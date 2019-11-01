@@ -33,6 +33,46 @@ namespace MyNamespace
             actual.Should().BeFalse();
         }
 
+        [Fact]
+        public void IsSupportedThrowsExceptionWithNullNode()
+        {
+            var resolver = new PropertyResolver();
+
+            Action action = () => resolver.IsSupported(null);
+
+            action.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
+        public async Task IsSupportReturnsFalseIfTheResolverDoesNotMatchTheNodeType()
+        {
+            var resolver = new PropertyResolver();
+
+            var code = @"
+namespace MyProject
+{
+
+}
+";
+            var node = await TestNode.FindNode<NamespaceDeclarationSyntax>(code).ConfigureAwait(false);
+
+            var actual = resolver.IsSupported(node);
+
+            actual.Should().BeFalse();
+        }
+
+        [Fact]
+        public async Task IsSupportReturnsTrueIfTheResolverMatchesTheNodeType()
+        {
+            var resolver = new PropertyResolver();
+
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(StandardProperty).ConfigureAwait(false);
+
+            var actual = resolver.IsSupported(node);
+
+            actual.Should().BeTrue();
+        }
+
         [Theory]
         [InlineData("", true)]
         [InlineData("public", true)]
@@ -50,7 +90,7 @@ namespace MyNamespace
 
             var sut = new PropertyResolver();
 
-            var actual = sut.Resolve(node);
+            var actual = (PropertyDefinition)sut.Resolve(node);
 
             actual.CanRead.Should().Be(expected);
         }
@@ -72,7 +112,7 @@ namespace MyNamespace
 
             var sut = new PropertyResolver();
 
-            var actual = sut.Resolve(node);
+            var actual = (PropertyDefinition)sut.Resolve(node);
 
             actual.CanWrite.Should().Be(expected);
         }
@@ -84,7 +124,7 @@ namespace MyNamespace
 
             var sut = new PropertyResolver();
 
-            var actual = sut.Resolve(node);
+            var actual = (PropertyDefinition)sut.Resolve(node);
 
             actual.Attributes.Should().BeEmpty();
         }
@@ -106,7 +146,7 @@ namespace MyNamespace
 
             var sut = new PropertyResolver();
 
-            var actual = sut.Resolve(node);
+            var actual = (PropertyDefinition)sut.Resolve(node);
 
             actual.IsPublic.Should().Be(expected);
         }
@@ -117,7 +157,13 @@ namespace MyNamespace
         [InlineData(@"[Ignore]
 [Serialize]
 [Custom]
-", "Ignore", "Ignore", "Serialize", "Serialize", "Custom", "Custom")]
+",
+            "Ignore",
+            "Ignore",
+            "Serialize",
+            "Serialize",
+            "Custom",
+            "Custom")]
         [InlineData("[Custom][Obsolete(\"message\"), Serialize]",
             "Custom",
             "Custom",
@@ -147,7 +193,7 @@ namespace MyNamespace
 
             var sut = new PropertyResolver();
 
-            var actual = sut.Resolve(node);
+            var actual = (PropertyDefinition)sut.Resolve(node);
 
             actual.Attributes.Should().HaveCount(3);
             actual.Attributes.First().Declaration.Should().Be(firstDeclaration);
@@ -183,7 +229,7 @@ namespace MyNamespace
 
             var sut = new PropertyResolver();
 
-            var actual = sut.Resolve(node);
+            var actual = (PropertyDefinition)sut.Resolve(node);
 
             actual.Attributes.Should().HaveCount(2);
             actual.Attributes.First().Declaration.Should().Be(firstDeclaration);
@@ -199,7 +245,7 @@ namespace MyNamespace
 
             var sut = new PropertyResolver();
 
-            var actual = sut.Resolve(node);
+            var actual = (PropertyDefinition)sut.Resolve(node);
 
             actual.Namespace.Should().Be("MyNamespace");
             actual.ClassName.Should().Be("MyClass");
@@ -223,7 +269,7 @@ namespace MyNamespace
 
             var sut = new PropertyResolver();
 
-            var actual = sut.Resolve(node);
+            var actual = (PropertyDefinition)sut.Resolve(node);
 
             actual.DataType.Should().Be(expected);
         }
@@ -243,7 +289,7 @@ namespace MyNamespace
 
             var sut = new PropertyResolver();
 
-            var actual = sut.Resolve(node);
+            var actual = (PropertyDefinition)sut.Resolve(node);
 
             actual.Attributes.Should().HaveCount(1);
             actual.Attributes.First().Declaration.Should().Be(declaration);
