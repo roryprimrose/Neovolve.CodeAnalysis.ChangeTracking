@@ -2,9 +2,11 @@
 {
     using Microsoft.CodeAnalysis;
 
-    public interface INodeResolver<TN, out TD> where TN : SyntaxNode
+    public interface INodeResolver
     {
-        TD Resolve(SyntaxNode node);
+        bool IsSupported(SyntaxNode node);
+
+        NodeDefinition Resolve(SyntaxNode node);
 
         bool EvaluateChildren { get; }
     }

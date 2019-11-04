@@ -6,9 +6,16 @@
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-    public class PropertyResolver : INodeResolver<PropertyDeclarationSyntax, PropertyDefinition>
+    public class PropertyResolver : INodeResolver
     {
-        public PropertyDefinition Resolve(SyntaxNode node)
+        public bool IsSupported(SyntaxNode node)
+        {
+            Ensure.Any.IsNotNull(node, nameof(node));
+
+            return node is PropertyDeclarationSyntax;
+        }
+
+        public NodeDefinition Resolve(SyntaxNode node)
         {
             Ensure.Any.IsNotNull(node, nameof(node));
             Ensure.Type.IsOfType(node, typeof(PropertyDeclarationSyntax), nameof(node));
