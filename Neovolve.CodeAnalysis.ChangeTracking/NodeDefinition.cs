@@ -2,7 +2,7 @@
 {
     using System.Collections.Generic;
 
-    public abstract class NodeDefinition
+    public class NodeDefinition
     {
         public ICollection<AttributeDefinition> Attributes { get; } = new List<AttributeDefinition>();
 
