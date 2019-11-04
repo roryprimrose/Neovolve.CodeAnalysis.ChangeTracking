@@ -6,7 +6,7 @@
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-    public class PropertyResolver : INodeResolver
+    public class PropertyResolver : MemberResolver, INodeResolver
     {
         public bool IsSupported(SyntaxNode node)
         {
@@ -20,20 +20,12 @@
             Ensure.Any.IsNotNull(node, nameof(node));
             Ensure.Type.IsOfType(node, typeof(PropertyDeclarationSyntax), nameof(node));
 
-            var propertySyntax = node as PropertyDeclarationSyntax;
+            var propertySyntax = (PropertyDeclarationSyntax) node;
 
-            var parentClass = propertySyntax.Parent as ClassDeclarationSyntax;
-            var containerNamespace = parentClass?.Parent as NamespaceDeclarationSyntax;
-            var namespaceIdentifier = containerNamespace?.Name as IdentifierNameSyntax;
+            var property = Resolve<PropertyDefinition>(propertySyntax);
 
-            var property = new PropertyDefinition
-            {
-                Name = propertySyntax.Identifier.Text,
-                ClassName = parentClass?.Identifier.Text,
-                Namespace = namespaceIdentifier?.Identifier.Text,
-                IsPublic = propertySyntax.Modifiers.Any(x => x.Text == "public"),
-                DataType = propertySyntax.Type.ToString()
-            };
+            property.Name = propertySyntax.Identifier.Text;
+            property.ReturnType = propertySyntax.Type.ToString();
 
             var getAccessor =
                 propertySyntax.AccessorList.Accessors.FirstOrDefault(x =>
@@ -58,20 +50,6 @@
                     || setAccessor.Modifiers.Any(x => x.Text == "public"))
                 {
                     property.CanWrite = true;
-                }
-            }
-
-            foreach (var attributeList in propertySyntax.AttributeLists)
-            {
-                foreach (var attributeSyntax in attributeList.Attributes)
-                {
-                    var attribute = new AttributeDefinition
-                    {
-                        Name = attributeSyntax.Name.GetText().ToString(),
-                        Declaration = attributeSyntax.GetText().ToString()
-                    };
-
-                    property.Attributes.Add(attribute);
                 }
             }
 

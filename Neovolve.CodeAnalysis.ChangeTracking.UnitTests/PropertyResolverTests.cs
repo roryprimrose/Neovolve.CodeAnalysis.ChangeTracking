@@ -248,7 +248,7 @@ namespace MyProject
             var actual = (PropertyDefinition)sut.Resolve(node);
 
             actual.Namespace.Should().Be("MyNamespace");
-            actual.ClassName.Should().Be("MyClass");
+            actual.OwningType.Should().Be("MyClass");
             actual.Name.Should().Be("MyProperty");
         }
 
@@ -271,7 +271,7 @@ namespace MyProject
 
             var actual = (PropertyDefinition)sut.Resolve(node);
 
-            actual.DataType.Should().Be(expected);
+            actual.ReturnType.Should().Be(expected);
         }
 
         [Theory]
