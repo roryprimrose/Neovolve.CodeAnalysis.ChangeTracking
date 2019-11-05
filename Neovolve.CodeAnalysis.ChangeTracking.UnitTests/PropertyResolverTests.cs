@@ -13,7 +13,7 @@ namespace MyNamespace
 {
     public class MyClass
     {
-        string MyProperty
+        string MyItem
         {
             get;
             set;
@@ -127,8 +127,8 @@ namespace MyProject
         [InlineData("[Serialize] string", "string")]
         public async Task ResolveReturnsPropertyDataType(string dataType, string expected)
         {
-            var code = StandardProperty.Replace("string MyProperty",
-                dataType + " MyProperty",
+            var code = StandardProperty.Replace("string MyItem",
+                dataType + " MyItem",
                 StringComparison.Ordinal);
 
             var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code).ConfigureAwait(false);
@@ -149,7 +149,7 @@ namespace MyProject
 
             var actual = (PropertyDefinition) sut.Resolve(node);
 
-            actual.Name.Should().Be("MyProperty");
+            actual.Name.Should().Be("MyItem");
         }
 
         [Fact]

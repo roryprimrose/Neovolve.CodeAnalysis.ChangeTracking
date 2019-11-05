@@ -1,5 +1,6 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking
 {
+    using System.Linq;
     using EnsureThat;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -22,7 +23,7 @@
 
             var property = Resolve<NodeDefinition>(syntaxNode);
 
-            property.Name = syntaxNode.Declaration.ToString();
+            property.Name = syntaxNode.Declaration.Variables.Single().Identifier.Text;
             property.ReturnType = syntaxNode.Declaration.Type.ToString();
 
             return property;
