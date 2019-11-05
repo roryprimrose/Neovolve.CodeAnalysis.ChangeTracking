@@ -58,6 +58,15 @@
 
             if (resolver != null)
             {
+                if (resolver.SkipNode)
+                {
+                    _logger.LogDebug("Resolver {0} matches node {1} but skips processing it",
+                        resolver.GetType().Namespace,
+                        node.GetType().Namespace);
+
+                    return;
+                }
+
                 var definition = resolver.Resolve(node);
 
                 _logger.LogInformation("Resolver {0} matches node {1} and returned definition {2}",

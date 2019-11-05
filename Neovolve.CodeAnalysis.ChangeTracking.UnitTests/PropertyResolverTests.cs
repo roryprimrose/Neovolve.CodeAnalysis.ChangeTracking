@@ -127,9 +127,7 @@ namespace MyProject
         [InlineData("[Serialize] string", "string")]
         public async Task ResolveReturnsPropertyDataType(string dataType, string expected)
         {
-            var code = StandardProperty.Replace("string MyItem",
-                dataType + " MyItem",
-                StringComparison.Ordinal);
+            var code = StandardProperty.Replace("string MyItem", dataType + " MyItem", StringComparison.Ordinal);
 
             var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code).ConfigureAwait(false);
 
@@ -160,6 +158,16 @@ namespace MyProject
             Action action = () => resolver.Resolve(null);
 
             action.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
+        public void SkipNodeReturnsFalse()
+        {
+            var sut = new FieldResolver();
+
+            var actual = sut.SkipNode;
+
+            actual.Should().BeFalse();
         }
     }
 }
