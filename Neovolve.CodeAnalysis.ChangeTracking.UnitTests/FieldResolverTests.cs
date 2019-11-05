@@ -79,9 +79,7 @@ namespace MyProject
         [InlineData("[Serialize] string", "string")]
         public async Task ResolveReturnsFieldDataType(string dataType, string expected)
         {
-            var code = StandardField.Replace("string MyItem",
-                dataType + " MyItem",
-                StringComparison.Ordinal);
+            var code = StandardField.Replace("string MyItem", dataType + " MyItem", StringComparison.Ordinal);
 
             var node = await TestNode.FindNode<FieldDeclarationSyntax>(code).ConfigureAwait(false);
 
@@ -91,7 +89,28 @@ namespace MyProject
 
             actual.ReturnType.Should().Be(expected);
         }
+        
+        [Fact]
+        public async Task ResolveReturnsDefinitionWhenFieldHasAssignment()
+        {
+            var code = @"
+namespace MyNamespace 
+{
+    public class MyClass
+    {
+        string MyItem = ""test"";
+    }   
+}
+";
+            var node = await TestNode.FindNode<FieldDeclarationSyntax>(code).ConfigureAwait(false);
 
+            var sut = new FieldResolver();
+
+            var actual = sut.Resolve(node);
+
+            actual.Name.Should().Be("MyItem");
+        }
+        
         [Fact]
         public async Task ResolveReturnsFieldName()
         {
@@ -112,6 +131,16 @@ namespace MyProject
             Action action = () => resolver.Resolve(null);
 
             action.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
+        public void SkipNodeReturnsFalse()
+        {
+            var sut = new FieldResolver();
+
+            var actual = sut.SkipNode;
+
+            actual.Should().BeFalse();
         }
     }
 }

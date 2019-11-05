@@ -57,5 +57,7 @@
         }
 
         public bool EvaluateChildren { get; } = false;
+
+        public bool SkipNode { get; } = false;
     }
 }

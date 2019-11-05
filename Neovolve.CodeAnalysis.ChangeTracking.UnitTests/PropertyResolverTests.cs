@@ -35,9 +35,9 @@ namespace MyNamespace
         [Fact]
         public void IsSupportedThrowsExceptionWithNullNode()
         {
-            var resolver = new PropertyResolver();
+            var sut = new PropertyResolver();
 
-            Action action = () => resolver.IsSupported(null);
+            Action action = () => sut.IsSupported(null);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -45,7 +45,7 @@ namespace MyNamespace
         [Fact]
         public async Task IsSupportReturnsFalseIfTheResolverDoesNotMatchTheNodeType()
         {
-            var resolver = new PropertyResolver();
+            var sut = new PropertyResolver();
 
             var code = @"
 namespace MyProject
@@ -55,7 +55,7 @@ namespace MyProject
 ";
             var node = await TestNode.FindNode<NamespaceDeclarationSyntax>(code).ConfigureAwait(false);
 
-            var actual = resolver.IsSupported(node);
+            var actual = sut.IsSupported(node);
 
             actual.Should().BeFalse();
         }
@@ -63,11 +63,11 @@ namespace MyProject
         [Fact]
         public async Task IsSupportReturnsTrueIfTheResolverMatchesTheNodeType()
         {
-            var resolver = new PropertyResolver();
+            var sut = new PropertyResolver();
 
             var node = await TestNode.FindNode<PropertyDeclarationSyntax>(StandardProperty).ConfigureAwait(false);
 
-            var actual = resolver.IsSupported(node);
+            var actual = sut.IsSupported(node);
 
             actual.Should().BeTrue();
         }
@@ -94,6 +94,30 @@ namespace MyProject
             actual.CanRead.Should().Be(expected);
         }
 
+        [Fact]
+        public async Task ResolveReturnsCanReadAsFalseWithWriteOnlyProperty()
+        {
+            const string Code = @"
+namespace MyNamespace 
+{
+    public class MyClass
+    {
+        public string MyItem
+        {
+            set;
+        }
+    }   
+}
+";
+            var sut = new PropertyResolver();
+
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(Code).ConfigureAwait(false);
+
+            var actual = (PropertyDefinition) sut.Resolve(node);
+
+            actual.CanRead.Should().BeFalse();
+        }
+
         [Theory]
         [InlineData("", true)]
         [InlineData("public", true)]
@@ -116,6 +140,80 @@ namespace MyProject
             actual.CanWrite.Should().Be(expected);
         }
 
+        [Fact]
+        public async Task ResolveReturnsCanWriteAsFalseWithReadOnlyProperty()
+        {
+            const string Code = @"
+namespace MyNamespace 
+{
+    public class MyClass
+    {
+        public string MyItem
+        {
+            get;
+        }
+    }   
+}
+";
+            var sut = new PropertyResolver();
+
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(Code).ConfigureAwait(false);
+
+            var actual = (PropertyDefinition) sut.Resolve(node);
+
+            actual.CanWrite.Should().BeFalse();
+        }
+
+        [Fact]
+        public async Task ResolveReturnsDefinitionWhenPropertyHasAssignment()
+        {
+            const string Code = @"
+namespace MyNamespace 
+{
+    public class MyClass
+    {
+        public string MyItem
+        {
+            get;
+            set;
+        } = ""stuff""
+    }   
+}
+";
+            var sut = new PropertyResolver();
+
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(Code).ConfigureAwait(false);
+
+            var actual = (PropertyDefinition) sut.Resolve(node);
+
+            actual.Name.Should().Be("MyItem");
+        }
+
+        [Fact]
+        public async Task ResolveReturnsDefinitionWhenPropertyHasExpression()
+        {
+            const string Code = @"
+namespace MyNamespace 
+{
+    public class MyClass
+    {
+        public string MyItem
+        {
+            get;
+            set;
+        } => ""stuff""
+    }   
+}
+";
+            var sut = new PropertyResolver();
+
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(Code).ConfigureAwait(false);
+
+            var actual = (PropertyDefinition) sut.Resolve(node);
+
+            actual.Name.Should().Be("MyItem");
+        }
+
         [Theory]
         [InlineData("string", "string")]
         [InlineData("Stream", "Stream")]
@@ -127,9 +225,7 @@ namespace MyProject
         [InlineData("[Serialize] string", "string")]
         public async Task ResolveReturnsPropertyDataType(string dataType, string expected)
         {
-            var code = StandardProperty.Replace("string MyItem",
-                dataType + " MyItem",
-                StringComparison.Ordinal);
+            var code = StandardProperty.Replace("string MyItem", dataType + " MyItem", StringComparison.Ordinal);
 
             var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code).ConfigureAwait(false);
 
@@ -155,11 +251,21 @@ namespace MyProject
         [Fact]
         public void ResolveThrowsExceptionWithNullNode()
         {
-            var resolver = new PropertyResolver();
+            var sut = new PropertyResolver();
 
-            Action action = () => resolver.Resolve(null);
+            Action action = () => sut.Resolve(null);
 
             action.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
+        public void SkipNodeReturnsFalse()
+        {
+            var sut = new PropertyResolver();
+
+            var actual = sut.SkipNode;
+
+            actual.Should().BeFalse();
         }
     }
 }

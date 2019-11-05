@@ -9,5 +9,7 @@
         NodeDefinition Resolve(SyntaxNode node);
 
         bool EvaluateChildren { get; }
+
+        bool SkipNode { get; }
     }
 }
