@@ -86,6 +86,7 @@ namespace MyNamespace
         [Theory]
         [InlineData("", false)]
         [InlineData("public", true)]
+        [InlineData("public readonly", true)]
         [InlineData("public virtual", true)]
         [InlineData("private", false)]
         [InlineData("internal", false)]

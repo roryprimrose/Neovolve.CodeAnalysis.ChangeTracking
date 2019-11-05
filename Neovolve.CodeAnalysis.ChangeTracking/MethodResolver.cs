@@ -1,6 +1,7 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking
 {
     using System;
+    using EnsureThat;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -8,7 +9,9 @@
     {
         public bool IsSupported(SyntaxNode node)
         {
-            return node is MemberDeclarationSyntax;
+            Ensure.Any.IsNotNull(node, nameof(node));
+
+            return node is MethodDeclarationSyntax;
         }
 
         public NodeDefinition Resolve(SyntaxNode node)

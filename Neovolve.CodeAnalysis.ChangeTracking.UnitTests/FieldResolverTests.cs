@@ -89,7 +89,28 @@ namespace MyProject
 
             actual.ReturnType.Should().Be(expected);
         }
+        
+        [Fact]
+        public async Task ResolveReturnsDefinitionWhenFieldHasAssignment()
+        {
+            var code = @"
+namespace MyNamespace 
+{
+    public class MyClass
+    {
+        string MyItem = ""test"";
+    }   
+}
+";
+            var node = await TestNode.FindNode<FieldDeclarationSyntax>(code).ConfigureAwait(false);
 
+            var sut = new FieldResolver();
+
+            var actual = sut.Resolve(node);
+
+            actual.Name.Should().Be("MyItem");
+        }
+        
         [Fact]
         public async Task ResolveReturnsFieldName()
         {

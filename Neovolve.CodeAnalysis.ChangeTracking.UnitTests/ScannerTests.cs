@@ -58,7 +58,7 @@ namespace MyNamespace
 
             actual.Should().Contain(definition);
         }
-        
+
         [Fact]
         public void FindDefinitionsReturnsEmptyWhenNodesAreEmpty()
         {
@@ -81,7 +81,6 @@ namespace MyNamespace
             var secondResolver = Substitute.For<INodeResolver>();
             var resolvers = new List<INodeResolver> {firstResolver, secondResolver};
             var rootNode = await TestNode.Parse(StandardProperty).ConfigureAwait(false);
-            var node = TestNode.FindNode<PropertyDeclarationSyntax>(rootNode);
 
             var nodes = new List<SyntaxNode> {rootNode};
 
@@ -90,6 +89,26 @@ namespace MyNamespace
             var actual = sut.FindDefinitions(nodes);
 
             actual.Should().BeEmpty();
+        }
+
+        [Fact]
+        public async Task FindDefinitionsSkipsProcessingWhenResolverSkipNodeIsTrue()
+        {
+            var resolver = Substitute.For<INodeResolver>();
+            var resolvers = new List<INodeResolver> {resolver};
+            var rootNode = await TestNode.Parse(StandardProperty).ConfigureAwait(false);
+
+            resolver.IsSupported(rootNode).Returns(true);
+            resolver.SkipNode.Returns(true);
+
+            var nodes = new List<SyntaxNode> {rootNode};
+
+            var sut = new Scanner(resolvers, _logger);
+
+            var actual = sut.FindDefinitions(nodes);
+
+            actual.Should().BeEmpty();
+            resolver.Received(1).IsSupported(Arg.Any<SyntaxNode>());
         }
 
         [Fact]
