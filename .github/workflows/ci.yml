@@ -15,18 +15,30 @@ jobs:
       run: |
         git fetch --tags
         git branch --create-reflog master origin/master
+
     - name: GitVersion
       uses: docker://gittools/gitversion:5.0.2-linux
       with:
-        args: /github/workspace /nofetch /exec /bin/sh /execargs "-c \"echo $GitVersion_NuGetVersionV2 > /github/workspace/version.txt\""
+        args: /github/workspace /nofetch /exec /bin/sh /execargs "-c \"echo $GitVersion_NuGetVersionV2\\r\\n$GitVersion_AssemblySemVer\\r\\n$GitVersion_MajorMinorPatch\\r\\n$GitVersion_InformationalVersion > /github/workspace/version.txt\""
+    
+    - name: Version projects
+      uses: docker://mcr.microsoft.com/powershell:alpine-3.8
+      with:
+        args: pwsh /github/workspace/version-projects.ps1
     
     - name: Setup dotnet
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '3.0.100' # SDK Version to use.
+
     - name: Restore
       run: dotnet restore
+
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build -c Release --no-restore
+
     - name: Test
-      run: dotnet test --no-build
+      run: dotnet test -c Release --no-build
+
+    - name: Pack
+      run: dotnet pack "./Neovolve.CodeAnalysis.ChangeTracking/Neovolve.CodeAnalysis.ChangeTracking.csproj" -c Release --no-build --include-symbols -o ./staging
