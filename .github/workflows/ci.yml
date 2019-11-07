@@ -39,6 +39,11 @@ jobs:
 
     - name: Test
       run: dotnet test -c Release --no-build --collect:"XPlat Code Coverage" /p:CollectCoverage=true /p:CoverletOutputFormat=lcov                                                       
-
+    
+    - name: Coveralls
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.github_token }}
+    
     - name: Pack
       run: dotnet pack "./Neovolve.CodeAnalysis.ChangeTracking/Neovolve.CodeAnalysis.ChangeTracking.csproj" -c Release --no-build --include-symbols -o ./staging
