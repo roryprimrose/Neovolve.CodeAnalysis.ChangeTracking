@@ -37,7 +37,7 @@ Function Set-NodeValue($rootNode, [string]$nodeName, [string]$value)
     $node = $rootNode.Node.SelectSingleNode($nodePath)
 
     if ($node -eq $null) {
-        Write-Host "Adding $($nodeName) element to existing PropertyGroup"
+        Write-Output "Adding $($nodeName) element to existing PropertyGroup"
 
         $group = $rootNode.Node.SelectSingleNode("PropertyGroup")
         $node = $group.OwnerDocument.CreateElement($nodeName)
@@ -46,23 +46,23 @@ Function Set-NodeValue($rootNode, [string]$nodeName, [string]$value)
 
     $node.InnerText = $value
 
-    Write-Host "Set $($nodeName) to $($value)"
+    Write-Output "Set $($nodeName) to $($value)"
 }
 
-Write-Host "Updating csproj files with the following version information"
-Write-Host "GitVersion_NuGetVersionV2: $nuGetVersion"
-Write-Host "GitVersion_AssemblySemVer: $assemblySemVer"
-Write-Host "GitVersion_MajorMinorPatch: $majorMinorPatch"
-Write-Host "GitVersion_InformationalVersion: $informationalVersion"
-Write-Host ""
-Write-Host "Searching for projects under $sourcesDirectory"
-Write-Host ""
+Write-Output "Updating csproj files with the following version information"
+Write-Output "GitVersion_NuGetVersionV2: $nuGetVersion"
+Write-Output "GitVersion_AssemblySemVer: $assemblySemVer"
+Write-Output "GitVersion_MajorMinorPatch: $majorMinorPatch"
+Write-Output "GitVersion_InformationalVersion: $informationalVersion"
+Write-Output ""
+Write-Output "Searching for projects under $sourcesDirectory"
+Write-Output ""
 
 # This code snippet gets all the files in $Path that end in ".csproj" and any subdirectories.
 Get-ChildItem -Path $sourcesDirectory -Filter "*.csproj" -Recurse -File | 
     ForEach-Object { 
         
-        Write-Host "Found project at $($_.FullName)"
+        Write-Output "Found project at $($_.FullName)"
 
         $projectPath = $_.FullName
         $project = Select-Xml $projectPath -XPath "//Project"
@@ -77,5 +77,5 @@ Get-ChildItem -Path $sourcesDirectory -Filter "*.csproj" -Recurse -File |
 
         $document.Save($projectPath)
 
-        Write-Host ""
+        Write-Output ""
     }
