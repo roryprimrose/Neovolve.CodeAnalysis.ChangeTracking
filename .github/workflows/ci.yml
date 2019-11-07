@@ -38,7 +38,7 @@ jobs:
       run: dotnet build -c Release --no-restore
 
     - name: Test
-      run: dotnet test -c Release --no-build --collect:"XPlat Code Coverage"
+      run: dotnet test -c Release --no-build --collect:"XPlat Code Coverage" /p:CollectCoverage=true /p:CoverletOutputFormat=lcov                                                       
 
     - name: Pack
       run: dotnet pack "./Neovolve.CodeAnalysis.ChangeTracking/Neovolve.CodeAnalysis.ChangeTracking.csproj" -c Release --no-build --include-symbols -o ./staging
