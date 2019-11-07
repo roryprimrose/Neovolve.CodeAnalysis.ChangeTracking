@@ -3,8 +3,8 @@ name: CI
 on: [push, pull_request]
 
 jobs:
-  build:
 
+  build:
     runs-on: ubuntu-latest
     
     steps:
@@ -37,8 +37,14 @@ jobs:
     - name: Build
       run: dotnet build -c Release --no-restore
 
+  test:
+    needs: build
+
     - name: Test
       run: dotnet test -c Release --no-build
+      
+  publish:
+    needs: test
 
     - name: Pack
       run: dotnet pack "./Neovolve.CodeAnalysis.ChangeTracking/Neovolve.CodeAnalysis.ChangeTracking.csproj" -c Release --no-build --include-symbols -o ./staging
