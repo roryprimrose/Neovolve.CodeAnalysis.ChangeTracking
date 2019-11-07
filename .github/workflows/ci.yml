@@ -46,7 +46,7 @@ jobs:
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.github_token }}
-        path-to-lcov: $GITHUB_WORKSPACE/coverage/lcov.info
+        path-to-lcov: /home/runner/work/Neovolve.CodeAnalysis.ChangeTracking/Neovolve.CodeAnalysis.ChangeTracking/coverage/lcov.info
     
     - name: Pack
       run: dotnet pack "./Neovolve.CodeAnalysis.ChangeTracking/Neovolve.CodeAnalysis.ChangeTracking.csproj" -c Release --no-build --include-symbols -o ./staging
