@@ -24,7 +24,7 @@ jobs:
     - name: Version projects
       uses: docker://mcr.microsoft.com/powershell:alpine-3.8
       with:
-        args:  pwsh -c '/github/workspace/version-projects.ps1'
+        args:  pwsh -c './github/workspace/version-projects.ps1'
     
     - name: Setup dotnet
       uses: actions/setup-dotnet@v1
