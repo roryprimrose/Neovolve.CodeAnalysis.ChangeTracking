@@ -4,8 +4,9 @@ on: [push, pull_request]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
+    env:
+      COVERAGE_PATH: $GITHUB_WORKSPACE/coverage/lcov.info
     
     steps:
     - name: Checkout
@@ -38,12 +39,18 @@ jobs:
       run: dotnet build -c Release --no-restore
 
     - name: Test
-      run: dotnet test -c Release --no-build /p:CollectCoverage=true /p:CoverletOutput="./coverage/lcov.info" /p:MergeWith="./coverage/lcov.info" /p:CoverletOutputFormat=lcov                                                       
-    
+      run: dotnet test -c Release --no-build /p:CollectCoverage=true /p:CoverletOutput="$COVERAGE_PATH" /p:MergeWith="$COVERAGE_PATH" /p:CoverletOutputFormat=lcov                                                       
+      
+    - name: List directory
+      run: |
+        ls $GITHUB_WORKSPACE
+        ls $GITHUB_WORKSPACE/coverage
+        
     - name: Coveralls
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.github_token }}
+        path-to-lcov: "$COVERAGE_PATH"
     
     - name: Pack
       run: dotnet pack "./Neovolve.CodeAnalysis.ChangeTracking/Neovolve.CodeAnalysis.ChangeTracking.csproj" -c Release --no-build --include-symbols -o ./staging
