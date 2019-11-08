@@ -38,10 +38,7 @@ jobs:
 
     - name: Test
       run: dotnet test -c Release --no-build /p:CollectCoverage=true /p:CoverletOutput="$GITHUB_WORKSPACE/coverage/lcov.info" /p:MergeWith="$GITHUB_WORKSPACE/coverage/lcov.info" /p:CoverletOutputFormat=lcov                                                       
-      
-    - name: List directory
-      run: ls $GITHUB_WORKSPACE/coverage
-        
+    
     - name: Coveralls
       uses: coverallsapp/github-action@master
       with:
