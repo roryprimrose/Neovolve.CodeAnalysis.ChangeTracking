@@ -37,12 +37,12 @@
 
         private static void ResolveMemberInfo(MemberDeclarationSyntax propertySyntax, NodeDefinition property)
         {
-            var parentClass = propertySyntax.Parent as ClassDeclarationSyntax;
-            var containerNamespace = parentClass?.Parent as NamespaceDeclarationSyntax;
-            var namespaceIdentifier = containerNamespace?.Name as IdentifierNameSyntax;
+            var parentClass = propertySyntax.FirstAncestorOrSelf<ClassDeclarationSyntax>();
+            var containerNamespace = parentClass.FirstAncestorOrSelf<NamespaceDeclarationSyntax>();
+            var namespaceIdentifier = (IdentifierNameSyntax)containerNamespace.Name;
 
-            property.OwningType = parentClass?.Identifier.Text;
-            property.Namespace = namespaceIdentifier?.Identifier.Text;
+            property.OwningType = parentClass.Identifier.Text;
+            property.Namespace = namespaceIdentifier.Identifier.Text;
             property.IsPublic = propertySyntax.Modifiers.Any(x => x.Text == "public");
         }
     }
