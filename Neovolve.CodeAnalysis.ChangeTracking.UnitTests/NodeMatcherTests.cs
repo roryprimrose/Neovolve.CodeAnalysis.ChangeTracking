@@ -10,22 +10,22 @@
         [Fact]
         public void GetMatchReturnsMatcherWhenNodesHaveSameIdentifiers()
         {
-            var oldDefinition = Model.Create<NodeDefinition>();
-            var newDefinition = Model.Create<NodeDefinition>()
+            var oldNode = Model.Create<NodeDefinition>();
+            var newNode = Model.Create<NodeDefinition>()
                 .Set(x =>
                 {
-                    x.Namespace = oldDefinition.Namespace;
-                    x.Name = oldDefinition.Name;
-                    x.OwningType = oldDefinition.OwningType;
+                    x.Namespace = oldNode.Namespace;
+                    x.Name = oldNode.Name;
+                    x.OwningType = oldNode.OwningType;
                 });
 
             var sut = new NodeMatcher();
 
-            var actual = sut.GetMatch(oldDefinition, newDefinition);
+            var actual = sut.GetMatch(oldNode, newNode);
 
             actual.Should().NotBeNull();
-            actual.NewDefinition.Should().Be(newDefinition);
-            actual.OldDefinition.Should().Be(oldDefinition);
+            actual.NewNode.Should().Be(newNode);
+            actual.OldNode.Should().Be(oldNode);
         }
 
         [Theory]
@@ -33,18 +33,18 @@
         [InlineData("Some", "some")]
         public void GetMatchReturnsNullWhereNameIsDifferent(string oldValue, string newValue)
         {
-            var oldDefinition = Model.Create<NodeDefinition>().Set(x => x.Name = oldValue);
-            var newDefinition = Model.Create<NodeDefinition>()
+            var oldNode = Model.Create<NodeDefinition>().Set(x => x.Name = oldValue);
+            var newNode = Model.Create<NodeDefinition>()
                 .Set(x =>
                 {
-                    x.Namespace = oldDefinition.Namespace;
+                    x.Namespace = oldNode.Namespace;
                     x.Name = newValue;
-                    x.OwningType = oldDefinition.OwningType;
+                    x.OwningType = oldNode.OwningType;
                 });
 
             var sut = new NodeMatcher();
 
-            var actual = sut.GetMatch(oldDefinition, newDefinition);
+            var actual = sut.GetMatch(oldNode, newNode);
 
             actual.Should().BeNull();
         }
@@ -54,18 +54,18 @@
         [InlineData("Some", "some")]
         public void GetMatchReturnsNullWhereNamespaceIsDifferent(string oldValue, string newValue)
         {
-            var oldDefinition = Model.Create<NodeDefinition>().Set(x => x.Namespace = oldValue);
-            var newDefinition = Model.Create<NodeDefinition>()
+            var oldNode = Model.Create<NodeDefinition>().Set(x => x.Namespace = oldValue);
+            var newNode = Model.Create<NodeDefinition>()
                 .Set(x =>
                 {
                     x.Namespace = newValue;
-                    x.Name = oldDefinition.Name;
-                    x.OwningType = oldDefinition.OwningType;
+                    x.Name = oldNode.Name;
+                    x.OwningType = oldNode.OwningType;
                 });
 
             var sut = new NodeMatcher();
 
-            var actual = sut.GetMatch(oldDefinition, newDefinition);
+            var actual = sut.GetMatch(oldNode, newNode);
 
             actual.Should().BeNull();
         }
@@ -75,42 +75,67 @@
         [InlineData("Some", "some")]
         public void GetMatchReturnsNullWhereOwningTypeIsDifferent(string oldValue, string newValue)
         {
-            var oldDefinition = Model.Create<NodeDefinition>().Set(x => x.OwningType = oldValue);
-            var newDefinition = Model.Create<NodeDefinition>()
+            var oldNode = Model.Create<NodeDefinition>().Set(x => x.OwningType = oldValue);
+            var newNode = Model.Create<NodeDefinition>()
                 .Set(x =>
                 {
-                    x.Namespace = oldDefinition.Namespace;
-                    x.Name = oldDefinition.Name;
+                    x.Namespace = oldNode.Namespace;
+                    x.Name = oldNode.Name;
                     x.OwningType = newValue;
                 });
 
             var sut = new NodeMatcher();
 
-            var actual = sut.GetMatch(oldDefinition, newDefinition);
+            var actual = sut.GetMatch(oldNode, newNode);
 
             actual.Should().BeNull();
         }
 
         [Fact]
-        public void GetMatchThrowsExceptionWithNullNewDefinition()
+        public void GetMatchThrowsExceptionWithNullNewNode()
         {
-            var oldDefinition = Model.Create<NodeDefinition>();
+            var oldNode = Model.Create<NodeDefinition>();
 
             var sut = new NodeMatcher();
 
-            Action action = () => sut.GetMatch(oldDefinition, null);
+            Action action = () => sut.GetMatch(oldNode, null);
 
             action.Should().Throw<ArgumentNullException>();
         }
 
         [Fact]
-        public void GetMatchThrowsExceptionWithNullOldDefinition()
+        public void GetMatchThrowsExceptionWithNullOldNode()
         {
-            var newDefinition = Model.Create<NodeDefinition>();
+            var newNode = Model.Create<NodeDefinition>();
 
             var sut = new NodeMatcher();
 
-            Action action = () => sut.GetMatch(null, newDefinition);
+            Action action = () => sut.GetMatch(null, newNode);
+
+            action.Should().Throw<ArgumentNullException>();
+        }
+
+        [Theory]
+        [InlineData(typeof(NodeDefinition), true)]
+        [InlineData(typeof(PropertyDefinition), false)]
+        [InlineData(typeof(AttributeDefinition), false)]
+        public void IsSupportedReturnsTrueForExactTypeMatch(Type type, bool expected)
+        {
+            var definition = (NodeDefinition) Model.Create(type);
+
+            var sut = new NodeMatcher();
+
+            var actual = sut.IsSupported(definition);
+
+            actual.Should().Be(expected);
+        }
+
+        [Fact]
+        public void IsSupportedThrowsExceptionWithNullNode()
+        {
+            var sut = new NodeMatcher();
+
+            Action action = () => sut.IsSupported(null);
 
             action.Should().Throw<ArgumentNullException>();
         }

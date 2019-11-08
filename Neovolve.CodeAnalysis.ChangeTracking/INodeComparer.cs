@@ -1,8 +1,8 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking
 {
-    public interface INodeMatcher
+    public interface INodeComparer
     {
-        NodeMatch GetMatch(NodeDefinition oldNode, NodeDefinition newNode);
+        ChangeType Compare(NodeDefinition oldNode, NodeDefinition newNode);
 
         bool IsSupported(NodeDefinition node);
     }

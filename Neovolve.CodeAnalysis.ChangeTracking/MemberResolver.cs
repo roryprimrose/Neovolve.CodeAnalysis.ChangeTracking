@@ -6,21 +6,21 @@
 
     public abstract class MemberResolver
     {
-        protected virtual T Resolve<T>(MemberDeclarationSyntax node) where T : NodeDefinition, new()
+        protected virtual T Resolve<T>(MemberDeclarationSyntax member) where T : NodeDefinition, new()
         {
-            Ensure.Any.IsNotNull(node, nameof(node));
+            Ensure.Any.IsNotNull(member, nameof(member));
 
-            var definition = new T();
+            var node = new T();
 
-            ResolveMemberInfo(node, definition);
-            ResolveAttributes(node, definition);
+            ResolveMemberInfo(member, node);
+            ResolveAttributes(member, node);
 
-            return definition;
+            return node;
         }
 
-        private static void ResolveAttributes(MemberDeclarationSyntax propertySyntax, NodeDefinition property)
+        private static void ResolveAttributes(MemberDeclarationSyntax member, NodeDefinition node)
         {
-            foreach (var attributeList in propertySyntax.AttributeLists)
+            foreach (var attributeList in member.AttributeLists)
             {
                 foreach (var attributeSyntax in attributeList.Attributes)
                 {
@@ -30,20 +30,20 @@
                         Declaration = attributeSyntax.GetText().ToString()
                     };
 
-                    property.Attributes.Add(attribute);
+                    node.Attributes.Add(attribute);
                 }
             }
         }
 
-        private static void ResolveMemberInfo(MemberDeclarationSyntax propertySyntax, NodeDefinition property)
+        private static void ResolveMemberInfo(MemberDeclarationSyntax member, NodeDefinition node)
         {
-            var parentClass = propertySyntax.FirstAncestorOrSelf<ClassDeclarationSyntax>();
+            var parentClass = member.FirstAncestorOrSelf<ClassDeclarationSyntax>();
             var containerNamespace = parentClass.FirstAncestorOrSelf<NamespaceDeclarationSyntax>();
             var namespaceIdentifier = (IdentifierNameSyntax)containerNamespace.Name;
 
-            property.OwningType = parentClass.Identifier.Text;
-            property.Namespace = namespaceIdentifier.Identifier.Text;
-            property.IsPublic = propertySyntax.Modifiers.Any(x => x.Text == "public");
+            node.OwningType = parentClass.Identifier.Text;
+            node.Namespace = namespaceIdentifier.Identifier.Text;
+            node.IsPublic = member.Modifiers.Any(x => x.Text == "public");
         }
     }
 }

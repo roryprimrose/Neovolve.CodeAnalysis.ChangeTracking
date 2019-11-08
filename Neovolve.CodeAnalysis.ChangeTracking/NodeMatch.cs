@@ -1,23 +1,20 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking
 {
-    using System;
+    using EnsureThat;
 
     public class NodeMatch
     {
-        public NodeMatch(NodeDefinition oldDefinition, NodeDefinition newDefinition)
+        public NodeMatch(NodeDefinition oldNode, NodeDefinition newNode)
         {
-            if (oldDefinition == null
-                && newDefinition == null)
-            {
-                throw new ArgumentException("At least one NodeDefinition must be supplied.");
-            }
+            Ensure.Any.IsNotNull(oldNode, nameof(oldNode));
+            Ensure.Any.IsNotNull(newNode, nameof(newNode));
 
-            OldDefinition = oldDefinition;
-            NewDefinition = newDefinition;
+            OldNode = oldNode;
+            NewNode = newNode;
         }
 
-        public NodeDefinition NewDefinition { get; }
+        public NodeDefinition NewNode { get; }
 
-        public NodeDefinition OldDefinition { get; }
+        public NodeDefinition OldNode { get; }
     }
 }

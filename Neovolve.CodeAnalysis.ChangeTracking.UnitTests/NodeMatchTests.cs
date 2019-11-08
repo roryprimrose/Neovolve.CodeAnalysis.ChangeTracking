@@ -8,43 +8,33 @@
     public class NodeMatchTests
     {
         [Fact]
-        public void CanCreateWithNullNewDefinitions()
+        public void CanCreateWithTwoNodes()
         {
-            var oldDefinition = Model.Create<NodeDefinition>();
+            var oldNode = Model.Create<NodeDefinition>();
+            var newNode = Model.Create<NodeDefinition>();
 
-            var sut = new NodeMatch(oldDefinition, null);
+            var sut = new NodeMatch(oldNode, newNode);
 
-            sut.OldDefinition.Should().Be(oldDefinition);
-            sut.NewDefinition.Should().BeNull();
+            sut.OldNode.Should().Be(oldNode);
+            sut.NewNode.Should().Be(newNode);
         }
 
         [Fact]
-        public void CanCreateWithNullOldDefinitions()
+        public void ThrowsExceptionWhenCreatedWithNullNewNode()
         {
-            var newDefinition = Model.Create<NodeDefinition>();
+            var oldNode = Model.Create<NodeDefinition>();
 
-            var sut = new NodeMatch(null, newDefinition);
+            Action action = () => new NodeMatch(oldNode, null);
 
-            sut.OldDefinition.Should().BeNull();
-            sut.NewDefinition.Should().Be(newDefinition);
+            action.Should().Throw<ArgumentException>();
         }
 
         [Fact]
-        public void CanCreateWithTwoDefinitions()
+        public void ThrowsExceptionWhenCreatedWithNullOldNode()
         {
-            var oldDefinition = Model.Create<NodeDefinition>();
-            var newDefinition = Model.Create<NodeDefinition>();
+            var newNode = Model.Create<NodeDefinition>();
 
-            var sut = new NodeMatch(oldDefinition, newDefinition);
-
-            sut.OldDefinition.Should().Be(oldDefinition);
-            sut.NewDefinition.Should().Be(newDefinition);
-        }
-
-        [Fact]
-        public void ThrowsExceptionWhenCreatedWithTwoNullDefinitions()
-        {
-            Action action = () => new NodeMatch(null, null);
+            Action action = () => new NodeMatch(null, newNode);
 
             action.Should().Throw<ArgumentException>();
         }

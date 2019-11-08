@@ -5,27 +5,35 @@
 
     public class NodeMatcher : INodeMatcher
     {
-        public NodeMatch GetMatch(NodeDefinition oldDefinition, NodeDefinition newDefinition)
+        public virtual NodeMatch GetMatch(NodeDefinition oldNode, NodeDefinition newNode)
         {
-            Ensure.Any.IsNotNull(oldDefinition, nameof(oldDefinition));
-            Ensure.Any.IsNotNull(newDefinition, nameof(newDefinition));
+            Ensure.Any.IsNotNull(oldNode, nameof(oldNode));
+            Ensure.Any.IsNotNull(newNode, nameof(newNode));
 
-            if (!string.Equals(oldDefinition.Namespace, newDefinition.Namespace, StringComparison.Ordinal))
+            if (!string.Equals(oldNode.Namespace, newNode.Namespace, StringComparison.Ordinal))
             {
                 return null;
             }
 
-            if (!string.Equals(oldDefinition.OwningType, newDefinition.OwningType, StringComparison.Ordinal))
+            if (!string.Equals(oldNode.OwningType, newNode.OwningType, StringComparison.Ordinal))
             {
                 return null;
             }
 
-            if (!string.Equals(oldDefinition.Name, newDefinition.Name, StringComparison.Ordinal))
+            if (!string.Equals(oldNode.Name, newNode.Name, StringComparison.Ordinal))
             {
                 return null;
             }
 
-            return new NodeMatch(oldDefinition, newDefinition);
+            return new NodeMatch(oldNode, newNode);
+        }
+
+        public virtual bool IsSupported(NodeDefinition node)
+        {
+            Ensure.Any.IsNotNull(node, nameof(node));
+
+            // We don't want to support derived types here
+            return node.GetType() == typeof(NodeDefinition);
         }
     }
 }
