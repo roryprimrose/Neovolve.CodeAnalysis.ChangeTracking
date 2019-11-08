@@ -2,6 +2,17 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
+    <NeutralLanguage>en-US</NeutralLanguage>	
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+
+    <Title>Contract comparer for C# projects</Title>
+    <Authors>rprimrose</Authors>
+    <Description>This library provides contract comparison between versions of c# code.</Description>
+    <PackageProjectUrl>https://github.com/roryprimrose/Neovolve.CodeAnalysis.ChangeTracking</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/roryprimrose/Neovolve.CodeAnalysis.ChangeTracking</RepositoryUrl>
+    <PackageTags>Analysis</PackageTags>
+    <Version>1.0.0-alpha</Version>
   </PropertyGroup>
 
   <ItemGroup>
