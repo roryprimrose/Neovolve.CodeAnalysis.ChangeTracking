@@ -11,8 +11,8 @@
             Ensure.Any.IsNotNull(newNode, nameof(newNode));
             Ensure.Type.IsOfType(newNode, typeof(PropertyDefinition), nameof(newNode));
 
-            var oldProperty = (PropertyDefinition)oldNode;
-            var newProperty = (PropertyDefinition)newNode;
+            var oldProperty = (PropertyDefinition) oldNode;
+            var newProperty = (PropertyDefinition) newNode;
 
             var changeType = base.Compare(oldProperty, newProperty);
 
@@ -42,20 +42,20 @@
             {
                 return ChangeType.Breaking;
             }
-            
+
             if (oldProperty.CanWrite
                 && newProperty.CanWrite == false)
             {
                 return ChangeType.Breaking;
             }
-            
+
             // Calculate feature changes
             if (oldProperty.CanRead == false
                 && newProperty.CanRead)
             {
                 return ChangeType.Feature;
             }
-            
+
             // Only other possible scenario at this point is that the old property couldn't write but the new property can
             return ChangeType.Feature;
         }

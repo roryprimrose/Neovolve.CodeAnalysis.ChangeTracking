@@ -1,5 +1,6 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking
 {
+    using System.Collections.Generic;
     using System.Linq;
     using EnsureThat;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -38,12 +39,45 @@
         private static void ResolveMemberInfo(MemberDeclarationSyntax member, NodeDefinition node)
         {
             var parentClass = member.FirstAncestorOrSelf<ClassDeclarationSyntax>();
+            
             var containerNamespace = parentClass.FirstAncestorOrSelf<NamespaceDeclarationSyntax>();
-            var namespaceIdentifier = (IdentifierNameSyntax)containerNamespace.Name;
 
-            node.OwningType = parentClass.Identifier.Text;
-            node.Namespace = namespaceIdentifier.Identifier.Text;
-            node.IsPublic = member.Modifiers.Any(x => x.Text == "public");
+            if (containerNamespace != null)
+            {
+                // This class is defined in a namespace
+                var namespaceIdentifier = (IdentifierNameSyntax)containerNamespace.Name;
+
+                node.Namespace = namespaceIdentifier.Identifier.Text;
+            }
+            
+            var parentClasses = new List<ClassDeclarationSyntax>();
+
+            while (parentClass != null)
+            {
+                parentClasses.Add(parentClass);
+                
+                var parent = parentClass;
+
+                parentClass = parentClass.FirstAncestorOrSelf<ClassDeclarationSyntax>(x => x != parent);
+            }
+            
+            var classNameHierarchy = parentClasses.Select(x => x.Identifier.Text).Reverse();
+
+            node.OwningType = string.Join("+", classNameHierarchy);
+
+            var memberIsPublic = member.Modifiers.Any(x => x.Text == "public");
+
+            if (memberIsPublic == false)
+            {
+                node.IsPublic = false;
+            }
+            else
+            {
+                // Check if any nest parent class is not public
+                var parentClassesArePublic = parentClasses.All(x => x.Modifiers.Any(y => y.Text == "public"));
+
+                node.IsPublic = parentClassesArePublic;
+            }
         }
     }
 }
