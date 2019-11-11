@@ -97,6 +97,68 @@
             actual.Should().Be(expected);
         }
 
+        [Theory]
+        [InlineData(null, "NewValue")]
+        [InlineData("", "NewValue")]
+        [InlineData(" ", "NewValue")]
+        [InlineData("OldValue", null)]
+        [InlineData("OldValue", "")]
+        [InlineData("OldValue", " ")]
+        [InlineData("OldValue", "NewValue")]
+        public void CompareThrowsExceptionWhenNameDoesNotMatch(string oldValue, string newValue)
+        {
+            var oldNode = Model.UsingModule<CompilerModule>().Create<NodeDefinition>().Set(x => x.Name = oldValue);
+            var newNode = oldNode.JsonClone().Set(x => x.Name = newValue);
+
+            var sut = new NodeComparer();
+
+            Action action = () => sut.Compare(oldNode, newNode);
+
+            action.Should().Throw<InvalidOperationException>();
+        }
+
+        [Theory]
+        [InlineData(null, "NewValue")]
+        [InlineData("", "NewValue")]
+        [InlineData(" ", "NewValue")]
+        [InlineData("OldValue", null)]
+        [InlineData("OldValue", "")]
+        [InlineData("OldValue", " ")]
+        [InlineData("OldValue", "NewValue")]
+        public void CompareThrowsExceptionWhenNamespaceDoesNotMatch(string oldValue, string newValue)
+        {
+            var oldNode = Model.UsingModule<CompilerModule>().Create<NodeDefinition>().Set(x => x.Namespace = oldValue);
+            var newNode = oldNode.JsonClone().Set(x => x.Namespace = newValue);
+
+            var sut = new NodeComparer();
+
+            Action action = () => sut.Compare(oldNode, newNode);
+
+            action.Should().Throw<InvalidOperationException>();
+        }
+
+        [Theory]
+        [InlineData(null, "NewValue")]
+        [InlineData("", "NewValue")]
+        [InlineData(" ", "NewValue")]
+        [InlineData("OldValue", null)]
+        [InlineData("OldValue", "")]
+        [InlineData("OldValue", " ")]
+        [InlineData("OldValue", "NewValue")]
+        public void CompareThrowsExceptionWhenOwningTypeDoesNotMatch(string oldValue, string newValue)
+        {
+            var oldNode = Model.UsingModule<CompilerModule>()
+                .Create<NodeDefinition>()
+                .Set(x => x.OwningType = oldValue);
+            var newNode = oldNode.JsonClone().Set(x => x.OwningType = newValue);
+
+            var sut = new NodeComparer();
+
+            Action action = () => sut.Compare(oldNode, newNode);
+
+            action.Should().Throw<InvalidOperationException>();
+        }
+
         [Fact]
         public void CompareThrowsExceptionWithNullNewNode()
         {

@@ -11,6 +11,21 @@
             Ensure.Any.IsNotNull(oldNode, nameof(oldNode));
             Ensure.Any.IsNotNull(newNode, nameof(newNode));
 
+            if (string.Equals(oldNode.Namespace, newNode.Namespace, StringComparison.Ordinal) == false)
+            {
+                throw new InvalidOperationException("The two nodes cannot be compared because they have different Namespace values.");
+            }
+            
+            if (string.Equals(oldNode.OwningType, newNode.OwningType, StringComparison.Ordinal) == false)
+            {
+                throw new InvalidOperationException("The two nodes cannot be compared because they have different OwningType values.");
+            }
+            
+            if (string.Equals(oldNode.Name, newNode.Name, StringComparison.Ordinal) == false)
+            {
+                throw new InvalidOperationException("The two nodes cannot be compared because they have different Name values.");
+            }
+
             if (oldNode.IsPublic == false
                 && newNode.IsPublic == false)
             {
