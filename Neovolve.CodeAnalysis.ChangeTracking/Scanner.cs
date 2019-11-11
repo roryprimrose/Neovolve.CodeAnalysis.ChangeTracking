@@ -16,7 +16,7 @@
             Ensure.Any.IsNotNull(resolvers, nameof(resolvers));
             Ensure.Any.IsNotNull(logger, nameof(logger));
 
-            _resolvers = resolvers.ToList();
+            _resolvers = resolvers.FastToList();
 
             Ensure.Collection.HasItems(_resolvers, nameof(resolvers));
 
