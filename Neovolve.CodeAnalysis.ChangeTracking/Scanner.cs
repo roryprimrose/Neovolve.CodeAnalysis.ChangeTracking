@@ -23,11 +23,11 @@
             _logger = logger;
         }
 
-        public IEnumerable<NodeDefinition> FindDefinitions(IEnumerable<SyntaxNode> nodes)
+        public IEnumerable<MemberDefinition> FindDefinitions(IEnumerable<SyntaxNode> nodes)
         {
             Ensure.Any.IsNotNull(nodes, nameof(nodes));
 
-            var definitions = new List<NodeDefinition>();
+            var definitions = new List<MemberDefinition>();
 
             foreach (var node in nodes)
             {
@@ -39,20 +39,20 @@
             return definitions;
         }
 
-        private IEnumerable<NodeDefinition> FindDefinitions(SyntaxNode node)
+        private IEnumerable<MemberDefinition> FindDefinitions(SyntaxNode node)
         {
             Ensure.Any.IsNotNull(node, nameof(node));
 
-            var definitions = new List<NodeDefinition>();
+            var definitions = new List<MemberDefinition>();
 
             FindDefinitions(node, definitions);
 
             return definitions;
         }
 
-        private void FindDefinitions(SyntaxNode node, ICollection<NodeDefinition> definitions)
+        private void FindDefinitions(SyntaxNode node, ICollection<MemberDefinition> definitions)
         {
-            _logger.LogDebug("Checking node {0}", node.GetType().Name);
+            _logger.LogDebug("Checking member {0}", node.GetType().Name);
 
             var resolver = FindSupportingResolver(node);
 
@@ -60,7 +60,7 @@
             {
                 if (resolver.SkipNode)
                 {
-                    _logger.LogDebug("Resolver {0} matches node {1} but skips processing it",
+                    _logger.LogDebug("Resolver {0} matches member {1} but skips processing it",
                         resolver.GetType().Namespace,
                         node.GetType().Namespace);
 
@@ -69,7 +69,7 @@
 
                 var definition = resolver.Resolve(node);
 
-                _logger.LogInformation("Resolver {0} matches node {1} and returned definition {2}",
+                _logger.LogInformation("Resolver {0} matches member {1} and returned definition {2}",
                     resolver.GetType().Name,
                     node.GetType().Name,
                     definition.GetType().Name);
@@ -78,7 +78,7 @@
 
                 if (resolver.EvaluateChildren == false)
                 {
-                    _logger.LogDebug("Skipping children of node {0}", node.GetType().Name);
+                    _logger.LogDebug("Skipping children of member {0}", node.GetType().Name);
 
                     // We are not going to recurse down into all the syntax children
                     // The resolver is telling us that there is no need to look further down this tree

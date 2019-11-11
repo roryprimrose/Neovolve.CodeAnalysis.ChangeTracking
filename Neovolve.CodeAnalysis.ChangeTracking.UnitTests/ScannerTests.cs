@@ -42,7 +42,7 @@ namespace MyNamespace
         {
             var resolver = Substitute.For<INodeResolver>();
             var resolvers = new List<INodeResolver> {resolver};
-            var definition = Model.Create<PropertyDefinition>();
+            var definition = Model.UsingModule<CompilerModule>().Create<PropertyDefinition>();
             var rootNode = await TestNode.Parse(StandardProperty).ConfigureAwait(false);
             var node = TestNode.FindNode<PropertyDeclarationSyntax>(rootNode);
 

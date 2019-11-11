@@ -1,6 +1,6 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking
 {
-    public class AttributeDefinition : NodeDefinition
+    public class AttributeDefinition : MemberDefinition
     {
         public string Declaration { get; set; }
     }

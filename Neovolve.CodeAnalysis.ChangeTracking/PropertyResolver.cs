@@ -15,7 +15,7 @@
             return node is PropertyDeclarationSyntax;
         }
 
-        public NodeDefinition Resolve(SyntaxNode node)
+        public MemberDefinition Resolve(SyntaxNode node)
         {
             Ensure.Any.IsNotNull(node, nameof(node));
             Ensure.Type.IsOfType(node, typeof(PropertyDeclarationSyntax), nameof(node));

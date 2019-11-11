@@ -1,26 +1,27 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking
 {
+    using System.Collections.Generic;
     using System.Linq;
     using EnsureThat;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
     public abstract class MemberResolver
     {
-        protected virtual T Resolve<T>(MemberDeclarationSyntax node) where T : NodeDefinition, new()
+        protected virtual T Resolve<T>(MemberDeclarationSyntax member) where T : MemberDefinition, new()
         {
-            Ensure.Any.IsNotNull(node, nameof(node));
+            Ensure.Any.IsNotNull(member, nameof(member));
 
-            var definition = new T();
+            var node = new T();
 
-            ResolveMemberInfo(node, definition);
-            ResolveAttributes(node, definition);
+            ResolveDeclarationInfo(member, node);
+            ResolveAttributes(member, node);
 
-            return definition;
+            return node;
         }
 
-        private static void ResolveAttributes(MemberDeclarationSyntax propertySyntax, NodeDefinition property)
+        private static void ResolveAttributes(MemberDeclarationSyntax declaration, MemberDefinition member)
         {
-            foreach (var attributeList in propertySyntax.AttributeLists)
+            foreach (var attributeList in declaration.AttributeLists)
             {
                 foreach (var attributeSyntax in attributeList.Attributes)
                 {
@@ -30,20 +31,53 @@
                         Declaration = attributeSyntax.GetText().ToString()
                     };
 
-                    property.Attributes.Add(attribute);
+                    member.Attributes.Add(attribute);
                 }
             }
         }
 
-        private static void ResolveMemberInfo(MemberDeclarationSyntax propertySyntax, NodeDefinition property)
+        private static void ResolveDeclarationInfo(MemberDeclarationSyntax declaration, MemberDefinition member)
         {
-            var parentClass = propertySyntax.Parent as ClassDeclarationSyntax;
-            var containerNamespace = parentClass?.Parent as NamespaceDeclarationSyntax;
-            var namespaceIdentifier = containerNamespace?.Name as IdentifierNameSyntax;
+            var parentClass = declaration.FirstAncestorOrSelf<ClassDeclarationSyntax>();
+            
+            var containerNamespace = parentClass.FirstAncestorOrSelf<NamespaceDeclarationSyntax>();
 
-            property.OwningType = parentClass?.Identifier.Text;
-            property.Namespace = namespaceIdentifier?.Identifier.Text;
-            property.IsPublic = propertySyntax.Modifiers.Any(x => x.Text == "public");
+            if (containerNamespace != null)
+            {
+                // This class is defined in a namespace
+                var namespaceIdentifier = (IdentifierNameSyntax)containerNamespace.Name;
+
+                member.Namespace = namespaceIdentifier.Identifier.Text;
+            }
+            
+            var parentClasses = new List<ClassDeclarationSyntax>();
+
+            while (parentClass != null)
+            {
+                parentClasses.Add(parentClass);
+                
+                var parent = parentClass;
+
+                parentClass = parentClass.FirstAncestorOrSelf<ClassDeclarationSyntax>(x => x != parent);
+            }
+            
+            var classNameHierarchy = parentClasses.Select(x => x.Identifier.Text).Reverse();
+
+            member.OwningType = string.Join("+", classNameHierarchy);
+
+            var memberIsPublic = declaration.Modifiers.Any(x => x.Text == "public");
+
+            if (memberIsPublic == false)
+            {
+                member.IsPublic = false;
+            }
+            else
+            {
+                // Check if any nest parent class is not public
+                var parentClassesArePublic = parentClasses.All(x => x.Modifiers.Any(y => y.Text == "public"));
+
+                member.IsPublic = parentClassesArePublic;
+            }
         }
     }
 }

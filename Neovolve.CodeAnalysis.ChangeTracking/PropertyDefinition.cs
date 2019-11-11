@@ -1,6 +1,6 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking
 {
-    public class PropertyDefinition : NodeDefinition
+    public class PropertyDefinition : MemberDefinition
     {
         public bool CanRead { get; set; }
 
