@@ -22,6 +22,21 @@
             actual.OldNode.Should().Be(oldNode);
         }
 
+        [Fact]
+        public void GetMatchReturnsMatcherWhenNodesHaveSameIdentifiersWithNullNamespace()
+        {
+            var oldNode = Model.UsingModule<CompilerModule>().Create<NodeDefinition>().Set(x => x.Namespace = null);
+            var newNode = oldNode.JsonClone();
+
+            var sut = new NodeMatcher();
+
+            var actual = sut.GetMatch(oldNode, newNode);
+
+            actual.Should().NotBeNull();
+            actual.NewNode.Should().Be(newNode);
+            actual.OldNode.Should().Be(oldNode);
+        }
+
         [Theory]
         [InlineData("Some", "Other")]
         [InlineData("Some", "some")]
@@ -57,7 +72,9 @@
         [InlineData("Some", "some")]
         public void GetMatchReturnsNullWhereOwningTypeIsDifferent(string oldValue, string newValue)
         {
-            var oldNode = Model.UsingModule<CompilerModule>().Create<NodeDefinition>().Set(x => x.OwningType = oldValue);
+            var oldNode = Model.UsingModule<CompilerModule>()
+                .Create<NodeDefinition>()
+                .Set(x => x.OwningType = oldValue);
             var newNode = oldNode.JsonClone().Set(x => x.OwningType = newValue);
 
             var sut = new NodeMatcher();
@@ -93,7 +110,7 @@
 
         [Theory]
         [InlineData(typeof(NodeDefinition), true)]
-        [InlineData(typeof(PropertyDefinition), false)]
+        [InlineData(typeof(PropertyDefinition), true)]
         [InlineData(typeof(AttributeDefinition), false)]
         public void IsSupportedReturnsTrueForExactTypeMatch(Type type, bool expected)
         {

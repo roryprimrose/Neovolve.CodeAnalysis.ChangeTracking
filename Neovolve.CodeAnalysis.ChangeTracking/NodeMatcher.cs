@@ -32,8 +32,15 @@
         {
             Ensure.Any.IsNotNull(node, nameof(node));
 
-            // We don't want to support derived types here
-            return node.GetType() == typeof(NodeDefinition);
+            var nodeType = node.GetType();
+
+            if (nodeType == typeof(PropertyDefinition))
+            {
+                return true;
+            }
+
+            // We don't want to support any other derived types here
+            return nodeType == typeof(NodeDefinition);
         }
     }
 }
