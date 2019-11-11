@@ -14,7 +14,7 @@
             return node is MethodDeclarationSyntax;
         }
 
-        public NodeDefinition Resolve(SyntaxNode node)
+        public MemberDefinition Resolve(SyntaxNode node)
         {
             throw new NotSupportedException();
         }

@@ -2,17 +2,17 @@
 {
     using EnsureThat;
 
-    public class PropertyComparer : NodeComparer
+    public class PropertyComparer : MemberComparer
     {
-        public override ChangeType Compare(NodeDefinition oldNode, NodeDefinition newNode)
+        public override ChangeType Compare(MemberDefinition oldMember, MemberDefinition newMember)
         {
-            Ensure.Any.IsNotNull(oldNode, nameof(oldNode));
-            Ensure.Type.IsOfType(oldNode, typeof(PropertyDefinition), nameof(oldNode));
-            Ensure.Any.IsNotNull(newNode, nameof(newNode));
-            Ensure.Type.IsOfType(newNode, typeof(PropertyDefinition), nameof(newNode));
+            Ensure.Any.IsNotNull(oldMember, nameof(oldMember));
+            Ensure.Type.IsOfType(oldMember, typeof(PropertyDefinition), nameof(oldMember));
+            Ensure.Any.IsNotNull(newMember, nameof(newMember));
+            Ensure.Type.IsOfType(newMember, typeof(PropertyDefinition), nameof(newMember));
 
-            var oldProperty = (PropertyDefinition) oldNode;
-            var newProperty = (PropertyDefinition) newNode;
+            var oldProperty = (PropertyDefinition) oldMember;
+            var newProperty = (PropertyDefinition) newMember;
 
             var changeType = base.Compare(oldProperty, newProperty);
 
@@ -53,11 +53,11 @@
             return ChangeType.Feature;
         }
 
-        public override bool IsSupported(NodeDefinition node)
+        public override bool IsSupported(MemberDefinition member)
         {
-            Ensure.Any.IsNotNull(node, nameof(node));
+            Ensure.Any.IsNotNull(member, nameof(member));
 
-            return node.GetType() == typeof(PropertyDefinition);
+            return member.GetType() == typeof(PropertyDefinition);
         }
     }
 }

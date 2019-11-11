@@ -17,14 +17,14 @@
             bool newValue,
             ChangeType expected)
         {
-            var oldNode = Model.UsingModule<CompilerModule>()
+            var oldMember = Model.UsingModule<CompilerModule>()
                 .Create<PropertyDefinition>()
                 .Set(x => x.IsPublic = oldValue);
-            var newNode = oldNode.JsonClone().Set(x => x.IsPublic = newValue);
+            var newMember = oldMember.JsonClone().Set(x => x.IsPublic = newValue);
 
             var sut = new PropertyComparer();
 
-            var actual = sut.Compare(oldNode, newNode);
+            var actual = sut.Compare(oldMember, newMember);
 
             actual.Should().Be(expected);
         }
@@ -32,10 +32,10 @@
         [Fact]
         public void CompareReturnsBreakingWhenFeatureAlsoIndicated()
         {
-            var oldNode = Model.UsingModule<CompilerModule>()
+            var oldMember = Model.UsingModule<CompilerModule>()
                 .Create<PropertyDefinition>()
                 .Set(x => { x.CanWrite = false; });
-            var newNode = oldNode.JsonClone()
+            var newMember = oldMember.JsonClone()
                 .Set(x =>
                 {
                     x.ReturnType = Guid.NewGuid().ToString(); // Breaking
@@ -44,7 +44,7 @@
 
             var sut = new PropertyComparer();
 
-            var actual = sut.Compare(oldNode, newNode);
+            var actual = sut.Compare(oldMember, newMember);
 
             actual.Should().Be(ChangeType.Breaking);
         }
@@ -52,10 +52,10 @@
         [Fact]
         public void CompareReturnsFeatureWhenBreakingChangeOnAccessorsAndPropertyNowVisible()
         {
-            var oldNode = Model.UsingModule<CompilerModule>()
+            var oldMember = Model.UsingModule<CompilerModule>()
                 .Create<PropertyDefinition>()
                 .Set(x => { x.IsPublic = false; });
-            var newNode = oldNode.JsonClone()
+            var newMember = oldMember.JsonClone()
                 .Set(x =>
                 {
                     x.IsPublic = true;
@@ -64,7 +64,7 @@
 
             var sut = new PropertyComparer();
 
-            var actual = sut.Compare(oldNode, newNode);
+            var actual = sut.Compare(oldMember, newMember);
 
             actual.Should().Be(ChangeType.Feature);
         }
@@ -72,18 +72,18 @@
         [Fact]
         public void CompareReturnsNoneWhenAccessorLessVisibleButPropertiesNotPublic()
         {
-            var oldNode = Model.UsingModule<CompilerModule>()
+            var oldMember = Model.UsingModule<CompilerModule>()
                 .Create<PropertyDefinition>()
                 .Set(x =>
                 {
                     x.IsPublic = false;
                     x.CanWrite = true;
                 });
-            var newNode = oldNode.JsonClone().Set(x => { x.CanWrite = false; });
+            var newMember = oldMember.JsonClone().Set(x => { x.CanWrite = false; });
 
             var sut = new PropertyComparer();
 
-            var actual = sut.Compare(oldNode, newNode);
+            var actual = sut.Compare(oldMember, newMember);
 
             actual.Should().Be(ChangeType.None);
         }
@@ -91,12 +91,12 @@
         [Fact]
         public void CompareReturnsNoneWhenNodesMatch()
         {
-            var oldNode = Model.UsingModule<CompilerModule>().Create<PropertyDefinition>();
-            var newNode = oldNode.JsonClone();
+            var oldMember = Model.UsingModule<CompilerModule>().Create<PropertyDefinition>();
+            var newMember = oldMember.JsonClone();
 
             var sut = new PropertyComparer();
 
-            var actual = sut.Compare(oldNode, newNode);
+            var actual = sut.Compare(oldMember, newMember);
 
             actual.Should().Be(ChangeType.None);
         }
@@ -111,14 +111,14 @@
             bool newValue,
             ChangeType expected)
         {
-            var oldNode = Model.UsingModule<CompilerModule>()
+            var oldMember = Model.UsingModule<CompilerModule>()
                 .Create<PropertyDefinition>()
                 .Set(x => x.CanRead = oldValue);
-            var newNode = oldNode.JsonClone().Set(x => x.CanRead = newValue);
+            var newMember = oldMember.JsonClone().Set(x => x.CanRead = newValue);
 
             var sut = new PropertyComparer();
 
-            var actual = sut.Compare(oldNode, newNode);
+            var actual = sut.Compare(oldMember, newMember);
 
             actual.Should().Be(expected);
         }
@@ -133,14 +133,14 @@
             bool newValue,
             ChangeType expected)
         {
-            var oldNode = Model.UsingModule<CompilerModule>()
+            var oldMember = Model.UsingModule<CompilerModule>()
                 .Create<PropertyDefinition>()
                 .Set(x => x.CanWrite = oldValue);
-            var newNode = oldNode.JsonClone().Set(x => x.CanWrite = newValue);
+            var newMember = oldMember.JsonClone().Set(x => x.CanWrite = newValue);
 
             var sut = new PropertyComparer();
 
-            var actual = sut.Compare(oldNode, newNode);
+            var actual = sut.Compare(oldMember, newMember);
 
             actual.Should().Be(expected);
         }
@@ -148,11 +148,11 @@
         [Fact]
         public void CompareThrowsExceptionWithNullNewNode()
         {
-            var oldNode = Model.UsingModule<CompilerModule>().Create<PropertyDefinition>();
+            var oldMember = Model.UsingModule<CompilerModule>().Create<PropertyDefinition>();
 
             var sut = new PropertyComparer();
 
-            Action action = () => sut.Compare(oldNode, null);
+            Action action = () => sut.Compare(oldMember, null);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -160,22 +160,22 @@
         [Fact]
         public void CompareThrowsExceptionWithNullOldNode()
         {
-            var newNode = Model.UsingModule<CompilerModule>().Create<PropertyDefinition>();
+            var newMember = Model.UsingModule<CompilerModule>().Create<PropertyDefinition>();
 
             var sut = new PropertyComparer();
 
-            Action action = () => sut.Compare(null, newNode);
+            Action action = () => sut.Compare(null, newMember);
 
             action.Should().Throw<ArgumentNullException>();
         }
 
         [Theory]
         [InlineData(typeof(PropertyDefinition), true)]
-        [InlineData(typeof(NodeDefinition), false)]
+        [InlineData(typeof(MemberDefinition), false)]
         [InlineData(typeof(AttributeDefinition), false)]
         public void IsSupportedReturnsTrueForExactTypeMatch(Type type, bool expected)
         {
-            var definition = (NodeDefinition) Model.Create(type);
+            var definition = (MemberDefinition) Model.Create(type);
 
             var sut = new PropertyComparer();
 

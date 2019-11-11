@@ -5,6 +5,6 @@
 
     public interface IScanner
     {
-        IEnumerable<NodeDefinition> FindDefinitions(IEnumerable<SyntaxNode> nodes);
+        IEnumerable<MemberDefinition> FindDefinitions(IEnumerable<SyntaxNode> nodes);
     }
 }
