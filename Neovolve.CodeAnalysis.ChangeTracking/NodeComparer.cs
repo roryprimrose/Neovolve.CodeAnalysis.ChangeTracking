@@ -1,6 +1,7 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking
 {
     using System;
+    using System.Diagnostics;
     using EnsureThat;
 
     public class NodeComparer : INodeComparer
@@ -10,23 +11,35 @@
             Ensure.Any.IsNotNull(oldNode, nameof(oldNode));
             Ensure.Any.IsNotNull(newNode, nameof(newNode));
 
-            // Evaluate all scenarios that could cause a breaking change
+            if (oldNode.IsPublic == false
+                && newNode.IsPublic == false)
+            {
+                // It doesn't matter if there is a change to the return type, the node isn't visible anyway
+                return ChangeType.None;
+            }
+
             if (oldNode.IsPublic
                 && newNode.IsPublic == false)
             {
+                // The node was public but isn't now, breaking change
                 return ChangeType.Breaking;
             }
 
-            if (oldNode.ReturnType.Equals(newNode.ReturnType, StringComparison.Ordinal) == false)
-            {
-                return ChangeType.Breaking;
-            }
-
-            // Evaluate all scenarios that could indicate a feature change
             if (oldNode.IsPublic == false
                 && newNode.IsPublic)
             {
+                // The node return type may have changed, but the node is only now becoming public
+                // This is a feature because the public API didn't break even if the return type has changed
                 return ChangeType.Feature;
+            }
+
+            Debug.Assert(oldNode.IsPublic);
+            Debug.Assert(newNode.IsPublic);
+
+            // At this point both the old node and the new node are public
+            if (oldNode.ReturnType.Equals(newNode.ReturnType, StringComparison.Ordinal) == false)
+            {
+                return ChangeType.Breaking;
             }
 
             return ChangeType.None;

@@ -8,16 +8,16 @@
     public class NodeComparerTests
     {
         [Fact]
-        public void CompareReturnsBreakingWhenFeatureAlsoIndicated()
+        public void CompareReturnsFeatureWhenReturnTypeChangedWithPropertyChangedToPublic()
         {
-            var oldNode = Model.Create<NodeDefinition>()
+            var oldNode = Model.UsingModule<CompilerModule>()
+                .Create<NodeDefinition>()
                 .Set(x =>
                 {
                     x.IsPublic = false;
                     x.ReturnType = "string";
                 });
-            var newNode = Model.Create<NodeDefinition>()
-                .Set(x => x.ReturnType = "DateTimeOffset")
+            var newNode = oldNode.JsonClone()
                 .Set(x =>
                 {
                     x.IsPublic = true; // Feature
@@ -28,7 +28,39 @@
 
             var actual = sut.Compare(oldNode, newNode);
 
-            actual.Should().Be(ChangeType.Breaking);
+            actual.Should().Be(ChangeType.Feature);
+        }
+
+        [Fact]
+        public void CompareReturnsNoneWhenNodesMatch()
+        {
+            var oldNode = Model.UsingModule<CompilerModule>().Create<NodeDefinition>();
+            var newNode = oldNode.JsonClone();
+
+            var sut = new NodeComparer();
+
+            var actual = sut.Compare(oldNode, newNode);
+
+            actual.Should().Be(ChangeType.None);
+        }
+
+        [Fact]
+        public void CompareReturnsNoneWhenReturnTypeChangedWithPropertyNotPublic()
+        {
+            var oldNode = Model.UsingModule<CompilerModule>()
+                .Create<NodeDefinition>()
+                .Set(x =>
+                {
+                    x.IsPublic = false;
+                    x.ReturnType = "string";
+                });
+            var newNode = oldNode.JsonClone().Set(x => { x.ReturnType = "DateTimeOffset"; });
+
+            var sut = new NodeComparer();
+
+            var actual = sut.Compare(oldNode, newNode);
+
+            actual.Should().Be(ChangeType.None);
         }
 
         [Theory]
@@ -38,10 +70,8 @@
         [InlineData(false, true, ChangeType.Feature)]
         public void CompareReturnsResultBasedOnIsPublic(bool oldValue, bool newValue, ChangeType expected)
         {
-            var oldNode = Model.Create<NodeDefinition>().Set(x => x.IsPublic = oldValue);
-            var newNode = Model.Create<NodeDefinition>()
-                .Set(x => x.IsPublic = newValue)
-                .Set(x => x.ReturnType = oldNode.ReturnType);
+            var oldNode = Model.UsingModule<CompilerModule>().Create<NodeDefinition>().Set(x => x.IsPublic = oldValue);
+            var newNode = oldNode.JsonClone().Set(x => x.IsPublic = newValue);
 
             var sut = new NodeComparer();
 
@@ -55,10 +85,10 @@
         [InlineData("string", "DateTimeOffset", ChangeType.Breaking)]
         public void CompareReturnsResultBasedOnReturnType(string oldValue, string newValue, ChangeType expected)
         {
-            var oldNode = Model.Create<NodeDefinition>().Set(x => x.ReturnType = oldValue);
-            var newNode = Model.Create<NodeDefinition>()
-                .Set(x => x.ReturnType = newValue)
-                .Set(x => x.IsPublic = oldNode.IsPublic);
+            var oldNode = Model.UsingModule<CompilerModule>()
+                .Create<NodeDefinition>()
+                .Set(x => x.ReturnType = oldValue);
+            var newNode = oldNode.JsonClone().Set(x => x.ReturnType = newValue);
 
             var sut = new NodeComparer();
 
@@ -70,7 +100,7 @@
         [Fact]
         public void CompareThrowsExceptionWithNullNewNode()
         {
-            var oldNode = Model.Create<NodeDefinition>();
+            var oldNode = Model.UsingModule<CompilerModule>().Create<NodeDefinition>();
 
             var sut = new NodeComparer();
 
@@ -82,7 +112,7 @@
         [Fact]
         public void CompareThrowsExceptionWithNullOldNode()
         {
-            var newNode = Model.Create<NodeDefinition>();
+            var newNode = Model.UsingModule<CompilerModule>().Create<NodeDefinition>();
 
             var sut = new NodeComparer();
 

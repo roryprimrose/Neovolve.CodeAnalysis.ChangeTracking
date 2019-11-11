@@ -22,10 +22,10 @@
                 return changeType;
             }
 
-            if (oldProperty.IsPublic == false
-                && newProperty.IsPublic == false)
+            if (oldProperty.IsPublic == false)
             {
-                // It doesn't matter if the accessibility of get/set has changed because the properties aren't visible anyway
+                // The property is either still not public or now becoming public
+                // It doesn't matter if the accessors have been changed to be less visible
                 return changeType;
             }
 
@@ -49,14 +49,7 @@
                 return ChangeType.Breaking;
             }
 
-            // Calculate feature changes
-            if (oldProperty.CanRead == false
-                && newProperty.CanRead)
-            {
-                return ChangeType.Feature;
-            }
-
-            // Only other possible scenario at this point is that the old property couldn't write but the new property can
+            // Only other possible scenario at this point is that the old property couldn't read/write but the new property can
             return ChangeType.Feature;
         }
 

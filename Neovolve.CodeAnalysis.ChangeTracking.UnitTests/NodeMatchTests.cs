@@ -10,8 +10,8 @@
         [Fact]
         public void CanCreateWithTwoNodes()
         {
-            var oldNode = Model.Create<NodeDefinition>();
-            var newNode = Model.Create<NodeDefinition>();
+            var oldNode = Model.UsingModule<CompilerModule>().Create<NodeDefinition>();
+            var newNode = Model.UsingModule<CompilerModule>().Create<NodeDefinition>();
 
             var sut = new NodeMatch(oldNode, newNode);
 
@@ -22,7 +22,7 @@
         [Fact]
         public void ThrowsExceptionWhenCreatedWithNullNewNode()
         {
-            var oldNode = Model.Create<NodeDefinition>();
+            var oldNode = Model.UsingModule<CompilerModule>().Create<NodeDefinition>();
 
             Action action = () => new NodeMatch(oldNode, null);
 
@@ -32,7 +32,7 @@
         [Fact]
         public void ThrowsExceptionWhenCreatedWithNullOldNode()
         {
-            var newNode = Model.Create<NodeDefinition>();
+            var newNode = Model.UsingModule<CompilerModule>().Create<NodeDefinition>();
 
             Action action = () => new NodeMatch(null, newNode);
 

@@ -10,14 +10,8 @@
         [Fact]
         public void GetMatchReturnsMatcherWhenNodesHaveSameIdentifiers()
         {
-            var oldNode = Model.Create<NodeDefinition>();
-            var newNode = Model.Create<NodeDefinition>()
-                .Set(x =>
-                {
-                    x.Namespace = oldNode.Namespace;
-                    x.Name = oldNode.Name;
-                    x.OwningType = oldNode.OwningType;
-                });
+            var oldNode = Model.UsingModule<CompilerModule>().Create<NodeDefinition>();
+            var newNode = oldNode.JsonClone();
 
             var sut = new NodeMatcher();
 
@@ -33,14 +27,8 @@
         [InlineData("Some", "some")]
         public void GetMatchReturnsNullWhereNameIsDifferent(string oldValue, string newValue)
         {
-            var oldNode = Model.Create<NodeDefinition>().Set(x => x.Name = oldValue);
-            var newNode = Model.Create<NodeDefinition>()
-                .Set(x =>
-                {
-                    x.Namespace = oldNode.Namespace;
-                    x.Name = newValue;
-                    x.OwningType = oldNode.OwningType;
-                });
+            var oldNode = Model.UsingModule<CompilerModule>().Create<NodeDefinition>().Set(x => x.Name = oldValue);
+            var newNode = oldNode.JsonClone().Set(x => x.Name = newValue);
 
             var sut = new NodeMatcher();
 
@@ -54,14 +42,8 @@
         [InlineData("Some", "some")]
         public void GetMatchReturnsNullWhereNamespaceIsDifferent(string oldValue, string newValue)
         {
-            var oldNode = Model.Create<NodeDefinition>().Set(x => x.Namespace = oldValue);
-            var newNode = Model.Create<NodeDefinition>()
-                .Set(x =>
-                {
-                    x.Namespace = newValue;
-                    x.Name = oldNode.Name;
-                    x.OwningType = oldNode.OwningType;
-                });
+            var oldNode = Model.UsingModule<CompilerModule>().Create<NodeDefinition>().Set(x => x.Namespace = oldValue);
+            var newNode = oldNode.JsonClone().Set(x => x.Namespace = newValue);
 
             var sut = new NodeMatcher();
 
@@ -75,14 +57,8 @@
         [InlineData("Some", "some")]
         public void GetMatchReturnsNullWhereOwningTypeIsDifferent(string oldValue, string newValue)
         {
-            var oldNode = Model.Create<NodeDefinition>().Set(x => x.OwningType = oldValue);
-            var newNode = Model.Create<NodeDefinition>()
-                .Set(x =>
-                {
-                    x.Namespace = oldNode.Namespace;
-                    x.Name = oldNode.Name;
-                    x.OwningType = newValue;
-                });
+            var oldNode = Model.UsingModule<CompilerModule>().Create<NodeDefinition>().Set(x => x.OwningType = oldValue);
+            var newNode = oldNode.JsonClone().Set(x => x.OwningType = newValue);
 
             var sut = new NodeMatcher();
 
@@ -94,7 +70,7 @@
         [Fact]
         public void GetMatchThrowsExceptionWithNullNewNode()
         {
-            var oldNode = Model.Create<NodeDefinition>();
+            var oldNode = Model.UsingModule<CompilerModule>().Create<NodeDefinition>();
 
             var sut = new NodeMatcher();
 
@@ -106,7 +82,7 @@
         [Fact]
         public void GetMatchThrowsExceptionWithNullOldNode()
         {
-            var newNode = Model.Create<NodeDefinition>();
+            var newNode = Model.UsingModule<CompilerModule>().Create<NodeDefinition>();
 
             var sut = new NodeMatcher();
 
