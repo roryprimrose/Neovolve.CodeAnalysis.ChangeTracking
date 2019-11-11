@@ -13,15 +13,15 @@
 
             var node = new T();
 
-            ResolveMemberInfo(member, node);
+            ResolveDeclarationInfo(member, node);
             ResolveAttributes(member, node);
 
             return node;
         }
 
-        private static void ResolveAttributes(MemberDeclarationSyntax member, NodeDefinition node)
+        private static void ResolveAttributes(MemberDeclarationSyntax declaration, NodeDefinition node)
         {
-            foreach (var attributeList in member.AttributeLists)
+            foreach (var attributeList in declaration.AttributeLists)
             {
                 foreach (var attributeSyntax in attributeList.Attributes)
                 {
@@ -36,9 +36,9 @@
             }
         }
 
-        private static void ResolveMemberInfo(MemberDeclarationSyntax member, NodeDefinition node)
+        private static void ResolveDeclarationInfo(MemberDeclarationSyntax declaration, NodeDefinition node)
         {
-            var parentClass = member.FirstAncestorOrSelf<ClassDeclarationSyntax>();
+            var parentClass = declaration.FirstAncestorOrSelf<ClassDeclarationSyntax>();
             
             var containerNamespace = parentClass.FirstAncestorOrSelf<NamespaceDeclarationSyntax>();
 
@@ -65,7 +65,7 @@
 
             node.OwningType = string.Join("+", classNameHierarchy);
 
-            var memberIsPublic = member.Modifiers.Any(x => x.Text == "public");
+            var memberIsPublic = declaration.Modifiers.Any(x => x.Text == "public");
 
             if (memberIsPublic == false)
             {
