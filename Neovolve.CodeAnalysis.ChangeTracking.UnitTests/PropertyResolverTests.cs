@@ -235,6 +235,18 @@ namespace MyNamespace
         }
 
         [Fact]
+        public async Task ResolveReturnsMemberType()
+        {
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(TestNode.StandardProperty).ConfigureAwait(false);
+
+            var sut = new PropertyResolver();
+
+            var actual = sut.Resolve(node);
+
+            actual.MemberType.Should().Be("Property");
+        }
+
+        [Fact]
         public void ResolveThrowsExceptionWithNullNode()
         {
             var sut = new PropertyResolver();

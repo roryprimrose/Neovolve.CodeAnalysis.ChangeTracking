@@ -7,18 +7,32 @@
     {
         public override string ToString()
         {
-            if (string.IsNullOrWhiteSpace(Namespace))
+            return ToString(true);
+        }
+
+        public string ToString(bool includeMemberType)
+        {
+            var prefix = string.Empty;
+
+            if (includeMemberType)
             {
-                return string.Format(CultureInfo.InvariantCulture, "{0}: {1}.{2}", GetType().Name, OwningType, Name);
+                prefix = MemberType + ": ";
             }
 
-            return string.Format(CultureInfo.InvariantCulture, "{0}: {1}.{2}.{3}", GetType().Name, Namespace,
+            if (string.IsNullOrWhiteSpace(Namespace))
+            {
+                return string.Format(CultureInfo.InvariantCulture, "{0}{1}.{2}", prefix, OwningType, Name);
+            }
+
+            return string.Format(CultureInfo.InvariantCulture, "{0}{1}.{2}.{3}", prefix, Namespace,
                 OwningType, Name);
         }
 
         public ICollection<AttributeDefinition> Attributes { get; } = new List<AttributeDefinition>();
 
         public bool IsPublic { get; set; }
+
+        public string MemberType { get; set; }
 
         public string Name { get; set; }
 

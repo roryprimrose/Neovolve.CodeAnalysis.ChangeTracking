@@ -21,12 +21,13 @@
 
             var syntaxNode = (FieldDeclarationSyntax) node;
 
-            var property = Resolve<MemberDefinition>(syntaxNode);
+            var member = Resolve<MemberDefinition>(syntaxNode);
 
-            property.Name = syntaxNode.Declaration.Variables.Single().Identifier.Text;
-            property.ReturnType = syntaxNode.Declaration.Type.ToString();
+            member.MemberType = "Field";
+            member.Name = syntaxNode.Declaration.Variables.Single().Identifier.Text;
+            member.ReturnType = syntaxNode.Declaration.Type.ToString();
 
-            return property;
+            return member;
         }
 
         public bool EvaluateChildren { get; } = false;

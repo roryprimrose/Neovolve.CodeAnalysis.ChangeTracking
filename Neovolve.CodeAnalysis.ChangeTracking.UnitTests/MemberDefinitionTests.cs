@@ -17,10 +17,29 @@
 
             var actual = sut.ToString();
 
-            actual.Should().StartWith(definitionType.Name);
+            actual.Should().StartWith(sut.MemberType);
             actual.Should().Contain(sut.Namespace);
             actual.Should().Contain(sut.OwningType);
             actual.Should().Contain(sut.Name);
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void ToStringReturnsMemberDescriptionWithOptionalMemberType(bool include)
+        {
+            var sut = Model.Create<MemberDefinition>();
+
+            var actual = sut.ToString(include);
+
+            if (include)
+            {
+                actual.Should().Contain(sut.MemberType);
+            }
+            else
+            {
+                actual.Should().NotContain(sut.MemberType);
+            }
         }
 
         [Theory]
@@ -33,7 +52,7 @@
 
             var actual = sut.ToString();
 
-            actual.Should().StartWith(definitionType.Name);
+            actual.Should().StartWith(sut.MemberType);
             actual.Should().NotContain("..");
             actual.Should().Contain(sut.OwningType);
             actual.Should().Contain(sut.Name);
