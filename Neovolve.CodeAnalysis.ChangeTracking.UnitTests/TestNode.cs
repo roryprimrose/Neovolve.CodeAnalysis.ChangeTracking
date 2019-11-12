@@ -7,7 +7,7 @@
 
     public static class TestNode
     {
-        public const string StandardField = @"
+        public const string Field = @"
 namespace MyNamespace 
 {
     public class MyClass
@@ -17,12 +17,26 @@ namespace MyNamespace
 }
 ";
 
-        public const string StandardProperty = @"
+        public const string ClassProperty = @"
 namespace MyNamespace 
 {
     public class MyClass
     {
         public string MyItem
+        {
+            get;
+            set;
+        }
+    }   
+}
+";
+
+        public const string InterfaceProperty = @"
+namespace MyNamespace 
+{
+    public interface MyInterface
+    {
+        string MyItem
         {
             get;
             set;

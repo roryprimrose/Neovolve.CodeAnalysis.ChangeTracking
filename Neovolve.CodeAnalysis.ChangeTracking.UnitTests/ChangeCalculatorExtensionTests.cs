@@ -19,11 +19,11 @@
         {
             var oldCode = new List<string>
             {
-                TestNode.StandardProperty
+                TestNode.ClassProperty
             };
             var newCode = new List<string>
             {
-                TestNode.StandardField
+                TestNode.Field
             };
             var expected = Model.Create<ChangeType>();
 
@@ -47,13 +47,13 @@
         {
             var oldCode = new List<string>
             {
-                TestNode.StandardProperty,
-                TestNode.StandardField
+                TestNode.ClassProperty,
+                TestNode.Field
             };
             var newCode = new List<string>
             {
-                TestNode.StandardField,
-                TestNode.StandardProperty
+                TestNode.Field,
+                TestNode.ClassProperty
             };
             var expected = Model.Create<ChangeType>();
 
@@ -66,6 +66,34 @@
 
             var actual = await calculator
                 .CalculateChange(oldCode, newCode, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            actual.Should().Be(expected);
+        }
+
+        [Fact]
+        public async Task CalculateChangeReturnsCalculatorResultWithoutCancellationToken()
+        {
+            var oldCode = new List<string>
+            {
+                TestNode.ClassProperty
+            };
+            var newCode = new List<string>
+            {
+                TestNode.Field
+            };
+            var expected = Model.Create<ChangeType>();
+
+            var calculator = Substitute.For<IChangeCalculator>();
+
+            calculator.CalculateChange(
+                    Arg.Is<IEnumerable<SyntaxNode>>(
+                        x => TestNode.FindNode<PropertyDeclarationSyntax>(x.First()) != null),
+                    Arg.Is<IEnumerable<SyntaxNode>>(x => TestNode.FindNode<FieldDeclarationSyntax>(x.First()) != null))
+                .Returns(expected);
+
+            var actual = await calculator
+                .CalculateChange(oldCode, newCode)
                 .ConfigureAwait(false);
 
             actual.Should().Be(expected);

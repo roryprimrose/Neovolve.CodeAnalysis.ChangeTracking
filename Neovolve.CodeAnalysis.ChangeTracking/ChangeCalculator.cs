@@ -19,7 +19,6 @@
         {
             Ensure.Any.IsNotNull(evaluator, nameof(evaluator));
             Ensure.Any.IsNotNull(comparers, nameof(comparers));
-            Ensure.Any.IsNotNull(logger, nameof(logger));
 
             _evaluator = evaluator;
             _comparers = comparers.FastToList();
@@ -38,7 +37,7 @@
 
             if (results == null)
             {
-                _logger.LogInformation("No member matches found, assuming no code change.");
+                _logger?.LogInformation("No member matches found, assuming no code change.");
 
                 return ChangeType.None;
             }
@@ -50,7 +49,7 @@
             {
                 var memberType = oldPublicMember.MemberType.ToLower(CultureInfo.CurrentCulture);
 
-                _logger.LogInformation(
+                _logger?.LogInformation(
                     "Found old public {0} {1} that does not match any new public {2}. This indicates a breaking change.",
                     memberType, oldPublicMember.ToString(false),
                     memberType);
@@ -78,7 +77,7 @@
 
                 if (matchChange == ChangeType.Breaking)
                 {
-                    _logger.LogInformation("Identified a potential breaking change in {0} {1}.",
+                    _logger?.LogInformation("Identified a potential breaking change in {0} {1}.",
                         match.OldMember.MemberType.ToLower(CultureInfo.CurrentCulture),
                         match.OldMember.ToString(false));
 
@@ -88,7 +87,7 @@
 
                 if (matchChange > changeType)
                 {
-                    _logger.LogInformation("Identified a potential {0} change in {1} {2}.",
+                    _logger?.LogInformation("Identified a potential {0} change in {1} {2}.",
                         matchChange.ToString().ToLower(CultureInfo.CurrentCulture),
                         match.OldMember.MemberType.ToLower(CultureInfo.CurrentCulture),
                         match.OldMember.ToString(false));
@@ -100,7 +99,7 @@
 
             if (changeType > ChangeType.None)
             {
-                _logger.LogInformation("Calculated overall result as a {0} change.",
+                _logger?.LogInformation("Calculated overall result as a {0} change.",
                     changeType.ToString().ToLower(CultureInfo.CurrentCulture));
 
                 // From here on we can't find any more breaking changes
@@ -117,7 +116,7 @@
             {
                 var memberType = newPublicMember.MemberType.ToLower(CultureInfo.CurrentCulture);
 
-                _logger.LogInformation(
+                _logger?.LogInformation(
                     "Found new public {0} {1} that does not match any old public {2}. This indicates a new feature.",
                     memberType, newPublicMember.ToString(false), memberType);
 
@@ -126,7 +125,7 @@
             }
 
             // No change identified
-            _logger.LogInformation("No changes identified between the old and new members.");
+            _logger?.LogInformation("No changes identified between the old and new members.");
 
             return ChangeType.None;
         }

@@ -1,5 +1,6 @@
 ﻿// ReSharper disable CollectionNeverUpdated.Local
 // ReSharper disable ObjectCreationAsStatement
+
 namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 {
     using System;
@@ -32,7 +33,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var resolver = Substitute.For<INodeResolver>();
             var resolvers = new List<INodeResolver> {resolver};
             var definition = Model.UsingModule<CompilerModule>().Create<PropertyDefinition>();
-            var rootNode = await TestNode.Parse(TestNode.StandardProperty).ConfigureAwait(false);
+            var rootNode = await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false);
             var node = TestNode.FindNode<PropertyDeclarationSyntax>(rootNode);
 
             resolver.IsSupported(node).Returns(true);
@@ -70,7 +71,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var firstResolver = Substitute.For<INodeResolver>();
             var secondResolver = Substitute.For<INodeResolver>();
             var resolvers = new List<INodeResolver> {firstResolver, secondResolver};
-            var rootNode = await TestNode.Parse(TestNode.StandardProperty).ConfigureAwait(false);
+            var rootNode = await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false);
 
             var nodes = new List<SyntaxNode> {rootNode};
 
@@ -86,7 +87,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
         {
             var resolver = Substitute.For<INodeResolver>();
             var resolvers = new List<INodeResolver> {resolver};
-            var rootNode = await TestNode.Parse(TestNode.StandardProperty).ConfigureAwait(false);
+            var rootNode = await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false);
 
             resolver.IsSupported(rootNode).Returns(true);
             resolver.SkipNode.Returns(true);
@@ -99,6 +100,28 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
             actual.Should().BeEmpty();
             resolver.Received(1).IsSupported(Arg.Any<SyntaxNode>());
+        }
+
+        [Fact]
+        public async Task FindDefinitionsSupportsNullLogger()
+        {
+            var resolver = Substitute.For<INodeResolver>();
+            var resolvers = new List<INodeResolver> {resolver};
+            var definition = Model.UsingModule<CompilerModule>().Create<PropertyDefinition>();
+            var rootNode = await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false);
+            var node = TestNode.FindNode<PropertyDeclarationSyntax>(rootNode);
+
+            resolver.IsSupported(node).Returns(true);
+            resolver.EvaluateChildren.Returns(true);
+            resolver.Resolve(node).Returns(definition);
+
+            var nodes = new List<SyntaxNode> {rootNode};
+
+            var sut = new NodeScanner(resolvers, null);
+
+            var actual = sut.FindDefinitions(nodes);
+
+            actual.Should().Contain(definition);
         }
 
         [Fact]
@@ -116,7 +139,8 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
         }
 
         [Fact]
-        [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification = "Testing constructor guard clause")]
+        [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification =
+            "Testing constructor guard clause")]
         public void ThrowsExceptionWithEmptyResolvers()
         {
             var resolvers = new List<INodeResolver>();
@@ -127,20 +151,8 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
         }
 
         [Fact]
-        [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification = "Testing constructor guard clause")]
-        public void ThrowsExceptionWithNullLogger()
-        {
-            var firstResolver = Substitute.For<INodeResolver>();
-            var secondResolver = Substitute.For<INodeResolver>();
-            var resolvers = new List<INodeResolver> {firstResolver, secondResolver};
-
-            Action action = () => new NodeScanner(resolvers, null);
-
-            action.Should().Throw<ArgumentNullException>();
-        }
-
-        [Fact]
-        [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification = "Testing constructor guard clause")]
+        [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification =
+            "Testing constructor guard clause")]
         public void ThrowsExceptionWithNullResolvers()
         {
             Action action = () => new NodeScanner(null, _logger);

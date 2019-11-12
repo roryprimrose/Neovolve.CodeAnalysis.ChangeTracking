@@ -14,7 +14,6 @@
         public NodeScanner(IEnumerable<INodeResolver> resolvers, ILogger logger)
         {
             Ensure.Any.IsNotNull(resolvers, nameof(resolvers));
-            Ensure.Any.IsNotNull(logger, nameof(logger));
 
             _resolvers = resolvers.FastToList();
 
@@ -52,7 +51,7 @@
 
         private void FindDefinitions(SyntaxNode node, ICollection<MemberDefinition> definitions)
         {
-            _logger.LogDebug("Checking member {0}", node.GetType().Name);
+            _logger?.LogDebug("Checking member {0}", node.GetType().Name);
 
             var resolver = FindSupportingResolver(node);
 
@@ -60,7 +59,7 @@
             {
                 if (resolver.SkipNode)
                 {
-                    _logger.LogDebug("Resolver {0} matches member {1} but skips processing it",
+                    _logger?.LogDebug("Resolver {0} matches member {1} but skips processing it",
                         resolver.GetType().Namespace,
                         node.GetType().Namespace);
 
@@ -69,7 +68,7 @@
 
                 var definition = resolver.Resolve(node);
 
-                _logger.LogDebug("Resolver {0} matches member {1} and returned definition {2}",
+                _logger?.LogDebug("Resolver {0} matches member {1} and returned definition {2}",
                     resolver.GetType().Name,
                     node.GetType().Name,
                     definition.GetType().Name);
@@ -78,7 +77,7 @@
 
                 if (resolver.EvaluateChildren == false)
                 {
-                    _logger.LogDebug("Skipping children of member {0}", node.GetType().Name);
+                    _logger?.LogDebug("Skipping children of member {0}", node.GetType().Name);
 
                     // We are not going to recurse down into all the syntax children
                     // The resolver is telling us that there is no need to look further down this tree

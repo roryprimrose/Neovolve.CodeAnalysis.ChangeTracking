@@ -16,7 +16,7 @@
         {
             var logger = output.BuildLogger();
 
-            _calculator = BuildCalculator(logger);
+            _calculator = ChangeCalculatorFactory.BuildCalculator(logger);
         }
 
         [Fact]
@@ -80,12 +80,12 @@ public class Test
         {
             var oldCode = new List<string>
             {
-                TestNode.StandardProperty,
-                TestNode.StandardField
+                TestNode.ClassProperty,
+                TestNode.Field
             };
             var newCode = new List<string>
             {
-                TestNode.StandardField
+                TestNode.Field
             };
 
             var result = await _calculator.CalculateChange(oldCode, newCode, CancellationToken.None)
@@ -239,12 +239,12 @@ public class Test
         {
             var oldCode = new List<string>
             {
-                TestNode.StandardField
+                TestNode.Field
             };
             var newCode = new List<string>
             {
-                TestNode.StandardProperty,
-                TestNode.StandardField
+                TestNode.ClassProperty,
+                TestNode.Field
             };
 
             var result = await _calculator.CalculateChange(oldCode, newCode, CancellationToken.None)
@@ -342,42 +342,19 @@ public class Test
         {
             var oldCode = new List<string>
             {
-                TestNode.StandardProperty,
-                TestNode.StandardField
+                TestNode.ClassProperty,
+                TestNode.Field
             };
             var newCode = new List<string>
             {
-                TestNode.StandardProperty,
-                TestNode.StandardField
+                TestNode.ClassProperty,
+                TestNode.Field
             };
 
             var result = await _calculator.CalculateChange(oldCode, newCode, CancellationToken.None)
                 .ConfigureAwait(false);
 
             result.Should().Be(ChangeType.None);
-        }
-
-        private static IChangeCalculator BuildCalculator(ILogger logger)
-        {
-            var resolvers = new List<INodeResolver>
-            {
-                new FieldResolver(),
-                new MethodResolver(),
-                new PropertyResolver()
-            };
-            var scanner = new NodeScanner(resolvers, logger);
-            var matchers = new List<IMemberMatcher>
-            {
-                new MemberMatcher()
-            };
-            var evaluator = new MatchEvaluator(scanner, matchers, logger);
-            var comparers = new List<MemberComparer>
-            {
-                new MemberComparer(),
-                new PropertyComparer()
-            };
-
-            return new ChangeCalculator(evaluator, comparers, logger);
         }
     }
 }
