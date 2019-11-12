@@ -7,53 +7,52 @@
     public class MemberComparer : IMemberComparer
     {
         // TODO: Add logging here to explain how a change was identified
-        public virtual ChangeType Compare(MemberDefinition oldMember, MemberDefinition newMember)
+        public virtual ChangeType Compare(MemberMatch match)
         {
-            Ensure.Any.IsNotNull(oldMember, nameof(oldMember));
-            Ensure.Any.IsNotNull(newMember, nameof(newMember));
+            Ensure.Any.IsNotNull(match, nameof(match));
 
-            if (string.Equals(oldMember.Namespace, newMember.Namespace, StringComparison.Ordinal) == false)
+            if (string.Equals(match.OldMember.Namespace, match.NewMember.Namespace, StringComparison.Ordinal) == false)
             {
                 throw new InvalidOperationException("The two members cannot be compared because they have different Namespace values.");
             }
             
-            if (string.Equals(oldMember.OwningType, newMember.OwningType, StringComparison.Ordinal) == false)
+            if (string.Equals(match.OldMember.OwningType, match.NewMember.OwningType, StringComparison.Ordinal) == false)
             {
                 throw new InvalidOperationException("The two members cannot be compared because they have different OwningType values.");
             }
             
-            if (string.Equals(oldMember.Name, newMember.Name, StringComparison.Ordinal) == false)
+            if (string.Equals(match.OldMember.Name, match.NewMember.Name, StringComparison.Ordinal) == false)
             {
                 throw new InvalidOperationException("The two members cannot be compared because they have different Name values.");
             }
 
-            if (oldMember.IsPublic == false
-                && newMember.IsPublic == false)
+            if (match.OldMember.IsPublic == false
+                && match.NewMember.IsPublic == false)
             {
                 // It doesn't matter if there is a change to the return type, the member isn't visible anyway
                 return ChangeType.None;
             }
 
-            if (oldMember.IsPublic
-                && newMember.IsPublic == false)
+            if (match.OldMember.IsPublic
+                && match.NewMember.IsPublic == false)
             {
                 // The member was public but isn't now, breaking change
                 return ChangeType.Breaking;
             }
 
-            if (oldMember.IsPublic == false
-                && newMember.IsPublic)
+            if (match.OldMember.IsPublic == false
+                && match.NewMember.IsPublic)
             {
                 // The member return type may have changed, but the member is only now becoming public
                 // This is a feature because the public API didn't break even if the return type has changed
                 return ChangeType.Feature;
             }
 
-            Debug.Assert(oldMember.IsPublic);
-            Debug.Assert(newMember.IsPublic);
+            Debug.Assert(match.OldMember.IsPublic);
+            Debug.Assert(match.NewMember.IsPublic);
 
             // At this point both the old member and the new member are public
-            if (oldMember.ReturnType.Equals(newMember.ReturnType, StringComparison.Ordinal) == false)
+            if (match.OldMember.ReturnType.Equals(match.NewMember.ReturnType, StringComparison.Ordinal) == false)
             {
                 return ChangeType.Breaking;
             }

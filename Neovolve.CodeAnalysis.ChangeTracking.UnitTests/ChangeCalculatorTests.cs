@@ -74,7 +74,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
             evaluator.CompareNodes(oldNodes, newNodes).Returns(results);
             comparer.IsSupported(Arg.Any<MemberDefinition>()).Returns(true);
-            comparer.Compare(oldMember, newMember).Returns(ChangeType.None, ChangeType.Feature, ChangeType.Breaking);
+            comparer.Compare(Arg.Any<MemberMatch>()).Returns(ChangeType.None, ChangeType.Feature, ChangeType.Breaking);
 
             var sut = new ChangeCalculator(evaluator, comparers, _logger);
 
@@ -109,7 +109,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             evaluator.CompareNodes(oldNodes, newNodes).Returns(results);
             comparer.IsSupported(oldMember).Returns(true);
             comparer.IsSupported(newMember).Returns(true);
-            comparer.Compare(oldMember, newMember).Returns(changeType);
+            comparer.Compare(matches[0]).Returns(changeType);
 
             var sut = new ChangeCalculator(evaluator, comparers, _logger);
 

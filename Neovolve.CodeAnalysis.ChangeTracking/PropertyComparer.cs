@@ -4,17 +4,16 @@
 
     public class PropertyComparer : MemberComparer
     {
-        public override ChangeType Compare(MemberDefinition oldMember, MemberDefinition newMember)
+        public override ChangeType Compare(MemberMatch match)
         {
-            Ensure.Any.IsNotNull(oldMember, nameof(oldMember));
-            Ensure.Type.IsOfType(oldMember, typeof(PropertyDefinition), nameof(oldMember));
-            Ensure.Any.IsNotNull(newMember, nameof(newMember));
-            Ensure.Type.IsOfType(newMember, typeof(PropertyDefinition), nameof(newMember));
+            Ensure.Any.IsNotNull(match, nameof(match));
+            Ensure.Type.IsOfType(match.OldMember, typeof(PropertyDefinition), "match.OldMember");
+            Ensure.Type.IsOfType(match.NewMember, typeof(PropertyDefinition), "match.NewMember");
 
-            var oldProperty = (PropertyDefinition) oldMember;
-            var newProperty = (PropertyDefinition) newMember;
+            var oldProperty = (PropertyDefinition)match.OldMember;
+            var newProperty = (PropertyDefinition)match.NewMember;
 
-            var changeType = base.Compare(oldProperty, newProperty);
+            var changeType = base.Compare(match);
 
             if (changeType == ChangeType.Breaking)
             {

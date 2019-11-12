@@ -47,7 +47,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var scanner = Substitute.For<INodeScanner>();
             var matcher = Substitute.For<IMemberMatcher>();
 
-            var member = Model.Create<PropertyDefinition>();
+            var member = Model.UsingModule<CompilerModule>().Create<PropertyDefinition>();
             var oldMembers = new List<MemberDefinition> {member};
             var newMembers = new List<MemberDefinition> {member};
             var matches = new List<IMemberMatcher> {matcher};

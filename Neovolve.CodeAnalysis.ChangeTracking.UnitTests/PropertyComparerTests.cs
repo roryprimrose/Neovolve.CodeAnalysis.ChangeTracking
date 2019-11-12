@@ -21,10 +21,11 @@
                 .Create<PropertyDefinition>()
                 .Set(x => x.IsPublic = oldValue);
             var newMember = oldMember.JsonClone().Set(x => x.IsPublic = newValue);
+            var match = new MemberMatch(oldMember, newMember);
 
             var sut = new PropertyComparer();
 
-            var actual = sut.Compare(oldMember, newMember);
+            var actual = sut.Compare(match);
 
             actual.Should().Be(expected);
         }
@@ -41,10 +42,11 @@
                     x.ReturnType = Guid.NewGuid().ToString(); // Breaking
                     x.CanWrite = true; // Feature
                 });
+            var match = new MemberMatch(oldMember, newMember);
 
             var sut = new PropertyComparer();
 
-            var actual = sut.Compare(oldMember, newMember);
+            var actual = sut.Compare(match);
 
             actual.Should().Be(ChangeType.Breaking);
         }
@@ -61,10 +63,11 @@
                     x.IsPublic = true;
                     x.CanWrite = false;
                 });
+            var match = new MemberMatch(oldMember, newMember);
 
             var sut = new PropertyComparer();
 
-            var actual = sut.Compare(oldMember, newMember);
+            var actual = sut.Compare(match);
 
             actual.Should().Be(ChangeType.Feature);
         }
@@ -80,10 +83,11 @@
                     x.CanWrite = true;
                 });
             var newMember = oldMember.JsonClone().Set(x => { x.CanWrite = false; });
+            var match = new MemberMatch(oldMember, newMember);
 
             var sut = new PropertyComparer();
 
-            var actual = sut.Compare(oldMember, newMember);
+            var actual = sut.Compare(match);
 
             actual.Should().Be(ChangeType.None);
         }
@@ -93,10 +97,11 @@
         {
             var oldMember = Model.UsingModule<CompilerModule>().Create<PropertyDefinition>();
             var newMember = oldMember.JsonClone();
+            var match = new MemberMatch(oldMember, newMember);
 
             var sut = new PropertyComparer();
 
-            var actual = sut.Compare(oldMember, newMember);
+            var actual = sut.Compare(match);
 
             actual.Should().Be(ChangeType.None);
         }
@@ -115,10 +120,11 @@
                 .Create<PropertyDefinition>()
                 .Set(x => x.CanRead = oldValue);
             var newMember = oldMember.JsonClone().Set(x => x.CanRead = newValue);
+            var match = new MemberMatch(oldMember, newMember);
 
             var sut = new PropertyComparer();
 
-            var actual = sut.Compare(oldMember, newMember);
+            var actual = sut.Compare(match);
 
             actual.Should().Be(expected);
         }
@@ -137,34 +143,21 @@
                 .Create<PropertyDefinition>()
                 .Set(x => x.CanWrite = oldValue);
             var newMember = oldMember.JsonClone().Set(x => x.CanWrite = newValue);
+            var match = new MemberMatch(oldMember, newMember);
 
             var sut = new PropertyComparer();
 
-            var actual = sut.Compare(oldMember, newMember);
+            var actual = sut.Compare(match);
 
             actual.Should().Be(expected);
         }
 
         [Fact]
-        public void CompareThrowsExceptionWithNullNewNode()
+        public void CompareThrowsExceptionWithNullMatch()
         {
-            var oldMember = Model.UsingModule<CompilerModule>().Create<PropertyDefinition>();
-
             var sut = new PropertyComparer();
 
-            Action action = () => sut.Compare(oldMember, null);
-
-            action.Should().Throw<ArgumentNullException>();
-        }
-
-        [Fact]
-        public void CompareThrowsExceptionWithNullOldNode()
-        {
-            var newMember = Model.UsingModule<CompilerModule>().Create<PropertyDefinition>();
-
-            var sut = new PropertyComparer();
-
-            Action action = () => sut.Compare(null, newMember);
+            Action action = () => sut.Compare(null);
 
             action.Should().Throw<ArgumentNullException>();
         }

@@ -74,7 +74,7 @@
                     throw new InvalidOperationException(message);
                 }
 
-                var matchChange = comparer.Compare(match.OldMember, match.NewMember);
+                var matchChange = comparer.Compare(match);
 
                 if (matchChange == ChangeType.Breaking)
                 {

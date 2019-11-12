@@ -2,7 +2,7 @@
 {
     public interface IMemberComparer
     {
-        ChangeType Compare(MemberDefinition oldMember, MemberDefinition newMember);
+        ChangeType Compare(MemberMatch match);
 
         bool IsSupported(MemberDefinition member);
     }
