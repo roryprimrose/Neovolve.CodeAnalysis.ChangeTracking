@@ -25,20 +25,19 @@ Changes not currently evaluated are:
 var oldCode = new List<string>
 {
     @"
-	public class Test
-	{
-		public string Value;
-	}
+    public class Test
+    {
+        public string Value;
+    }
 "
 };
 var newCode = new List<string>
 {
     @"
-	public class Test
-	{
-		public bool Value;
-	}
-"
+    public class Test
+    {
+        public bool Value;
+    }"
 };
 
 var calculator = ChangeCalculatorFactory.BuildCalculator();
@@ -55,19 +54,20 @@ For example, the following two code blocks when evaluated will indicate a breaki
 public MyNamespace
 {
     public class MyClass
-	{
+    {
         public System.DateTime MyValue { get; set; }
-	}
+    }
 }
 ```
 
 ```
 using System;
+
 public MyNamespace
 {
     public class MyClass
-	{
+    {
         public DateTime MyValue { get; set; }
-	}
+    }
 }
 ```
