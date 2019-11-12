@@ -151,6 +151,31 @@ namespace MyNamespace
         }
 
         [Fact]
+        public async Task ResolveReturnsDefinitionForClassWithImplementedInterface()
+        {
+            const string code = @"
+namespace MyNamespace 
+{
+    public class MyClass : IMyInterface
+    {
+        public string MyItem
+        {
+            get;
+            set;
+        }
+    }   
+}
+";
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code).ConfigureAwait(false);
+
+            var sut = new PropertyResolver();
+
+            var actual = sut.Resolve(node);
+
+            actual.Name.Should().Be("MyItem");
+        }
+
+        [Fact]
         public async Task ResolveReturnsDefinitionWhenPropertyHasAssignment()
         {
             const string code = @"
@@ -223,7 +248,8 @@ namespace MyNamespace
         [InlineData("[Serialize] string", "string")]
         public async Task ResolveReturnsPropertyDataType(string dataType, string expected)
         {
-            var code = TestNode.ClassProperty.Replace("public string MyItem", "public " + dataType + " MyItem",
+            var code = TestNode.ClassProperty.Replace("public string MyItem",
+                "public " + dataType + " MyItem",
                 StringComparison.Ordinal);
 
             var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code).ConfigureAwait(false);
