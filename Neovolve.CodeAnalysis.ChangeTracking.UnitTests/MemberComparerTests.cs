@@ -185,7 +185,7 @@
         [InlineData(typeof(AttributeDefinition), false)]
         public void IsSupportedReturnsTrueForExactTypeMatch(Type type, bool expected)
         {
-            var definition = (MemberDefinition) Model.Create(type);
+            var definition = (MemberDefinition) Model.UsingModule<CompilerModule>().Create(type);
 
             var sut = new MemberComparer();
 
