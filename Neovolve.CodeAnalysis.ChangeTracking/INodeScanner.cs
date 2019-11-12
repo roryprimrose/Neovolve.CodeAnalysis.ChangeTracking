@@ -3,7 +3,7 @@
     using System.Collections.Generic;
     using Microsoft.CodeAnalysis;
 
-    public interface IScanner
+    public interface INodeScanner
     {
         IEnumerable<MemberDefinition> FindDefinitions(IEnumerable<SyntaxNode> nodes);
     }

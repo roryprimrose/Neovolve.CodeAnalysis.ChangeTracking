@@ -1,6 +1,7 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using FluentAssertions;
     using ModelBuilder;
     using Xunit;
@@ -20,20 +21,24 @@
         }
 
         [Fact]
+        [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification = "Testing constructor guard clause")]
         public void ThrowsExceptionWhenCreatedWithNullNewNode()
         {
             var oldMember = Model.UsingModule<CompilerModule>().Create<MemberDefinition>();
 
+            // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new MemberMatch(oldMember, null);
 
             action.Should().Throw<ArgumentException>();
         }
 
         [Fact]
+        [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification = "Testing constructor guard clause")]
         public void ThrowsExceptionWhenCreatedWithNullOldNode()
         {
             var newMember = Model.UsingModule<CompilerModule>().Create<MemberDefinition>();
 
+            // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new MemberMatch(null, newMember);
 
             action.Should().Throw<ArgumentException>();

@@ -6,17 +6,17 @@
     using Microsoft.CodeAnalysis;
     using Microsoft.Extensions.Logging;
 
-    public class Scanner : IScanner
+    public class NodeScanner : INodeScanner
     {
         private readonly ILogger _logger;
         private readonly IList<INodeResolver> _resolvers;
 
-        public Scanner(IEnumerable<INodeResolver> resolvers, ILogger logger)
+        public NodeScanner(IEnumerable<INodeResolver> resolvers, ILogger logger)
         {
             Ensure.Any.IsNotNull(resolvers, nameof(resolvers));
             Ensure.Any.IsNotNull(logger, nameof(logger));
 
-            _resolvers = resolvers.ToList();
+            _resolvers = resolvers.FastToList();
 
             Ensure.Collection.HasItems(_resolvers, nameof(resolvers));
 
