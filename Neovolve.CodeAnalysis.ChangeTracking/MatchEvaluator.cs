@@ -71,7 +71,7 @@
 
                     if (match != null)
                     {
-                        _logger.LogInformation("Found match on " + match.OldMember);
+                        _logger.LogDebug("Found match on " + match.OldMember);
 
                         // Track the match
                         matches.Add(match);

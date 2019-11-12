@@ -8,20 +8,6 @@
 
     public class PropertyResolverTests
     {
-        private const string StandardProperty = @"
-namespace MyNamespace 
-{
-    public class MyClass
-    {
-        string MyItem
-        {
-            get;
-            set;
-        }
-    }   
-}
-";
-
         [Fact]
         public void EvaluateChildrenReturnsFalse()
         {
@@ -65,7 +51,7 @@ namespace MyProject
         {
             var sut = new PropertyResolver();
 
-            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(StandardProperty).ConfigureAwait(false);
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(TestNode.StandardProperty).ConfigureAwait(false);
 
             var actual = sut.IsSupported(node);
 
@@ -83,7 +69,7 @@ namespace MyProject
         [InlineData("protected virtual", false)]
         public async Task ResolveReturnsCanRead(string accessors, bool expected)
         {
-            var code = StandardProperty.Replace("get;", accessors + " get;", StringComparison.Ordinal);
+            var code = TestNode.StandardProperty.Replace("get;", accessors + " get;", StringComparison.Ordinal);
 
             var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code).ConfigureAwait(false);
 
@@ -97,7 +83,7 @@ namespace MyProject
         [Fact]
         public async Task ResolveReturnsCanReadAsFalseWithWriteOnlyProperty()
         {
-            const string Code = @"
+            const string code = @"
 namespace MyNamespace 
 {
     public class MyClass
@@ -111,7 +97,7 @@ namespace MyNamespace
 ";
             var sut = new PropertyResolver();
 
-            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(Code).ConfigureAwait(false);
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code).ConfigureAwait(false);
 
             var actual = (PropertyDefinition) sut.Resolve(node);
 
@@ -129,7 +115,7 @@ namespace MyNamespace
         [InlineData("protected virtual", false)]
         public async Task ResolveReturnsCanWrite(string accessors, bool expected)
         {
-            var code = StandardProperty.Replace("set;", accessors + " set;", StringComparison.Ordinal);
+            var code = TestNode.StandardProperty.Replace("set;", accessors + " set;", StringComparison.Ordinal);
 
             var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code).ConfigureAwait(false);
 
@@ -143,7 +129,7 @@ namespace MyNamespace
         [Fact]
         public async Task ResolveReturnsCanWriteAsFalseWithReadOnlyProperty()
         {
-            const string Code = @"
+            const string code = @"
 namespace MyNamespace 
 {
     public class MyClass
@@ -157,7 +143,7 @@ namespace MyNamespace
 ";
             var sut = new PropertyResolver();
 
-            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(Code).ConfigureAwait(false);
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code).ConfigureAwait(false);
 
             var actual = (PropertyDefinition) sut.Resolve(node);
 
@@ -167,7 +153,7 @@ namespace MyNamespace
         [Fact]
         public async Task ResolveReturnsDefinitionWhenPropertyHasAssignment()
         {
-            const string Code = @"
+            const string code = @"
 namespace MyNamespace 
 {
     public class MyClass
@@ -182,7 +168,7 @@ namespace MyNamespace
 ";
             var sut = new PropertyResolver();
 
-            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(Code).ConfigureAwait(false);
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code).ConfigureAwait(false);
 
             var actual = (PropertyDefinition) sut.Resolve(node);
 
@@ -192,7 +178,7 @@ namespace MyNamespace
         [Fact]
         public async Task ResolveReturnsDefinitionWhenPropertyHasExpression()
         {
-            const string Code = @"
+            const string code = @"
 namespace MyNamespace 
 {
     public class MyClass
@@ -207,7 +193,7 @@ namespace MyNamespace
 ";
             var sut = new PropertyResolver();
 
-            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(Code).ConfigureAwait(false);
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code).ConfigureAwait(false);
 
             var actual = (PropertyDefinition) sut.Resolve(node);
 
@@ -225,7 +211,7 @@ namespace MyNamespace
         [InlineData("[Serialize] string", "string")]
         public async Task ResolveReturnsPropertyDataType(string dataType, string expected)
         {
-            var code = StandardProperty.Replace("string MyItem", dataType + " MyItem", StringComparison.Ordinal);
+            var code = TestNode.StandardProperty.Replace("string MyItem", dataType + " MyItem", StringComparison.Ordinal);
 
             var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code).ConfigureAwait(false);
 
@@ -239,7 +225,7 @@ namespace MyNamespace
         [Fact]
         public async Task ResolveReturnsPropertyName()
         {
-            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(StandardProperty).ConfigureAwait(false);
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(TestNode.StandardProperty).ConfigureAwait(false);
 
             var sut = new PropertyResolver();
 

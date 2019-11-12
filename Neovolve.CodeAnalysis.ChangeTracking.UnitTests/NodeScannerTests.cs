@@ -1,4 +1,6 @@
-﻿namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
+﻿// ReSharper disable CollectionNeverUpdated.Local
+// ReSharper disable ObjectCreationAsStatement
+namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 {
     using System;
     using System.Collections.Generic;
@@ -15,20 +17,6 @@
 
     public class NodeScannerTests
     {
-        private const string StandardProperty = @"
-namespace MyNamespace 
-{
-    public class MyClass
-    {
-        string MyProperty
-        {
-            get;
-            set;
-        }
-    }   
-}
-";
-
         private readonly ILogger _logger;
 
         public NodeScannerTests(ITestOutputHelper output)
@@ -44,7 +32,7 @@ namespace MyNamespace
             var resolver = Substitute.For<INodeResolver>();
             var resolvers = new List<INodeResolver> {resolver};
             var definition = Model.UsingModule<CompilerModule>().Create<PropertyDefinition>();
-            var rootNode = await TestNode.Parse(StandardProperty).ConfigureAwait(false);
+            var rootNode = await TestNode.Parse(TestNode.StandardProperty).ConfigureAwait(false);
             var node = TestNode.FindNode<PropertyDeclarationSyntax>(rootNode);
 
             resolver.IsSupported(node).Returns(true);
@@ -67,7 +55,6 @@ namespace MyNamespace
             var secondResolver = Substitute.For<INodeResolver>();
             var resolvers = new List<INodeResolver> {firstResolver, secondResolver};
 
-            // ReSharper disable once CollectionNeverUpdated.Local
             var nodes = new List<SyntaxNode>();
 
             var sut = new NodeScanner(resolvers, _logger);
@@ -83,7 +70,7 @@ namespace MyNamespace
             var firstResolver = Substitute.For<INodeResolver>();
             var secondResolver = Substitute.For<INodeResolver>();
             var resolvers = new List<INodeResolver> {firstResolver, secondResolver};
-            var rootNode = await TestNode.Parse(StandardProperty).ConfigureAwait(false);
+            var rootNode = await TestNode.Parse(TestNode.StandardProperty).ConfigureAwait(false);
 
             var nodes = new List<SyntaxNode> {rootNode};
 
@@ -99,7 +86,7 @@ namespace MyNamespace
         {
             var resolver = Substitute.For<INodeResolver>();
             var resolvers = new List<INodeResolver> {resolver};
-            var rootNode = await TestNode.Parse(StandardProperty).ConfigureAwait(false);
+            var rootNode = await TestNode.Parse(TestNode.StandardProperty).ConfigureAwait(false);
 
             resolver.IsSupported(rootNode).Returns(true);
             resolver.SkipNode.Returns(true);
@@ -132,10 +119,8 @@ namespace MyNamespace
         [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification = "Testing constructor guard clause")]
         public void ThrowsExceptionWithEmptyResolvers()
         {
-            // ReSharper disable once CollectionNeverUpdated.Local
             var resolvers = new List<INodeResolver>();
 
-            // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new NodeScanner(resolvers, _logger);
 
             action.Should().Throw<ArgumentException>();
@@ -149,7 +134,6 @@ namespace MyNamespace
             var secondResolver = Substitute.For<INodeResolver>();
             var resolvers = new List<INodeResolver> {firstResolver, secondResolver};
 
-            // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new NodeScanner(resolvers, null);
 
             action.Should().Throw<ArgumentNullException>();
@@ -159,7 +143,6 @@ namespace MyNamespace
         [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification = "Testing constructor guard clause")]
         public void ThrowsExceptionWithNullResolvers()
         {
-            // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new NodeScanner(null, _logger);
 
             action.Should().Throw<ArgumentNullException>();

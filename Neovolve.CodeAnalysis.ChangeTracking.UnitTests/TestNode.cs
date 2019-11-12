@@ -7,6 +7,30 @@
 
     public static class TestNode
     {
+        public const string StandardField = @"
+namespace MyNamespace 
+{
+    public class MyClass
+    {
+        string MyItem;
+    }   
+}
+";
+
+        public const string StandardProperty = @"
+namespace MyNamespace 
+{
+    public class MyClass
+    {
+        string MyItem
+        {
+            get;
+            set;
+        }
+    }   
+}
+";
+
         public static async Task<T> FindNode<T>(string code) where T : SyntaxNode
         {
             var root = await Parse(code).ConfigureAwait(false);

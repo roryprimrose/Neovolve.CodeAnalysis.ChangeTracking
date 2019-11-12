@@ -1,4 +1,5 @@
-﻿using System;
+﻿// ReSharper disable ObjectCreationAsStatement
+using System;
 using System.Collections.Generic;
 using FluentAssertions;
 using ModelBuilder;
@@ -17,7 +18,6 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var oldMembersNotMatched = Model.Create<IEnumerable<MemberDefinition>>();
             var newMembersNotMatched = Model.Create<IEnumerable<MemberDefinition>>();
 
-            // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new MatchResults(null, oldMembersNotMatched, newMembersNotMatched);
 
             action.Should().Throw<ArgumentNullException>();
@@ -30,7 +30,6 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var matches = Model.Create<IEnumerable<MemberMatch>>();
             var newMembersNotMatched = Model.Create<IEnumerable<MemberDefinition>>();
 
-            // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new MatchResults(matches, null, newMembersNotMatched);
 
             action.Should().Throw<ArgumentNullException>();
@@ -43,7 +42,6 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var matches = Model.Create<IEnumerable<MemberMatch>>();
             var oldMembersNotMatched = Model.Create<IEnumerable<MemberDefinition>>();
 
-            // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new MatchResults(matches, oldMembersNotMatched, null);
 
             action.Should().Throw<ArgumentNullException>();

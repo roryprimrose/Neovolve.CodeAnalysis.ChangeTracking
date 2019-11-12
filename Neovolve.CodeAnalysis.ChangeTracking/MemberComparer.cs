@@ -6,6 +6,7 @@
 
     public class MemberComparer : IMemberComparer
     {
+        // TODO: Add logging here to explain how a change was identified
         public virtual ChangeType Compare(MemberDefinition oldMember, MemberDefinition newMember)
         {
             Ensure.Any.IsNotNull(oldMember, nameof(oldMember));

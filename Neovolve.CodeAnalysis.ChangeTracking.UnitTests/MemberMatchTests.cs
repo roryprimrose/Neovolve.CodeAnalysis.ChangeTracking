@@ -1,4 +1,5 @@
-﻿namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
+﻿// ReSharper disable ObjectCreationAsStatement
+namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
@@ -26,7 +27,6 @@
         {
             var oldMember = Model.UsingModule<CompilerModule>().Create<MemberDefinition>();
 
-            // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new MemberMatch(oldMember, null);
 
             action.Should().Throw<ArgumentException>();
@@ -38,7 +38,6 @@
         {
             var newMember = Model.UsingModule<CompilerModule>().Create<MemberDefinition>();
 
-            // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new MemberMatch(null, newMember);
 
             action.Should().Throw<ArgumentException>();

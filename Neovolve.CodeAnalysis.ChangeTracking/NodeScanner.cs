@@ -69,7 +69,7 @@
 
                 var definition = resolver.Resolve(node);
 
-                _logger.LogInformation("Resolver {0} matches member {1} and returned definition {2}",
+                _logger.LogDebug("Resolver {0} matches member {1} and returned definition {2}",
                     resolver.GetType().Name,
                     node.GetType().Name,
                     definition.GetType().Name);

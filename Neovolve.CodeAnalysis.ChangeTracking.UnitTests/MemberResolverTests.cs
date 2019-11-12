@@ -9,34 +9,10 @@
 
     public class MemberResolverTests
     {
-        private const string StandardField = @"
-namespace MyNamespace 
-{
-    public class MyClass
-    {
-        string MyItem;
-    }   
-}
-";
-
-        private const string StandardProperty = @"
-namespace MyNamespace 
-{
-    public class MyClass
-    {
-        string MyItem
-        {
-            get;
-            set;
-        }
-    }   
-}
-";
-
         [Fact]
         public async Task ResolveReturnsClassAndNamespaceNamesForField()
         {
-            var node = await TestNode.FindNode<FieldDeclarationSyntax>(StandardField).ConfigureAwait(false);
+            var node = await TestNode.FindNode<FieldDeclarationSyntax>(TestNode.StandardField).ConfigureAwait(false);
 
             var sut = new FieldResolver();
 
@@ -49,7 +25,7 @@ namespace MyNamespace
         [Fact]
         public async Task ResolveReturnsClassAndNamespaceNamesForProperty()
         {
-            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(StandardProperty).ConfigureAwait(false);
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(TestNode.StandardProperty).ConfigureAwait(false);
 
             var sut = new PropertyResolver();
 
@@ -100,7 +76,7 @@ public class MyClass
         [Fact]
         public async Task ResolveReturnsEmptyAttributesForField()
         {
-            var node = await TestNode.FindNode<FieldDeclarationSyntax>(StandardField).ConfigureAwait(false);
+            var node = await TestNode.FindNode<FieldDeclarationSyntax>(TestNode.StandardField).ConfigureAwait(false);
 
             var sut = new FieldResolver();
 
@@ -112,7 +88,7 @@ public class MyClass
         [Fact]
         public async Task ResolveReturnsEmptyAttributesForProperty()
         {
-            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(StandardProperty).ConfigureAwait(false);
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(TestNode.StandardProperty).ConfigureAwait(false);
 
             var sut = new PropertyResolver();
 
@@ -145,7 +121,6 @@ namespace MyNamespace
     }
 }
 ";
-            ;
 
             code = code.Replace("class Parent", accessors + " class Parent", StringComparison.Ordinal);
 
@@ -184,7 +159,6 @@ namespace MyNamespace
     }
 }
 ";
-            ;
 
             code = code.Replace("class Parent", accessors + " class Parent", StringComparison.Ordinal);
 
@@ -209,7 +183,7 @@ namespace MyNamespace
         [InlineData("protected virtual", false)]
         public async Task ResolveReturnsIsPublicBasedOnParentClassScopeForField(string accessors, bool expected)
         {
-            var code = StandardField
+            var code = TestNode.StandardField
                 .Replace("public class MyClass", accessors + " class MyClass", StringComparison.Ordinal)
                 .Replace("string MyItem", "public string MyItem", StringComparison.Ordinal);
 
@@ -234,7 +208,7 @@ namespace MyNamespace
         [InlineData("protected virtual", false)]
         public async Task ResolveReturnsIsPublicBasedOnParentClassScopeForProperty(string accessors, bool expected)
         {
-            var code = StandardProperty
+            var code = TestNode.StandardProperty
                 .Replace("public class MyClass", accessors + " class MyClass", StringComparison.Ordinal)
                 .Replace("string MyItem", "public string MyItem", StringComparison.Ordinal);
 
@@ -259,7 +233,7 @@ namespace MyNamespace
         [InlineData("protected virtual", false)]
         public async Task ResolveReturnsIsPublicForField(string accessors, bool expected)
         {
-            var code = StandardField.Replace("string MyItem", accessors + " string MyItem", StringComparison.Ordinal);
+            var code = TestNode.StandardField.Replace("string MyItem", accessors + " string MyItem", StringComparison.Ordinal);
 
             var node = await TestNode.FindNode<FieldDeclarationSyntax>(code).ConfigureAwait(false);
 
@@ -281,7 +255,7 @@ namespace MyNamespace
         [InlineData("protected virtual", false)]
         public async Task ResolveReturnsIsPublicForProperty(string accessors, bool expected)
         {
-            var code = StandardProperty.Replace("string MyItem",
+            var code = TestNode.StandardProperty.Replace("string MyItem",
                 accessors + " string MyItem",
                 StringComparison.Ordinal);
 
@@ -330,7 +304,7 @@ namespace MyNamespace
             string thirdDeclaration,
             string thirdName)
         {
-            var code = StandardField.Replace("string MyItem", fragment + " string MyItem", StringComparison.Ordinal);
+            var code = TestNode.StandardField.Replace("string MyItem", fragment + " string MyItem", StringComparison.Ordinal);
 
             var node = await TestNode.FindNode<FieldDeclarationSyntax>(code).ConfigureAwait(false);
 
@@ -383,7 +357,7 @@ namespace MyNamespace
             string thirdDeclaration,
             string thirdName)
         {
-            var code = StandardProperty.Replace("string MyItem", fragment + " string MyItem", StringComparison.Ordinal);
+            var code = TestNode.StandardProperty.Replace("string MyItem", fragment + " string MyItem", StringComparison.Ordinal);
 
             var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code).ConfigureAwait(false);
 
@@ -419,7 +393,7 @@ namespace MyNamespace
             string secondDeclaration,
             string secondName)
         {
-            var code = StandardField.Replace("string MyItem", fragment + " string MyItem", StringComparison.Ordinal);
+            var code = TestNode.StandardField.Replace("string MyItem", fragment + " string MyItem", StringComparison.Ordinal);
 
             var node = await TestNode.FindNode<FieldDeclarationSyntax>(code).ConfigureAwait(false);
 
@@ -453,7 +427,7 @@ namespace MyNamespace
             string secondDeclaration,
             string secondName)
         {
-            var code = StandardProperty.Replace("string MyItem", fragment + " string MyItem", StringComparison.Ordinal);
+            var code = TestNode.StandardProperty.Replace("string MyItem", fragment + " string MyItem", StringComparison.Ordinal);
 
             var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code).ConfigureAwait(false);
 
@@ -519,7 +493,7 @@ public class Parent
             "Obsolete")]
         public async Task ResolveReturnsSingleAttributeForField(string fragment, string declaration, string name)
         {
-            var code = StandardField.Replace("string MyItem", fragment + " string MyItem", StringComparison.Ordinal);
+            var code = TestNode.StandardField.Replace("string MyItem", fragment + " string MyItem", StringComparison.Ordinal);
 
             var node = await TestNode.FindNode<FieldDeclarationSyntax>(code).ConfigureAwait(false);
 
@@ -541,7 +515,7 @@ public class Parent
             "Obsolete")]
         public async Task ResolveReturnsSingleAttributeForProperty(string fragment, string declaration, string name)
         {
-            var code = StandardProperty.Replace("string MyItem", fragment + " string MyItem", StringComparison.Ordinal);
+            var code = TestNode.StandardProperty.Replace("string MyItem", fragment + " string MyItem", StringComparison.Ordinal);
 
             var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code).ConfigureAwait(false);
 
