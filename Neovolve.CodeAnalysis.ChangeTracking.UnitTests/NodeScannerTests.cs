@@ -12,7 +12,7 @@
     using Xunit;
     using Xunit.Abstractions;
 
-    public class ScannerTests
+    public class NodeScannerTests
     {
         private const string StandardProperty = @"
 namespace MyNamespace 
@@ -30,7 +30,7 @@ namespace MyNamespace
 
         private readonly ILogger _logger;
 
-        public ScannerTests(ITestOutputHelper output)
+        public NodeScannerTests(ITestOutputHelper output)
         {
             _logger = output.BuildLogger();
         }
@@ -52,7 +52,7 @@ namespace MyNamespace
 
             var nodes = new List<SyntaxNode> {rootNode};
 
-            var sut = new Scanner(resolvers, _logger);
+            var sut = new NodeScanner(resolvers, _logger);
 
             var actual = sut.FindDefinitions(nodes);
 
@@ -67,7 +67,7 @@ namespace MyNamespace
             var resolvers = new List<INodeResolver> {firstResolver, secondResolver};
             var nodes = new List<SyntaxNode>();
 
-            var sut = new Scanner(resolvers, _logger);
+            var sut = new NodeScanner(resolvers, _logger);
 
             var actual = sut.FindDefinitions(nodes);
 
@@ -84,7 +84,7 @@ namespace MyNamespace
 
             var nodes = new List<SyntaxNode> {rootNode};
 
-            var sut = new Scanner(resolvers, _logger);
+            var sut = new NodeScanner(resolvers, _logger);
 
             var actual = sut.FindDefinitions(nodes);
 
@@ -103,7 +103,7 @@ namespace MyNamespace
 
             var nodes = new List<SyntaxNode> {rootNode};
 
-            var sut = new Scanner(resolvers, _logger);
+            var sut = new NodeScanner(resolvers, _logger);
 
             var actual = sut.FindDefinitions(nodes);
 
@@ -118,7 +118,7 @@ namespace MyNamespace
             var secondResolver = Substitute.For<INodeResolver>();
             var resolvers = new List<INodeResolver> {firstResolver, secondResolver};
 
-            var sut = new Scanner(resolvers, _logger);
+            var sut = new NodeScanner(resolvers, _logger);
 
             Action action = () => sut.FindDefinitions(null);
 
@@ -130,7 +130,7 @@ namespace MyNamespace
         {
             var resolvers = new List<INodeResolver>();
 
-            Action action = () => new Scanner(resolvers, _logger);
+            Action action = () => new NodeScanner(resolvers, _logger);
 
             action.Should().Throw<ArgumentException>();
         }
@@ -142,7 +142,7 @@ namespace MyNamespace
             var secondResolver = Substitute.For<INodeResolver>();
             var resolvers = new List<INodeResolver> {firstResolver, secondResolver};
 
-            Action action = () => new Scanner(resolvers, null);
+            Action action = () => new NodeScanner(resolvers, null);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -150,7 +150,7 @@ namespace MyNamespace
         [Fact]
         public void ThrowsExceptionWithNullResolvers()
         {
-            Action action = () => new Scanner(null, _logger);
+            Action action = () => new NodeScanner(null, _logger);
 
             action.Should().Throw<ArgumentNullException>();
         }

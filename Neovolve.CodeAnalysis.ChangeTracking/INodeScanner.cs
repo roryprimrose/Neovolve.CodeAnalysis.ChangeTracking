@@ -3,8 +3,8 @@
     using System.Collections.Generic;
     using Microsoft.CodeAnalysis;
 
-    public interface IEvaluator
+    public interface INodeScanner
     {
-        ChangeType CompareNodes(IEnumerable<SyntaxNode> oldNodes, IEnumerable<SyntaxNode> newNodes);
+        IEnumerable<MemberDefinition> FindDefinitions(IEnumerable<SyntaxNode> nodes);
     }
 }
