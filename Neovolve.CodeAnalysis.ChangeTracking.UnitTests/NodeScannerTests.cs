@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Threading.Tasks;
     using FluentAssertions;
     using Microsoft.CodeAnalysis;
@@ -65,6 +66,8 @@ namespace MyNamespace
             var firstResolver = Substitute.For<INodeResolver>();
             var secondResolver = Substitute.For<INodeResolver>();
             var resolvers = new List<INodeResolver> {firstResolver, secondResolver};
+
+            // ReSharper disable once CollectionNeverUpdated.Local
             var nodes = new List<SyntaxNode>();
 
             var sut = new NodeScanner(resolvers, _logger);
@@ -126,30 +129,37 @@ namespace MyNamespace
         }
 
         [Fact]
+        [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification = "Testing constructor guard clause")]
         public void ThrowsExceptionWithEmptyResolvers()
         {
+            // ReSharper disable once CollectionNeverUpdated.Local
             var resolvers = new List<INodeResolver>();
 
+            // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new NodeScanner(resolvers, _logger);
 
             action.Should().Throw<ArgumentException>();
         }
 
         [Fact]
+        [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification = "Testing constructor guard clause")]
         public void ThrowsExceptionWithNullLogger()
         {
             var firstResolver = Substitute.For<INodeResolver>();
             var secondResolver = Substitute.For<INodeResolver>();
             var resolvers = new List<INodeResolver> {firstResolver, secondResolver};
 
+            // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new NodeScanner(resolvers, null);
 
             action.Should().Throw<ArgumentNullException>();
         }
 
         [Fact]
+        [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification = "Testing constructor guard clause")]
         public void ThrowsExceptionWithNullResolvers()
         {
+            // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new NodeScanner(null, _logger);
 
             action.Should().Throw<ArgumentNullException>();

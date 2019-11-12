@@ -6,36 +6,44 @@ using Xunit;
 
 namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 {
+    using System.Diagnostics.CodeAnalysis;
+
     public class MatchResultsTests
     {
         [Fact]
+        [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification = "Testing constructor guard clause")]
         public void ThrowsExceptionWhenCreatedWithNullMatches()
         {
             var oldMembersNotMatched = Model.Create<IEnumerable<MemberDefinition>>();
             var newMembersNotMatched = Model.Create<IEnumerable<MemberDefinition>>();
 
+            // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new MatchResults(null, oldMembersNotMatched, newMembersNotMatched);
 
             action.Should().Throw<ArgumentNullException>();
         }
 
         [Fact]
+        [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification = "Testing constructor guard clause")]
         public void ThrowsExceptionWhenCreatedWithNullOldMembersNotMatched()
         {
             var matches = Model.Create<IEnumerable<MemberMatch>>();
             var newMembersNotMatched = Model.Create<IEnumerable<MemberDefinition>>();
 
+            // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new MatchResults(matches, null, newMembersNotMatched);
 
             action.Should().Throw<ArgumentNullException>();
         }
 
         [Fact]
+        [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification = "Testing constructor guard clause")]
         public void ThrowsExceptionWhenCreatedWithNullNewMembersNotMatched()
         {
             var matches = Model.Create<IEnumerable<MemberMatch>>();
             var oldMembersNotMatched = Model.Create<IEnumerable<MemberDefinition>>();
 
+            // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new MatchResults(matches, oldMembersNotMatched, null);
 
             action.Should().Throw<ArgumentNullException>();

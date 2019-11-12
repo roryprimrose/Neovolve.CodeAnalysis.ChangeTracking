@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Threading.Tasks;
     using FluentAssertions;
     using Microsoft.CodeAnalysis;
@@ -13,16 +14,6 @@
 
     public class MatchEvaluatorTests
     {
-        private const string StandardField = @"
-namespace MyNamespace 
-{
-    public class MyClass
-    {
-        string MyItem;
-    }   
-}
-";
-
         private const string StandardProperty = @"
 namespace MyNamespace 
 {
@@ -50,7 +41,10 @@ namespace MyNamespace
             var scanner = Substitute.For<INodeScanner>();
             var matcher = Substitute.For<IMemberMatcher>();
             var matches = new List<IMemberMatcher> {matcher};
+
+            // ReSharper disable once CollectionNeverUpdated.Local
             var oldNodes = new List<SyntaxNode>();
+            // ReSharper disable once CollectionNeverUpdated.Local
             var newNodes = new List<SyntaxNode>();
 
             var sut = new MatchEvaluator(scanner, matches, _logger);
@@ -271,44 +265,54 @@ namespace MyNamespace
         }
 
         [Fact]
+        [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification = "Testing constructor guard clause")]
         public void ThrowsExceptionWhenCreatedWithEmptyMatches()
         {
             var scanner = Substitute.For<INodeScanner>();
+
+            // ReSharper disable once CollectionNeverUpdated.Local
             var matches = new List<IMemberMatcher>();
 
+            // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new MatchEvaluator(scanner, matches, _logger);
 
             action.Should().Throw<ArgumentException>();
         }
 
         [Fact]
+        [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification = "Testing constructor guard clause")]
         public void ThrowsExceptionWhenCreatedWithNullLogger()
         {
             var scanner = Substitute.For<INodeScanner>();
             var matcher = Substitute.For<IMemberMatcher>();
             var matches = new List<IMemberMatcher> {matcher};
 
+            // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new MatchEvaluator(scanner, matches, null);
 
             action.Should().Throw<ArgumentNullException>();
         }
 
         [Fact]
+        [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification = "Testing constructor guard clause")]
         public void ThrowsExceptionWhenCreatedWithNullMatches()
         {
             var scanner = Substitute.For<INodeScanner>();
 
+            // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new MatchEvaluator(scanner, null, _logger);
 
             action.Should().Throw<ArgumentNullException>();
         }
 
         [Fact]
+        [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification = "Testing constructor guard clause")]
         public void ThrowsExceptionWhenCreatedWithNullScanner()
         {
             var matcher = Substitute.For<IMemberMatcher>();
             var matches = new List<IMemberMatcher> {matcher};
 
+            // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new MatchEvaluator(null, matches, _logger);
 
             action.Should().Throw<ArgumentNullException>();
