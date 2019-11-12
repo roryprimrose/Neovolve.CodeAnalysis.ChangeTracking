@@ -90,7 +90,7 @@ namespace MyNamespace
         [InlineData("[Serialize] string", "string")]
         public async Task ResolveReturnsFieldDataType(string dataType, string expected)
         {
-            var code = TestNode.StandardField.Replace("string MyItem", dataType + " MyItem", StringComparison.Ordinal);
+            var code = TestNode.StandardField.Replace("public string MyItem", "public " + dataType + " MyItem", StringComparison.Ordinal);
 
             var node = await TestNode.FindNode<FieldDeclarationSyntax>(code).ConfigureAwait(false);
 

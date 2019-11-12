@@ -211,7 +211,7 @@ namespace MyNamespace
         [InlineData("[Serialize] string", "string")]
         public async Task ResolveReturnsPropertyDataType(string dataType, string expected)
         {
-            var code = TestNode.StandardProperty.Replace("string MyItem", dataType + " MyItem", StringComparison.Ordinal);
+            var code = TestNode.StandardProperty.Replace("public string MyItem", "public " + dataType + " MyItem", StringComparison.Ordinal);
 
             var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code).ConfigureAwait(false);
 
