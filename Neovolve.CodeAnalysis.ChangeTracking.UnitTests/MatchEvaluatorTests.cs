@@ -1,4 +1,6 @@
-﻿namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
+﻿// ReSharper disable CollectionNeverUpdated.Local
+// ReSharper disable ObjectCreationAsStatement
+namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 {
     using System;
     using System.Collections.Generic;
@@ -14,20 +16,6 @@
 
     public class MatchEvaluatorTests
     {
-        private const string StandardProperty = @"
-namespace MyNamespace 
-{
-    public class MyClass
-    {
-        string MyItem
-        {
-            get;
-            set;
-        }
-    }   
-}
-";
-
         private readonly ILogger _logger;
 
         public MatchEvaluatorTests(ITestOutputHelper output)
@@ -41,10 +29,7 @@ namespace MyNamespace
             var scanner = Substitute.For<INodeScanner>();
             var matcher = Substitute.For<IMemberMatcher>();
             var matches = new List<IMemberMatcher> {matcher};
-
-            // ReSharper disable once CollectionNeverUpdated.Local
             var oldNodes = new List<SyntaxNode>();
-            // ReSharper disable once CollectionNeverUpdated.Local
             var newNodes = new List<SyntaxNode>();
 
             var sut = new MatchEvaluator(scanner, matches, _logger);
@@ -62,18 +47,18 @@ namespace MyNamespace
             var scanner = Substitute.For<INodeScanner>();
             var matcher = Substitute.For<IMemberMatcher>();
 
-            var member = Model.Create<PropertyDefinition>();
+            var member = Model.UsingModule<CompilerModule>().Create<PropertyDefinition>();
             var oldMembers = new List<MemberDefinition> {member};
             var newMembers = new List<MemberDefinition> {member};
             var matches = new List<IMemberMatcher> {matcher};
             var match = new MemberMatch(member, member);
             var oldNodes = new List<SyntaxNode>
             {
-                await TestNode.Parse(StandardProperty).ConfigureAwait(false)
+                await TestNode.Parse(TestNode.StandardProperty).ConfigureAwait(false)
             };
             var newNodes = new List<SyntaxNode>
             {
-                await TestNode.Parse(StandardProperty).ConfigureAwait(false)
+                await TestNode.Parse(TestNode.StandardProperty).ConfigureAwait(false)
             };
 
             scanner.FindDefinitions(oldNodes).Returns(oldMembers);
@@ -96,19 +81,19 @@ namespace MyNamespace
             var scanner = Substitute.For<INodeScanner>();
             var matcher = Substitute.For<IMemberMatcher>();
 
-            var member = Model.Create<PropertyDefinition>();
-            var memberNotMatched = Model.Create<MemberDefinition>();
+            var member = Model.UsingModule<CompilerModule>().Create<PropertyDefinition>();
+            var memberNotMatched = Model.UsingModule<CompilerModule>().Create<MemberDefinition>();
             var oldMembers = new List<MemberDefinition> {member};
             var newMembers = new List<MemberDefinition> {member, memberNotMatched};
             var matches = new List<IMemberMatcher> {matcher};
             var match = new MemberMatch(member, member);
             var oldNodes = new List<SyntaxNode>
             {
-                await TestNode.Parse(StandardProperty).ConfigureAwait(false)
+                await TestNode.Parse(TestNode.StandardProperty).ConfigureAwait(false)
             };
             var newNodes = new List<SyntaxNode>
             {
-                await TestNode.Parse(StandardProperty).ConfigureAwait(false)
+                await TestNode.Parse(TestNode.StandardProperty).ConfigureAwait(false)
             };
 
             scanner.FindDefinitions(oldNodes).Returns(oldMembers);
@@ -132,19 +117,19 @@ namespace MyNamespace
             var scanner = Substitute.For<INodeScanner>();
             var matcher = Substitute.For<IMemberMatcher>();
 
-            var member = Model.Create<PropertyDefinition>();
-            var memberNotMatched = Model.Create<MemberDefinition>();
+            var member = Model.UsingModule<CompilerModule>().Create<PropertyDefinition>();
+            var memberNotMatched = Model.UsingModule<CompilerModule>().Create<MemberDefinition>();
             var oldMembers = new List<MemberDefinition> {member, memberNotMatched};
             var newMembers = new List<MemberDefinition> {member};
             var matches = new List<IMemberMatcher> {matcher};
             var match = new MemberMatch(member, member);
             var oldNodes = new List<SyntaxNode>
             {
-                await TestNode.Parse(StandardProperty).ConfigureAwait(false)
+                await TestNode.Parse(TestNode.StandardProperty).ConfigureAwait(false)
             };
             var newNodes = new List<SyntaxNode>
             {
-                await TestNode.Parse(StandardProperty).ConfigureAwait(false)
+                await TestNode.Parse(TestNode.StandardProperty).ConfigureAwait(false)
             };
 
             scanner.FindDefinitions(oldNodes).Returns(oldMembers);
@@ -168,19 +153,19 @@ namespace MyNamespace
             var scanner = Substitute.For<INodeScanner>();
             var matcher = Substitute.For<IMemberMatcher>();
 
-            var member = Model.Create<PropertyDefinition>();
-            var memberNotMatched = Model.Create<MemberDefinition>();
+            var member = Model.UsingModule<CompilerModule>().Create<PropertyDefinition>();
+            var memberNotMatched = Model.UsingModule<CompilerModule>().Create<MemberDefinition>();
             var oldMembers = new List<MemberDefinition> {member};
             var newMembers = new List<MemberDefinition> {member, memberNotMatched };
             var matches = new List<IMemberMatcher> {matcher};
             var match = new MemberMatch(member, member);
             var oldNodes = new List<SyntaxNode>
             {
-                await TestNode.Parse(StandardProperty).ConfigureAwait(false)
+                await TestNode.Parse(TestNode.StandardProperty).ConfigureAwait(false)
             };
             var newNodes = new List<SyntaxNode>
             {
-                await TestNode.Parse(StandardProperty).ConfigureAwait(false)
+                await TestNode.Parse(TestNode.StandardProperty).ConfigureAwait(false)
             };
 
             scanner.FindDefinitions(oldNodes).Returns(oldMembers);
@@ -204,18 +189,18 @@ namespace MyNamespace
             var scanner = Substitute.For<INodeScanner>();
             var matcher = Substitute.For<IMemberMatcher>();
 
-            var member = Model.Create<PropertyDefinition>();
-            var memberNotMatched = Model.Create<MemberDefinition>();
+            var member = Model.UsingModule<CompilerModule>().Create<PropertyDefinition>();
+            var memberNotMatched = Model.UsingModule<CompilerModule>().Create<MemberDefinition>();
             var oldMembers = new List<MemberDefinition> {member, memberNotMatched};
             var newMembers = new List<MemberDefinition> {member};
             var matches = new List<IMemberMatcher> {matcher};
             var oldNodes = new List<SyntaxNode>
             {
-                await TestNode.Parse(StandardProperty).ConfigureAwait(false)
+                await TestNode.Parse(TestNode.StandardProperty).ConfigureAwait(false)
             };
             var newNodes = new List<SyntaxNode>
             {
-                await TestNode.Parse(StandardProperty).ConfigureAwait(false)
+                await TestNode.Parse(TestNode.StandardProperty).ConfigureAwait(false)
             };
 
             scanner.FindDefinitions(oldNodes).Returns(oldMembers);
@@ -236,7 +221,7 @@ namespace MyNamespace
             var matches = new List<IMemberMatcher> {matcher};
             var oldNodes = new List<SyntaxNode>
             {
-                await TestNode.Parse(StandardProperty).ConfigureAwait(false)
+                await TestNode.Parse(TestNode.StandardProperty).ConfigureAwait(false)
             };
 
             var sut = new MatchEvaluator(scanner, matches, _logger);
@@ -254,7 +239,7 @@ namespace MyNamespace
             var matches = new List<IMemberMatcher> {matcher};
             var newNodes = new List<SyntaxNode>
             {
-                await TestNode.Parse(StandardProperty).ConfigureAwait(false)
+                await TestNode.Parse(TestNode.StandardProperty).ConfigureAwait(false)
             };
 
             var sut = new MatchEvaluator(scanner, matches, _logger);
@@ -270,10 +255,8 @@ namespace MyNamespace
         {
             var scanner = Substitute.For<INodeScanner>();
 
-            // ReSharper disable once CollectionNeverUpdated.Local
             var matches = new List<IMemberMatcher>();
 
-            // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new MatchEvaluator(scanner, matches, _logger);
 
             action.Should().Throw<ArgumentException>();
@@ -287,7 +270,6 @@ namespace MyNamespace
             var matcher = Substitute.For<IMemberMatcher>();
             var matches = new List<IMemberMatcher> {matcher};
 
-            // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new MatchEvaluator(scanner, matches, null);
 
             action.Should().Throw<ArgumentNullException>();
@@ -299,7 +281,6 @@ namespace MyNamespace
         {
             var scanner = Substitute.For<INodeScanner>();
 
-            // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new MatchEvaluator(scanner, null, _logger);
 
             action.Should().Throw<ArgumentNullException>();
@@ -312,7 +293,6 @@ namespace MyNamespace
             var matcher = Substitute.For<IMemberMatcher>();
             var matches = new List<IMemberMatcher> {matcher};
 
-            // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new MatchEvaluator(null, matches, _logger);
 
             action.Should().Throw<ArgumentNullException>();

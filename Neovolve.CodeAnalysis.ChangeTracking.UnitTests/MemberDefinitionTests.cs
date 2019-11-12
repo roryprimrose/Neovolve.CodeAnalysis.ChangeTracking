@@ -13,14 +13,33 @@
         [InlineData(typeof(AttributeDefinition))]
         public void ToStringReturnsMemberDescription(Type definitionType)
         {
-            var sut = (MemberDefinition) Model.Create(definitionType);
+            var sut = (MemberDefinition) Model.UsingModule<CompilerModule>().Create(definitionType);
 
             var actual = sut.ToString();
 
-            actual.Should().StartWith(definitionType.Name);
+            actual.Should().StartWith(sut.MemberType);
             actual.Should().Contain(sut.Namespace);
             actual.Should().Contain(sut.OwningType);
             actual.Should().Contain(sut.Name);
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void ToStringReturnsMemberDescriptionWithOptionalMemberType(bool include)
+        {
+            var sut = Model.UsingModule<CompilerModule>().Create<MemberDefinition>();
+
+            var actual = sut.ToString(include);
+
+            if (include)
+            {
+                actual.Should().Contain(sut.MemberType);
+            }
+            else
+            {
+                actual.Should().NotContain(sut.MemberType);
+            }
         }
 
         [Theory]
@@ -29,11 +48,11 @@
         [InlineData(typeof(AttributeDefinition))]
         public void ToStringReturnsMemberDescriptionWithoutNamespace(Type definitionType)
         {
-            var sut = ((MemberDefinition) Model.Create(definitionType)).Set(x => x.Namespace = null);
+            var sut = ((MemberDefinition) Model.UsingModule<CompilerModule>().Create(definitionType)).Set(x => x.Namespace = null);
 
             var actual = sut.ToString();
 
-            actual.Should().StartWith(definitionType.Name);
+            actual.Should().StartWith(sut.MemberType);
             actual.Should().NotContain("..");
             actual.Should().Contain(sut.OwningType);
             actual.Should().Contain(sut.Name);

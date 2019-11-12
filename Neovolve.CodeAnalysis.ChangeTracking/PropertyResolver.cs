@@ -22,10 +22,11 @@
 
             var propertySyntax = (PropertyDeclarationSyntax) node;
 
-            var property = Resolve<PropertyDefinition>(propertySyntax);
+            var member = Resolve<PropertyDefinition>(propertySyntax);
 
-            property.Name = propertySyntax.Identifier.Text;
-            property.ReturnType = propertySyntax.Type.ToString();
+            member.MemberType = "Property";
+            member.Name = propertySyntax.Identifier.Text;
+            member.ReturnType = propertySyntax.Type.ToString();
 
             var getAccessor =
                 propertySyntax.AccessorList.Accessors.FirstOrDefault(x =>
@@ -33,10 +34,10 @@
 
             if (getAccessor != null)
             {
-                if (getAccessor.Modifiers.Count == 0
-                    || getAccessor.Modifiers.Any(x => x.Text == "public"))
+                if (getAccessor.Modifiers.Count == 0 ||
+                    getAccessor.Modifiers.Any(x => x.Text == "public"))
                 {
-                    property.CanRead = true;
+                    member.CanRead = true;
                 }
             }
 
@@ -46,14 +47,14 @@
 
             if (setAccessor != null)
             {
-                if (setAccessor.Modifiers.Count == 0
-                    || setAccessor.Modifiers.Any(x => x.Text == "public"))
+                if (setAccessor.Modifiers.Count == 0 ||
+                    setAccessor.Modifiers.Any(x => x.Text == "public"))
                 {
-                    property.CanWrite = true;
+                    member.CanWrite = true;
                 }
             }
 
-            return property;
+            return member;
         }
 
         public bool EvaluateChildren { get; } = false;
