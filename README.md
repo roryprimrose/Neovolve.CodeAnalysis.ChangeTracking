@@ -21,7 +21,7 @@ Changes not currently evaluated are:
 - Changes in interface methods
 
 ## Usage
-```
+```csharp
 var oldCode = new List<string>
 {
     @"
@@ -63,7 +63,7 @@ The library evaluates code changes by parsing the code text. The advantage of th
 
 For example, the following two code blocks when evaluated will indicate a breaking change. In reality, it is likely that the code will compile to the same outcome.
 
-```
+```csharp
 public MyNamespace
 {
     public class MyClass
@@ -73,7 +73,7 @@ public MyNamespace
 }
 ```
 
-```
+```csharp
 using System;
 
 public MyNamespace
