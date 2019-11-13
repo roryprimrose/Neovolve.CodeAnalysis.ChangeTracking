@@ -28,8 +28,7 @@ var oldCode = new List<string>
     public class Test
     {
         public string Value;
-    }
-"
+    }"
 };
 var newCode = new List<string>
 {
