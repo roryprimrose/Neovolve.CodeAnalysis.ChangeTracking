@@ -1,5 +1,6 @@
 ﻿// ReSharper disable CollectionNeverUpdated.Local
 // ReSharper disable ObjectCreationAsStatement
+
 namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 {
     using System;
@@ -54,11 +55,11 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var match = new MemberMatch(member, member);
             var oldNodes = new List<SyntaxNode>
             {
-                await TestNode.Parse(TestNode.StandardProperty).ConfigureAwait(false)
+                await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
             };
             var newNodes = new List<SyntaxNode>
             {
-                await TestNode.Parse(TestNode.StandardProperty).ConfigureAwait(false)
+                await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
             };
 
             scanner.FindDefinitions(oldNodes).Returns(oldMembers);
@@ -89,11 +90,11 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var match = new MemberMatch(member, member);
             var oldNodes = new List<SyntaxNode>
             {
-                await TestNode.Parse(TestNode.StandardProperty).ConfigureAwait(false)
+                await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
             };
             var newNodes = new List<SyntaxNode>
             {
-                await TestNode.Parse(TestNode.StandardProperty).ConfigureAwait(false)
+                await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
             };
 
             scanner.FindDefinitions(oldNodes).Returns(oldMembers);
@@ -125,11 +126,11 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var match = new MemberMatch(member, member);
             var oldNodes = new List<SyntaxNode>
             {
-                await TestNode.Parse(TestNode.StandardProperty).ConfigureAwait(false)
+                await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
             };
             var newNodes = new List<SyntaxNode>
             {
-                await TestNode.Parse(TestNode.StandardProperty).ConfigureAwait(false)
+                await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
             };
 
             scanner.FindDefinitions(oldNodes).Returns(oldMembers);
@@ -156,16 +157,16 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var member = Model.UsingModule<CompilerModule>().Create<PropertyDefinition>();
             var memberNotMatched = Model.UsingModule<CompilerModule>().Create<MemberDefinition>();
             var oldMembers = new List<MemberDefinition> {member};
-            var newMembers = new List<MemberDefinition> {member, memberNotMatched };
+            var newMembers = new List<MemberDefinition> {member, memberNotMatched};
             var matches = new List<IMemberMatcher> {matcher};
             var match = new MemberMatch(member, member);
             var oldNodes = new List<SyntaxNode>
             {
-                await TestNode.Parse(TestNode.StandardProperty).ConfigureAwait(false)
+                await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
             };
             var newNodes = new List<SyntaxNode>
             {
-                await TestNode.Parse(TestNode.StandardProperty).ConfigureAwait(false)
+                await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
             };
 
             scanner.FindDefinitions(oldNodes).Returns(oldMembers);
@@ -184,6 +185,40 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
         }
 
         [Fact]
+        public async Task CompareNodesSupportsNullLogger()
+        {
+            var scanner = Substitute.For<INodeScanner>();
+            var matcher = Substitute.For<IMemberMatcher>();
+
+            var member = Model.UsingModule<CompilerModule>().Create<PropertyDefinition>();
+            var oldMembers = new List<MemberDefinition> {member};
+            var newMembers = new List<MemberDefinition> {member};
+            var matches = new List<IMemberMatcher> {matcher};
+            var match = new MemberMatch(member, member);
+            var oldNodes = new List<SyntaxNode>
+            {
+                await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
+            };
+            var newNodes = new List<SyntaxNode>
+            {
+                await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
+            };
+
+            scanner.FindDefinitions(oldNodes).Returns(oldMembers);
+            scanner.FindDefinitions(newNodes).Returns(newMembers);
+            matcher.IsSupported(member).Returns(true);
+            matcher.GetMatch(member, member).Returns(match);
+
+            var sut = new MatchEvaluator(scanner, matches, null);
+
+            var actual = sut.CompareNodes(oldNodes, newNodes);
+
+            actual.Matches.Should().HaveCount(1);
+            actual.NewMembersNotMatched.Should().BeEmpty();
+            actual.OldMembersNotMatched.Should().BeEmpty();
+        }
+
+        [Fact]
         public async Task CompareNodesThrowsExceptionWhenNoSupportingMatcherFound()
         {
             var scanner = Substitute.For<INodeScanner>();
@@ -196,11 +231,11 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var matches = new List<IMemberMatcher> {matcher};
             var oldNodes = new List<SyntaxNode>
             {
-                await TestNode.Parse(TestNode.StandardProperty).ConfigureAwait(false)
+                await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
             };
             var newNodes = new List<SyntaxNode>
             {
-                await TestNode.Parse(TestNode.StandardProperty).ConfigureAwait(false)
+                await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
             };
 
             scanner.FindDefinitions(oldNodes).Returns(oldMembers);
@@ -221,7 +256,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var matches = new List<IMemberMatcher> {matcher};
             var oldNodes = new List<SyntaxNode>
             {
-                await TestNode.Parse(TestNode.StandardProperty).ConfigureAwait(false)
+                await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
             };
 
             var sut = new MatchEvaluator(scanner, matches, _logger);
@@ -239,7 +274,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var matches = new List<IMemberMatcher> {matcher};
             var newNodes = new List<SyntaxNode>
             {
-                await TestNode.Parse(TestNode.StandardProperty).ConfigureAwait(false)
+                await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
             };
 
             var sut = new MatchEvaluator(scanner, matches, _logger);
@@ -250,7 +285,8 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
         }
 
         [Fact]
-        [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification = "Testing constructor guard clause")]
+        [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification =
+            "Testing constructor guard clause")]
         public void ThrowsExceptionWhenCreatedWithEmptyMatches()
         {
             var scanner = Substitute.For<INodeScanner>();
@@ -263,20 +299,8 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
         }
 
         [Fact]
-        [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification = "Testing constructor guard clause")]
-        public void ThrowsExceptionWhenCreatedWithNullLogger()
-        {
-            var scanner = Substitute.For<INodeScanner>();
-            var matcher = Substitute.For<IMemberMatcher>();
-            var matches = new List<IMemberMatcher> {matcher};
-
-            Action action = () => new MatchEvaluator(scanner, matches, null);
-
-            action.Should().Throw<ArgumentNullException>();
-        }
-
-        [Fact]
-        [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification = "Testing constructor guard clause")]
+        [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification =
+            "Testing constructor guard clause")]
         public void ThrowsExceptionWhenCreatedWithNullMatches()
         {
             var scanner = Substitute.For<INodeScanner>();
@@ -287,7 +311,8 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
         }
 
         [Fact]
-        [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification = "Testing constructor guard clause")]
+        [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification =
+            "Testing constructor guard clause")]
         public void ThrowsExceptionWhenCreatedWithNullScanner()
         {
             var matcher = Substitute.For<IMemberMatcher>();

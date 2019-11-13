@@ -10,6 +10,13 @@
 
     public static class ChangeCalculatorExtensions
     {
+        public static Task<ChangeType> CalculateChange(this IChangeCalculator calculator,
+            IEnumerable<string> oldCode,
+            IEnumerable<string> newCode)
+        {
+            return CalculateChange(calculator, oldCode, newCode, default);
+        }
+
         public static async Task<ChangeType> CalculateChange(this IChangeCalculator calculator,
             IEnumerable<string> oldCode,
             IEnumerable<string> newCode, CancellationToken cancellationToken)

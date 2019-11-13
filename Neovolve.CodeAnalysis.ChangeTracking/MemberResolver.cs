@@ -54,27 +54,16 @@
 
                 // We will assume that the attribute is public. It would be very unusual if it wasn't
                 IsPublic = true,
-
                 Declaration = attributeSyntax.GetText().ToString()
             };
             return attribute;
         }
 
-        private static void ResolveDeclarationInfo(MemberDeclarationSyntax declaration, MemberDefinition member)
+        private static List<ClassDeclarationSyntax> FindParentClasses(MemberDeclarationSyntax declaration)
         {
-            var parentClass = declaration.FirstAncestorOrSelf<ClassDeclarationSyntax>();
-
-            var containerNamespace = parentClass.FirstAncestorOrSelf<NamespaceDeclarationSyntax>();
-
-            if (containerNamespace != null)
-            {
-                // This class is defined in a namespace
-                var namespaceIdentifier = (IdentifierNameSyntax) containerNamespace.Name;
-
-                member.Namespace = namespaceIdentifier.Identifier.Text;
-            }
-
             var parentClasses = new List<ClassDeclarationSyntax>();
+
+            var parentClass = declaration.FirstAncestorOrSelf<ClassDeclarationSyntax>();
 
             while (parentClass != null)
             {
@@ -85,19 +74,64 @@
                 parentClass = parentClass.FirstAncestorOrSelf<ClassDeclarationSyntax>(x => x != parent);
             }
 
-            var classNameHierarchy = parentClasses.Select(x => x.Identifier.Text).Reverse();
+            return parentClasses;
+        }
 
-            member.OwningType = string.Join("+", classNameHierarchy);
+        private static void ResolveDeclarationInfo(MemberDeclarationSyntax declaration, MemberDefinition member)
+        {
+            var containerNamespace = declaration.FirstAncestorOrSelf<NamespaceDeclarationSyntax>();
 
-            var memberIsPublic = declaration.Modifiers.Any(x => x.Text == "public");
-
-            if (memberIsPublic == false)
+            if (containerNamespace != null)
             {
-                member.IsPublic = false;
+                // This class is defined in a namespace
+                var namespaceIdentifier = (IdentifierNameSyntax)containerNamespace.Name;
+
+                member.Namespace = namespaceIdentifier.Identifier.Text;
+            }
+
+            var parentInterface = declaration.FirstAncestorOrSelf<InterfaceDeclarationSyntax>();
+
+            var parentClasses = FindParentClasses(declaration);
+
+            var classNameHierarchy = parentClasses.Select(x => x.Identifier.Text).Reverse();
+            var classTypeName = string.Join("+", classNameHierarchy);
+
+            if (parentInterface != null)
+            {
+                var interfaceTypeName = parentInterface.Identifier.Text;
+
+                if (string.IsNullOrWhiteSpace(classTypeName))
+                {
+                    member.OwningType = interfaceTypeName;
+                }
+                else
+                {
+                    member.OwningType = classTypeName + "+" + interfaceTypeName;
+                }
             }
             else
             {
-                // Check if any nest parent class is not public
+                member.OwningType = classTypeName;
+            }
+
+            if (parentInterface != null)
+            {
+                // The property is declared on an interface
+                // Interface properties don't have modifiers so we will check the scope of the parent interface
+                // then fall down to checking all parents in the class hierarchy
+                member.IsPublic = parentInterface.Modifiers.Any(x => x.Text == "public");
+            }
+            else
+            {
+                // This property is declared on a class
+                // First check the scope of the member, then fall down to checking all parents in the class hierarchy
+                member.IsPublic = declaration.Modifiers.Any(x => x.Text == "public");
+            }
+
+            if (member.IsPublic)
+            {
+                // Either the parent interface or class member is public
+                // Check if any parent class is not public
                 var parentClassesArePublic = parentClasses.All(x => x.Modifiers.Any(y => y.Text == "public"));
 
                 member.IsPublic = parentClassesArePublic;

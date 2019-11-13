@@ -18,7 +18,6 @@
         {
             Ensure.Any.IsNotNull(nodeScanner, nameof(nodeScanner));
             Ensure.Any.IsNotNull(matchers, nameof(matchers));
-            Ensure.Any.IsNotNull(logger, nameof(logger));
 
             _nodeScanner = nodeScanner;
             _matchers = matchers.FastToList();
@@ -71,7 +70,7 @@
 
                     if (match != null)
                     {
-                        _logger.LogDebug("Found match on " + match.OldMember);
+                        _logger?.LogDebug("Found match on " + match.OldMember);
 
                         // Track the match
                         matches.Add(match);

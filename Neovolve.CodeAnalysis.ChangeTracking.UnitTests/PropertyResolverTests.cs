@@ -51,7 +51,7 @@ namespace MyProject
         {
             var sut = new PropertyResolver();
 
-            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(TestNode.StandardProperty).ConfigureAwait(false);
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(TestNode.ClassProperty).ConfigureAwait(false);
 
             var actual = sut.IsSupported(node);
 
@@ -69,7 +69,7 @@ namespace MyProject
         [InlineData("protected virtual", false)]
         public async Task ResolveReturnsCanRead(string accessors, bool expected)
         {
-            var code = TestNode.StandardProperty.Replace("get;", accessors + " get;", StringComparison.Ordinal);
+            var code = TestNode.ClassProperty.Replace("get;", accessors + " get;", StringComparison.Ordinal);
 
             var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code).ConfigureAwait(false);
 
@@ -115,7 +115,7 @@ namespace MyNamespace
         [InlineData("protected virtual", false)]
         public async Task ResolveReturnsCanWrite(string accessors, bool expected)
         {
-            var code = TestNode.StandardProperty.Replace("set;", accessors + " set;", StringComparison.Ordinal);
+            var code = TestNode.ClassProperty.Replace("set;", accessors + " set;", StringComparison.Ordinal);
 
             var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code).ConfigureAwait(false);
 
@@ -148,6 +148,31 @@ namespace MyNamespace
             var actual = (PropertyDefinition) sut.Resolve(node);
 
             actual.CanWrite.Should().BeFalse();
+        }
+
+        [Fact]
+        public async Task ResolveReturnsDefinitionForClassWithImplementedInterface()
+        {
+            const string code = @"
+namespace MyNamespace 
+{
+    public class MyClass : IMyInterface
+    {
+        public string MyItem
+        {
+            get;
+            set;
+        }
+    }   
+}
+";
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code).ConfigureAwait(false);
+
+            var sut = new PropertyResolver();
+
+            var actual = sut.Resolve(node);
+
+            actual.Name.Should().Be("MyItem");
         }
 
         [Fact]
@@ -200,6 +225,18 @@ namespace MyNamespace
             actual.Name.Should().Be("MyItem");
         }
 
+        [Fact]
+        public async Task ResolveReturnsMemberType()
+        {
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(TestNode.ClassProperty).ConfigureAwait(false);
+
+            var sut = new PropertyResolver();
+
+            var actual = sut.Resolve(node);
+
+            actual.MemberType.Should().Be("Property");
+        }
+
         [Theory]
         [InlineData("string", "string")]
         [InlineData("Stream", "Stream")]
@@ -211,7 +248,9 @@ namespace MyNamespace
         [InlineData("[Serialize] string", "string")]
         public async Task ResolveReturnsPropertyDataType(string dataType, string expected)
         {
-            var code = TestNode.StandardProperty.Replace("public string MyItem", "public " + dataType + " MyItem", StringComparison.Ordinal);
+            var code = TestNode.ClassProperty.Replace("public string MyItem",
+                "public " + dataType + " MyItem",
+                StringComparison.Ordinal);
 
             var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code).ConfigureAwait(false);
 
@@ -225,25 +264,13 @@ namespace MyNamespace
         [Fact]
         public async Task ResolveReturnsPropertyName()
         {
-            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(TestNode.StandardProperty).ConfigureAwait(false);
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(TestNode.ClassProperty).ConfigureAwait(false);
 
             var sut = new PropertyResolver();
 
             var actual = (PropertyDefinition) sut.Resolve(node);
 
             actual.Name.Should().Be("MyItem");
-        }
-
-        [Fact]
-        public async Task ResolveReturnsMemberType()
-        {
-            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(TestNode.StandardProperty).ConfigureAwait(false);
-
-            var sut = new PropertyResolver();
-
-            var actual = sut.Resolve(node);
-
-            actual.MemberType.Should().Be("Property");
         }
 
         [Fact]
