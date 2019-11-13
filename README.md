@@ -43,6 +43,19 @@ var newCode = new List<string>
 var calculator = ChangeCalculatorFactory.BuildCalculator();
 
 var result = await calculator.CalculateChange(oldCode, newCode).ConfigureAwait(false);
+
+if (result == ChangeType.None) 
+{
+    // Looks like there is no change in the members
+}
+else if (result == ChangeType.Feature)
+{
+    // Looks like members have been added to the code
+}
+else if (result == ChangeType.Breaking)
+{
+    // Looks like members have been removed or changed
+}
 ```
 
 ## Limitations
