@@ -53,6 +53,7 @@ jobs:
 
     - name: Setup nuget
       uses: olegtarasov/download-nuget@v1
+      if: github.event_name == 'pull_request' || github.ref == 'master' 
 
     - name: Publish to MyGet.org
       run: nuget push ./staging/Neovolve.CodeAnalysis.ChangeTracking.$GitVersion_NuGetVersionV2.symbols.nupkg $MYGET_APIKEY -source https://www.myget.org/F/neovolve/api/v2/package
