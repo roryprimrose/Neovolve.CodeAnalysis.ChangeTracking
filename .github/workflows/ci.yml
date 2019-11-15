@@ -49,7 +49,8 @@ jobs:
     - name: Pack
       run: dotnet pack "./Neovolve.CodeAnalysis.ChangeTracking/Neovolve.CodeAnalysis.ChangeTracking.csproj" -c Release --no-build --include-symbols -o ./staging
 
-    - uses: Publish build artifacts
+    - name: Publish build artifacts
+      uses: actions/upload-artifact@master
       with:
         name: packages
         path: ./staging
