@@ -49,13 +49,13 @@ jobs:
       run: dotnet pack "./Neovolve.CodeAnalysis.ChangeTracking/Neovolve.CodeAnalysis.ChangeTracking.csproj" -c Release --no-build --include-symbols -o ./staging
 
     - name: Setup nuget
-      uses: warrenbuckley/Setup-Nuget@v1
+      uses: olegtarasov/download-nuget@v1
       if: github.event_name == 'pull_request' || github.ref == 'master' 
 
     - name: Publish to MyGet.org
-      run: nuget push ./staging/Neovolve.CodeAnalysis.ChangeTracking.$GitVersion_NuGetVersionV2.symbols.nupkg $MYGET_APIKEY -source https://www.myget.org/F/neovolve/api/v2/package
+      run: mono $NUGET_EXE nuget push ./staging/Neovolve.CodeAnalysis.ChangeTracking.$GitVersion_NuGetVersionV2.symbols.nupkg $MYGET_APIKEY -source https://www.myget.org/F/neovolve/api/v2/package
       if: github.event_name == 'pull_request'
 
     - name: Publish to NuGet.org
-      run: nuget push ./staging/Neovolve.CodeAnalysis.ChangeTracking.$GitVersion_NuGetVersionV2.symbols.nupkg $NUGET_APIKEY -source https://api.nuget.org/v3/index.json
+      run: mono $NUGET_EXE nuget push ./staging/Neovolve.CodeAnalysis.ChangeTracking.$GitVersion_NuGetVersionV2.symbols.nupkg $NUGET_APIKEY -source https://api.nuget.org/v3/index.json
       if: github.ref == 'master' 
