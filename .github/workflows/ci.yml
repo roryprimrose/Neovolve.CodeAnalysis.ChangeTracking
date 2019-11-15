@@ -65,6 +65,11 @@ jobs:
       run: mono $NUGET_EXE push ./staging/Neovolve.CodeAnalysis.ChangeTracking.*.symbols.nupkg $MYGET_APIKEY -source https://www.myget.org/F/neovolve/api/v2/package
       if: github.event_name == 'pull_request'
 
+    - name: Publish GitHub registry
+      run: mono $NUGET_EXE push ./staging/Neovolve.CodeAnalysis.ChangeTracking.*.symbols.nupkg $GITHUB_TOKEN -source https://nuget.pkg.github.com/roryprimrose/index.json
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+          
     - name: Publish to NuGet.org
       env: 
         NUGET_APIKEY: ${{ secrets.NUGET_APIKEY }}
