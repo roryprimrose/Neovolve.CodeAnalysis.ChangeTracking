@@ -49,7 +49,7 @@ jobs:
       run: dotnet pack "./Neovolve.CodeAnalysis.ChangeTracking/Neovolve.CodeAnalysis.ChangeTracking.csproj" -c Release --no-build --include-symbols -o ./staging
 
     - name: Setup nuget
-      uses: olegtarasov/download-nuget@v1
+      uses: warrenbuckley/Setup-Nuget@v1
       if: github.event_name == 'pull_request' || github.ref == 'master' 
 
     - name: Publish to MyGet.org
