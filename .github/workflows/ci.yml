@@ -69,10 +69,12 @@ jobs:
       run: mono $NUGET_EXE push ./staging/Neovolve.CodeAnalysis.ChangeTracking.*.symbols.nupkg $GITHUB_TOKEN -source https://nuget.pkg.github.com/roryprimrose/index.json
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+      if: github.event_name == 'pull_request'
       # if: github.ref == 'master' 
                 
     - name: Publish to NuGet.org
       env: 
         NUGET_APIKEY: ${{ secrets.NUGET_APIKEY }}
       run: mono $NUGET_EXE push ./staging/Neovolve.CodeAnalysis.ChangeTracking.*.symbols.nupkg $NUGET_APIKEY -source https://api.nuget.org/v3/index.json
+      if: github.event_name == 'pull_request'
       # if: github.ref == 'master' 
