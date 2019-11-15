@@ -49,6 +49,11 @@ jobs:
     - name: Pack
       run: dotnet pack "./Neovolve.CodeAnalysis.ChangeTracking/Neovolve.CodeAnalysis.ChangeTracking.csproj" -c Release --no-build --include-symbols -o ./staging
 
+    - uses: actions/upload-artifact@master
+      with:
+        name: packages
+        path: ./staging
+    
     - name: Setup nuget
       uses: olegtarasov/download-nuget@v1
       if: github.event_name == 'pull_request' || github.ref == 'master' 
