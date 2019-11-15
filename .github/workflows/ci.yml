@@ -7,6 +7,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
     - name: Checkout
       uses: actions/checkout@v1
 
@@ -53,9 +54,13 @@ jobs:
       if: github.event_name == 'pull_request' || github.ref == 'master' 
 
     - name: Publish to MyGet.org
+      env: 
+        MYGET_APIKEY: ${{ secrets.MYGET_APIKEY }}
       run: mono $NUGET_EXE push ./staging/Neovolve.CodeAnalysis.ChangeTracking.*.symbols.nupkg $MYGET_APIKEY -source https://www.myget.org/F/neovolve/api/v2/package
       if: github.event_name == 'pull_request'
 
     - name: Publish to NuGet.org
+      env: 
+        NUGET_APIKEY: ${{ secrets.NUGET_APIKEY }}
       run: mono $NUGET_EXE push ./staging/Neovolve.CodeAnalysis.ChangeTracking.*.symbols.nupkg $NUGET_APIKEY -source https://api.nuget.org/v3/index.json
       if: github.ref == 'master' 
