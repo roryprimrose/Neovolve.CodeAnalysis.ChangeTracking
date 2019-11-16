@@ -60,7 +60,7 @@ jobs:
       if: github.event_name == 'pull_request' || github.ref == 'master' 
 
     - name: Add private GitHub registry to NuGet
-      run: mono $NUGET_EXE sources add -name "GPR" -Source https://nuget.pkg.github.com/roryprimrose/index.json -Username roryprimrose -Password ${{ secrets.GITHUB_TOKEN }}
+      run: mono $NUGET_EXE sources add -name "GPR" -Source https://nuget.pkg.github.com/roryprimrose/index.json -UserName roryprimrose -Password ${{ secrets.GITHUB_TOKEN }}
       if: github.event_name == 'pull_request'
       # if: github.ref == 'master' 
 
