@@ -65,10 +65,13 @@ jobs:
       run: mono $NUGET_EXE push ./staging/Neovolve.CodeAnalysis.ChangeTracking.*.symbols.nupkg $MYGET_APIKEY -source https://www.myget.org/F/neovolve/api/v2/package
       if: github.event_name == 'pull_request'
 
-    - name: Publish GitHub registry
-      run: mono $NUGET_EXE push ./staging/Neovolve.CodeAnalysis.ChangeTracking.*.symbols.nupkg $GITHUB_TOKEN -source https://nuget.pkg.github.com/roryprimrose/index.json
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+    - name: Add private GitHub registry to NuGet
+      run: mono $NUGET_EXE sources add -name "GPR" -Source https://nuget.pkg.github.com/roryprimrose/index.json -Username roryprimrose -Password ${{ secrets.GITHUB_TOKEN }}
+      if: github.event_name == 'pull_request'
+      # if: github.ref == 'master' 
+
+    - name: Push generated package to GitHub registry
+      run: mono $NUGET_EXE push ./staging/Neovolve.CodeAnalysis.ChangeTracking.*.symbols.nupkg -Source "GPR"
       if: github.event_name == 'pull_request'
       # if: github.ref == 'master' 
                 
