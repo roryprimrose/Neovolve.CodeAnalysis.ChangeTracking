@@ -18,7 +18,7 @@ jobs:
 
     - name: GitVersion
       id: gitversion
-      uses: roryprimrose/rungitversion
+      uses: roryprimrose/rungitversion@v1.0.0
     
     - name: Output versions
       run: echo "${{ steps.gitversion.outputs.NuGetVersionV2 }}\\r\\n${{ steps.gitversion.outputs.AssemblySemVer }}\\r\\n${{ steps.gitversion.outputs.MajorMinorPatch }}\\r\\n${{ steps.gitversion.outputs.InformationalVersion }}" > /github/workspace/version.txt
