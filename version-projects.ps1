@@ -1,34 +1,11 @@
+param (
+    [Parameter(Mandatory=$true)][string]$nuGetVersion,
+    [Parameter(Mandatory=$true)][string]$assemblySemVer,
+    [Parameter(Mandatory=$true)][string]$majorMinorPatch,
+    [Parameter(Mandatory=$true)][string]$informationalVersion
+)
 
 $sourcesDirectory = $PSScriptRoot
-
-$data = Get-Content "$sourcesDirectory/version.txt"
-
-Remove-Item "$sourcesDirectory/version.txt"
-
-$nuGetVersion = $data[0]
-$assemblySemVer = $data[1]
-$majorMinorPatch = $data[2]
-$informationalVersion = $data[3]
-
-if ($nuGetVersion -eq $null) {
-    Write-Error ("GitVersion_NuGetVersionV2 environment variable is missing.")
-    exit 1
-}
-
-if ($assemblySemVer -eq $null) {
-    Write-Error ("GitVersion_AssemblySemVer environment variable is missing.")
-    exit 1
-}
-
-if ($majorMinorPatch -eq $null) {
-    Write-Error ("GitVersion_MajorMinorPatch environment variable is missing.")
-    exit 1
-}
-
-if ($informationalVersion -eq $null) {
-    Write-Error ("GitVersion_InformationalVersion environment variable is missing.")
-    exit 1
-}
 
 Function Set-NodeValue($rootNode, [string]$nodeName, [string]$value)
 {   
