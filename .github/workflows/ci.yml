@@ -20,13 +20,10 @@ jobs:
       id: gitversion
       uses: roryprimrose/rungitversion@v1.0.0
     
-    - name: Output versions
-      run: echo "${{ steps.gitversion.outputs.NuGetVersionV2 }}\\r\\n${{ steps.gitversion.outputs.AssemblySemVer }}\\r\\n${{ steps.gitversion.outputs.MajorMinorPatch }}\\r\\n${{ steps.gitversion.outputs.InformationalVersion }}" > /github/workspace/version.txt
-    
     - name: Version projects
       uses: docker://mcr.microsoft.com/powershell:alpine-3.8
       with:
-        args: pwsh /github/workspace/version-projects.ps1
+        args: pwsh /github/workspace/version-projects.ps1 "${{ steps.gitversion.outputs.NuGetVersionV2 }}" "${{ steps.gitversion.outputs.AssemblySemVer }}" "${{ steps.gitversion.outputs.MajorMinorPatch }}" "${{ steps.gitversion.outputs.InformationalVersion }}"
     
     - name: Setup dotnet
       uses: actions/setup-dotnet@v1
