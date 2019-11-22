@@ -17,14 +17,17 @@ jobs:
         git branch --create-reflog master origin/master
 
     - name: GitVersion
-      id: gitversion
+      id: gitversion  # step id used as reference for output values
       uses: roryprimrose/rungitversion@v1.0.0
-    
-    - name: Version projects
-      uses: docker://mcr.microsoft.com/powershell:alpine-3.8
+
+    - name: Update project version
+      uses: roryprimrose/set-vs-sdk-project-version@v1.0.0
       with:
-        args: pwsh /github/workspace/version-projects.ps1 "${{ steps.gitversion.outputs.NuGetVersionV2 }}" "${{ steps.gitversion.outputs.AssemblySemVer }}" "${{ steps.gitversion.outputs.MajorMinorPatch }}" "${{ steps.gitversion.outputs.InformationalVersion }}"
-    
+        version: ${{ steps.gitversion.outputs.NuGetVersionV2 }}
+        assemblyVersion: ${{ steps.gitversion.outputs.AssemblySemVer }}
+        fileVersion: ${{ steps.gitversion.outputs.MajorMinorPatch }}
+        informationalVersion: ${{ steps.gitversion.outputs.InformationalVersion }}
+
     - name: Setup dotnet
       uses: actions/setup-dotnet@v1
       with:
