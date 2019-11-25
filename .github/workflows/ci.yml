@@ -21,7 +21,7 @@ jobs:
       uses: roryprimrose/rungitversion@v1.0.0
 
     - name: Update project version
-      uses: roryprimrose/set-vs-sdk-project-version@1718284
+      uses: roryprimrose/set-vs-sdk-project-version@f5ed736
       with:
         version: ${{ steps.gitversion.outputs.NuGetVersionV2 }}
         assemblyVersion: ${{ steps.gitversion.outputs.AssemblySemVer }}
