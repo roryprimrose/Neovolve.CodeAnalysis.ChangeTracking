@@ -24,7 +24,7 @@
         {
             Ensure.Any.IsNotNull(attributeSyntax, nameof(attributeSyntax));
 
-            var name = attributeSyntax.Name.GetText().ToString();
+            var name = attributeSyntax.Name.GetText().ToString().Trim();
             string namespaceIdentifier = null;
 
             if (name.Contains(".", StringComparison.Ordinal))
