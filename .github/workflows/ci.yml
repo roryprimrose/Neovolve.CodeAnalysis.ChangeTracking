@@ -73,18 +73,18 @@ jobs:
       run: mono $NUGET_EXE push ./staging/Neovolve.CodeAnalysis.ChangeTracking.*.symbols.nupkg $MYGET_APIKEY -source https://www.myget.org/F/neovolve/api/v2/package
       if: github.event_name == 'pull_request'
 
+    - name: Publish to NuGet.org
+      env: 
+        NUGET_APIKEY: ${{ secrets.NUGET_APIKEY }}
+      run: mono $NUGET_EXE push ./staging/Neovolve.CodeAnalysis.ChangeTracking.*.symbols.nupkg $NUGET_APIKEY -source https://api.nuget.org/v3/index.json
+      if: github.ref == 'refs/heads/master'
+
     - name: Add GitHub registry to NuGet config
       run: mono $NUGET_EXE sources add -name "GPR" -Source https://nuget.pkg.github.com/roryprimrose/index.json -UserName roryprimrose -Password ${{ secrets.GITHUB_TOKEN }}
       if: github.ref == 'refs/heads/master'
 
     - name: Push generated package to GitHub registry
       run: mono $NUGET_EXE push ./staging/Neovolve.CodeAnalysis.ChangeTracking.*.symbols.nupkg -Source "GPR"
-      if: github.ref == 'refs/heads/master'
-
-    - name: Publish to NuGet.org
-      env: 
-        NUGET_APIKEY: ${{ secrets.NUGET_APIKEY }}
-      run: mono $NUGET_EXE push ./staging/Neovolve.CodeAnalysis.ChangeTracking.*.symbols.nupkg $NUGET_APIKEY -source https://api.nuget.org/v3/index.json
       if: github.ref == 'refs/heads/master'
 
     - name: Create Release

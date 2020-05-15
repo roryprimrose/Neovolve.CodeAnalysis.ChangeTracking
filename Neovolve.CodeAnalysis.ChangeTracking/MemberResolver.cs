@@ -83,10 +83,7 @@
 
             if (containerNamespace != null)
             {
-                // This class is defined in a namespace
-                var namespaceIdentifier = (IdentifierNameSyntax)containerNamespace.Name;
-
-                member.Namespace = namespaceIdentifier.Identifier.Text;
+                member.Namespace = containerNamespace.Name.GetText().ToString().Trim();
             }
 
             var parentInterface = declaration.FirstAncestorOrSelf<InterfaceDeclarationSyntax>();
