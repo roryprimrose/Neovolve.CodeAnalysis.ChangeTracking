@@ -29,19 +29,17 @@
             return new ComparisonResult(changeType, null, newMember, message);
         }
 
-        public static ComparisonResult MemberChanged(SemVerChangeType changeType, MemberDefinition oldMember,
-            MemberDefinition newMember,
+        public static ComparisonResult MemberChanged(SemVerChangeType changeType, MemberMatch match,
             string message)
         {
             changeType = changeType == SemVerChangeType.None
                 ? throw new ArgumentException("The changeType cannot be None to indicate a change on the member.",
                     nameof(changeType))
                 : changeType;
-            oldMember = oldMember ?? throw new ArgumentNullException(nameof(oldMember));
-            newMember = newMember ?? throw new ArgumentNullException(nameof(newMember));
+            match = match ?? throw new ArgumentNullException(nameof(match));
             message = string.IsNullOrWhiteSpace(message) ? throw new ArgumentException(nameof(message)) : message;
 
-            return new ComparisonResult(changeType, oldMember, newMember, message);
+            return new ComparisonResult(changeType, match.OldMember, match.NewMember, message);
         }
 
         public static ComparisonResult MemberRemoved(MemberDefinition oldMember)
@@ -60,14 +58,13 @@
             return new ComparisonResult(changeType, oldMember, null, message);
         }
 
-        public static ComparisonResult NoChange(MemberDefinition oldMember, MemberDefinition newMember)
+        public static ComparisonResult NoChange(MemberMatch match)
         {
-            oldMember = oldMember ?? throw new ArgumentNullException(nameof(oldMember));
-            newMember = newMember ?? throw new ArgumentNullException(nameof(newMember));
+            match = match ?? throw new ArgumentNullException(nameof(match));
 
-            var message = "No change on " + oldMember;
+            var message = "No change on " + match.OldMember;
 
-            return new ComparisonResult(SemVerChangeType.None, oldMember, newMember, message);
+            return new ComparisonResult(SemVerChangeType.None, match.OldMember, match.NewMember, message);
         }
 
         public SemVerChangeType ChangeType { get; }

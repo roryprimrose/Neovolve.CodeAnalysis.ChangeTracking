@@ -8,8 +8,8 @@
         {
             Ensure.Any.IsNotNull(match, nameof(match));
 
-            var oldProperty = (PropertyDefinition)match.OldMember;
-            var newProperty = (PropertyDefinition)match.NewMember;
+            var oldProperty = (PropertyDefinition) match.OldMember;
+            var newProperty = (PropertyDefinition) match.NewMember;
 
             var result = base.Compare(match);
 
@@ -39,7 +39,7 @@
             {
                 var message = oldProperty + " removed get accessor availability";
 
-                return ComparisonResult.MemberChanged(SemVerChangeType.Breaking, match.OldMember, match.NewMember,
+                return ComparisonResult.MemberChanged(SemVerChangeType.Breaking, match,
                     message);
             }
 
@@ -48,14 +48,14 @@
             {
                 var message = oldProperty + " removed set accessor availability";
 
-                return ComparisonResult.MemberChanged(SemVerChangeType.Breaking, match.OldMember, match.NewMember,
+                return ComparisonResult.MemberChanged(SemVerChangeType.Breaking, match,
                     message);
             }
 
             // Only other possible scenario at this point is that the old property couldn't read/write but the new property can
             var accessorMessage = oldProperty + " get and/or set is now available";
 
-            return ComparisonResult.MemberChanged(SemVerChangeType.Feature, match.OldMember, match.NewMember,
+            return ComparisonResult.MemberChanged(SemVerChangeType.Feature, match,
                 accessorMessage);
         }
 
