@@ -4,7 +4,7 @@
 
     public class PropertyComparer : MemberComparer
     {
-        public override ChangeType Compare(MemberMatch match)
+        public override SemVerChangeType Compare(MemberMatch match)
         {
             Ensure.Any.IsNotNull(match, nameof(match));
 
@@ -13,7 +13,7 @@
 
             var changeType = base.Compare(match);
 
-            if (changeType == ChangeType.Breaking)
+            if (changeType == SemVerChangeType.Breaking)
             {
                 // Doesn't matter if the property accessibility indicates feature or no change, breaking trumps everything
                 return changeType;
@@ -37,17 +37,17 @@
             if (oldProperty.CanRead
                 && newProperty.CanRead == false)
             {
-                return ChangeType.Breaking;
+                return SemVerChangeType.Breaking;
             }
 
             if (oldProperty.CanWrite
                 && newProperty.CanWrite == false)
             {
-                return ChangeType.Breaking;
+                return SemVerChangeType.Breaking;
             }
 
             // Only other possible scenario at this point is that the old property couldn't read/write but the new property can
-            return ChangeType.Feature;
+            return SemVerChangeType.Feature;
         }
 
         public override bool IsSupported(MemberDefinition member)

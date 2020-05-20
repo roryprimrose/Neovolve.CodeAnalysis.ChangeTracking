@@ -2,7 +2,7 @@
 {
     public interface IMemberComparer
     {
-        ChangeType Compare(MemberMatch match);
+        SemVerChangeType Compare(MemberMatch match);
 
         bool IsSupported(MemberDefinition member);
     }

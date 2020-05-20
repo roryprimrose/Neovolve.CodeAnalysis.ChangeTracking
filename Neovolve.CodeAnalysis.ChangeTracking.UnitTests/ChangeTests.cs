@@ -16,9 +16,9 @@
         }
 
         [Theory]
-        [InlineData(true, ChangeType.Feature)]
-        [InlineData(false, ChangeType.None)]
-        public void MemberAddedPopulatesInformationFromParameters(bool isPublic, ChangeType expected)
+        [InlineData(true, SemVerChangeType.Feature)]
+        [InlineData(false, SemVerChangeType.None)]
+        public void MemberAddedPopulatesInformationFromParameters(bool isPublic, SemVerChangeType expected)
         {
             var newMember = Model.Create<PropertyDefinition>().Set(x => x.IsPublic = isPublic);
 
@@ -43,9 +43,9 @@
         }
 
         [Theory]
-        [InlineData(ChangeType.Feature)]
-        [InlineData(ChangeType.Breaking)]
-        public void MemberChangedPopulatesInformationFromParameters(ChangeType changeType)
+        [InlineData(SemVerChangeType.Feature)]
+        [InlineData(SemVerChangeType.Breaking)]
+        public void MemberChangedPopulatesInformationFromParameters(SemVerChangeType changeType)
         {
             var newMember = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
             var oldMember = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
@@ -69,7 +69,7 @@
             var newMember = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
             var oldMember = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
 
-            Action action = () => Change.MemberChanged(ChangeType.Feature, oldMember, newMember, message);
+            Action action = () => Change.MemberChanged(SemVerChangeType.Feature, oldMember, newMember, message);
 
             action.Should().Throw<ArgumentException>();
         }
@@ -81,7 +81,7 @@
             var oldMember = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
             var message = Guid.NewGuid().ToString();
 
-            Action action = () => Change.MemberChanged(ChangeType.None, oldMember, newMember, message);
+            Action action = () => Change.MemberChanged(SemVerChangeType.None, oldMember, newMember, message);
 
             action.Should().Throw<ArgumentException>();
         }
@@ -92,7 +92,7 @@
             var oldMember = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
             var message = Guid.NewGuid().ToString();
 
-            Action action = () => Change.MemberChanged(ChangeType.Feature, oldMember, null!, message);
+            Action action = () => Change.MemberChanged(SemVerChangeType.Feature, oldMember, null!, message);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -103,15 +103,15 @@
             var newMember = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
             var message = Guid.NewGuid().ToString();
 
-            Action action = () => Change.MemberChanged(ChangeType.Feature, null!, newMember, message);
+            Action action = () => Change.MemberChanged(SemVerChangeType.Feature, null!, newMember, message);
 
             action.Should().Throw<ArgumentNullException>();
         }
 
         [Theory]
-        [InlineData(true, ChangeType.Breaking)]
-        [InlineData(false, ChangeType.None)]
-        public void MemberRemovedPopulatesInformationFromParameters(bool isPublic, ChangeType expected)
+        [InlineData(true, SemVerChangeType.Breaking)]
+        [InlineData(false, SemVerChangeType.None)]
+        public void MemberRemovedPopulatesInformationFromParameters(bool isPublic, SemVerChangeType expected)
         {
             var oldMember = Model.Create<PropertyDefinition>().Set(x => x.IsPublic = isPublic);
 

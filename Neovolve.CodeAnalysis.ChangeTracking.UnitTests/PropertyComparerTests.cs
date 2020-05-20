@@ -8,14 +8,14 @@
     public class PropertyComparerTests
     {
         [Theory]
-        [InlineData(false, false, ChangeType.None)]
-        [InlineData(true, true, ChangeType.None)]
-        [InlineData(true, false, ChangeType.Breaking)]
-        [InlineData(false, true, ChangeType.Feature)]
+        [InlineData(false, false, SemVerChangeType.None)]
+        [InlineData(true, true, SemVerChangeType.None)]
+        [InlineData(true, false, SemVerChangeType.Breaking)]
+        [InlineData(false, true, SemVerChangeType.Feature)]
         public void CompareReturnsBaseResultWhenPropertyAccessorsHaveSameVisibility(
             bool oldValue,
             bool newValue,
-            ChangeType expected)
+            SemVerChangeType expected)
         {
             var oldMember = Model.UsingModule<ConfigurationModule>()
                 .Create<PropertyDefinition>()
@@ -48,7 +48,7 @@
 
             var actual = sut.Compare(match);
 
-            actual.Should().Be(ChangeType.Breaking);
+            actual.Should().Be(SemVerChangeType.Breaking);
         }
 
         [Fact]
@@ -69,7 +69,7 @@
 
             var actual = sut.Compare(match);
 
-            actual.Should().Be(ChangeType.Feature);
+            actual.Should().Be(SemVerChangeType.Feature);
         }
 
         [Fact]
@@ -89,7 +89,7 @@
 
             var actual = sut.Compare(match);
 
-            actual.Should().Be(ChangeType.None);
+            actual.Should().Be(SemVerChangeType.None);
         }
 
         [Fact]
@@ -103,18 +103,18 @@
 
             var actual = sut.Compare(match);
 
-            actual.Should().Be(ChangeType.None);
+            actual.Should().Be(SemVerChangeType.None);
         }
 
         [Theory]
-        [InlineData(false, false, ChangeType.None)]
-        [InlineData(true, true, ChangeType.None)]
-        [InlineData(false, true, ChangeType.Feature)]
-        [InlineData(true, false, ChangeType.Breaking)]
+        [InlineData(false, false, SemVerChangeType.None)]
+        [InlineData(true, true, SemVerChangeType.None)]
+        [InlineData(false, true, SemVerChangeType.Feature)]
+        [InlineData(true, false, SemVerChangeType.Breaking)]
         public void CompareReturnsResultOnChangesToGetAccessorVisibility(
             bool oldValue,
             bool newValue,
-            ChangeType expected)
+            SemVerChangeType expected)
         {
             var oldMember = Model.UsingModule<ConfigurationModule>()
                 .Create<PropertyDefinition>()
@@ -130,14 +130,14 @@
         }
 
         [Theory]
-        [InlineData(false, false, ChangeType.None)]
-        [InlineData(true, true, ChangeType.None)]
-        [InlineData(false, true, ChangeType.Feature)]
-        [InlineData(true, false, ChangeType.Breaking)]
+        [InlineData(false, false, SemVerChangeType.None)]
+        [InlineData(true, true, SemVerChangeType.None)]
+        [InlineData(false, true, SemVerChangeType.Feature)]
+        [InlineData(true, false, SemVerChangeType.Breaking)]
         public void CompareReturnsResultOnChangesToSetAccessorVisibility(
             bool oldValue,
             bool newValue,
-            ChangeType expected)
+            SemVerChangeType expected)
         {
             var oldMember = Model.UsingModule<ConfigurationModule>()
                 .Create<PropertyDefinition>()

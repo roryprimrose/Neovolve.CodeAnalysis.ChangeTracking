@@ -29,7 +29,7 @@
 
             var actual = sut.Compare(match);
 
-            actual.Should().Be(ChangeType.Feature);
+            actual.Should().Be(SemVerChangeType.Feature);
         }
 
         [Fact]
@@ -43,7 +43,7 @@
 
             var actual = sut.Compare(match);
 
-            actual.Should().Be(ChangeType.None);
+            actual.Should().Be(SemVerChangeType.None);
         }
 
         [Fact]
@@ -63,15 +63,15 @@
 
             var actual = sut.Compare(match);
 
-            actual.Should().Be(ChangeType.None);
+            actual.Should().Be(SemVerChangeType.None);
         }
 
         [Theory]
-        [InlineData(false, false, ChangeType.None)]
-        [InlineData(true, true, ChangeType.None)]
-        [InlineData(true, false, ChangeType.Breaking)]
-        [InlineData(false, true, ChangeType.Feature)]
-        public void CompareReturnsResultBasedOnIsPublic(bool oldValue, bool newValue, ChangeType expected)
+        [InlineData(false, false, SemVerChangeType.None)]
+        [InlineData(true, true, SemVerChangeType.None)]
+        [InlineData(true, false, SemVerChangeType.Breaking)]
+        [InlineData(false, true, SemVerChangeType.Feature)]
+        public void CompareReturnsResultBasedOnIsPublic(bool oldValue, bool newValue, SemVerChangeType expected)
         {
             var oldMember = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>()
                 .Set(x => x.IsPublic = oldValue);
@@ -86,9 +86,9 @@
         }
 
         [Theory]
-        [InlineData("string", "string", ChangeType.None)]
-        [InlineData("string", "DateTimeOffset", ChangeType.Breaking)]
-        public void CompareReturnsResultBasedOnReturnType(string oldValue, string newValue, ChangeType expected)
+        [InlineData("string", "string", SemVerChangeType.None)]
+        [InlineData("string", "DateTimeOffset", SemVerChangeType.Breaking)]
+        public void CompareReturnsResultBasedOnReturnType(string oldValue, string newValue, SemVerChangeType expected)
         {
             var oldMember = Model.UsingModule<ConfigurationModule>()
                 .Create<MemberDefinition>()

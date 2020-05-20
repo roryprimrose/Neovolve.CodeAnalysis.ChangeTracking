@@ -47,7 +47,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
             var actual = sut.CalculateChange(oldNodes, newNodes);
 
-            actual.Should().Be(ChangeType.Breaking);
+            actual.Should().Be(SemVerChangeType.Breaking);
         }
 
         [Fact]
@@ -73,7 +73,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
             var actual = sut.CalculateChange(oldNodes, newNodes);
 
-            actual.Should().Be(ChangeType.Breaking);
+            actual.Should().Be(SemVerChangeType.Breaking);
         }
 
         [Fact]
@@ -100,20 +100,20 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
             evaluator.CompareNodes(oldNodes, newNodes).Returns(results);
             comparer.IsSupported(Arg.Any<MemberDefinition>()).Returns(true);
-            comparer.Compare(Arg.Any<MemberMatch>()).Returns(ChangeType.None, ChangeType.Feature, ChangeType.Breaking);
+            comparer.Compare(Arg.Any<MemberMatch>()).Returns(SemVerChangeType.None, SemVerChangeType.Feature, SemVerChangeType.Breaking);
 
             var sut = new ChangeCalculator(evaluator, comparers, _logger);
 
             var actual = sut.CalculateChange(oldNodes, newNodes);
 
-            actual.Should().Be(ChangeType.Breaking);
+            actual.Should().Be(SemVerChangeType.Breaking);
         }
 
         [Theory]
-        [InlineData(ChangeType.None)]
-        [InlineData(ChangeType.Feature)]
-        [InlineData(ChangeType.Breaking)]
-        public void CompareChangesReturnsComparerValueForMemberMatch(ChangeType changeType)
+        [InlineData(SemVerChangeType.None)]
+        [InlineData(SemVerChangeType.Feature)]
+        [InlineData(SemVerChangeType.Breaking)]
+        public void CompareChangesReturnsComparerValueForMemberMatch(SemVerChangeType changeType)
         {
             var evaluator = Substitute.For<IMatchEvaluator>();
             var comparer = Substitute.For<IMemberComparer>();
@@ -145,10 +145,10 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
         }
 
         [Theory]
-        [InlineData(ChangeType.None)]
-        [InlineData(ChangeType.Feature)]
-        [InlineData(ChangeType.Breaking)]
-        public void CompareChangesReturnsComparerValueForMemberMatchWithNullLogger(ChangeType changeType)
+        [InlineData(SemVerChangeType.None)]
+        [InlineData(SemVerChangeType.Feature)]
+        [InlineData(SemVerChangeType.Breaking)]
+        public void CompareChangesReturnsComparerValueForMemberMatchWithNullLogger(SemVerChangeType changeType)
         {
             var evaluator = Substitute.For<IMatchEvaluator>();
             var comparer = Substitute.For<IMemberComparer>();
@@ -202,7 +202,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
             var actual = sut.CalculateChange(oldNodes, newNodes);
 
-            actual.Should().Be(ChangeType.Feature);
+            actual.Should().Be(SemVerChangeType.Feature);
         }
 
         [Fact]
@@ -229,7 +229,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
             var actual = sut.CalculateChange(oldNodes, newNodes);
 
-            actual.Should().Be(ChangeType.Feature);
+            actual.Should().Be(SemVerChangeType.Feature);
         }
 
         [Fact]
@@ -251,7 +251,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
             var actual = sut.CalculateChange(oldNodes, newNodes);
 
-            actual.Should().Be(ChangeType.None);
+            actual.Should().Be(SemVerChangeType.None);
         }
 
         [Fact]
@@ -267,7 +267,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
             var actual = sut.CalculateChange(oldNodes, newNodes);
 
-            actual.Should().Be(ChangeType.None);
+            actual.Should().Be(SemVerChangeType.None);
         }
 
         [Fact]

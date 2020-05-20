@@ -5,6 +5,6 @@
 
     public interface IChangeCalculator
     {
-        ChangeType CalculateChange(IEnumerable<SyntaxNode> oldNodes, IEnumerable<SyntaxNode> newNodes);
+        SemVerChangeType CalculateChange(IEnumerable<SyntaxNode> oldNodes, IEnumerable<SyntaxNode> newNodes);
     }
 }

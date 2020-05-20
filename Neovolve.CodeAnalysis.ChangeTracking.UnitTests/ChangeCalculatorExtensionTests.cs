@@ -25,7 +25,7 @@
             {
                 TestNode.Field
             };
-            var expected = Model.Create<ChangeType>();
+            var expected = Model.Create<SemVerChangeType>();
 
             var calculator = Substitute.For<IChangeCalculator>();
 
@@ -55,7 +55,7 @@
                 TestNode.Field,
                 TestNode.ClassProperty
             };
-            var expected = Model.Create<ChangeType>();
+            var expected = Model.Create<SemVerChangeType>();
 
             var calculator = Substitute.For<IChangeCalculator>();
 
@@ -82,7 +82,7 @@
             {
                 TestNode.Field
             };
-            var expected = Model.Create<ChangeType>();
+            var expected = Model.Create<SemVerChangeType>();
 
             var calculator = Substitute.For<IChangeCalculator>();
 

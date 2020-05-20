@@ -44,7 +44,7 @@ public class Test
             var result = await _calculator.CalculateChange(oldCode, newCode, CancellationToken.None)
                 .ConfigureAwait(false);
 
-            result.Should().Be(ChangeType.Breaking);
+            result.Should().Be(SemVerChangeType.Breaking);
         }
 
         [Fact]
@@ -72,7 +72,7 @@ public class Test
             var result = await _calculator.CalculateChange(oldCode, newCode, CancellationToken.None)
                 .ConfigureAwait(false);
 
-            result.Should().Be(ChangeType.Breaking);
+            result.Should().Be(SemVerChangeType.Breaking);
         }
 
         [Fact]
@@ -91,7 +91,7 @@ public class Test
             var result = await _calculator.CalculateChange(oldCode, newCode, CancellationToken.None)
                 .ConfigureAwait(false);
 
-            result.Should().Be(ChangeType.Breaking);
+            result.Should().Be(SemVerChangeType.Breaking);
         }
 
         [Fact]
@@ -119,7 +119,7 @@ public class Test
             var result = await _calculator.CalculateChange(oldCode, newCode, CancellationToken.None)
                 .ConfigureAwait(false);
 
-            result.Should().Be(ChangeType.Breaking);
+            result.Should().Be(SemVerChangeType.Breaking);
         }
 
         [Fact]
@@ -147,7 +147,7 @@ public class Test
             var result = await _calculator.CalculateChange(oldCode, newCode, CancellationToken.None)
                 .ConfigureAwait(false);
 
-            result.Should().Be(ChangeType.Breaking);
+            result.Should().Be(SemVerChangeType.Breaking);
         }
 
         [Fact]
@@ -175,7 +175,7 @@ public class Test
             var result = await _calculator.CalculateChange(oldCode, newCode, CancellationToken.None)
                 .ConfigureAwait(false);
 
-            result.Should().Be(ChangeType.Breaking);
+            result.Should().Be(SemVerChangeType.Breaking);
         }
 
         [Fact]
@@ -203,7 +203,7 @@ public class Test
             var result = await _calculator.CalculateChange(oldCode, newCode, CancellationToken.None)
                 .ConfigureAwait(false);
 
-            result.Should().Be(ChangeType.Breaking);
+            result.Should().Be(SemVerChangeType.Breaking);
         }
 
         [Fact]
@@ -231,7 +231,7 @@ public class Test
             var result = await _calculator.CalculateChange(oldCode, newCode, CancellationToken.None)
                 .ConfigureAwait(false);
 
-            result.Should().Be(ChangeType.Feature);
+            result.Should().Be(SemVerChangeType.Feature);
         }
 
         [Fact]
@@ -250,7 +250,7 @@ public class Test
             var result = await _calculator.CalculateChange(oldCode, newCode, CancellationToken.None)
                 .ConfigureAwait(false);
 
-            result.Should().Be(ChangeType.Feature);
+            result.Should().Be(SemVerChangeType.Feature);
         }
 
         [Fact]
@@ -278,7 +278,7 @@ public class Test
             var result = await _calculator.CalculateChange(oldCode, newCode, CancellationToken.None)
                 .ConfigureAwait(false);
 
-            result.Should().Be(ChangeType.Feature);
+            result.Should().Be(SemVerChangeType.Feature);
         }
 
         [Fact]
@@ -306,7 +306,7 @@ public class Test
             var result = await _calculator.CalculateChange(oldCode, newCode, CancellationToken.None)
                 .ConfigureAwait(false);
 
-            result.Should().Be(ChangeType.Feature);
+            result.Should().Be(SemVerChangeType.Feature);
         }
 
         [Fact]
@@ -334,7 +334,7 @@ public class Test
             var result = await _calculator.CalculateChange(oldCode, newCode, CancellationToken.None)
                 .ConfigureAwait(false);
 
-            result.Should().Be(ChangeType.Feature);
+            result.Should().Be(SemVerChangeType.Feature);
         }
 
         [Fact]
@@ -354,7 +354,7 @@ public class Test
             var result = await _calculator.CalculateChange(oldCode, newCode, CancellationToken.None)
                 .ConfigureAwait(false);
 
-            result.Should().Be(ChangeType.None);
+            result.Should().Be(SemVerChangeType.None);
         }
     }
 }

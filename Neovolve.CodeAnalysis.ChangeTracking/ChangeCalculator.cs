@@ -28,7 +28,7 @@
             _logger = logger;
         }
 
-        public ChangeType CalculateChange(IEnumerable<SyntaxNode> oldNodes, IEnumerable<SyntaxNode> newNodes)
+        public SemVerChangeType CalculateChange(IEnumerable<SyntaxNode> oldNodes, IEnumerable<SyntaxNode> newNodes)
         {
             Ensure.Any.IsNotNull(oldNodes, nameof(oldNodes));
             Ensure.Any.IsNotNull(newNodes, nameof(newNodes));
@@ -39,7 +39,7 @@
             {
                 _logger?.LogInformation("No member matches found, assuming no code change.");
 
-                return ChangeType.None;
+                return SemVerChangeType.None;
             }
 
             // Check if there are any old members that didn't match where they were publicly visible - breaking change
@@ -54,10 +54,10 @@
                     memberType, oldPublicMember.ToString(false),
                     memberType);
 
-                return ChangeType.Breaking;
+                return SemVerChangeType.Breaking;
             }
 
-            var changeType = ChangeType.None;
+            var changeType = SemVerChangeType.None;
 
             // Check all the matches for a breaking change or feature added
             foreach (var match in results.Matches)
@@ -75,14 +75,14 @@
 
                 var matchChange = comparer.Compare(match);
 
-                if (matchChange == ChangeType.Breaking)
+                if (matchChange == SemVerChangeType.Breaking)
                 {
                     _logger?.LogInformation("Identified a potential breaking change in {0} {1}.",
                         match.OldMember.MemberType.ToString().ToLower(CultureInfo.CurrentCulture),
                         match.OldMember.ToString(false));
 
                     // We can't get a worse result so no point continuing
-                    return ChangeType.Breaking;
+                    return SemVerChangeType.Breaking;
                 }
 
                 if (matchChange > changeType)
@@ -97,14 +97,14 @@
                 }
             }
 
-            if (changeType > ChangeType.None)
+            if (changeType > SemVerChangeType.None)
             {
                 _logger?.LogInformation("Calculated overall result as a {0} change.",
                     changeType.ToString().ToLower(CultureInfo.CurrentCulture));
 
                 // From here on we can't find any more breaking changes
                 // This really should be just a feature change at this point
-                Debug.Assert(changeType == ChangeType.Feature);
+                Debug.Assert(changeType == SemVerChangeType.Feature);
 
                 return changeType;
             }
@@ -121,13 +121,13 @@
                     memberType, newPublicMember.ToString(false), memberType);
 
                 // New members added. At this point nothing has been found to be removed or altered to produce a breaking change
-                return ChangeType.Feature;
+                return SemVerChangeType.Feature;
             }
 
             // No change identified
             _logger?.LogInformation("No changes identified between the old and new members.");
 
-            return ChangeType.None;
+            return SemVerChangeType.None;
         }
     }
 }

@@ -7,7 +7,7 @@
     public class MemberComparer : IMemberComparer
     {
         // TODO: Add logging here to explain how a change was identified
-        public virtual ChangeType Compare(MemberMatch match)
+        public virtual SemVerChangeType Compare(MemberMatch match)
         {
             Ensure.Any.IsNotNull(match, nameof(match));
 
@@ -30,14 +30,14 @@
                 && match.NewMember.IsPublic == false)
             {
                 // It doesn't matter if there is a change to the return type, the member isn't visible anyway
-                return ChangeType.None;
+                return SemVerChangeType.None;
             }
 
             if (match.OldMember.IsPublic
                 && match.NewMember.IsPublic == false)
             {
                 // The member was public but isn't now, breaking change
-                return ChangeType.Breaking;
+                return SemVerChangeType.Breaking;
             }
 
             if (match.OldMember.IsPublic == false
@@ -45,7 +45,7 @@
             {
                 // The member return type may have changed, but the member is only now becoming public
                 // This is a feature because the public API didn't break even if the return type has changed
-                return ChangeType.Feature;
+                return SemVerChangeType.Feature;
             }
 
             Debug.Assert(match.OldMember.IsPublic);
@@ -54,10 +54,10 @@
             // At this point both the old member and the new member are public
             if (match.OldMember.ReturnType.Equals(match.NewMember.ReturnType, StringComparison.Ordinal) == false)
             {
-                return ChangeType.Breaking;
+                return SemVerChangeType.Breaking;
             }
 
-            return ChangeType.None;
+            return SemVerChangeType.None;
         }
 
         public virtual bool IsSupported(MemberDefinition member)

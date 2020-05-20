@@ -4,7 +4,7 @@
 
     public class Change
     {
-        private Change(ChangeType changeType, MemberDefinition? oldMember, MemberDefinition? newMember, string message)
+        private Change(SemVerChangeType changeType, MemberDefinition? oldMember, MemberDefinition? newMember, string message)
         {
             ChangeType = changeType;
             OldMember = oldMember;
@@ -12,10 +12,10 @@
             Message = message;
         }
 
-        public static Change MemberChanged(ChangeType changeType, MemberDefinition oldMember, MemberDefinition newMember,
+        public static Change MemberChanged(SemVerChangeType changeType, MemberDefinition oldMember, MemberDefinition newMember,
             string message)
         {
-            changeType = changeType == ChangeType.None
+            changeType = changeType == SemVerChangeType.None
                 ? throw new ArgumentException("The changeType cannot be None to indicate a change on the member.",
                     nameof(changeType))
                 : changeType;
@@ -32,11 +32,11 @@
 
             var message = newMember + " has been added";
 
-            var changeType = ChangeType.None;
+            var changeType = SemVerChangeType.None;
 
             if (newMember.IsPublic)
             {
-                changeType = ChangeType.Feature;
+                changeType = SemVerChangeType.Feature;
             }
 
             return new Change(changeType, null, newMember, message);
@@ -48,17 +48,17 @@
 
             var message = oldMember + " has been removed";
 
-            var changeType = ChangeType.None;
+            var changeType = SemVerChangeType.None;
 
             if (oldMember.IsPublic)
             {
-                changeType = ChangeType.Breaking;
+                changeType = SemVerChangeType.Breaking;
             }
 
             return new Change(changeType, oldMember, null, message);
         }
 
-        public ChangeType ChangeType { get; }
+        public SemVerChangeType ChangeType { get; }
 
         public MemberDefinition? NewMember { get; }
 
