@@ -133,7 +133,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
             var sut = new NodeScanner(resolvers, _logger);
 
-            Action action = () => sut.FindDefinitions(null);
+            Action action = () => sut.FindDefinitions(null!);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -155,7 +155,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             "Testing constructor guard clause")]
         public void ThrowsExceptionWithNullResolvers()
         {
-            Action action = () => new NodeScanner(null, _logger);
+            Action action = () => new NodeScanner(null!, _logger);
 
             action.Should().Throw<ArgumentNullException>();
         }

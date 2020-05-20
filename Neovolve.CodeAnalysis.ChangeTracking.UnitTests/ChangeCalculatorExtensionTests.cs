@@ -106,7 +106,7 @@
             var newCode = Model.Create<List<string>>();
 
             Func<Task> action = async () => await ChangeCalculatorExtensions
-                .CalculateChange(null, oldCode, newCode, CancellationToken.None)
+                .CalculateChange(null!, oldCode, newCode, CancellationToken.None)
                 .ConfigureAwait(false);
 
             action.Should().Throw<ArgumentNullException>();
@@ -118,7 +118,7 @@
             var calculator = Substitute.For<IChangeCalculator>();
             var oldCode = Model.Create<List<string>>();
 
-            Func<Task> action = async () => await calculator.CalculateChange(oldCode, null, CancellationToken.None)
+            Func<Task> action = async () => await calculator.CalculateChange(oldCode, null!, CancellationToken.None)
                 .ConfigureAwait(false);
 
             action.Should().Throw<ArgumentNullException>();
@@ -130,7 +130,7 @@
             var calculator = Substitute.For<IChangeCalculator>();
             var newCode = Model.Create<List<string>>();
 
-            Func<Task> action = async () => await calculator.CalculateChange(null, newCode, CancellationToken.None)
+            Func<Task> action = async () => await calculator.CalculateChange(null!, newCode, CancellationToken.None)
                 .ConfigureAwait(false);
 
             action.Should().Throw<ArgumentNullException>();

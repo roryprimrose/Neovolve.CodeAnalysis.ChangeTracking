@@ -23,7 +23,7 @@
         {
             var resolver = new FieldResolver();
 
-            Action action = () => resolver.IsSupported(null);
+            Action action = () => resolver.IsSupported(null!);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -122,7 +122,7 @@ namespace MyNamespace
 
             var actual = sut.Resolve(node);
 
-            actual.MemberType.Should().Be("Field");
+            actual.MemberType.Should().Be(MemberType.Field);
         }
 
         [Fact]
@@ -130,7 +130,7 @@ namespace MyNamespace
         {
             var resolver = new FieldResolver();
 
-            Action action = () => resolver.Resolve(null);
+            Action action = () => resolver.Resolve(null!);
 
             action.Should().Throw<ArgumentNullException>();
         }

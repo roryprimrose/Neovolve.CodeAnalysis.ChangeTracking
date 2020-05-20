@@ -280,7 +280,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
             var sut = new ChangeCalculator(evaluator, comparers, _logger);
 
-            Action action = () => sut.CalculateChange(oldNodes, null);
+            Action action = () => sut.CalculateChange(oldNodes, null!);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -295,7 +295,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
             var sut = new ChangeCalculator(evaluator, comparers, _logger);
 
-            Action action = () => sut.CalculateChange(null, newNodes);
+            Action action = () => sut.CalculateChange(null!, newNodes);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -349,7 +349,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
         {
             var evaluator = Substitute.For<IMatchEvaluator>();
 
-            Action action = () => new ChangeCalculator(evaluator, null, _logger);
+            Action action = () => new ChangeCalculator(evaluator, null!, _logger);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -362,7 +362,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var comparer = Substitute.For<IMemberComparer>();
             var comparers = new List<IMemberComparer> {comparer};
 
-            Action action = () => new ChangeCalculator(null, comparers, _logger);
+            Action action = () => new ChangeCalculator(null!, comparers, _logger);
 
             action.Should().Throw<ArgumentNullException>();
         }

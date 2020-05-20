@@ -35,7 +35,7 @@ namespace MyNamespace
         {
             var resolver = new MethodResolver();
 
-            Action action = () => resolver.IsSupported(null);
+            Action action = () => resolver.IsSupported(null!);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -75,7 +75,7 @@ namespace MyProject
         {
             var resolver = new MethodResolver();
 
-            Action action = () => resolver.Resolve(null);
+            Action action = () => resolver.Resolve(null!);
 
             action.Should().Throw<NotSupportedException>();
         }

@@ -25,7 +25,7 @@
             Ensure.Any.IsNotNull(attributeSyntax, nameof(attributeSyntax));
 
             var name = attributeSyntax.Name.GetText().ToString();
-            string namespaceIdentifier = null;
+            string? namespaceIdentifier = null;
 
             if (name.Contains(".", StringComparison.Ordinal))
             {
@@ -50,12 +50,13 @@
                 Namespace = namespaceIdentifier,
                 OwningType = typeName,
                 Name = name,
-                MemberType = "Attribute",
+                MemberType = MemberType.Attribute,
 
                 // We will assume that the attribute is public. It would be very unusual if it wasn't
                 IsPublic = true,
                 Declaration = attributeSyntax.GetText().ToString()
             };
+
             return attribute;
         }
 

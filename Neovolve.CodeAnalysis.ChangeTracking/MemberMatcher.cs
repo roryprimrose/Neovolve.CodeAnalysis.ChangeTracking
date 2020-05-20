@@ -5,7 +5,7 @@
 
     public class MemberMatcher : IMemberMatcher
     {
-        public virtual MemberMatch GetMatch(MemberDefinition oldMember, MemberDefinition newMember)
+        public virtual MemberMatch? GetMatch(MemberDefinition oldMember, MemberDefinition newMember)
         {
             Ensure.Any.IsNotNull(oldMember, nameof(oldMember));
             Ensure.Any.IsNotNull(newMember, nameof(newMember));

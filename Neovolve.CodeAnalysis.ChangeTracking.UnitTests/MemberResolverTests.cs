@@ -42,7 +42,7 @@
             value.Name.Should().Be(name);
             value.Declaration.Should().Be(declaration);
             value.IsPublic.Should().BeTrue();
-            value.MemberType.Should().Be("Attribute");
+            value.MemberType.Should().Be(MemberType.Attribute);
         }
 
         [Fact]
@@ -934,7 +934,7 @@ public interface MyInterface
         {
             var resolver = new PropertyResolver();
 
-            Action action = () => resolver.Resolve(null);
+            Action action = () => resolver.Resolve(null!);
 
             action.Should().Throw<ArgumentNullException>();
         }

@@ -23,7 +23,7 @@
         {
             var sut = new PropertyResolver();
 
-            Action action = () => sut.IsSupported(null);
+            Action action = () => sut.IsSupported(null!);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -234,7 +234,7 @@ namespace MyNamespace
 
             var actual = sut.Resolve(node);
 
-            actual.MemberType.Should().Be("Property");
+            actual.MemberType.Should().Be(MemberType.Property);
         }
 
         [Theory]
@@ -278,7 +278,7 @@ namespace MyNamespace
         {
             var sut = new PropertyResolver();
 
-            Action action = () => sut.Resolve(null);
+            Action action = () => sut.Resolve(null!);
 
             action.Should().Throw<ArgumentNullException>();
         }

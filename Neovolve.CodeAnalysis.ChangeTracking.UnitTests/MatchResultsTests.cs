@@ -18,7 +18,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var oldMembersNotMatched = Model.UsingModule<CompilerModule>().Create<IEnumerable<MemberDefinition>>();
             var newMembersNotMatched = Model.UsingModule<CompilerModule>().Create<IEnumerable<MemberDefinition>>();
 
-            Action action = () => new MatchResults(null, oldMembersNotMatched, newMembersNotMatched);
+            Action action = () => new MatchResults(null!, oldMembersNotMatched, newMembersNotMatched);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -30,7 +30,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var matches = Model.UsingModule<CompilerModule>().Create<IEnumerable<MemberMatch>>();
             var newMembersNotMatched = Model.UsingModule<CompilerModule>().Create<IEnumerable<MemberDefinition>>();
 
-            Action action = () => new MatchResults(matches, null, newMembersNotMatched);
+            Action action = () => new MatchResults(matches, null!, newMembersNotMatched);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -42,7 +42,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var matches = Model.UsingModule<CompilerModule>().Create<IEnumerable<MemberMatch>>();
             var oldMembersNotMatched = Model.UsingModule<CompilerModule>().Create<IEnumerable<MemberDefinition>>();
 
-            Action action = () => new MatchResults(matches, oldMembersNotMatched, null);
+            Action action = () => new MatchResults(matches, oldMembersNotMatched, null!);
 
             action.Should().Throw<ArgumentNullException>();
         }

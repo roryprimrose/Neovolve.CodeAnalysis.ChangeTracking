@@ -2,14 +2,14 @@
 {
     using ModelBuilder;
 
-    public class CompilerModule : ICompilerModule
+    public class CompilerModule : IConfigurationModule
     {
-        public void Configure(IBuildStrategyCompiler compiler)
+        public void Configure(IBuildConfiguration configuration)
         {
-            compiler.AddCreationRule<MemberDefinition>(x => x.IsPublic, 100, true)
-                .AddCreationRule<PropertyDefinition>(x => x.IsPublic, 100, true)
-                .AddCreationRule<PropertyDefinition>(x => x.CanRead, 100, true)
-                .AddCreationRule<PropertyDefinition>(x => x.CanWrite, 100, true)
+            configuration.AddCreationRule<MemberDefinition>(x => x.IsPublic, true, 100)
+                .AddCreationRule<PropertyDefinition>(x => x.IsPublic, true, 100)
+                .AddCreationRule<PropertyDefinition>(x => x.CanRead, true, 100)
+                .AddCreationRule<PropertyDefinition>(x => x.CanWrite, true, 100)
                 .AddIgnoreRule<AttributeDefinition>(x => x.Attributes);
         }
     }

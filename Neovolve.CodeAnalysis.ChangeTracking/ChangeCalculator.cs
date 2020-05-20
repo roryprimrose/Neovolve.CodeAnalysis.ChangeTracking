@@ -13,9 +13,9 @@
     {
         private readonly IList<IMemberComparer> _comparers;
         private readonly IMatchEvaluator _evaluator;
-        private readonly ILogger _logger;
+        private readonly ILogger? _logger;
 
-        public ChangeCalculator(IMatchEvaluator evaluator, IEnumerable<IMemberComparer> comparers, ILogger logger)
+        public ChangeCalculator(IMatchEvaluator evaluator, IEnumerable<IMemberComparer> comparers, ILogger? logger)
         {
             Ensure.Any.IsNotNull(evaluator, nameof(evaluator));
             Ensure.Any.IsNotNull(comparers, nameof(comparers));
@@ -47,7 +47,7 @@
 
             if (oldPublicMember != null)
             {
-                var memberType = oldPublicMember.MemberType.ToLower(CultureInfo.CurrentCulture);
+                var memberType = oldPublicMember.MemberType.ToString().ToLower(CultureInfo.CurrentCulture);
 
                 _logger?.LogInformation(
                     "Found old public {0} {1} that does not match any new public {2}. This indicates a breaking change.",
@@ -78,7 +78,7 @@
                 if (matchChange == ChangeType.Breaking)
                 {
                     _logger?.LogInformation("Identified a potential breaking change in {0} {1}.",
-                        match.OldMember.MemberType.ToLower(CultureInfo.CurrentCulture),
+                        match.OldMember.MemberType.ToString().ToLower(CultureInfo.CurrentCulture),
                         match.OldMember.ToString(false));
 
                     // We can't get a worse result so no point continuing
@@ -89,7 +89,7 @@
                 {
                     _logger?.LogInformation("Identified a potential {0} change in {1} {2}.",
                         matchChange.ToString().ToLower(CultureInfo.CurrentCulture),
-                        match.OldMember.MemberType.ToLower(CultureInfo.CurrentCulture),
+                        match.OldMember.MemberType.ToString().ToLower(CultureInfo.CurrentCulture),
                         match.OldMember.ToString(false));
 
                     // This should be an increase from None to Feature
@@ -114,7 +114,7 @@
 
             if (newPublicMember != null)
             {
-                var memberType = newPublicMember.MemberType.ToLower(CultureInfo.CurrentCulture);
+                var memberType = newPublicMember.MemberType.ToString().ToLower(CultureInfo.CurrentCulture);
 
                 _logger?.LogInformation(
                     "Found new public {0} {1} that does not match any old public {2}. This indicates a new feature.",

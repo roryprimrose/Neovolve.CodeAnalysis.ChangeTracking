@@ -18,7 +18,7 @@
             var actual = sut.GetMatch(oldMember, newMember);
 
             actual.Should().NotBeNull();
-            actual.NewMember.Should().Be(newMember);
+            actual!.NewMember.Should().Be(newMember);
             actual.OldMember.Should().Be(oldMember);
         }
 
@@ -33,7 +33,7 @@
             var actual = sut.GetMatch(oldMember, newMember);
 
             actual.Should().NotBeNull();
-            actual.NewMember.Should().Be(newMember);
+            actual!.NewMember.Should().Be(newMember);
             actual.OldMember.Should().Be(oldMember);
         }
 
@@ -91,7 +91,7 @@
 
             var sut = new MemberMatcher();
 
-            Action action = () => sut.GetMatch(oldMember, null);
+            Action action = () => sut.GetMatch(oldMember, null!);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -103,7 +103,7 @@
 
             var sut = new MemberMatcher();
 
-            Action action = () => sut.GetMatch(null, newMember);
+            Action action = () => sut.GetMatch(null!, newMember);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -128,7 +128,7 @@
         {
             var sut = new MemberMatcher();
 
-            Action action = () => sut.IsSupported(null);
+            Action action = () => sut.IsSupported(null!);
 
             action.Should().Throw<ArgumentNullException>();
         }

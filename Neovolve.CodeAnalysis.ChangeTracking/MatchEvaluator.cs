@@ -10,11 +10,11 @@
 
     public class MatchEvaluator : IMatchEvaluator
     {
-        private readonly ILogger _logger;
+        private readonly ILogger? _logger;
         private readonly IList<IMemberMatcher> _matchers;
         private readonly INodeScanner _nodeScanner;
 
-        public MatchEvaluator(INodeScanner nodeScanner, IEnumerable<IMemberMatcher> matchers, ILogger logger)
+        public MatchEvaluator(INodeScanner nodeScanner, IEnumerable<IMemberMatcher> matchers, ILogger? logger)
         {
             Ensure.Any.IsNotNull(nodeScanner, nameof(nodeScanner));
             Ensure.Any.IsNotNull(matchers, nameof(matchers));

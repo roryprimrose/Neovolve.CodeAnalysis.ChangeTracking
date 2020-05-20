@@ -2,6 +2,6 @@
 {
     public class AttributeDefinition : MemberDefinition
     {
-        public string Declaration { get; set; }
+        public string Declaration { get; set; } = string.Empty;
     }
 }

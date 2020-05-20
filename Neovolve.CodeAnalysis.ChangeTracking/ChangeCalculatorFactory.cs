@@ -10,7 +10,7 @@
             return BuildCalculator(null);
         }
 
-        public static IChangeCalculator BuildCalculator(ILogger logger)
+        public static IChangeCalculator BuildCalculator(ILogger? logger)
         {
             var resolvers = new List<INodeResolver>
             {

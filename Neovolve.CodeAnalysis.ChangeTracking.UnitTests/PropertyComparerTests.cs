@@ -157,7 +157,7 @@
         {
             var sut = new PropertyComparer();
 
-            Action action = () => sut.Compare(null);
+            Action action = () => sut.Compare(null!);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -182,7 +182,7 @@
         {
             var sut = new PropertyComparer();
 
-            Action action = () => sut.IsSupported(null);
+            Action action = () => sut.IsSupported(null!);
 
             action.Should().Throw<ArgumentNullException>();
         }
