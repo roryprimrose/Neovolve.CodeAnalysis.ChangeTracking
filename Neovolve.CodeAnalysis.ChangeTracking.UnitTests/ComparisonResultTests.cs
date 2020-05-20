@@ -6,11 +6,11 @@
     using Xunit;
     using Xunit.Abstractions;
 
-    public class ChangeTests
+    public class ComparisonResultTests
     {
         private readonly ITestOutputHelper _output;
 
-        public ChangeTests(ITestOutputHelper output)
+        public ComparisonResultTests(ITestOutputHelper output)
         {
             _output = output;
         }
@@ -22,7 +22,7 @@
         {
             var newMember = Model.Create<PropertyDefinition>().Set(x => x.IsPublic = isPublic);
 
-            var actual = Change.MemberAdded(newMember);
+            var actual = ComparisonResult.MemberAdded(newMember);
 
             actual.Should().NotBeNull();
 
@@ -37,7 +37,7 @@
         [Fact]
         public void MemberAddedThrowsExceptionWithNullOldMember()
         {
-            Action action = () => Change.MemberAdded(null!);
+            Action action = () => ComparisonResult.MemberAdded(null!);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -51,7 +51,7 @@
             var oldMember = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
             var message = Guid.NewGuid().ToString();
 
-            var actual = Change.MemberChanged(changeType, oldMember, newMember, message);
+            var actual = ComparisonResult.MemberChanged(changeType, oldMember, newMember, message);
 
             actual.Should().NotBeNull();
             actual.ChangeType.Should().Be(changeType);
@@ -69,7 +69,7 @@
             var newMember = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
             var oldMember = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
 
-            Action action = () => Change.MemberChanged(SemVerChangeType.Feature, oldMember, newMember, message);
+            Action action = () => ComparisonResult.MemberChanged(SemVerChangeType.Feature, oldMember, newMember, message);
 
             action.Should().Throw<ArgumentException>();
         }
@@ -81,7 +81,7 @@
             var oldMember = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
             var message = Guid.NewGuid().ToString();
 
-            Action action = () => Change.MemberChanged(SemVerChangeType.None, oldMember, newMember, message);
+            Action action = () => ComparisonResult.MemberChanged(SemVerChangeType.None, oldMember, newMember, message);
 
             action.Should().Throw<ArgumentException>();
         }
@@ -92,7 +92,7 @@
             var oldMember = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
             var message = Guid.NewGuid().ToString();
 
-            Action action = () => Change.MemberChanged(SemVerChangeType.Feature, oldMember, null!, message);
+            Action action = () => ComparisonResult.MemberChanged(SemVerChangeType.Feature, oldMember, null!, message);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -103,7 +103,7 @@
             var newMember = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
             var message = Guid.NewGuid().ToString();
 
-            Action action = () => Change.MemberChanged(SemVerChangeType.Feature, null!, newMember, message);
+            Action action = () => ComparisonResult.MemberChanged(SemVerChangeType.Feature, null!, newMember, message);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -115,7 +115,7 @@
         {
             var oldMember = Model.Create<PropertyDefinition>().Set(x => x.IsPublic = isPublic);
 
-            var actual = Change.MemberRemoved(oldMember);
+            var actual = ComparisonResult.MemberRemoved(oldMember);
 
             actual.Should().NotBeNull();
 
@@ -130,7 +130,7 @@
         [Fact]
         public void MemberRemovedThrowsExceptionWithNullOldMember()
         {
-            Action action = () => Change.MemberRemoved(null!);
+            Action action = () => ComparisonResult.MemberRemoved(null!);
 
             action.Should().Throw<ArgumentNullException>();
         }

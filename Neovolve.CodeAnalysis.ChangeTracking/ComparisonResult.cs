@@ -2,9 +2,9 @@
 {
     using System;
 
-    public class Change
+    public class ComparisonResult
     {
-        private Change(SemVerChangeType changeType, MemberDefinition? oldMember, MemberDefinition? newMember, string message)
+        private ComparisonResult(SemVerChangeType changeType, MemberDefinition? oldMember, MemberDefinition? newMember, string message)
         {
             ChangeType = changeType;
             OldMember = oldMember;
@@ -12,7 +12,7 @@
             Message = message;
         }
 
-        public static Change MemberChanged(SemVerChangeType changeType, MemberDefinition oldMember, MemberDefinition newMember,
+        public static ComparisonResult MemberChanged(SemVerChangeType changeType, MemberDefinition oldMember, MemberDefinition newMember,
             string message)
         {
             changeType = changeType == SemVerChangeType.None
@@ -23,10 +23,10 @@
             newMember = newMember ?? throw new ArgumentNullException(nameof(newMember));
             message = string.IsNullOrWhiteSpace(message) ? throw new ArgumentException(nameof(message)) : message;
 
-            return new Change(changeType, oldMember, newMember, message);
+            return new ComparisonResult(changeType, oldMember, newMember, message);
         }
 
-        public static Change MemberAdded(MemberDefinition newMember)
+        public static ComparisonResult MemberAdded(MemberDefinition newMember)
         {
             newMember = newMember ?? throw new ArgumentNullException(nameof(newMember));
 
@@ -39,10 +39,10 @@
                 changeType = SemVerChangeType.Feature;
             }
 
-            return new Change(changeType, null, newMember, message);
+            return new ComparisonResult(changeType, null, newMember, message);
         }
 
-        public static Change MemberRemoved(MemberDefinition oldMember)
+        public static ComparisonResult MemberRemoved(MemberDefinition oldMember)
         {
             oldMember = oldMember ?? throw new ArgumentNullException(nameof(oldMember));
 
@@ -55,7 +55,7 @@
                 changeType = SemVerChangeType.Breaking;
             }
 
-            return new Change(changeType, oldMember, null, message);
+            return new ComparisonResult(changeType, oldMember, null, message);
         }
 
         public SemVerChangeType ChangeType { get; }

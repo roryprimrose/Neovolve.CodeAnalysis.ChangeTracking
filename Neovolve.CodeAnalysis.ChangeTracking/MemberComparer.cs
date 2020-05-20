@@ -6,7 +6,6 @@
 
     public class MemberComparer : IMemberComparer
     {
-        // TODO: Add logging here to explain how a change was identified
         public virtual SemVerChangeType Compare(MemberMatch match)
         {
             Ensure.Any.IsNotNull(match, nameof(match));
@@ -47,9 +46,6 @@
                 // This is a feature because the public API didn't break even if the return type has changed
                 return SemVerChangeType.Feature;
             }
-
-            Debug.Assert(match.OldMember.IsPublic);
-            Debug.Assert(match.NewMember.IsPublic);
 
             // At this point both the old member and the new member are public
             if (match.OldMember.ReturnType.Equals(match.NewMember.ReturnType, StringComparison.Ordinal) == false)
