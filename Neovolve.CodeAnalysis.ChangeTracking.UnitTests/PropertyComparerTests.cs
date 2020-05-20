@@ -17,7 +17,7 @@
             bool newValue,
             ChangeType expected)
         {
-            var oldMember = Model.UsingModule<CompilerModule>()
+            var oldMember = Model.UsingModule<ConfigurationModule>()
                 .Create<PropertyDefinition>()
                 .Set(x => x.IsPublic = oldValue);
             var newMember = oldMember.JsonClone().Set(x => x.IsPublic = newValue);
@@ -33,7 +33,7 @@
         [Fact]
         public void CompareReturnsBreakingWhenFeatureAlsoIndicated()
         {
-            var oldMember = Model.UsingModule<CompilerModule>()
+            var oldMember = Model.UsingModule<ConfigurationModule>()
                 .Create<PropertyDefinition>()
                 .Set(x => { x.CanWrite = false; });
             var newMember = oldMember.JsonClone()
@@ -54,7 +54,7 @@
         [Fact]
         public void CompareReturnsFeatureWhenBreakingChangeOnAccessorsAndPropertyNowVisible()
         {
-            var oldMember = Model.UsingModule<CompilerModule>()
+            var oldMember = Model.UsingModule<ConfigurationModule>()
                 .Create<PropertyDefinition>()
                 .Set(x => { x.IsPublic = false; });
             var newMember = oldMember.JsonClone()
@@ -75,7 +75,7 @@
         [Fact]
         public void CompareReturnsNoneWhenAccessorLessVisibleButPropertiesNotPublic()
         {
-            var oldMember = Model.UsingModule<CompilerModule>()
+            var oldMember = Model.UsingModule<ConfigurationModule>()
                 .Create<PropertyDefinition>()
                 .Set(x =>
                 {
@@ -95,7 +95,7 @@
         [Fact]
         public void CompareReturnsNoneWhenNodesMatch()
         {
-            var oldMember = Model.UsingModule<CompilerModule>().Create<PropertyDefinition>();
+            var oldMember = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
             var newMember = oldMember.JsonClone();
             var match = new MemberMatch(oldMember, newMember);
 
@@ -116,7 +116,7 @@
             bool newValue,
             ChangeType expected)
         {
-            var oldMember = Model.UsingModule<CompilerModule>()
+            var oldMember = Model.UsingModule<ConfigurationModule>()
                 .Create<PropertyDefinition>()
                 .Set(x => x.CanRead = oldValue);
             var newMember = oldMember.JsonClone().Set(x => x.CanRead = newValue);
@@ -139,7 +139,7 @@
             bool newValue,
             ChangeType expected)
         {
-            var oldMember = Model.UsingModule<CompilerModule>()
+            var oldMember = Model.UsingModule<ConfigurationModule>()
                 .Create<PropertyDefinition>()
                 .Set(x => x.CanWrite = oldValue);
             var newMember = oldMember.JsonClone().Set(x => x.CanWrite = newValue);
@@ -168,7 +168,7 @@
         [InlineData(typeof(AttributeDefinition), false)]
         public void IsSupportedReturnsTrueForExactTypeMatch(Type type, bool expected)
         {
-            var definition = (MemberDefinition) Model.UsingModule<CompilerModule>().Create(type);
+            var definition = (MemberDefinition) Model.UsingModule<ConfigurationModule>().Create(type);
 
             var sut = new PropertyComparer();
 

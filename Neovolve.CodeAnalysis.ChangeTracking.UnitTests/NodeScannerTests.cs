@@ -32,7 +32,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
         {
             var resolver = Substitute.For<INodeResolver>();
             var resolvers = new List<INodeResolver> {resolver};
-            var definition = Model.UsingModule<CompilerModule>().Create<PropertyDefinition>();
+            var definition = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
             var rootNode = await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false);
             var node = TestNode.FindNode<PropertyDeclarationSyntax>(rootNode);
 
@@ -107,7 +107,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
         {
             var resolver = Substitute.For<INodeResolver>();
             var resolvers = new List<INodeResolver> {resolver};
-            var definition = Model.UsingModule<CompilerModule>().Create<PropertyDefinition>();
+            var definition = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
             var rootNode = await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false);
             var node = TestNode.FindNode<PropertyDeclarationSyntax>(rootNode);
 

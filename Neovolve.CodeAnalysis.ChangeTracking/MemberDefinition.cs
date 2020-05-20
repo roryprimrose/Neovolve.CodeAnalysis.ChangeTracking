@@ -22,7 +22,7 @@
 
             if (includeMemberType)
             {
-                prefix = MemberType + ": ";
+                prefix = MemberType + " ";
             }
 
             if (string.IsNullOrWhiteSpace(Namespace))

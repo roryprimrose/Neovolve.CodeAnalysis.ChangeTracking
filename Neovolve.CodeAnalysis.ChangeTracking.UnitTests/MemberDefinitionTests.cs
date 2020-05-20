@@ -13,7 +13,7 @@
         [InlineData(typeof(AttributeDefinition))]
         public void ToStringReturnsMemberDescription(Type definitionType)
         {
-            var sut = (MemberDefinition) Model.UsingModule<CompilerModule>().Create(definitionType);
+            var sut = (MemberDefinition) Model.UsingModule<ConfigurationModule>().Create(definitionType);
 
             var actual = sut.ToString();
 
@@ -28,7 +28,7 @@
         [InlineData(false)]
         public void ToStringReturnsMemberDescriptionWithOptionalMemberType(bool include)
         {
-            var sut = Model.UsingModule<CompilerModule>().Create<MemberDefinition>();
+            var sut = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
 
             var actual = sut.ToString(include);
 
@@ -48,7 +48,7 @@
         [InlineData(typeof(AttributeDefinition))]
         public void ToStringReturnsMemberDescriptionWithoutNamespace(Type definitionType)
         {
-            var sut = ((MemberDefinition) Model.UsingModule<CompilerModule>().Create(definitionType)).Set(x =>
+            var sut = ((MemberDefinition) Model.UsingModule<ConfigurationModule>().Create(definitionType)).Set(x =>
                 x.Namespace = null);
 
             var actual = sut.ToString();

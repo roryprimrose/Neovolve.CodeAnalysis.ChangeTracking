@@ -10,7 +10,7 @@
         [Fact]
         public void CompareReturnsFeatureWhenReturnTypeChangedWithPropertyChangedToPublic()
         {
-            var oldMember = Model.UsingModule<CompilerModule>()
+            var oldMember = Model.UsingModule<ConfigurationModule>()
                 .Create<MemberDefinition>()
                 .Set(x =>
                 {
@@ -35,7 +35,7 @@
         [Fact]
         public void CompareReturnsNoneWhenNodesMatch()
         {
-            var oldMember = Model.UsingModule<CompilerModule>().Create<MemberDefinition>();
+            var oldMember = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
             var newMember = oldMember.JsonClone();
             var match = new MemberMatch(oldMember, newMember);
 
@@ -49,7 +49,7 @@
         [Fact]
         public void CompareReturnsNoneWhenReturnTypeChangedWithPropertyNotPublic()
         {
-            var oldMember = Model.UsingModule<CompilerModule>()
+            var oldMember = Model.UsingModule<ConfigurationModule>()
                 .Create<MemberDefinition>()
                 .Set(x =>
                 {
@@ -73,7 +73,7 @@
         [InlineData(false, true, ChangeType.Feature)]
         public void CompareReturnsResultBasedOnIsPublic(bool oldValue, bool newValue, ChangeType expected)
         {
-            var oldMember = Model.UsingModule<CompilerModule>().Create<MemberDefinition>()
+            var oldMember = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>()
                 .Set(x => x.IsPublic = oldValue);
             var newMember = oldMember.JsonClone().Set(x => x.IsPublic = newValue);
             var match = new MemberMatch(oldMember, newMember);
@@ -90,7 +90,7 @@
         [InlineData("string", "DateTimeOffset", ChangeType.Breaking)]
         public void CompareReturnsResultBasedOnReturnType(string oldValue, string newValue, ChangeType expected)
         {
-            var oldMember = Model.UsingModule<CompilerModule>()
+            var oldMember = Model.UsingModule<ConfigurationModule>()
                 .Create<MemberDefinition>()
                 .Set(x => x.ReturnType = oldValue);
             var newMember = oldMember.JsonClone().Set(x => x.ReturnType = newValue);
@@ -113,7 +113,7 @@
         [InlineData("OldValue", "NewValue")]
         public void CompareThrowsExceptionWhenNameDoesNotMatch(string oldValue, string newValue)
         {
-            var oldMember = Model.UsingModule<CompilerModule>().Create<MemberDefinition>().Set(x => x.Name = oldValue);
+            var oldMember = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>().Set(x => x.Name = oldValue);
             var newMember = oldMember.JsonClone().Set(x => x.Name = newValue);
             var match = new MemberMatch(oldMember, newMember);
 
@@ -134,7 +134,7 @@
         [InlineData("OldValue", "NewValue")]
         public void CompareThrowsExceptionWhenNamespaceDoesNotMatch(string oldValue, string newValue)
         {
-            var oldMember = Model.UsingModule<CompilerModule>().Create<MemberDefinition>()
+            var oldMember = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>()
                 .Set(x => x.Namespace = oldValue);
             var newMember = oldMember.JsonClone().Set(x => x.Namespace = newValue);
             var match = new MemberMatch(oldMember, newMember);
@@ -156,7 +156,7 @@
         [InlineData("OldValue", "NewValue")]
         public void CompareThrowsExceptionWhenOwningTypeDoesNotMatch(string oldValue, string newValue)
         {
-            var oldMember = Model.UsingModule<CompilerModule>()
+            var oldMember = Model.UsingModule<ConfigurationModule>()
                 .Create<MemberDefinition>()
                 .Set(x => x.OwningType = oldValue);
             var newMember = oldMember.JsonClone().Set(x => x.OwningType = newValue);
@@ -185,7 +185,7 @@
         [InlineData(typeof(AttributeDefinition), false)]
         public void IsSupportedReturnsTrueForExactTypeMatch(Type type, bool expected)
         {
-            var definition = (MemberDefinition) Model.UsingModule<CompilerModule>().Create(type);
+            var definition = (MemberDefinition) Model.UsingModule<ConfigurationModule>().Create(type);
 
             var sut = new MemberComparer();
 

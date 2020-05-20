@@ -7,8 +7,6 @@
         public override ChangeType Compare(MemberMatch match)
         {
             Ensure.Any.IsNotNull(match, nameof(match));
-            Ensure.Type.IsOfType(match.OldMember, typeof(PropertyDefinition), "match.OldMember");
-            Ensure.Type.IsOfType(match.NewMember, typeof(PropertyDefinition), "match.NewMember");
 
             var oldProperty = (PropertyDefinition)match.OldMember;
             var newProperty = (PropertyDefinition)match.NewMember;
