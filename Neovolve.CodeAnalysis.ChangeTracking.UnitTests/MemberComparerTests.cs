@@ -4,9 +4,17 @@
     using FluentAssertions;
     using ModelBuilder;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class MemberComparerTests
     {
+        private readonly ITestOutputHelper _output;
+
+        public MemberComparerTests(ITestOutputHelper output)
+        {
+            _output = output;
+        }
+
         [Fact]
         public void CompareReturnsFeatureWhenReturnTypeChangedWithPropertyChangedToPublic()
         {
@@ -29,7 +37,9 @@
 
             var actual = sut.Compare(match);
 
-            actual.Should().Be(SemVerChangeType.Feature);
+            _output.WriteLine(actual.Message);
+
+            actual.ChangeType.Should().Be(SemVerChangeType.Feature);
         }
 
         [Fact]
@@ -43,7 +53,9 @@
 
             var actual = sut.Compare(match);
 
-            actual.Should().Be(SemVerChangeType.None);
+            _output.WriteLine(actual.Message);
+
+            actual.ChangeType.Should().Be(SemVerChangeType.None);
         }
 
         [Fact]
@@ -63,7 +75,9 @@
 
             var actual = sut.Compare(match);
 
-            actual.Should().Be(SemVerChangeType.None);
+            _output.WriteLine(actual.Message);
+
+            actual.ChangeType.Should().Be(SemVerChangeType.None);
         }
 
         [Theory]
@@ -82,7 +96,9 @@
 
             var actual = sut.Compare(match);
 
-            actual.Should().Be(expected);
+            _output.WriteLine(actual.Message);
+
+            actual.ChangeType.Should().Be(expected);
         }
 
         [Theory]
@@ -100,7 +116,9 @@
 
             var actual = sut.Compare(match);
 
-            actual.Should().Be(expected);
+            _output.WriteLine(actual.Message);
+
+            actual.ChangeType.Should().Be(expected);
         }
 
         [Theory]
@@ -113,7 +131,8 @@
         [InlineData("OldValue", "NewValue")]
         public void CompareThrowsExceptionWhenNameDoesNotMatch(string oldValue, string newValue)
         {
-            var oldMember = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>().Set(x => x.Name = oldValue);
+            var oldMember = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>()
+                .Set(x => x.Name = oldValue);
             var newMember = oldMember.JsonClone().Set(x => x.Name = newValue);
             var match = new MemberMatch(oldMember, newMember);
 

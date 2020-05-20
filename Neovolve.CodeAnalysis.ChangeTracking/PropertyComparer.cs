@@ -4,50 +4,59 @@
 
     public class PropertyComparer : MemberComparer
     {
-        public override SemVerChangeType Compare(MemberMatch match)
+        public override ComparisonResult Compare(MemberMatch match)
         {
             Ensure.Any.IsNotNull(match, nameof(match));
 
             var oldProperty = (PropertyDefinition)match.OldMember;
             var newProperty = (PropertyDefinition)match.NewMember;
 
-            var changeType = base.Compare(match);
+            var result = base.Compare(match);
 
-            if (changeType == SemVerChangeType.Breaking)
+            if (result.ChangeType == SemVerChangeType.Breaking)
             {
                 // Doesn't matter if the property accessibility indicates feature or no change, breaking trumps everything
-                return changeType;
+                return result;
             }
 
             if (oldProperty.IsPublic == false)
             {
                 // The property is either still not public or now becoming public
                 // It doesn't matter if the accessors have been changed to be less visible
-                return changeType;
+                return result;
             }
 
             if (oldProperty.CanRead == newProperty.CanRead
                 && oldProperty.CanWrite == newProperty.CanWrite)
             {
                 // The accessibility of the property get/set members are equal so the changeType already calculated will be accurate
-                return changeType;
+                return result;
             }
 
             // Calculate breaking changes
             if (oldProperty.CanRead
                 && newProperty.CanRead == false)
             {
-                return SemVerChangeType.Breaking;
+                var message = oldProperty + " removed get accessor availability";
+
+                return ComparisonResult.MemberChanged(SemVerChangeType.Breaking, match.OldMember, match.NewMember,
+                    message);
             }
 
             if (oldProperty.CanWrite
                 && newProperty.CanWrite == false)
             {
-                return SemVerChangeType.Breaking;
+                var message = oldProperty + " removed set accessor availability";
+
+                return ComparisonResult.MemberChanged(SemVerChangeType.Breaking, match.OldMember, match.NewMember,
+                    message);
             }
 
             // Only other possible scenario at this point is that the old property couldn't read/write but the new property can
-            return SemVerChangeType.Feature;
+            var accessorMessage = oldProperty + " get and/or set is now available";
+
+            return ComparisonResult.MemberChanged(SemVerChangeType.Feature, match.OldMember, match.NewMember,
+                accessorMessage);
         }
 
         public override bool IsSupported(MemberDefinition member)

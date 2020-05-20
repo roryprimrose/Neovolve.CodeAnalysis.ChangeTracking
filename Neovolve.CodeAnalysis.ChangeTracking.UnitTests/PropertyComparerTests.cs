@@ -4,9 +4,17 @@
     using FluentAssertions;
     using ModelBuilder;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class PropertyComparerTests
     {
+        private readonly ITestOutputHelper _output;
+
+        public PropertyComparerTests(ITestOutputHelper output)
+        {
+            _output = output;
+        }
+
         [Theory]
         [InlineData(false, false, SemVerChangeType.None)]
         [InlineData(true, true, SemVerChangeType.None)]
@@ -27,7 +35,9 @@
 
             var actual = sut.Compare(match);
 
-            actual.Should().Be(expected);
+            _output.WriteLine(actual.Message);
+
+            actual.ChangeType.Should().Be(expected);
         }
 
         [Fact]
@@ -48,7 +58,9 @@
 
             var actual = sut.Compare(match);
 
-            actual.Should().Be(SemVerChangeType.Breaking);
+            _output.WriteLine(actual.Message);
+
+            actual.ChangeType.Should().Be(SemVerChangeType.Breaking);
         }
 
         [Fact]
@@ -69,7 +81,9 @@
 
             var actual = sut.Compare(match);
 
-            actual.Should().Be(SemVerChangeType.Feature);
+            _output.WriteLine(actual.Message);
+
+            actual.ChangeType.Should().Be(SemVerChangeType.Feature);
         }
 
         [Fact]
@@ -89,7 +103,9 @@
 
             var actual = sut.Compare(match);
 
-            actual.Should().Be(SemVerChangeType.None);
+            _output.WriteLine(actual.Message);
+
+            actual.ChangeType.Should().Be(SemVerChangeType.None);
         }
 
         [Fact]
@@ -103,7 +119,9 @@
 
             var actual = sut.Compare(match);
 
-            actual.Should().Be(SemVerChangeType.None);
+            _output.WriteLine(actual.Message);
+
+            actual.ChangeType.Should().Be(SemVerChangeType.None);
         }
 
         [Theory]
@@ -126,7 +144,9 @@
 
             var actual = sut.Compare(match);
 
-            actual.Should().Be(expected);
+            _output.WriteLine(actual.Message);
+
+            actual.ChangeType.Should().Be(expected);
         }
 
         [Theory]
@@ -149,7 +169,9 @@
 
             var actual = sut.Compare(match);
 
-            actual.Should().Be(expected);
+            _output.WriteLine(actual.Message);
+
+            actual.ChangeType.Should().Be(expected);
         }
 
         [Fact]

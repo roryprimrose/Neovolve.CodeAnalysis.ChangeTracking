@@ -4,26 +4,13 @@
 
     public class ComparisonResult
     {
-        private ComparisonResult(SemVerChangeType changeType, MemberDefinition? oldMember, MemberDefinition? newMember, string message)
+        private ComparisonResult(SemVerChangeType changeType, MemberDefinition? oldMember, MemberDefinition? newMember,
+            string message)
         {
             ChangeType = changeType;
             OldMember = oldMember;
             NewMember = newMember;
             Message = message;
-        }
-
-        public static ComparisonResult MemberChanged(SemVerChangeType changeType, MemberDefinition oldMember, MemberDefinition newMember,
-            string message)
-        {
-            changeType = changeType == SemVerChangeType.None
-                ? throw new ArgumentException("The changeType cannot be None to indicate a change on the member.",
-                    nameof(changeType))
-                : changeType;
-            oldMember = oldMember ?? throw new ArgumentNullException(nameof(oldMember));
-            newMember = newMember ?? throw new ArgumentNullException(nameof(newMember));
-            message = string.IsNullOrWhiteSpace(message) ? throw new ArgumentException(nameof(message)) : message;
-
-            return new ComparisonResult(changeType, oldMember, newMember, message);
         }
 
         public static ComparisonResult MemberAdded(MemberDefinition newMember)
@@ -42,6 +29,21 @@
             return new ComparisonResult(changeType, null, newMember, message);
         }
 
+        public static ComparisonResult MemberChanged(SemVerChangeType changeType, MemberDefinition oldMember,
+            MemberDefinition newMember,
+            string message)
+        {
+            changeType = changeType == SemVerChangeType.None
+                ? throw new ArgumentException("The changeType cannot be None to indicate a change on the member.",
+                    nameof(changeType))
+                : changeType;
+            oldMember = oldMember ?? throw new ArgumentNullException(nameof(oldMember));
+            newMember = newMember ?? throw new ArgumentNullException(nameof(newMember));
+            message = string.IsNullOrWhiteSpace(message) ? throw new ArgumentException(nameof(message)) : message;
+
+            return new ComparisonResult(changeType, oldMember, newMember, message);
+        }
+
         public static ComparisonResult MemberRemoved(MemberDefinition oldMember)
         {
             oldMember = oldMember ?? throw new ArgumentNullException(nameof(oldMember));
@@ -58,12 +60,22 @@
             return new ComparisonResult(changeType, oldMember, null, message);
         }
 
+        public static ComparisonResult NoChange(MemberDefinition oldMember, MemberDefinition newMember)
+        {
+            oldMember = oldMember ?? throw new ArgumentNullException(nameof(oldMember));
+            newMember = newMember ?? throw new ArgumentNullException(nameof(newMember));
+
+            var message = "No change on " + oldMember;
+
+            return new ComparisonResult(SemVerChangeType.None, oldMember, newMember, message);
+        }
+
         public SemVerChangeType ChangeType { get; }
+
+        public string Message { get; }
 
         public MemberDefinition? NewMember { get; }
 
         public MemberDefinition? OldMember { get; }
-
-        public string Message { get; }
     }
 }

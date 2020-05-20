@@ -54,6 +54,9 @@
             var actual = ComparisonResult.MemberChanged(changeType, oldMember, newMember, message);
 
             actual.Should().NotBeNull();
+
+            _output.WriteLine(actual.Message);
+
             actual.ChangeType.Should().Be(changeType);
             actual.OldMember.Should().Be(oldMember);
             actual.NewMember.Should().Be(newMember);
@@ -69,7 +72,8 @@
             var newMember = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
             var oldMember = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
 
-            Action action = () => ComparisonResult.MemberChanged(SemVerChangeType.Feature, oldMember, newMember, message);
+            Action action = () =>
+                ComparisonResult.MemberChanged(SemVerChangeType.Feature, oldMember, newMember, message);
 
             action.Should().Throw<ArgumentException>();
         }
@@ -131,6 +135,44 @@
         public void MemberRemovedThrowsExceptionWithNullOldMember()
         {
             Action action = () => ComparisonResult.MemberRemoved(null!);
+
+            action.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
+        public void NoChangeReturnsValuesFromParameters()
+        {
+            var oldMember = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
+            var newMember = Model.Create<PropertyDefinition>();
+
+            var actual = ComparisonResult.NoChange(oldMember, newMember);
+
+            actual.Should().NotBeNull();
+
+            _output.WriteLine(actual.Message);
+
+            actual.ChangeType.Should().Be(SemVerChangeType.None);
+            actual.OldMember.Should().Be(oldMember);
+            actual.NewMember.Should().Be(newMember);
+            actual.Message.Should().NotBeNullOrWhiteSpace();
+        }
+
+        [Fact]
+        public void NoChangeThrowsExceptionWithNullNewMember()
+        {
+            var oldMember = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
+
+            Action action = () => ComparisonResult.NoChange(oldMember, null!);
+
+            action.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
+        public void NoChangeThrowsExceptionWithNullOldMember()
+        {
+            var newMember = Model.Create<PropertyDefinition>();
+
+            Action action = () => ComparisonResult.NoChange(null!, newMember);
 
             action.Should().Throw<ArgumentNullException>();
         }

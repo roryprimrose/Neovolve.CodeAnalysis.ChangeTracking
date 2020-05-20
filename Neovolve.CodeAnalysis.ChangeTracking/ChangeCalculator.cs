@@ -73,9 +73,9 @@
                     throw new InvalidOperationException(message);
                 }
 
-                var matchChange = comparer.Compare(match);
+                var result = comparer.Compare(match);
 
-                if (matchChange == SemVerChangeType.Breaking)
+                if (result.ChangeType == SemVerChangeType.Breaking)
                 {
                     _logger?.LogInformation("Identified a potential breaking change in {0} {1}.",
                         match.OldMember.MemberType.ToString().ToLower(CultureInfo.CurrentCulture),
@@ -85,15 +85,15 @@
                     return SemVerChangeType.Breaking;
                 }
 
-                if (matchChange > changeType)
+                if (result.ChangeType > changeType)
                 {
                     _logger?.LogInformation("Identified a potential {0} change in {1} {2}.",
-                        matchChange.ToString().ToLower(CultureInfo.CurrentCulture),
+                        result.ToString().ToLower(CultureInfo.CurrentCulture),
                         match.OldMember.MemberType.ToString().ToLower(CultureInfo.CurrentCulture),
                         match.OldMember.ToString(false));
 
                     // This should be an increase from None to Feature
-                    changeType = matchChange;
+                    changeType = result.ChangeType;
                 }
             }
 
