@@ -92,9 +92,10 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
                 new MemberMatch(oldMember, newMember),
                 new MemberMatch(oldMember, newMember)
             };
-            var firstResult = ComparisonResult.NoChange(oldMember, newMember);
-            var secondResult = ComparisonResult.MemberChanged(SemVerChangeType.Feature, oldMember, newMember, "feature change");
-            var thirdResult = ComparisonResult.MemberChanged(SemVerChangeType.Breaking, oldMember, newMember, "breaking change");
+            var match = new MemberMatch(oldMember, newMember);
+            var firstResult = ComparisonResult.NoChange(match);
+            var secondResult = ComparisonResult.MemberChanged(SemVerChangeType.Feature, match, "feature change");
+            var thirdResult = ComparisonResult.MemberChanged(SemVerChangeType.Breaking, match, "breaking change");
 
             var results = new MatchResults(matches, oldMembersNotMatched, newMembersNotMatched);
             var oldNodes = new List<SyntaxNode>();
@@ -123,6 +124,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var comparers = new List<IMemberComparer> { comparer };
             var oldMember = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
             var newMember = oldMember.JsonClone();
+            var match = new MemberMatch(oldMember, newMember);
             var oldMembersNotMatched = new List<MemberDefinition>();
             var newMembersNotMatched = new List<MemberDefinition>();
             var matches = new List<MemberMatch>
@@ -133,11 +135,11 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
             if (changeType == SemVerChangeType.None)
             {
-                result = ComparisonResult.NoChange(oldMember, newMember);
+                result = ComparisonResult.NoChange(match);
             }
             else
             {
-                result = ComparisonResult.MemberChanged(changeType, oldMember, newMember, changeType + " change");
+                result = ComparisonResult.MemberChanged(changeType, match, changeType + " change");
             }
 
             var results = new MatchResults(matches, oldMembersNotMatched, newMembersNotMatched);
@@ -168,6 +170,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var comparers = new List<IMemberComparer> { comparer };
             var oldMember = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
             var newMember = oldMember.JsonClone();
+            var match = new MemberMatch(oldMember, newMember);
             var oldMembersNotMatched = new List<MemberDefinition>();
             var newMembersNotMatched = new List<MemberDefinition>();
             var matches = new List<MemberMatch>
@@ -178,11 +181,11 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
             if (changeType == SemVerChangeType.None)
             {
-                result = ComparisonResult.NoChange(oldMember, newMember);
+                result = ComparisonResult.NoChange(match);
             }
             else
             {
-                result = ComparisonResult.MemberChanged(changeType, oldMember, newMember, changeType + " change");
+                result = ComparisonResult.MemberChanged(changeType, match, changeType + " change");
             }
 
             var results = new MatchResults(matches, oldMembersNotMatched, newMembersNotMatched);

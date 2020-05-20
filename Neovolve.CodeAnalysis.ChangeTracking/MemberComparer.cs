@@ -28,31 +28,31 @@
                     "The two members cannot be compared because they have different Name values.");
             }
 
-            if (match.OldMember.IsPublic == false &&
-                match.NewMember.IsPublic == false)
+            if (match.OldMember.IsPublic == false
+                && match.NewMember.IsPublic == false)
             {
                 // It doesn't matter if there is a change to the return type, the member isn't visible anyway
-                return ComparisonResult.NoChange(match.OldMember, match.NewMember);
+                return ComparisonResult.NoChange(match);
             }
 
-            if (match.OldMember.IsPublic &&
-                match.NewMember.IsPublic == false)
+            if (match.OldMember.IsPublic
+                && match.NewMember.IsPublic == false)
             {
                 // The member was public but isn't now, breaking change
                 var message = match.OldMember + " changed scope from public";
 
-                return ComparisonResult.MemberChanged(SemVerChangeType.Breaking, match.OldMember, match.NewMember,
+                return ComparisonResult.MemberChanged(SemVerChangeType.Breaking, match,
                     message);
             }
 
-            if (match.OldMember.IsPublic == false &&
-                match.NewMember.IsPublic)
+            if (match.OldMember.IsPublic == false
+                && match.NewMember.IsPublic)
             {
                 // The member return type may have changed, but the member is only now becoming public
                 // This is a feature because the public API didn't break even if the return type has changed
                 var message = match.OldMember + " changed scope to public";
 
-                return ComparisonResult.MemberChanged(SemVerChangeType.Feature, match.OldMember, match.NewMember,
+                return ComparisonResult.MemberChanged(SemVerChangeType.Feature, match,
                     message);
             }
 
@@ -62,11 +62,11 @@
                 var message = match.OldMember +
                               $" changed return type from {match.OldMember.ReturnType} to {match.NewMember.ReturnType}";
 
-                return ComparisonResult.MemberChanged(SemVerChangeType.Breaking, match.OldMember, match.NewMember,
+                return ComparisonResult.MemberChanged(SemVerChangeType.Breaking, match,
                     message);
             }
 
-            return ComparisonResult.NoChange(match.OldMember, match.NewMember);
+            return ComparisonResult.NoChange(match);
         }
 
         public virtual bool IsSupported(MemberDefinition member)
