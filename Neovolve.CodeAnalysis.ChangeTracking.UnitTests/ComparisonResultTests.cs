@@ -20,7 +20,7 @@
         [InlineData(false, SemVerChangeType.None)]
         public void MemberAddedPopulatesInformationFromParameters(bool isPublic, SemVerChangeType expected)
         {
-            var newMember = Model.Create<PropertyDefinition>().Set(x => x.IsPublic = isPublic);
+            var newMember = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>().Set(x => x.IsPublic = isPublic);
 
             var actual = ComparisonResult.MemberAdded(newMember);
 
@@ -108,7 +108,7 @@
         [InlineData(false, SemVerChangeType.None)]
         public void MemberRemovedPopulatesInformationFromParameters(bool isPublic, SemVerChangeType expected)
         {
-            var oldMember = Model.Create<PropertyDefinition>().Set(x => x.IsPublic = isPublic);
+            var oldMember = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>().Set(x => x.IsPublic = isPublic);
 
             var actual = ComparisonResult.MemberRemoved(oldMember);
 

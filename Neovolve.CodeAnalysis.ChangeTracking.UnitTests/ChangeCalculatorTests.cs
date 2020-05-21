@@ -29,9 +29,9 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
         {
             var evaluator = Substitute.For<IMatchEvaluator>();
             var comparer = Substitute.For<IMemberComparer>();
-            var comparers = new List<IMemberComparer> { comparer };
+            var comparers = new List<IMemberComparer> {comparer};
             var oldMemberNotMatched = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
-            var oldMembersNotMatched = new List<MemberDefinition> { oldMemberNotMatched };
+            var oldMembersNotMatched = new List<MemberDefinition> {oldMemberNotMatched};
             var newMembersNotMatched = new List<MemberDefinition>();
             var matches = new List<MemberMatch>();
             var results = new MatchResults(matches, oldMembersNotMatched, newMembersNotMatched);
@@ -45,9 +45,9 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
             var sut = new ChangeCalculator(evaluator, comparers, _logger);
 
-            var actual = sut.CalculateChange(oldNodes, newNodes);
+            var actual = sut.CalculateChanges(oldNodes, newNodes);
 
-            actual.Should().Be(SemVerChangeType.Breaking);
+            actual.ChangeType.Should().Be(SemVerChangeType.Breaking);
         }
 
         [Fact]
@@ -55,9 +55,9 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
         {
             var evaluator = Substitute.For<IMatchEvaluator>();
             var comparer = Substitute.For<IMemberComparer>();
-            var comparers = new List<IMemberComparer> { comparer };
+            var comparers = new List<IMemberComparer> {comparer};
             var oldMemberNotMatched = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
-            var oldMembersNotMatched = new List<MemberDefinition> { oldMemberNotMatched };
+            var oldMembersNotMatched = new List<MemberDefinition> {oldMemberNotMatched};
             var newMembersNotMatched = new List<MemberDefinition>();
             var matches = new List<MemberMatch>();
             var results = new MatchResults(matches, oldMembersNotMatched, newMembersNotMatched);
@@ -71,9 +71,9 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
             var sut = new ChangeCalculator(evaluator, comparers, null);
 
-            var actual = sut.CalculateChange(oldNodes, newNodes);
+            var actual = sut.CalculateChanges(oldNodes, newNodes);
 
-            actual.Should().Be(SemVerChangeType.Breaking);
+            actual.ChangeType.Should().Be(SemVerChangeType.Breaking);
         }
 
         [Fact]
@@ -81,7 +81,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
         {
             var evaluator = Substitute.For<IMatchEvaluator>();
             var comparer = Substitute.For<IMemberComparer>();
-            var comparers = new List<IMemberComparer> { comparer };
+            var comparers = new List<IMemberComparer> {comparer};
             var oldMember = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
             var newMember = oldMember.JsonClone();
             var oldMembersNotMatched = new List<MemberDefinition>();
@@ -108,9 +108,9 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
             var sut = new ChangeCalculator(evaluator, comparers, _logger);
 
-            var actual = sut.CalculateChange(oldNodes, newNodes);
+            var actual = sut.CalculateChanges(oldNodes, newNodes);
 
-            actual.Should().Be(SemVerChangeType.Breaking);
+            actual.ChangeType.Should().Be(SemVerChangeType.Breaking);
         }
 
         [Theory]
@@ -121,7 +121,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
         {
             var evaluator = Substitute.For<IMatchEvaluator>();
             var comparer = Substitute.For<IMemberComparer>();
-            var comparers = new List<IMemberComparer> { comparer };
+            var comparers = new List<IMemberComparer> {comparer};
             var oldMember = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
             var newMember = oldMember.JsonClone();
             var match = new MemberMatch(oldMember, newMember);
@@ -154,9 +154,9 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
             var sut = new ChangeCalculator(evaluator, comparers, _logger);
 
-            var actual = sut.CalculateChange(oldNodes, newNodes);
+            var actual = sut.CalculateChanges(oldNodes, newNodes);
 
-            actual.Should().Be(changeType);
+            actual.ChangeType.Should().Be(changeType);
         }
 
         [Theory]
@@ -167,7 +167,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
         {
             var evaluator = Substitute.For<IMatchEvaluator>();
             var comparer = Substitute.For<IMemberComparer>();
-            var comparers = new List<IMemberComparer> { comparer };
+            var comparers = new List<IMemberComparer> {comparer};
             var oldMember = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
             var newMember = oldMember.JsonClone();
             var match = new MemberMatch(oldMember, newMember);
@@ -200,9 +200,9 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
             var sut = new ChangeCalculator(evaluator, comparers, null);
 
-            var actual = sut.CalculateChange(oldNodes, newNodes);
+            var actual = sut.CalculateChanges(oldNodes, newNodes);
 
-            actual.Should().Be(changeType);
+            actual.ChangeType.Should().Be(changeType);
         }
 
         [Fact]
@@ -210,10 +210,10 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
         {
             var evaluator = Substitute.For<IMatchEvaluator>();
             var comparer = Substitute.For<IMemberComparer>();
-            var comparers = new List<IMemberComparer> { comparer };
+            var comparers = new List<IMemberComparer> {comparer};
             var oldMembersNotMatched = new List<MemberDefinition>();
             var newMemberNotMatched = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
-            var newMembersNotMatched = new List<MemberDefinition> { newMemberNotMatched };
+            var newMembersNotMatched = new List<MemberDefinition> {newMemberNotMatched};
             var matches = new List<MemberMatch>();
             var results = new MatchResults(matches, oldMembersNotMatched, newMembersNotMatched);
             var oldNodes = new List<SyntaxNode>
@@ -226,9 +226,9 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
             var sut = new ChangeCalculator(evaluator, comparers, _logger);
 
-            var actual = sut.CalculateChange(oldNodes, newNodes);
+            var actual = sut.CalculateChanges(oldNodes, newNodes);
 
-            actual.Should().Be(SemVerChangeType.Feature);
+            actual.ChangeType.Should().Be(SemVerChangeType.Feature);
         }
 
         [Fact]
@@ -237,10 +237,10 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
         {
             var evaluator = Substitute.For<IMatchEvaluator>();
             var comparer = Substitute.For<IMemberComparer>();
-            var comparers = new List<IMemberComparer> { comparer };
+            var comparers = new List<IMemberComparer> {comparer};
             var oldMembersNotMatched = new List<MemberDefinition>();
             var newMemberNotMatched = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
-            var newMembersNotMatched = new List<MemberDefinition> { newMemberNotMatched };
+            var newMembersNotMatched = new List<MemberDefinition> {newMemberNotMatched};
             var matches = new List<MemberMatch>();
             var results = new MatchResults(matches, oldMembersNotMatched, newMembersNotMatched);
             var oldNodes = new List<SyntaxNode>
@@ -253,9 +253,31 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
             var sut = new ChangeCalculator(evaluator, comparers, null);
 
-            var actual = sut.CalculateChange(oldNodes, newNodes);
+            var actual = sut.CalculateChanges(oldNodes, newNodes);
 
-            actual.Should().Be(SemVerChangeType.Feature);
+            actual.ChangeType.Should().Be(SemVerChangeType.Feature);
+        }
+
+        [Fact]
+        public void CompareChangesReturnsNoneWhenEmptyComparisonReturned()
+        {
+            var matches = Array.Empty<MemberMatch>();
+            var emptyMissingMembers = Array.Empty<MemberDefinition>();
+            var matchResults = new MatchResults(matches, emptyMissingMembers, emptyMissingMembers);
+            var oldNodes = new List<SyntaxNode>();
+            var newNodes = new List<SyntaxNode>();
+
+            var evaluator = Substitute.For<IMatchEvaluator>();
+            var comparer = Substitute.For<IMemberComparer>();
+            var comparers = new List<IMemberComparer> {comparer};
+
+            evaluator.CompareNodes(oldNodes, newNodes).Returns(matchResults);
+
+            var sut = new ChangeCalculator(evaluator, comparers, _logger);
+
+            var actual = sut.CalculateChanges(oldNodes, newNodes);
+
+            actual.ChangeType.Should().Be(SemVerChangeType.None);
         }
 
         [Fact]
@@ -263,7 +285,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
         {
             var evaluator = Substitute.For<IMatchEvaluator>();
             var comparer = Substitute.For<IMemberComparer>();
-            var comparers = new List<IMemberComparer> { comparer };
+            var comparers = new List<IMemberComparer> {comparer};
             var oldMembersNotMatched = new List<MemberDefinition>();
             var newMembersNotMatched = new List<MemberDefinition>();
             var matches = new List<MemberMatch>();
@@ -275,25 +297,9 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
             var sut = new ChangeCalculator(evaluator, comparers, _logger);
 
-            var actual = sut.CalculateChange(oldNodes, newNodes);
+            var actual = sut.CalculateChanges(oldNodes, newNodes);
 
-            actual.Should().Be(SemVerChangeType.None);
-        }
-
-        [Fact]
-        public void CompareChangesReturnsNullWhenNoResultsFound()
-        {
-            var evaluator = Substitute.For<IMatchEvaluator>();
-            var comparer = Substitute.For<IMemberComparer>();
-            var comparers = new List<IMemberComparer> { comparer };
-            var oldNodes = new List<SyntaxNode>();
-            var newNodes = new List<SyntaxNode>();
-
-            var sut = new ChangeCalculator(evaluator, comparers, _logger);
-
-            var actual = sut.CalculateChange(oldNodes, newNodes);
-
-            actual.Should().Be(SemVerChangeType.None);
+            actual.ChangeType.Should().Be(SemVerChangeType.None);
         }
 
         [Fact]
@@ -301,12 +307,12 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
         {
             var evaluator = Substitute.For<IMatchEvaluator>();
             var comparer = Substitute.For<IMemberComparer>();
-            var comparers = new List<IMemberComparer> { comparer };
+            var comparers = new List<IMemberComparer> {comparer};
             var oldNodes = new List<SyntaxNode>();
 
             var sut = new ChangeCalculator(evaluator, comparers, _logger);
 
-            Action action = () => sut.CalculateChange(oldNodes, null!);
+            Action action = () => sut.CalculateChanges(oldNodes, null!);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -316,12 +322,12 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
         {
             var evaluator = Substitute.For<IMatchEvaluator>();
             var comparer = Substitute.For<IMemberComparer>();
-            var comparers = new List<IMemberComparer> { comparer };
+            var comparers = new List<IMemberComparer> {comparer};
             var newNodes = new List<SyntaxNode>();
 
             var sut = new ChangeCalculator(evaluator, comparers, _logger);
 
-            Action action = () => sut.CalculateChange(null!, newNodes);
+            Action action = () => sut.CalculateChanges(null!, newNodes);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -331,7 +337,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
         {
             var evaluator = Substitute.For<IMatchEvaluator>();
             var comparer = Substitute.For<IMemberComparer>();
-            var comparers = new List<IMemberComparer> { comparer };
+            var comparers = new List<IMemberComparer> {comparer};
             var oldMember = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
             var newMember = oldMember.JsonClone();
             var oldMembersNotMatched = new List<MemberDefinition>();
@@ -350,7 +356,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
             var sut = new ChangeCalculator(evaluator, comparers, _logger);
 
-            Action action = () => sut.CalculateChange(oldNodes, newNodes);
+            Action action = () => sut.CalculateChanges(oldNodes, newNodes);
 
             action.Should().Throw<InvalidOperationException>();
         }
@@ -386,7 +392,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
         public void ThrowsExceptionWhenCreatedWithNullEvaluator()
         {
             var comparer = Substitute.For<IMemberComparer>();
-            var comparers = new List<IMemberComparer> { comparer };
+            var comparers = new List<IMemberComparer> {comparer};
 
             Action action = () => new ChangeCalculator(null!, comparers, _logger);
 

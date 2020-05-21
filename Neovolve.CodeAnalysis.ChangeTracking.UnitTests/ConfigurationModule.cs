@@ -15,6 +15,9 @@
 
             configuration.AddCreationRule<AttributeDefinition>(x => x.MemberType, MemberType.Attribute, 100);
             configuration.AddIgnoreRule<AttributeDefinition>(x => x.Attributes);
+
+            configuration.AddValueGenerator<SemVerChangeTypeValueGenerator>();
+            configuration.AddTypeCreator<ComparisonResultTypeCreator>();
         }
     }
 }

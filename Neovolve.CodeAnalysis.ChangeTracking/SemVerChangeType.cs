@@ -2,7 +2,7 @@
 {
     public enum SemVerChangeType
     {
-        None,
+        None = 0,
 
         Feature,
 

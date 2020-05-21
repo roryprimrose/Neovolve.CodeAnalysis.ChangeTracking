@@ -47,7 +47,7 @@
         /// <summary>
         ///     Gets or sets the value that identifies the type of member (such as Property, Field or Attribute).
         /// </summary>
-        public MemberType MemberType { get; set; }
+        public MemberType MemberType { get; set; } = MemberType.Unknown;
 
         /// <summary>
         ///     Gets or sets the name of the member.
