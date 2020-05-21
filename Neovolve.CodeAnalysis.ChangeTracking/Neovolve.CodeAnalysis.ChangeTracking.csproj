@@ -12,6 +12,7 @@
     <PackageProjectUrl>https://github.com/roryprimrose/Neovolve.CodeAnalysis.ChangeTracking</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/roryprimrose/Neovolve.CodeAnalysis.ChangeTracking</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
     <PackageTags>Analysis</PackageTags>
     <Version>1.0.0-alpha</Version>
   </PropertyGroup>

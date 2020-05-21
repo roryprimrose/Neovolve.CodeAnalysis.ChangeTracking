@@ -45,6 +45,39 @@
             value.MemberType.Should().Be(MemberType.Attribute);
         }
 
+        [Theory]
+        [InlineData("MyClass.cs")]
+        [InlineData("MyNamespace\\MyClass.cs")]
+        [InlineData("MyNamespace//MyClass.cs")]
+        [InlineData("")]
+        public async Task ResolvePopulatesFilePathWherePossible(string filePath)
+        {
+            var code = TestNode.ClassProperty;
+
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code, filePath).ConfigureAwait(false);
+
+            var sut = new PropertyResolver();
+
+            var actual = (PropertyDefinition) sut.Resolve(node);
+
+            actual.FilePath.Should().Be(filePath);
+        }
+
+        [Fact]
+        public async Task ResolvePopulatesMemberStartPosition()
+        {
+            var code = TestNode.ClassProperty;
+
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code).ConfigureAwait(false);
+
+            var sut = new PropertyResolver();
+
+            var actual = (PropertyDefinition) sut.Resolve(node);
+
+            actual.LineIndex.Should().BeGreaterThan(0);
+            actual.CharacterIndex.Should().BeGreaterThan(0);
+        }
+
         [Fact]
         public async Task ResolveReturnsEmptyAttributesForField()
         {

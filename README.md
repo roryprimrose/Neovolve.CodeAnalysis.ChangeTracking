@@ -22,21 +22,21 @@ Changes not currently evaluated are:
 
 ## Usage
 ```csharp
-var oldCode = new List<string>
+var oldCode = new List<CodeSource>
 {
-    @"
-    public class Test
-    {
-        public string Value;
-    }"
+    new CodeSource(@"
+        public class Test
+        {
+            public string Value;
+        }", "Test.cs")
 };
-var newCode = new List<string>
+var newCode = new List<CodeSource>
 {
-    @"
-    public class Test
-    {
-        public bool Value;
-    }"
+    new CodeSource(@"
+        public class Test
+        {
+            public bool Value;
+        }", "Test.cs")
 };
 
 var calculator = ChangeCalculatorFactory.BuildCalculator();
