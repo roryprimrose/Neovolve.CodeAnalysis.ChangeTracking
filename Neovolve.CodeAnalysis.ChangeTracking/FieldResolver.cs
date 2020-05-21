@@ -23,7 +23,7 @@
 
             var member = Resolve<MemberDefinition>(syntaxNode);
 
-            member.MemberType = "Field";
+            member.MemberType = MemberType.Field;
             member.Name = syntaxNode.Declaration.Variables.Single().Identifier.Text;
             member.ReturnType = syntaxNode.Declaration.Type.ToString();
 

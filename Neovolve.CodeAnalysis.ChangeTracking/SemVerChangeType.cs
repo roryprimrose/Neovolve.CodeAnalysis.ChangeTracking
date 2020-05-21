@@ -1,8 +1,8 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking
 {
-    public enum ChangeType
+    public enum SemVerChangeType
     {
-        None,
+        None = 0,
 
         Feature,
 

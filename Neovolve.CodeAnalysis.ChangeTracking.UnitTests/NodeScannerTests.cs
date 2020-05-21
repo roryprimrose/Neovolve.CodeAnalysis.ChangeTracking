@@ -32,7 +32,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
         {
             var resolver = Substitute.For<INodeResolver>();
             var resolvers = new List<INodeResolver> {resolver};
-            var definition = Model.UsingModule<CompilerModule>().Create<PropertyDefinition>();
+            var definition = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
             var rootNode = await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false);
             var node = TestNode.FindNode<PropertyDeclarationSyntax>(rootNode);
 
@@ -107,7 +107,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
         {
             var resolver = Substitute.For<INodeResolver>();
             var resolvers = new List<INodeResolver> {resolver};
-            var definition = Model.UsingModule<CompilerModule>().Create<PropertyDefinition>();
+            var definition = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
             var rootNode = await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false);
             var node = TestNode.FindNode<PropertyDeclarationSyntax>(rootNode);
 
@@ -133,7 +133,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
             var sut = new NodeScanner(resolvers, _logger);
 
-            Action action = () => sut.FindDefinitions(null);
+            Action action = () => sut.FindDefinitions(null!);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -155,7 +155,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             "Testing constructor guard clause")]
         public void ThrowsExceptionWithNullResolvers()
         {
-            Action action = () => new NodeScanner(null, _logger);
+            Action action = () => new NodeScanner(null!, _logger);
 
             action.Should().Throw<ArgumentNullException>();
         }

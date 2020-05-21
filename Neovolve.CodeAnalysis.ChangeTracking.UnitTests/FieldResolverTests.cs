@@ -23,7 +23,7 @@
         {
             var resolver = new FieldResolver();
 
-            Action action = () => resolver.IsSupported(null);
+            Action action = () => resolver.IsSupported(null!);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -90,7 +90,7 @@ namespace MyNamespace
         [InlineData("[Serialize] string", "string")]
         public async Task ResolveReturnsFieldDataType(string dataType, string expected)
         {
-            var code = TestNode.Field.Replace("public string MyItem", "public " + dataType + " MyItem", StringComparison.Ordinal);
+            var code = TestNode.Field.Replace("public string MyField", "public " + dataType + " MyField", StringComparison.Ordinal);
 
             var node = await TestNode.FindNode<FieldDeclarationSyntax>(code).ConfigureAwait(false);
 
@@ -110,7 +110,7 @@ namespace MyNamespace
 
             var actual = sut.Resolve(node);
 
-            actual.Name.Should().Be("MyItem");
+            actual.Name.Should().Be("MyField");
         }
 
         [Fact]
@@ -122,7 +122,7 @@ namespace MyNamespace
 
             var actual = sut.Resolve(node);
 
-            actual.MemberType.Should().Be("Field");
+            actual.MemberType.Should().Be(MemberType.Field);
         }
 
         [Fact]
@@ -130,7 +130,7 @@ namespace MyNamespace
         {
             var resolver = new FieldResolver();
 
-            Action action = () => resolver.Resolve(null);
+            Action action = () => resolver.Resolve(null!);
 
             action.Should().Throw<ArgumentNullException>();
         }

@@ -13,11 +13,11 @@
         [InlineData(typeof(AttributeDefinition))]
         public void ToStringReturnsMemberDescription(Type definitionType)
         {
-            var sut = (MemberDefinition) Model.UsingModule<CompilerModule>().Create(definitionType);
+            var sut = (MemberDefinition) Model.UsingModule<ConfigurationModule>().Create(definitionType);
 
             var actual = sut.ToString();
 
-            actual.Should().StartWith(sut.MemberType);
+            actual.Should().StartWith(sut.MemberType.ToString());
             actual.Should().Contain(sut.Namespace);
             actual.Should().Contain(sut.OwningType);
             actual.Should().Contain(sut.Name);
@@ -28,17 +28,17 @@
         [InlineData(false)]
         public void ToStringReturnsMemberDescriptionWithOptionalMemberType(bool include)
         {
-            var sut = Model.UsingModule<CompilerModule>().Create<MemberDefinition>();
+            var sut = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
 
             var actual = sut.ToString(include);
 
             if (include)
             {
-                actual.Should().Contain(sut.MemberType);
+                actual.Should().Contain(sut.MemberType.ToString());
             }
             else
             {
-                actual.Should().NotContain(sut.MemberType);
+                actual.Should().NotContain(sut.MemberType.ToString());
             }
         }
 
@@ -48,11 +48,12 @@
         [InlineData(typeof(AttributeDefinition))]
         public void ToStringReturnsMemberDescriptionWithoutNamespace(Type definitionType)
         {
-            var sut = ((MemberDefinition) Model.UsingModule<CompilerModule>().Create(definitionType)).Set(x => x.Namespace = null);
+            var sut = ((MemberDefinition) Model.UsingModule<ConfigurationModule>().Create(definitionType)).Set(x =>
+                x.Namespace = null);
 
             var actual = sut.ToString();
 
-            actual.Should().StartWith(sut.MemberType);
+            actual.Should().StartWith(sut.MemberType.ToString());
             actual.Should().NotContain("..");
             actual.Should().Contain(sut.OwningType);
             actual.Should().Contain(sut.Name);

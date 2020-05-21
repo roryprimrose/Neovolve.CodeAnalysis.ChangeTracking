@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Globalization;
     using System.Linq;
     using EnsureThat;
@@ -13,9 +12,9 @@
     {
         private readonly IList<IMemberComparer> _comparers;
         private readonly IMatchEvaluator _evaluator;
-        private readonly ILogger _logger;
+        private readonly ILogger? _logger;
 
-        public ChangeCalculator(IMatchEvaluator evaluator, IEnumerable<IMemberComparer> comparers, ILogger logger)
+        public ChangeCalculator(IMatchEvaluator evaluator, IEnumerable<IMemberComparer> comparers, ILogger? logger)
         {
             Ensure.Any.IsNotNull(evaluator, nameof(evaluator));
             Ensure.Any.IsNotNull(comparers, nameof(comparers));
@@ -28,39 +27,48 @@
             _logger = logger;
         }
 
-        public ChangeType CalculateChange(IEnumerable<SyntaxNode> oldNodes, IEnumerable<SyntaxNode> newNodes)
+        public ChangeCalculatorResult CalculateChanges(IEnumerable<SyntaxNode> oldNodes,
+            IEnumerable<SyntaxNode> newNodes)
         {
             Ensure.Any.IsNotNull(oldNodes, nameof(oldNodes));
             Ensure.Any.IsNotNull(newNodes, nameof(newNodes));
 
-            var results = _evaluator.CompareNodes(oldNodes, newNodes);
+            var matchingNodes = _evaluator.CompareNodes(oldNodes, newNodes);
 
-            if (results == null)
+            var results = new ChangeCalculatorResult();
+
+            // Record any public members that have been added
+            foreach (var memberAdded in matchingNodes.NewMembersNotMatched.Where(x => x.IsPublic))
             {
-                _logger?.LogInformation("No member matches found, assuming no code change.");
-
-                return ChangeType.None;
-            }
-
-            // Check if there are any old members that didn't match where they were publicly visible - breaking change
-            var oldPublicMember = results.OldMembersNotMatched.FirstOrDefault(x => x.IsPublic);
-
-            if (oldPublicMember != null)
-            {
-                var memberType = oldPublicMember.MemberType.ToLower(CultureInfo.CurrentCulture);
+                var memberType = memberAdded.MemberType.ToString().ToLower(CultureInfo.CurrentCulture);
 
                 _logger?.LogInformation(
-                    "Found old public {0} {1} that does not match any new public {2}. This indicates a breaking change.",
-                    memberType, oldPublicMember.ToString(false),
+                    "Found new public {0} {1} that does not match any old public {2} (feature)",
+                    memberType, memberAdded.ToString(false),
                     memberType);
 
-                return ChangeType.Breaking;
+                var memberRemovedResult = ComparisonResult.MemberAdded(memberAdded);
+
+                results.Add(memberRemovedResult);
             }
 
-            var changeType = ChangeType.None;
+            // Record any public members that have been removed
+            foreach (var memberRemoved in matchingNodes.OldMembersNotMatched.Where(x => x.IsPublic))
+            {
+                var memberType = memberRemoved.MemberType.ToString().ToLower(CultureInfo.CurrentCulture);
+
+                _logger?.LogInformation(
+                    "Found old public {0} {1} that does not match any new public {2} (breaking)",
+                    memberType, memberRemoved.ToString(false),
+                    memberType);
+
+                var memberRemovedResult = ComparisonResult.MemberRemoved(memberRemoved);
+
+                results.Add(memberRemovedResult);
+            }
 
             // Check all the matches for a breaking change or feature added
-            foreach (var match in results.Matches)
+            foreach (var match in matchingNodes.Matches)
             {
                 var comparer = _comparers.FirstOrDefault(x => x.IsSupported(match.OldMember));
 
@@ -73,61 +81,39 @@
                     throw new InvalidOperationException(message);
                 }
 
-                var matchChange = comparer.Compare(match);
+                var result = comparer.Compare(match);
 
-                if (matchChange == ChangeType.Breaking)
+                if (result.ChangeType == SemVerChangeType.None)
+                {
+                    _logger?.LogDebug(result.Message);
+
+                    // Don't add comparison results to the outcome where it looks like there is no change
+                    continue;
+                }
+
+                _logger?.LogInformation(result.Message);
+
+                results.Add(result);
+
+                if (result.ChangeType == SemVerChangeType.Breaking)
                 {
                     _logger?.LogInformation("Identified a potential breaking change in {0} {1}.",
-                        match.OldMember.MemberType.ToLower(CultureInfo.CurrentCulture),
+                        match.OldMember.MemberType.ToString().ToLower(CultureInfo.CurrentCulture),
                         match.OldMember.ToString(false));
-
-                    // We can't get a worse result so no point continuing
-                    return ChangeType.Breaking;
                 }
-
-                if (matchChange > changeType)
+                else if (result.ChangeType == SemVerChangeType.Feature)
                 {
                     _logger?.LogInformation("Identified a potential {0} change in {1} {2}.",
-                        matchChange.ToString().ToLower(CultureInfo.CurrentCulture),
-                        match.OldMember.MemberType.ToLower(CultureInfo.CurrentCulture),
+                        result.ToString().ToLower(CultureInfo.CurrentCulture),
+                        match.OldMember.MemberType.ToString().ToLower(CultureInfo.CurrentCulture),
                         match.OldMember.ToString(false));
-
-                    // This should be an increase from None to Feature
-                    changeType = matchChange;
                 }
             }
 
-            if (changeType > ChangeType.None)
-            {
-                _logger?.LogInformation("Calculated overall result as a {0} change.",
-                    changeType.ToString().ToLower(CultureInfo.CurrentCulture));
+            _logger?.LogInformation("Calculated overall result as a {0} change.",
+                results.ChangeType.ToString().ToLower(CultureInfo.CurrentCulture));
 
-                // From here on we can't find any more breaking changes
-                // This really should be just a feature change at this point
-                Debug.Assert(changeType == ChangeType.Feature);
-
-                return changeType;
-            }
-
-            // Check all the new members that didn't match where they are publicly visible - feature change
-            var newPublicMember = results.NewMembersNotMatched.FirstOrDefault(x => x.IsPublic);
-
-            if (newPublicMember != null)
-            {
-                var memberType = newPublicMember.MemberType.ToLower(CultureInfo.CurrentCulture);
-
-                _logger?.LogInformation(
-                    "Found new public {0} {1} that does not match any old public {2}. This indicates a new feature.",
-                    memberType, newPublicMember.ToString(false), memberType);
-
-                // New members added. At this point nothing has been found to be removed or altered to produce a breaking change
-                return ChangeType.Feature;
-            }
-
-            // No change identified
-            _logger?.LogInformation("No changes identified between the old and new members.");
-
-            return ChangeType.None;
+            return results;
         }
     }
 }

@@ -43,15 +43,15 @@ var calculator = ChangeCalculatorFactory.BuildCalculator();
 
 var result = await calculator.CalculateChange(oldCode, newCode).ConfigureAwait(false);
 
-if (result == ChangeType.None) 
+if (result.ChangeType == ChangeType.None) 
 {
     // Looks like there is no change in the members
 }
-else if (result == ChangeType.Feature)
+else if (result.ChangeType == ChangeType.Feature)
 {
     // Looks like members have been added to the code
 }
-else if (result == ChangeType.Breaking)
+else if (result.ChangeType == ChangeType.Breaking)
 {
     // Looks like members have been removed or changed
 }

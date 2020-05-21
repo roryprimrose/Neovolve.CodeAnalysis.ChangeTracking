@@ -15,10 +15,10 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
         [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification = "Testing constructor guard clause")]
         public void ThrowsExceptionWhenCreatedWithNullMatches()
         {
-            var oldMembersNotMatched = Model.UsingModule<CompilerModule>().Create<IEnumerable<MemberDefinition>>();
-            var newMembersNotMatched = Model.UsingModule<CompilerModule>().Create<IEnumerable<MemberDefinition>>();
+            var oldMembersNotMatched = Model.UsingModule<ConfigurationModule>().Create<IEnumerable<MemberDefinition>>();
+            var newMembersNotMatched = Model.UsingModule<ConfigurationModule>().Create<IEnumerable<MemberDefinition>>();
 
-            Action action = () => new MatchResults(null, oldMembersNotMatched, newMembersNotMatched);
+            Action action = () => new MatchResults(null!, oldMembersNotMatched, newMembersNotMatched);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -27,10 +27,10 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
         [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification = "Testing constructor guard clause")]
         public void ThrowsExceptionWhenCreatedWithNullOldMembersNotMatched()
         {
-            var matches = Model.UsingModule<CompilerModule>().Create<IEnumerable<MemberMatch>>();
-            var newMembersNotMatched = Model.UsingModule<CompilerModule>().Create<IEnumerable<MemberDefinition>>();
+            var matches = Model.UsingModule<ConfigurationModule>().Create<IEnumerable<MemberMatch>>();
+            var newMembersNotMatched = Model.UsingModule<ConfigurationModule>().Create<IEnumerable<MemberDefinition>>();
 
-            Action action = () => new MatchResults(matches, null, newMembersNotMatched);
+            Action action = () => new MatchResults(matches, null!, newMembersNotMatched);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -39,10 +39,10 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
         [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification = "Testing constructor guard clause")]
         public void ThrowsExceptionWhenCreatedWithNullNewMembersNotMatched()
         {
-            var matches = Model.UsingModule<CompilerModule>().Create<IEnumerable<MemberMatch>>();
-            var oldMembersNotMatched = Model.UsingModule<CompilerModule>().Create<IEnumerable<MemberDefinition>>();
+            var matches = Model.UsingModule<ConfigurationModule>().Create<IEnumerable<MemberMatch>>();
+            var oldMembersNotMatched = Model.UsingModule<ConfigurationModule>().Create<IEnumerable<MemberDefinition>>();
 
-            Action action = () => new MatchResults(matches, oldMembersNotMatched, null);
+            Action action = () => new MatchResults(matches, oldMembersNotMatched, null!);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -50,9 +50,9 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
         [Fact]
         public void CanCreateWithRequiredValues()
         {
-            var matches = Model.UsingModule<CompilerModule>().Create<IList<MemberMatch>>();
-            var oldMembersNotMatched = Model.UsingModule<CompilerModule>().Create<IList<MemberDefinition>>();
-            var newMembersNotMatched = Model.UsingModule<CompilerModule>().Create<IList<MemberDefinition>>();
+            var matches = Model.UsingModule<ConfigurationModule>().Create<IList<MemberMatch>>();
+            var oldMembersNotMatched = Model.UsingModule<ConfigurationModule>().Create<IList<MemberDefinition>>();
+            var newMembersNotMatched = Model.UsingModule<ConfigurationModule>().Create<IList<MemberDefinition>>();
 
             var sut = new MatchResults(matches, oldMembersNotMatched, newMembersNotMatched);
 

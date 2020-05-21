@@ -23,13 +23,13 @@
             var propertySyntax = (PropertyDeclarationSyntax) node;
 
             var member = Resolve<PropertyDefinition>(propertySyntax);
-
-            member.MemberType = "Property";
+            
+            member.MemberType = MemberType.Property;
             member.Name = propertySyntax.Identifier.Text;
             member.ReturnType = propertySyntax.Type.ToString();
 
             var getAccessor =
-                propertySyntax.AccessorList.Accessors.FirstOrDefault(x =>
+                propertySyntax.AccessorList?.Accessors.FirstOrDefault(x =>
                     x.Kind() == SyntaxKind.GetAccessorDeclaration);
 
             if (getAccessor != null)
@@ -42,7 +42,7 @@
             }
 
             var setAccessor =
-                propertySyntax.AccessorList.Accessors.FirstOrDefault(x =>
+                propertySyntax.AccessorList?.Accessors.FirstOrDefault(x =>
                     x.Kind() == SyntaxKind.SetAccessorDeclaration);
 
             if (setAccessor != null)

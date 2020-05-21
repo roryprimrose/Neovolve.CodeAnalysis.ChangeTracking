@@ -4,20 +4,28 @@
     using FluentAssertions;
     using ModelBuilder;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class PropertyComparerTests
     {
+        private readonly ITestOutputHelper _output;
+
+        public PropertyComparerTests(ITestOutputHelper output)
+        {
+            _output = output;
+        }
+
         [Theory]
-        [InlineData(false, false, ChangeType.None)]
-        [InlineData(true, true, ChangeType.None)]
-        [InlineData(true, false, ChangeType.Breaking)]
-        [InlineData(false, true, ChangeType.Feature)]
+        [InlineData(false, false, SemVerChangeType.None)]
+        [InlineData(true, true, SemVerChangeType.None)]
+        [InlineData(true, false, SemVerChangeType.Breaking)]
+        [InlineData(false, true, SemVerChangeType.Feature)]
         public void CompareReturnsBaseResultWhenPropertyAccessorsHaveSameVisibility(
             bool oldValue,
             bool newValue,
-            ChangeType expected)
+            SemVerChangeType expected)
         {
-            var oldMember = Model.UsingModule<CompilerModule>()
+            var oldMember = Model.UsingModule<ConfigurationModule>()
                 .Create<PropertyDefinition>()
                 .Set(x => x.IsPublic = oldValue);
             var newMember = oldMember.JsonClone().Set(x => x.IsPublic = newValue);
@@ -27,13 +35,15 @@
 
             var actual = sut.Compare(match);
 
-            actual.Should().Be(expected);
+            _output.WriteLine(actual.Message);
+
+            actual.ChangeType.Should().Be(expected);
         }
 
         [Fact]
         public void CompareReturnsBreakingWhenFeatureAlsoIndicated()
         {
-            var oldMember = Model.UsingModule<CompilerModule>()
+            var oldMember = Model.UsingModule<ConfigurationModule>()
                 .Create<PropertyDefinition>()
                 .Set(x => { x.CanWrite = false; });
             var newMember = oldMember.JsonClone()
@@ -48,13 +58,15 @@
 
             var actual = sut.Compare(match);
 
-            actual.Should().Be(ChangeType.Breaking);
+            _output.WriteLine(actual.Message);
+
+            actual.ChangeType.Should().Be(SemVerChangeType.Breaking);
         }
 
         [Fact]
         public void CompareReturnsFeatureWhenBreakingChangeOnAccessorsAndPropertyNowVisible()
         {
-            var oldMember = Model.UsingModule<CompilerModule>()
+            var oldMember = Model.UsingModule<ConfigurationModule>()
                 .Create<PropertyDefinition>()
                 .Set(x => { x.IsPublic = false; });
             var newMember = oldMember.JsonClone()
@@ -69,13 +81,15 @@
 
             var actual = sut.Compare(match);
 
-            actual.Should().Be(ChangeType.Feature);
+            _output.WriteLine(actual.Message);
+
+            actual.ChangeType.Should().Be(SemVerChangeType.Feature);
         }
 
         [Fact]
         public void CompareReturnsNoneWhenAccessorLessVisibleButPropertiesNotPublic()
         {
-            var oldMember = Model.UsingModule<CompilerModule>()
+            var oldMember = Model.UsingModule<ConfigurationModule>()
                 .Create<PropertyDefinition>()
                 .Set(x =>
                 {
@@ -89,13 +103,15 @@
 
             var actual = sut.Compare(match);
 
-            actual.Should().Be(ChangeType.None);
+            _output.WriteLine(actual.Message);
+
+            actual.ChangeType.Should().Be(SemVerChangeType.None);
         }
 
         [Fact]
         public void CompareReturnsNoneWhenNodesMatch()
         {
-            var oldMember = Model.UsingModule<CompilerModule>().Create<PropertyDefinition>();
+            var oldMember = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
             var newMember = oldMember.JsonClone();
             var match = new MemberMatch(oldMember, newMember);
 
@@ -103,20 +119,22 @@
 
             var actual = sut.Compare(match);
 
-            actual.Should().Be(ChangeType.None);
+            _output.WriteLine(actual.Message);
+
+            actual.ChangeType.Should().Be(SemVerChangeType.None);
         }
 
         [Theory]
-        [InlineData(false, false, ChangeType.None)]
-        [InlineData(true, true, ChangeType.None)]
-        [InlineData(false, true, ChangeType.Feature)]
-        [InlineData(true, false, ChangeType.Breaking)]
+        [InlineData(false, false, SemVerChangeType.None)]
+        [InlineData(true, true, SemVerChangeType.None)]
+        [InlineData(false, true, SemVerChangeType.Feature)]
+        [InlineData(true, false, SemVerChangeType.Breaking)]
         public void CompareReturnsResultOnChangesToGetAccessorVisibility(
             bool oldValue,
             bool newValue,
-            ChangeType expected)
+            SemVerChangeType expected)
         {
-            var oldMember = Model.UsingModule<CompilerModule>()
+            var oldMember = Model.UsingModule<ConfigurationModule>()
                 .Create<PropertyDefinition>()
                 .Set(x => x.CanRead = oldValue);
             var newMember = oldMember.JsonClone().Set(x => x.CanRead = newValue);
@@ -126,20 +144,22 @@
 
             var actual = sut.Compare(match);
 
-            actual.Should().Be(expected);
+            _output.WriteLine(actual.Message);
+
+            actual.ChangeType.Should().Be(expected);
         }
 
         [Theory]
-        [InlineData(false, false, ChangeType.None)]
-        [InlineData(true, true, ChangeType.None)]
-        [InlineData(false, true, ChangeType.Feature)]
-        [InlineData(true, false, ChangeType.Breaking)]
+        [InlineData(false, false, SemVerChangeType.None)]
+        [InlineData(true, true, SemVerChangeType.None)]
+        [InlineData(false, true, SemVerChangeType.Feature)]
+        [InlineData(true, false, SemVerChangeType.Breaking)]
         public void CompareReturnsResultOnChangesToSetAccessorVisibility(
             bool oldValue,
             bool newValue,
-            ChangeType expected)
+            SemVerChangeType expected)
         {
-            var oldMember = Model.UsingModule<CompilerModule>()
+            var oldMember = Model.UsingModule<ConfigurationModule>()
                 .Create<PropertyDefinition>()
                 .Set(x => x.CanWrite = oldValue);
             var newMember = oldMember.JsonClone().Set(x => x.CanWrite = newValue);
@@ -149,7 +169,9 @@
 
             var actual = sut.Compare(match);
 
-            actual.Should().Be(expected);
+            _output.WriteLine(actual.Message);
+
+            actual.ChangeType.Should().Be(expected);
         }
 
         [Fact]
@@ -157,7 +179,7 @@
         {
             var sut = new PropertyComparer();
 
-            Action action = () => sut.Compare(null);
+            Action action = () => sut.Compare(null!);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -168,7 +190,7 @@
         [InlineData(typeof(AttributeDefinition), false)]
         public void IsSupportedReturnsTrueForExactTypeMatch(Type type, bool expected)
         {
-            var definition = (MemberDefinition) Model.UsingModule<CompilerModule>().Create(type);
+            var definition = (MemberDefinition) Model.UsingModule<ConfigurationModule>().Create(type);
 
             var sut = new PropertyComparer();
 
@@ -182,7 +204,7 @@
         {
             var sut = new PropertyComparer();
 
-            Action action = () => sut.IsSupported(null);
+            Action action = () => sut.IsSupported(null!);
 
             action.Should().Throw<ArgumentNullException>();
         }

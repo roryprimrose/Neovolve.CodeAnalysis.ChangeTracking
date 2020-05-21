@@ -23,7 +23,7 @@
         {
             var sut = new PropertyResolver();
 
-            Action action = () => sut.IsSupported(null);
+            Action action = () => sut.IsSupported(null!);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -234,7 +234,7 @@ namespace MyNamespace
 
             var actual = sut.Resolve(node);
 
-            actual.MemberType.Should().Be("Property");
+            actual.MemberType.Should().Be(MemberType.Property);
         }
 
         [Theory]
@@ -248,8 +248,8 @@ namespace MyNamespace
         [InlineData("[Serialize] string", "string")]
         public async Task ResolveReturnsPropertyDataType(string dataType, string expected)
         {
-            var code = TestNode.ClassProperty.Replace("public string MyItem",
-                "public " + dataType + " MyItem",
+            var code = TestNode.ClassProperty.Replace("public string MyProperty",
+                "public " + dataType + " MyProperty",
                 StringComparison.Ordinal);
 
             var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code).ConfigureAwait(false);
@@ -270,7 +270,7 @@ namespace MyNamespace
 
             var actual = (PropertyDefinition) sut.Resolve(node);
 
-            actual.Name.Should().Be("MyItem");
+            actual.Name.Should().Be("MyProperty");
         }
 
         [Fact]
@@ -278,7 +278,7 @@ namespace MyNamespace
         {
             var sut = new PropertyResolver();
 
-            Action action = () => sut.Resolve(null);
+            Action action = () => sut.Resolve(null!);
 
             action.Should().Throw<ArgumentNullException>();
         }

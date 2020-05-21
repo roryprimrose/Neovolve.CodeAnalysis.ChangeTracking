@@ -8,10 +8,10 @@
 
     public class NodeScanner : INodeScanner
     {
-        private readonly ILogger _logger;
+        private readonly ILogger? _logger;
         private readonly IList<INodeResolver> _resolvers;
 
-        public NodeScanner(IEnumerable<INodeResolver> resolvers, ILogger logger)
+        public NodeScanner(IEnumerable<INodeResolver> resolvers, ILogger? logger)
         {
             Ensure.Any.IsNotNull(resolvers, nameof(resolvers));
 

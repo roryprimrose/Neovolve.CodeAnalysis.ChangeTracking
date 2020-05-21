@@ -12,7 +12,7 @@ namespace MyNamespace
 {
     public class MyClass
     {
-        public string MyItem;
+        public string MyField;
     }   
 }
 ";
@@ -22,7 +22,7 @@ namespace MyNamespace
 {
     public class MyClass
     {
-        public string MyItem
+        public string MyProperty
         {
             get;
             set;
@@ -36,7 +36,7 @@ namespace MyNamespace
 {
     public interface MyInterface
     {
-        string MyItem
+        string MyProperty
         {
             get;
             set;

@@ -22,7 +22,7 @@
 
             if (includeMemberType)
             {
-                prefix = MemberType + ": ";
+                prefix = MemberType + " ";
             }
 
             if (string.IsNullOrWhiteSpace(Namespace))
@@ -47,26 +47,26 @@
         /// <summary>
         ///     Gets or sets the value that identifies the type of member (such as Property, Field or Attribute).
         /// </summary>
-        public string MemberType { get; set; }
+        public MemberType MemberType { get; set; } = MemberType.Unknown;
 
         /// <summary>
         ///     Gets or sets the name of the member.
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         ///     Gets or sets the namespace of the member.
         /// </summary>
-        public string Namespace { get; set; }
+        public string? Namespace { get; set; }
 
         /// <summary>
         ///     Gets or sets the type that declares the member.
         /// </summary>
-        public string OwningType { get; set; }
+        public string OwningType { get; set; } = string.Empty;
 
         /// <summary>
         ///     Gets or sets the type returned by the member.
         /// </summary>
-        public string ReturnType { get; set; }
+        public string ReturnType { get; set; } = string.Empty;
     }
 }

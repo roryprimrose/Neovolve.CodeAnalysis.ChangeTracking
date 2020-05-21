@@ -1,5 +1,4 @@
-﻿// ReSharper disable ObjectCreationAsStatement
-namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
+﻿namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
@@ -12,8 +11,8 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
         [Fact]
         public void CanCreateWithTwoNodes()
         {
-            var oldMember = Model.UsingModule<CompilerModule>().Create<MemberDefinition>();
-            var newMember = Model.UsingModule<CompilerModule>().Create<MemberDefinition>();
+            var oldMember = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
+            var newMember = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
 
             var sut = new MemberMatch(oldMember, newMember);
 
@@ -25,9 +24,10 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
         [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification = "Testing constructor guard clause")]
         public void ThrowsExceptionWhenCreatedWithNullNewNode()
         {
-            var oldMember = Model.UsingModule<CompilerModule>().Create<MemberDefinition>();
+            var oldMember = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
 
-            Action action = () => new MemberMatch(oldMember, null);
+            // ReSharper disable ObjectCreationAsStatement
+            Action action = () => new MemberMatch(oldMember, null!);
 
             action.Should().Throw<ArgumentException>();
         }
@@ -36,9 +36,10 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
         [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification = "Testing constructor guard clause")]
         public void ThrowsExceptionWhenCreatedWithNullOldNode()
         {
-            var newMember = Model.UsingModule<CompilerModule>().Create<MemberDefinition>();
+            var newMember = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
 
-            Action action = () => new MemberMatch(null, newMember);
+            // ReSharper disable ObjectCreationAsStatement
+            Action action = () => new MemberMatch(null!, newMember);
 
             action.Should().Throw<ArgumentException>();
         }

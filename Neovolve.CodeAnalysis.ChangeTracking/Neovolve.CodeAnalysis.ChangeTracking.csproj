@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
+    <Nullable>enable</Nullable>
     <NeutralLanguage>en-US</NeutralLanguage>	
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
 
@@ -16,10 +17,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Ensure.That" Version="8.1.2" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.3.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.0.1" />
-    <PackageReference Include="ModelBuilder" Version="5.0.0" />
+    <PackageReference Include="Ensure.That" Version="9.0.1" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.5.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.4" />
+    <PackageReference Include="ModelBuilder" Version="6.0.1" />
     <PackageReference Include="nsubstitute" Version="4.2.1" />
   </ItemGroup>
 

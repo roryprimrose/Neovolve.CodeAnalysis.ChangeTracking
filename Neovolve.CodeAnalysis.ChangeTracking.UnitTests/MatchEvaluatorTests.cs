@@ -48,7 +48,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var scanner = Substitute.For<INodeScanner>();
             var matcher = Substitute.For<IMemberMatcher>();
 
-            var member = Model.UsingModule<CompilerModule>().Create<PropertyDefinition>();
+            var member = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
             var oldMembers = new List<MemberDefinition> {member};
             var newMembers = new List<MemberDefinition> {member};
             var matches = new List<IMemberMatcher> {matcher};
@@ -82,8 +82,8 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var scanner = Substitute.For<INodeScanner>();
             var matcher = Substitute.For<IMemberMatcher>();
 
-            var member = Model.UsingModule<CompilerModule>().Create<PropertyDefinition>();
-            var memberNotMatched = Model.UsingModule<CompilerModule>().Create<MemberDefinition>();
+            var member = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
+            var memberNotMatched = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
             var oldMembers = new List<MemberDefinition> {member};
             var newMembers = new List<MemberDefinition> {member, memberNotMatched};
             var matches = new List<IMemberMatcher> {matcher};
@@ -118,8 +118,8 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var scanner = Substitute.For<INodeScanner>();
             var matcher = Substitute.For<IMemberMatcher>();
 
-            var member = Model.UsingModule<CompilerModule>().Create<PropertyDefinition>();
-            var memberNotMatched = Model.UsingModule<CompilerModule>().Create<MemberDefinition>();
+            var member = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
+            var memberNotMatched = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
             var oldMembers = new List<MemberDefinition> {member, memberNotMatched};
             var newMembers = new List<MemberDefinition> {member};
             var matches = new List<IMemberMatcher> {matcher};
@@ -154,8 +154,8 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var scanner = Substitute.For<INodeScanner>();
             var matcher = Substitute.For<IMemberMatcher>();
 
-            var member = Model.UsingModule<CompilerModule>().Create<PropertyDefinition>();
-            var memberNotMatched = Model.UsingModule<CompilerModule>().Create<MemberDefinition>();
+            var member = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
+            var memberNotMatched = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
             var oldMembers = new List<MemberDefinition> {member};
             var newMembers = new List<MemberDefinition> {member, memberNotMatched};
             var matches = new List<IMemberMatcher> {matcher};
@@ -190,7 +190,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var scanner = Substitute.For<INodeScanner>();
             var matcher = Substitute.For<IMemberMatcher>();
 
-            var member = Model.UsingModule<CompilerModule>().Create<PropertyDefinition>();
+            var member = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
             var oldMembers = new List<MemberDefinition> {member};
             var newMembers = new List<MemberDefinition> {member};
             var matches = new List<IMemberMatcher> {matcher};
@@ -224,8 +224,8 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var scanner = Substitute.For<INodeScanner>();
             var matcher = Substitute.For<IMemberMatcher>();
 
-            var member = Model.UsingModule<CompilerModule>().Create<PropertyDefinition>();
-            var memberNotMatched = Model.UsingModule<CompilerModule>().Create<MemberDefinition>();
+            var member = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
+            var memberNotMatched = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
             var oldMembers = new List<MemberDefinition> {member, memberNotMatched};
             var newMembers = new List<MemberDefinition> {member};
             var matches = new List<IMemberMatcher> {matcher};
@@ -261,7 +261,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
             var sut = new MatchEvaluator(scanner, matches, _logger);
 
-            Action action = () => sut.CompareNodes(oldNodes, null);
+            Action action = () => sut.CompareNodes(oldNodes, null!);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -279,7 +279,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
             var sut = new MatchEvaluator(scanner, matches, _logger);
 
-            Action action = () => sut.CompareNodes(null, newNodes);
+            Action action = () => sut.CompareNodes(null!, newNodes);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -305,7 +305,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
         {
             var scanner = Substitute.For<INodeScanner>();
 
-            Action action = () => new MatchEvaluator(scanner, null, _logger);
+            Action action = () => new MatchEvaluator(scanner, null!, _logger);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -318,7 +318,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var matcher = Substitute.For<IMemberMatcher>();
             var matches = new List<IMemberMatcher> {matcher};
 
-            Action action = () => new MatchEvaluator(null, matches, _logger);
+            Action action = () => new MatchEvaluator(null!, matches, _logger);
 
             action.Should().Throw<ArgumentNullException>();
         }
