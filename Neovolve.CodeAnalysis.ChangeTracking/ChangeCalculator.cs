@@ -83,6 +83,14 @@
 
                 var result = comparer.Compare(match);
 
+                if (result.ChangeType == SemVerChangeType.None)
+                {
+                    _logger?.LogDebug(result.Message);
+
+                    // Don't add comparison results to the outcome where it looks like there is no change
+                    continue;
+                }
+
                 _logger?.LogInformation(result.Message);
 
                 results.Add(result);

@@ -281,6 +281,41 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
         }
 
         [Fact]
+        public void CompareChangesReturnsNoneWhenNoChangesIdentified()
+        {
+            var evaluator = Substitute.For<IMatchEvaluator>();
+            var comparer = Substitute.For<IMemberComparer>();
+            var comparers = new List<IMemberComparer> {comparer};
+            var oldMember = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
+            var newMember = oldMember.JsonClone();
+            var match = new MemberMatch(oldMember, newMember);
+            var oldMembersNotMatched = new List<MemberDefinition>();
+            var newMembersNotMatched = new List<MemberDefinition>();
+            var matches = new List<MemberMatch>
+            {
+                new MemberMatch(oldMember, newMember)
+            };
+            ComparisonResult result = ComparisonResult.NoChange(match);
+
+            var results = new MatchResults(matches, oldMembersNotMatched, newMembersNotMatched);
+            var oldNodes = new List<SyntaxNode>();
+
+            var newNodes = new List<SyntaxNode>();
+
+            evaluator.CompareNodes(oldNodes, newNodes).Returns(results);
+            comparer.IsSupported(oldMember).Returns(true);
+            comparer.IsSupported(newMember).Returns(true);
+            comparer.Compare(matches[0]).Returns(result);
+
+            var sut = new ChangeCalculator(evaluator, comparers, null);
+
+            var actual = sut.CalculateChanges(oldNodes, newNodes);
+
+            actual.ChangeType.Should().Be(SemVerChangeType.None);
+            actual.ComparisonResults.Should().BeEmpty();
+        }
+
+        [Fact]
         public void CompareChangesReturnsNoneWhenResultsAreEmpty()
         {
             var evaluator = Substitute.For<IMatchEvaluator>();
