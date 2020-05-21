@@ -23,8 +23,8 @@
             string owningType,
             string name)
         {
-            var code = TestNode.Field.Replace("public string MyItem",
-                "[" + declaration + "] public string MyItem",
+            var code = TestNode.Field.Replace("public string MyField",
+                "[" + declaration + "] public string MyField",
                 StringComparison.Ordinal);
 
             var node = await TestNode.FindNode<FieldDeclarationSyntax>(code).ConfigureAwait(false);
@@ -393,8 +393,8 @@ namespace MyNamespace
         [InlineData("protected virtual", false)]
         public async Task ResolveReturnsIsPublicForField(string accessors, bool expected)
         {
-            var code = TestNode.Field.Replace("public string MyItem",
-                accessors + " string MyItem",
+            var code = TestNode.Field.Replace("public string MyField",
+                accessors + " string MyField",
                 StringComparison.Ordinal);
 
             var node = await TestNode.FindNode<FieldDeclarationSyntax>(code).ConfigureAwait(false);
@@ -417,8 +417,8 @@ namespace MyNamespace
         [InlineData("protected virtual", false)]
         public async Task ResolveReturnsIsPublicForProperty(string accessors, bool expected)
         {
-            var code = TestNode.ClassProperty.Replace("public string MyItem",
-                accessors + " string MyItem",
+            var code = TestNode.ClassProperty.Replace("public string MyProperty",
+                accessors + " string MyProperty",
                 StringComparison.Ordinal);
 
             var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code).ConfigureAwait(false);
@@ -466,8 +466,8 @@ namespace MyNamespace
             string thirdDeclaration,
             string thirdName)
         {
-            var code = TestNode.Field.Replace("public string MyItem",
-                fragment + " public string MyItem",
+            var code = TestNode.Field.Replace("public string MyField",
+                fragment + " public string MyField",
                 StringComparison.Ordinal);
 
             var node = await TestNode.FindNode<FieldDeclarationSyntax>(code).ConfigureAwait(false);
@@ -521,8 +521,8 @@ namespace MyNamespace
             string thirdDeclaration,
             string thirdName)
         {
-            var code = TestNode.ClassProperty.Replace("public string MyItem",
-                fragment + " public string MyItem",
+            var code = TestNode.ClassProperty.Replace("public string MyProperty",
+                fragment + " public string MyProperty",
                 StringComparison.Ordinal);
 
             var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code).ConfigureAwait(false);
@@ -559,8 +559,8 @@ namespace MyNamespace
             string secondDeclaration,
             string secondName)
         {
-            var code = TestNode.Field.Replace("public string MyItem",
-                fragment + " public string MyItem",
+            var code = TestNode.Field.Replace("public string MyField",
+                fragment + " public string MyField",
                 StringComparison.Ordinal);
 
             var node = await TestNode.FindNode<FieldDeclarationSyntax>(code).ConfigureAwait(false);
@@ -595,8 +595,8 @@ namespace MyNamespace
             string secondDeclaration,
             string secondName)
         {
-            var code = TestNode.ClassProperty.Replace("public string MyItem",
-                fragment + " public string MyItem",
+            var code = TestNode.ClassProperty.Replace("public string MyProperty",
+                fragment + " public string MyProperty",
                 StringComparison.Ordinal);
 
             var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code).ConfigureAwait(false);
@@ -890,8 +890,8 @@ public interface MyInterface
             "Obsolete")]
         public async Task ResolveReturnsSingleAttributeForField(string fragment, string declaration, string name)
         {
-            var code = TestNode.Field.Replace("public string MyItem",
-                fragment + " public string MyItem",
+            var code = TestNode.Field.Replace("public string MyField",
+                fragment + " public string MyField",
                 StringComparison.Ordinal);
 
             var node = await TestNode.FindNode<FieldDeclarationSyntax>(code).ConfigureAwait(false);
@@ -914,8 +914,8 @@ public interface MyInterface
             "Obsolete")]
         public async Task ResolveReturnsSingleAttributeForProperty(string fragment, string declaration, string name)
         {
-            var code = TestNode.ClassProperty.Replace("public string MyItem",
-                fragment + " public string MyItem",
+            var code = TestNode.ClassProperty.Replace("public string MyProperty",
+                fragment + " public string MyProperty",
                 StringComparison.Ordinal);
 
             var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code).ConfigureAwait(false);
