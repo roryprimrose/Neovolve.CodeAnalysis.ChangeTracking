@@ -38,7 +38,7 @@
             var results = new ChangeCalculatorResult();
 
             // Record any public members that have been added
-            foreach (var memberAdded in matchingNodes.NewMembersNotMatched.Where(x => x.IsPublic))
+            foreach (var memberAdded in matchingNodes.NewMembersNotMatched.Where(x => x.IsVisible))
             {
                 var memberType = memberAdded.MemberType.ToString().ToLower(CultureInfo.CurrentCulture);
 
@@ -53,7 +53,7 @@
             }
 
             // Record any public members that have been removed
-            foreach (var memberRemoved in matchingNodes.OldMembersNotMatched.Where(x => x.IsPublic))
+            foreach (var memberRemoved in matchingNodes.OldMembersNotMatched.Where(x => x.IsVisible))
             {
                 var memberType = memberRemoved.MemberType.ToString().ToLower(CultureInfo.CurrentCulture);
 

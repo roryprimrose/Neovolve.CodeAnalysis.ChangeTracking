@@ -22,13 +22,13 @@
                 .Create<MemberDefinition>()
                 .Set(x =>
                 {
-                    x.IsPublic = false;
+                    x.IsVisible = false;
                     x.ReturnType = "string";
                 });
             var newMember = oldMember.JsonClone()
                 .Set(x =>
                 {
-                    x.IsPublic = true; // Feature
+                    x.IsVisible = true; // Feature
                     x.ReturnType = "DateTimeOffset"; // Breaking
                 });
             var match = new MemberMatch(oldMember, newMember);
@@ -65,7 +65,7 @@
                 .Create<MemberDefinition>()
                 .Set(x =>
                 {
-                    x.IsPublic = false;
+                    x.IsVisible = false;
                     x.ReturnType = "string";
                 });
             var newMember = oldMember.JsonClone().Set(x => { x.ReturnType = "DateTimeOffset"; });
@@ -85,11 +85,11 @@
         [InlineData(true, true, SemVerChangeType.None)]
         [InlineData(true, false, SemVerChangeType.Breaking)]
         [InlineData(false, true, SemVerChangeType.Feature)]
-        public void CompareReturnsResultBasedOnIsPublic(bool oldValue, bool newValue, SemVerChangeType expected)
+        public void CompareReturnsResultBasedOnIsVisible(bool oldValue, bool newValue, SemVerChangeType expected)
         {
             var oldMember = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>()
-                .Set(x => x.IsPublic = oldValue);
-            var newMember = oldMember.JsonClone().Set(x => x.IsPublic = newValue);
+                .Set(x => x.IsVisible = oldValue);
+            var newMember = oldMember.JsonClone().Set(x => x.IsVisible = newValue);
             var match = new MemberMatch(oldMember, newMember);
 
             var sut = new MemberComparer();

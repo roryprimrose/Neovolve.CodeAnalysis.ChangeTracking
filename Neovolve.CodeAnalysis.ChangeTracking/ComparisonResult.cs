@@ -21,7 +21,7 @@
 
             var changeType = SemVerChangeType.None;
 
-            if (newMember.IsPublic)
+            if (newMember.IsVisible)
             {
                 changeType = SemVerChangeType.Feature;
             }
@@ -50,7 +50,7 @@
 
             var changeType = SemVerChangeType.None;
 
-            if (oldMember.IsPublic)
+            if (oldMember.IsVisible)
             {
                 changeType = SemVerChangeType.Breaking;
             }

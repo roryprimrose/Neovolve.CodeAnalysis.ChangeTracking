@@ -65,8 +65,8 @@ namespace MyProject
         [InlineData("private", false)]
         [InlineData("internal", false)]
         [InlineData("internal virtual", false)]
-        [InlineData("protected", false)]
-        [InlineData("protected virtual", false)]
+        [InlineData("protected", true)]
+        [InlineData("protected virtual", true)]
         public async Task ResolveReturnsCanRead(string accessors, bool expected)
         {
             var code = TestNode.ClassProperty.Replace("get;", accessors + " get;", StringComparison.Ordinal);
@@ -111,8 +111,8 @@ namespace MyNamespace
         [InlineData("private", false)]
         [InlineData("internal", false)]
         [InlineData("internal virtual", false)]
-        [InlineData("protected", false)]
-        [InlineData("protected virtual", false)]
+        [InlineData("protected", true)]
+        [InlineData("protected virtual", true)]
         public async Task ResolveReturnsCanWrite(string accessors, bool expected)
         {
             var code = TestNode.ClassProperty.Replace("set;", accessors + " set;", StringComparison.Ordinal);

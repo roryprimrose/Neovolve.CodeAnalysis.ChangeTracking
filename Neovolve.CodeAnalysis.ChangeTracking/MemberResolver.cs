@@ -55,7 +55,7 @@
                 MemberType = MemberType.Attribute,
 
                 // We will assume that the attribute is public. It would be very unusual if it wasn't
-                IsPublic = true,
+                IsVisible = true,
                 Declaration = attributeSyntax.GetText().ToString()
             };
 
@@ -116,25 +116,25 @@
 
             if (parentInterface != null)
             {
-                // The property is declared on an interface
-                // Interface properties don't have modifiers so we will check the scope of the parent interface
+                // The member is declared on an interface
+                // Interface members don't have modifiers so we will check the scope of the parent interface
                 // then fall down to checking all parents in the class hierarchy
-                member.IsPublic = parentInterface.Modifiers.Any(x => x.Text == "public");
+                member.IsVisible = parentInterface.IsVisible();
             }
             else
             {
                 // This property is declared on a class
                 // First check the scope of the member, then fall down to checking all parents in the class hierarchy
-                member.IsPublic = declaration.Modifiers.Any(x => x.Text == "public");
+                member.IsVisible = declaration.IsVisible();
             }
 
-            if (member.IsPublic)
+            if (member.IsVisible)
             {
                 // Either the parent interface or class member is public
                 // Check if any parent class is not public
-                var parentClassesArePublic = parentClasses.All(x => x.Modifiers.Any(y => y.Text == "public"));
+                var parentClassesArePublic = parentClasses.All(x => x.IsVisible());
 
-                member.IsPublic = parentClassesArePublic;
+                member.IsVisible = parentClassesArePublic;
             }
         }
 

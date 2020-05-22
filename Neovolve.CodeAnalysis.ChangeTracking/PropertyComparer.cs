@@ -19,7 +19,7 @@
                 return result;
             }
 
-            if (oldProperty.IsPublic == false)
+            if (oldProperty.IsVisible == false)
             {
                 // The property is either still not public or now becoming public
                 // It doesn't matter if the accessors have been changed to be less visible

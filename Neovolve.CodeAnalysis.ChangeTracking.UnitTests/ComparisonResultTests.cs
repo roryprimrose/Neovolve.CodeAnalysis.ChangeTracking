@@ -18,9 +18,10 @@
         [Theory]
         [InlineData(true, SemVerChangeType.Feature)]
         [InlineData(false, SemVerChangeType.None)]
-        public void MemberAddedPopulatesInformationFromParameters(bool isPublic, SemVerChangeType expected)
+        public void MemberAddedPopulatesInformationFromParameters(bool isVisible, SemVerChangeType expected)
         {
-            var newMember = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>().Set(x => x.IsPublic = isPublic);
+            var newMember = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>()
+                .Set(x => x.IsVisible = isVisible);
 
             var actual = ComparisonResult.MemberAdded(newMember);
 
@@ -106,9 +107,10 @@
         [Theory]
         [InlineData(true, SemVerChangeType.Breaking)]
         [InlineData(false, SemVerChangeType.None)]
-        public void MemberRemovedPopulatesInformationFromParameters(bool isPublic, SemVerChangeType expected)
+        public void MemberRemovedPopulatesInformationFromParameters(bool isVisible, SemVerChangeType expected)
         {
-            var oldMember = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>().Set(x => x.IsPublic = isPublic);
+            var oldMember = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>()
+                .Set(x => x.IsVisible = isVisible);
 
             var actual = ComparisonResult.MemberRemoved(oldMember);
 

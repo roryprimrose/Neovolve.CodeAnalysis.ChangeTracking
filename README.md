@@ -1,9 +1,29 @@
 # Neovolve.CodeAnalysis.ChangeTracking
 C# code analysis tool for evaluating changes to contracts
 
-[![Coverage Status](https://coveralls.io/repos/github/roryprimrose/Neovolve.CodeAnalysis.ChangeTracking/badge.svg?branch=master)](https://coveralls.io/github/roryprimrose/Neovolve.CodeAnalysis.ChangeTracking?branch=master)
+[![GitHub license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/roryprimrose/Neovolve.CodeAnalysis.ChangeTracking/blob/master/LICENSE)&nbsp;[![Nuget](https://img.shields.io/nuget/v/Neovolve.CodeAnalysis.ChangeTracking.svg)&nbsp;![Nuget](https://img.shields.io/nuget/dt/Neovolve.CodeAnalysis.ChangeTracking.svg)](https://www.nuget.org/packages/Neovolve.CodeAnalysis.ChangeTracking)
 
+[![Coverage Status](https://coveralls.io/repos/github/roryprimrose/Neovolve.CodeAnalysis.ChangeTracking/badge.svg?branch=master)](https://coveralls.io/github/roryprimrose/Neovolve.CodeAnalysis.ChangeTracking?branch=master)&nbsp;
 [![Actions Status](https://github.com/roryprimrose/Neovolve.CodeAnalysis.ChangeTracking/workflows/CI/badge.svg)](https://github.com/roryprimrose/Neovolve.CodeAnalysis.ChangeTracking/actions)
+
+- [Installation](#installation)
+- [Features](#features)
+- [Usage](#usage)
+- [Limitations](#limitations)
+
+## Installation
+
+Production and beta versions are available on [NuGet](https://www.nuget.org/packages/Neovolve.CodeAnalysis.ChangeTracking/).
+
+```
+Install-Package Neovolve.CodeAnalysis.ChangeTracking
+```
+
+Continous Integration builds are available on [MyGet](https://www.myget.org/feed/neovolve/package/nuget/Neovolve.CodeAnalysis.ChangeTracking).
+
+```
+Install-Package Neovolve.CodeAnalysis.ChangeTracking -Source https://www.myget.org/F/neovolve/api/v3/index.json
+```
 
 ## Features
 

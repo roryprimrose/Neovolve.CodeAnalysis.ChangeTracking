@@ -50,9 +50,9 @@
         public string FilePath { get; set; } = string.Empty;
 
         /// <summary>
-        ///     Gets or sets whether the member is public.
+        ///     Gets or sets whether the member is visible.
         /// </summary>
-        public bool IsPublic { get; set; }
+        public bool IsVisible { get; set; }
 
         /// <summary>
         ///     Gets or sets the line index that the member declaration starts on in the containing code.
