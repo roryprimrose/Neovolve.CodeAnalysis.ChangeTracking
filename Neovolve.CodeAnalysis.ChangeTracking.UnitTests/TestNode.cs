@@ -45,9 +45,9 @@ namespace MyNamespace
 }
 ";
 
-        public static async Task<T> FindNode<T>(string code) where T : SyntaxNode
+        public static async Task<T> FindNode<T>(string code, string filePath = "") where T : SyntaxNode
         {
-            var root = await Parse(code).ConfigureAwait(false);
+            var root = await Parse(code, filePath).ConfigureAwait(false);
 
             return FindNode<T>(root);
         }
@@ -62,9 +62,9 @@ namespace MyNamespace
             return node.ChildNodes().Select(FindNode<T>).FirstOrDefault(nodeFound => nodeFound != null);
         }
 
-        public static Task<SyntaxNode> Parse(string code)
+        public static Task<SyntaxNode> Parse(string code, string filePath = "")
         {
-            var tree = CSharpSyntaxTree.ParseText(code);
+            var tree = CSharpSyntaxTree.ParseText(code, null, filePath);
 
             return tree.GetRootAsync();
         }

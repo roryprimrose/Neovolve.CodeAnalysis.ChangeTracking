@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using EnsureThat;
+    using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
     public abstract class MemberResolver
@@ -14,6 +15,7 @@
 
             var node = new T();
 
+            ResolveLocation(member, node);
             ResolveDeclarationInfo(member, node);
             ResolveAttributes(member, node);
 
@@ -134,6 +136,22 @@
 
                 member.IsPublic = parentClassesArePublic;
             }
+        }
+
+        private static void ResolveLocation(MemberDeclarationSyntax declaration, MemberDefinition member)
+        {
+            var location = declaration.GetLocation();
+
+            if (location.IsInSource
+                && location.Kind == LocationKind.SourceFile)
+            {
+                member.FilePath = location.SourceTree?.FilePath ?? string.Empty;
+            }
+
+            var startPosition = location.GetLineSpan().StartLinePosition;
+
+            member.LineIndex = startPosition.Line;
+            member.CharacterIndex = startPosition.Character;
         }
 
         private void ResolveAttributes(MemberDeclarationSyntax declaration, MemberDefinition member)

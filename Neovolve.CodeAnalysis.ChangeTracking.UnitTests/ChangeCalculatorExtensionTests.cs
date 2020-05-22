@@ -17,13 +17,13 @@
         [Fact]
         public async Task CalculateChangeReturnsCalculatorResult()
         {
-            var oldCode = new List<string>
+            var oldCode = new List<CodeSource>
             {
-                TestNode.ClassProperty
+                new CodeSource(TestNode.ClassProperty)
             };
-            var newCode = new List<string>
+            var newCode = new List<CodeSource>
             {
-                TestNode.Field
+                new CodeSource(TestNode.Field)
             };
             var expected = Model.UsingModule<ConfigurationModule>().Create<ChangeCalculatorResult>();
 
@@ -45,15 +45,15 @@
         [Fact]
         public async Task CalculateChangeReturnsCalculatorResultFromMultipleNodes()
         {
-            var oldCode = new List<string>
+            var oldCode = new List<CodeSource>
             {
-                TestNode.ClassProperty,
-                TestNode.Field
+                new CodeSource(TestNode.ClassProperty),
+                new CodeSource(TestNode.Field)
             };
-            var newCode = new List<string>
+            var newCode = new List<CodeSource>
             {
-                TestNode.Field,
-                TestNode.ClassProperty
+                new CodeSource(TestNode.Field),
+                new CodeSource(TestNode.ClassProperty)
             };
             var expected = Model.UsingModule<ConfigurationModule>().Create<ChangeCalculatorResult>();
 
@@ -74,13 +74,13 @@
         [Fact]
         public async Task CalculateChangeReturnsCalculatorResultWithoutCancellationToken()
         {
-            var oldCode = new List<string>
+            var oldCode = new List<CodeSource>
             {
-                TestNode.ClassProperty
+                new CodeSource(TestNode.ClassProperty)
             };
-            var newCode = new List<string>
+            var newCode = new List<CodeSource>
             {
-                TestNode.Field
+                new CodeSource(TestNode.Field)
             };
             var expected = Model.UsingModule<ConfigurationModule>().Create<ChangeCalculatorResult>();
 
@@ -93,7 +93,7 @@
                 .Returns(expected);
 
             var actual = await calculator
-                .CalculateChange(oldCode, newCode)
+                .CalculateChange(oldCode, newCode, CancellationToken.None)
                 .ConfigureAwait(false);
 
             actual.Should().Be(expected);
@@ -102,8 +102,8 @@
         [Fact]
         public void CalculateChangeThrowsExceptionWithNullCalculator()
         {
-            var oldCode = Model.UsingModule<ConfigurationModule>().Create<List<string>>();
-            var newCode = Model.UsingModule<ConfigurationModule>().Create<List<string>>();
+            var oldCode = Model.UsingModule<ConfigurationModule>().Create<List<CodeSource>>();
+            var newCode = Model.UsingModule<ConfigurationModule>().Create<List<CodeSource>>();
 
             Func<Task> action = async () => await ChangeCalculatorExtensions
                 .CalculateChange(null!, oldCode, newCode, CancellationToken.None)
@@ -116,7 +116,7 @@
         public void CalculateChangeThrowsExceptionWithNullNewCode()
         {
             var calculator = Substitute.For<IChangeCalculator>();
-            var oldCode = Model.UsingModule<ConfigurationModule>().Create<List<string>>();
+            var oldCode = Model.UsingModule<ConfigurationModule>().Create<List<CodeSource>>();
 
             Func<Task> action = async () => await calculator.CalculateChange(oldCode, null!, CancellationToken.None)
                 .ConfigureAwait(false);
@@ -128,7 +128,7 @@
         public void CalculateChangeThrowsExceptionWithNullOldCode()
         {
             var calculator = Substitute.For<IChangeCalculator>();
-            var newCode = Model.UsingModule<ConfigurationModule>().Create<List<string>>();
+            var newCode = Model.UsingModule<ConfigurationModule>().Create<List<CodeSource>>();
 
             Func<Task> action = async () => await calculator.CalculateChange(null!, newCode, CancellationToken.None)
                 .ConfigureAwait(false);

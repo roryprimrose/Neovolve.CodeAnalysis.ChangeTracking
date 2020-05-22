@@ -10,16 +10,9 @@
 
     public static class ChangeCalculatorExtensions
     {
-        public static Task<ChangeCalculatorResult> CalculateChange(this IChangeCalculator calculator,
-            IEnumerable<string> oldCode,
-            IEnumerable<string> newCode)
-        {
-            return CalculateChange(calculator, oldCode, newCode, default);
-        }
-
         public static async Task<ChangeCalculatorResult> CalculateChange(this IChangeCalculator calculator,
-            IEnumerable<string> oldCode,
-            IEnumerable<string> newCode, CancellationToken cancellationToken)
+            IEnumerable<CodeSource> oldCode,
+            IEnumerable<CodeSource> newCode, CancellationToken cancellationToken)
         {
             Ensure.Any.IsNotNull(calculator, nameof(calculator));
             Ensure.Any.IsNotNull(oldCode, nameof(oldCode));
@@ -37,10 +30,10 @@
             return calculator.CalculateChanges(oldNodes, newNodes);
         }
 
-        private static async Task<IEnumerable<SyntaxNode>> ParseCode(IEnumerable<string> code,
+        private static async Task<IEnumerable<SyntaxNode>> ParseCode(IEnumerable<CodeSource> sources,
             CancellationToken cancellationToken)
         {
-            var syntaxTrees = code.Select(x => CSharpSyntaxTree.ParseText(x));
+            var syntaxTrees = sources.Select(x => CSharpSyntaxTree.ParseText(x.Contents, null, x.FilePath));
             var tasks = syntaxTrees.Select(x => x.GetRootAsync(cancellationToken)).ToList();
 
             await Task.WhenAll(tasks).ConfigureAwait(false);

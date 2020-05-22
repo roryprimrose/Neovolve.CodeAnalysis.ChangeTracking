@@ -40,9 +40,24 @@
         public ICollection<AttributeDefinition> Attributes { get; } = new List<AttributeDefinition>();
 
         /// <summary>
+        ///     Gets or sets the character index that the member declaration starts on in the containing code.
+        /// </summary>
+        public int CharacterIndex { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the file path that contains the member.
+        /// </summary>
+        public string FilePath { get; set; } = string.Empty;
+
+        /// <summary>
         ///     Gets or sets whether the member is public.
         /// </summary>
         public bool IsPublic { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the line index that the member declaration starts on in the containing code.
+        /// </summary>
+        public int LineIndex { get; set; }
 
         /// <summary>
         ///     Gets or sets the value that identifies the type of member (such as Property, Field or Attribute).
