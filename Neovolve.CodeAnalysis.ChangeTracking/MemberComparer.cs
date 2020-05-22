@@ -28,15 +28,15 @@
                     "The two members cannot be compared because they have different Name values.");
             }
 
-            if (match.OldMember.IsPublic == false
-                && match.NewMember.IsPublic == false)
+            if (match.OldMember.IsVisible == false
+                && match.NewMember.IsVisible == false)
             {
                 // It doesn't matter if there is a change to the return type, the member isn't visible anyway
                 return ComparisonResult.NoChange(match);
             }
 
-            if (match.OldMember.IsPublic
-                && match.NewMember.IsPublic == false)
+            if (match.OldMember.IsVisible
+                && match.NewMember.IsVisible == false)
             {
                 // The member was public but isn't now, breaking change
                 var message = match.OldMember + " changed scope from public";
@@ -45,8 +45,8 @@
                     message);
             }
 
-            if (match.OldMember.IsPublic == false
-                && match.NewMember.IsPublic)
+            if (match.OldMember.IsVisible == false
+                && match.NewMember.IsVisible)
             {
                 // The member return type may have changed, but the member is only now becoming public
                 // This is a feature because the public API didn't break even if the return type has changed

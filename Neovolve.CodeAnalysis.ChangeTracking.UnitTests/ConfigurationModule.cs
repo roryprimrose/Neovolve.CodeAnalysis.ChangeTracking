@@ -6,9 +6,9 @@
     {
         public void Configure(IBuildConfiguration configuration)
         {
-            configuration.AddCreationRule<MemberDefinition>(x => x.IsPublic, true, 100);
+            configuration.AddCreationRule<MemberDefinition>(x => x.IsVisible, true, 100);
 
-            configuration.AddCreationRule<PropertyDefinition>(x => x.IsPublic, true, 100);
+            configuration.AddCreationRule<PropertyDefinition>(x => x.IsVisible, true, 100);
             configuration.AddCreationRule<PropertyDefinition>(x => x.CanRead, true, 100);
             configuration.AddCreationRule<PropertyDefinition>(x => x.CanWrite, true, 100);
             configuration.AddCreationRule<PropertyDefinition>(x => x.MemberType, MemberType.Property, 100);

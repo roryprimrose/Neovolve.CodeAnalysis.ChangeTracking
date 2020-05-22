@@ -41,7 +41,7 @@
             value.OwningType.Should().Be(owningType);
             value.Name.Should().Be(name);
             value.Declaration.Should().Be(declaration);
-            value.IsPublic.Should().BeTrue();
+            value.IsVisible.Should().BeTrue();
             value.MemberType.Should().Be(MemberType.Attribute);
         }
 
@@ -110,9 +110,9 @@
         [InlineData("private", false)]
         [InlineData("internal", false)]
         [InlineData("internal virtual", false)]
-        [InlineData("protected", false)]
-        [InlineData("protected virtual", false)]
-        public async Task ResolveReturnsIsPublicBasedOnNestedGrandparentClassScopeForClassProperty(
+        [InlineData("protected", true)]
+        [InlineData("protected virtual", true)]
+        public async Task ResolveReturnsIsVisibleBasedOnNestedGrandparentClassScopeForClassProperty(
             string accessors,
             bool expected)
         {
@@ -140,7 +140,7 @@ namespace MyNamespace
 
             var actual = sut.Resolve(node);
 
-            actual.IsPublic.Should().Be(expected);
+            actual.IsVisible.Should().Be(expected);
         }
 
         [Theory]
@@ -151,9 +151,9 @@ namespace MyNamespace
         [InlineData("private", false)]
         [InlineData("internal", false)]
         [InlineData("internal virtual", false)]
-        [InlineData("protected", false)]
-        [InlineData("protected virtual", false)]
-        public async Task ResolveReturnsIsPublicBasedOnNestedGrandparentClassScopeForField(
+        [InlineData("protected", true)]
+        [InlineData("protected virtual", true)]
+        public async Task ResolveReturnsIsVisibleBasedOnNestedGrandparentClassScopeForField(
             string accessors,
             bool expected)
         {
@@ -181,7 +181,7 @@ namespace MyNamespace
 
             var actual = sut.Resolve(node);
 
-            actual.IsPublic.Should().Be(expected);
+            actual.IsVisible.Should().Be(expected);
         }
 
         [Theory]
@@ -192,9 +192,9 @@ namespace MyNamespace
         [InlineData("private", false)]
         [InlineData("internal", false)]
         [InlineData("internal virtual", false)]
-        [InlineData("protected", false)]
-        [InlineData("protected virtual", false)]
-        public async Task ResolveReturnsIsPublicBasedOnNestedGrandparentClassScopeForInterfaceProperty(
+        [InlineData("protected", true)]
+        [InlineData("protected virtual", true)]
+        public async Task ResolveReturnsIsVisibleBasedOnNestedGrandparentClassScopeForInterfaceProperty(
             string accessors,
             bool expected)
         {
@@ -222,7 +222,7 @@ namespace MyNamespace
 
             var actual = sut.Resolve(node);
 
-            actual.IsPublic.Should().Be(expected);
+            actual.IsVisible.Should().Be(expected);
         }
 
         [Theory]
@@ -233,9 +233,9 @@ namespace MyNamespace
         [InlineData("private", false)]
         [InlineData("internal", false)]
         [InlineData("internal virtual", false)]
-        [InlineData("protected", false)]
-        [InlineData("protected virtual", false)]
-        public async Task ResolveReturnsIsPublicBasedOnNestedParentClassScopeForClassProperty(
+        [InlineData("protected", true)]
+        [InlineData("protected virtual", true)]
+        public async Task ResolveReturnsIsVisibleBasedOnNestedParentClassScopeForClassProperty(
             string accessors,
             bool expected)
         {
@@ -260,7 +260,7 @@ namespace MyNamespace
 
             var actual = sut.Resolve(node);
 
-            actual.IsPublic.Should().Be(expected);
+            actual.IsVisible.Should().Be(expected);
         }
 
         [Theory]
@@ -271,9 +271,9 @@ namespace MyNamespace
         [InlineData("private", false)]
         [InlineData("internal", false)]
         [InlineData("internal virtual", false)]
-        [InlineData("protected", false)]
-        [InlineData("protected virtual", false)]
-        public async Task ResolveReturnsIsPublicBasedOnNestedParentClassScopeForField(string accessors, bool expected)
+        [InlineData("protected", true)]
+        [InlineData("protected virtual", true)]
+        public async Task ResolveReturnsIsVisibleBasedOnNestedParentClassScopeForField(string accessors, bool expected)
         {
             var code = @"
 namespace MyNamespace 
@@ -296,7 +296,7 @@ namespace MyNamespace
 
             var actual = sut.Resolve(node);
 
-            actual.IsPublic.Should().Be(expected);
+            actual.IsVisible.Should().Be(expected);
         }
 
         [Theory]
@@ -307,9 +307,9 @@ namespace MyNamespace
         [InlineData("private", false)]
         [InlineData("internal", false)]
         [InlineData("internal virtual", false)]
-        [InlineData("protected", false)]
-        [InlineData("protected virtual", false)]
-        public async Task ResolveReturnsIsPublicBasedOnNestedParentClassScopeForInterfaceProperty(
+        [InlineData("protected", true)]
+        [InlineData("protected virtual", true)]
+        public async Task ResolveReturnsIsVisibleBasedOnNestedParentClassScopeForInterfaceProperty(
             string accessors,
             bool expected)
         {
@@ -334,7 +334,7 @@ namespace MyNamespace
 
             var actual = sut.Resolve(node);
 
-            actual.IsPublic.Should().Be(expected);
+            actual.IsVisible.Should().Be(expected);
         }
 
         [Theory]
@@ -345,9 +345,10 @@ namespace MyNamespace
         [InlineData("private", false)]
         [InlineData("internal", false)]
         [InlineData("internal virtual", false)]
-        [InlineData("protected", false)]
-        [InlineData("protected virtual", false)]
-        public async Task ResolveReturnsIsPublicBasedOnParentClassScopeForClassProperty(string accessors, bool expected)
+        [InlineData("protected", true)]
+        [InlineData("protected virtual", true)]
+        public async Task ResolveReturnsIsVisibleBasedOnParentClassScopeForClassProperty(string accessors,
+            bool expected)
         {
             var code = TestNode.ClassProperty.Replace("public class MyClass",
                 accessors + " class MyClass",
@@ -359,7 +360,7 @@ namespace MyNamespace
 
             var actual = sut.Resolve(node);
 
-            actual.IsPublic.Should().Be(expected);
+            actual.IsVisible.Should().Be(expected);
         }
 
         [Theory]
@@ -370,9 +371,9 @@ namespace MyNamespace
         [InlineData("private", false)]
         [InlineData("internal", false)]
         [InlineData("internal virtual", false)]
-        [InlineData("protected", false)]
-        [InlineData("protected virtual", false)]
-        public async Task ResolveReturnsIsPublicBasedOnParentClassScopeForField(string accessors, bool expected)
+        [InlineData("protected", true)]
+        [InlineData("protected virtual", true)]
+        public async Task ResolveReturnsIsVisibleBasedOnParentClassScopeForField(string accessors, bool expected)
         {
             var code = TestNode.Field.Replace("public class MyClass",
                 accessors + " class MyClass",
@@ -384,7 +385,7 @@ namespace MyNamespace
 
             var actual = sut.Resolve(node);
 
-            actual.IsPublic.Should().Be(expected);
+            actual.IsVisible.Should().Be(expected);
         }
 
         [Theory]
@@ -395,9 +396,9 @@ namespace MyNamespace
         [InlineData("private", false)]
         [InlineData("internal", false)]
         [InlineData("internal virtual", false)]
-        [InlineData("protected", false)]
-        [InlineData("protected virtual", false)]
-        public async Task ResolveReturnsIsPublicBasedOnParentInterfaceScopeForInterfaceProperty(
+        [InlineData("protected", true)]
+        [InlineData("protected virtual", true)]
+        public async Task ResolveReturnsIsVisibleBasedOnParentInterfaceScopeForInterfaceProperty(
             string accessors,
             bool expected)
         {
@@ -411,7 +412,7 @@ namespace MyNamespace
 
             var actual = sut.Resolve(node);
 
-            actual.IsPublic.Should().Be(expected);
+            actual.IsVisible.Should().Be(expected);
         }
 
         [Theory]
@@ -422,9 +423,9 @@ namespace MyNamespace
         [InlineData("private", false)]
         [InlineData("internal", false)]
         [InlineData("internal virtual", false)]
-        [InlineData("protected", false)]
-        [InlineData("protected virtual", false)]
-        public async Task ResolveReturnsIsPublicForField(string accessors, bool expected)
+        [InlineData("protected", true)]
+        [InlineData("protected virtual", true)]
+        public async Task ResolveReturnsIsVisibleForField(string accessors, bool expected)
         {
             var code = TestNode.Field.Replace("public string MyField",
                 accessors + " string MyField",
@@ -436,7 +437,7 @@ namespace MyNamespace
 
             var actual = sut.Resolve(node);
 
-            actual.IsPublic.Should().Be(expected);
+            actual.IsVisible.Should().Be(expected);
         }
 
         [Theory]
@@ -446,9 +447,9 @@ namespace MyNamespace
         [InlineData("private", false)]
         [InlineData("internal", false)]
         [InlineData("internal virtual", false)]
-        [InlineData("protected", false)]
-        [InlineData("protected virtual", false)]
-        public async Task ResolveReturnsIsPublicForProperty(string accessors, bool expected)
+        [InlineData("protected", true)]
+        [InlineData("protected virtual", true)]
+        public async Task ResolveReturnsIsVisibleForProperty(string accessors, bool expected)
         {
             var code = TestNode.ClassProperty.Replace("public string MyProperty",
                 accessors + " string MyProperty",
@@ -460,7 +461,7 @@ namespace MyNamespace
 
             var actual = sut.Resolve(node);
 
-            actual.IsPublic.Should().Be(expected);
+            actual.IsVisible.Should().Be(expected);
         }
 
         [Theory]

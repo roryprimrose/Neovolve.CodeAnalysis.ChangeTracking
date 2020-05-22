@@ -35,7 +35,7 @@
             if (getAccessor != null)
             {
                 if (getAccessor.Modifiers.Count == 0 ||
-                    getAccessor.Modifiers.Any(x => x.Text == "public"))
+                    getAccessor.IsVisible())
                 {
                     member.CanRead = true;
                 }
@@ -48,7 +48,7 @@
             if (setAccessor != null)
             {
                 if (setAccessor.Modifiers.Count == 0 ||
-                    setAccessor.Modifiers.Any(x => x.Text == "public"))
+                    setAccessor.IsVisible())
                 {
                     member.CanWrite = true;
                 }

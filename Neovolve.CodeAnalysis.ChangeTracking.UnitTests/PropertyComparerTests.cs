@@ -27,8 +27,8 @@
         {
             var oldMember = Model.UsingModule<ConfigurationModule>()
                 .Create<PropertyDefinition>()
-                .Set(x => x.IsPublic = oldValue);
-            var newMember = oldMember.JsonClone().Set(x => x.IsPublic = newValue);
+                .Set(x => x.IsVisible = oldValue);
+            var newMember = oldMember.JsonClone().Set(x => x.IsVisible = newValue);
             var match = new MemberMatch(oldMember, newMember);
 
             var sut = new PropertyComparer();
@@ -68,11 +68,11 @@
         {
             var oldMember = Model.UsingModule<ConfigurationModule>()
                 .Create<PropertyDefinition>()
-                .Set(x => { x.IsPublic = false; });
+                .Set(x => { x.IsVisible = false; });
             var newMember = oldMember.JsonClone()
                 .Set(x =>
                 {
-                    x.IsPublic = true;
+                    x.IsVisible = true;
                     x.CanWrite = false;
                 });
             var match = new MemberMatch(oldMember, newMember);
@@ -93,7 +93,7 @@
                 .Create<PropertyDefinition>()
                 .Set(x =>
                 {
-                    x.IsPublic = false;
+                    x.IsVisible = false;
                     x.CanWrite = true;
                 });
             var newMember = oldMember.JsonClone().Set(x => { x.CanWrite = false; });
