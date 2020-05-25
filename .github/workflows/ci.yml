@@ -95,7 +95,7 @@ jobs:
         release_name: Release ${{ steps.gitversion.outputs.NuGetVersionV2 }}
         draft: false
         prerelease: ${{ contains(steps.gitversion.outputs.NuGetVersionV2, 'beta') }}
-      # if: github.ref == 'refs/heads/master'
+      if: github.ref == 'refs/heads/master'
     
     - name: Upload Release Asset
       id: upload-release-asset 
@@ -107,4 +107,4 @@ jobs:
         asset_path: ${{ format('./staging/{0}.{1}.symbols.nupkg', env.PROJECT_NAME, steps.gitversion.outputs.NuGetVersionV2) }}
         asset_name: ${{ format('{0}.{1}.nupkg', env.PROJECT_NAME, steps.gitversion.outputs.NuGetVersionV2) }}
         asset_content_type: application/zip
-      # if: github.ref == 'refs/heads/master'
+      if: github.ref == 'refs/heads/master'
