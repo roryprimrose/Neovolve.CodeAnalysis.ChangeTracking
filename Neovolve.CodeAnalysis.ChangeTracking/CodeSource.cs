@@ -20,6 +20,6 @@
 
         public string Contents { get; }
 
-        public string? FilePath { get; }
+        public string FilePath { get; }
     }
 }
