@@ -44,7 +44,7 @@ public class Test
 ")
             };
 
-            var result = await _calculator.CalculateChange(oldCode, newCode, CancellationToken.None)
+            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);
@@ -74,7 +74,7 @@ public class Test
 ")
             };
 
-            var result = await _calculator.CalculateChange(oldCode, newCode, CancellationToken.None)
+            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);
@@ -95,7 +95,7 @@ public class Test
                 new CodeSource(TestNode.Field)
             };
 
-            var result = await _calculator.CalculateChange(oldCode, newCode, CancellationToken.None)
+            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);
@@ -125,7 +125,7 @@ public class Test
 ")
             };
 
-            var result = await _calculator.CalculateChange(oldCode, newCode, CancellationToken.None)
+            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);
@@ -155,7 +155,7 @@ public class Test
 ")
             };
 
-            var result = await _calculator.CalculateChange(oldCode, newCode, CancellationToken.None)
+            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);
@@ -185,7 +185,7 @@ public class Test
 ")
             };
 
-            var result = await _calculator.CalculateChange(oldCode, newCode, CancellationToken.None)
+            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);
@@ -215,7 +215,7 @@ public class Test
 ")
             };
 
-            var result = await _calculator.CalculateChange(oldCode, newCode, CancellationToken.None)
+            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);
@@ -245,7 +245,7 @@ public class Test
 ")
             };
 
-            var result = await _calculator.CalculateChange(oldCode, newCode, CancellationToken.None)
+            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);
@@ -266,7 +266,7 @@ public class Test
                 new CodeSource(TestNode.Field)
             };
 
-            var result = await _calculator.CalculateChange(oldCode, newCode, CancellationToken.None)
+            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);
@@ -296,7 +296,7 @@ public class Test
 ")
             };
 
-            var result = await _calculator.CalculateChange(oldCode, newCode, CancellationToken.None)
+            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);
@@ -326,7 +326,7 @@ public class Test
 ")
             };
 
-            var result = await _calculator.CalculateChange(oldCode, newCode, CancellationToken.None)
+            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);
@@ -356,7 +356,7 @@ public class Test
 ")
             };
 
-            var result = await _calculator.CalculateChange(oldCode, newCode, CancellationToken.None)
+            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);
@@ -378,7 +378,7 @@ public class Test
                 new CodeSource(TestNode.Field)
             };
 
-            var result = await _calculator.CalculateChange(oldCode, newCode, CancellationToken.None)
+            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);
