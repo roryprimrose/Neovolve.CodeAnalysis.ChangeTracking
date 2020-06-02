@@ -15,7 +15,7 @@
     public class ChangeCalculatorExtensionTests
     {
         [Fact]
-        public async Task CalculateChangeReturnsCalculatorResult()
+        public async Task CalculateChangesReturnsCalculatorResult()
         {
             var oldCode = new List<CodeSource>
             {
@@ -36,14 +36,14 @@
                 .Returns(expected);
 
             var actual = await calculator
-                .CalculateChange(oldCode, newCode, CancellationToken.None)
+                .CalculateChanges(oldCode, newCode, CancellationToken.None)
                 .ConfigureAwait(false);
 
             actual.Should().Be(expected);
         }
 
         [Fact]
-        public async Task CalculateChangeReturnsCalculatorResultFromMultipleNodes()
+        public async Task CalculateChangesReturnsCalculatorResultFromMultipleNodes()
         {
             var oldCode = new List<CodeSource>
             {
@@ -65,14 +65,14 @@
                 .Returns(expected);
 
             var actual = await calculator
-                .CalculateChange(oldCode, newCode, CancellationToken.None)
+                .CalculateChanges(oldCode, newCode, CancellationToken.None)
                 .ConfigureAwait(false);
 
             actual.Should().Be(expected);
         }
 
         [Fact]
-        public async Task CalculateChangeReturnsCalculatorResultWithoutCancellationToken()
+        public async Task CalculateChangesReturnsCalculatorResultWithoutCancellationToken()
         {
             var oldCode = new List<CodeSource>
             {
@@ -93,44 +93,44 @@
                 .Returns(expected);
 
             var actual = await calculator
-                .CalculateChange(oldCode, newCode, CancellationToken.None)
+                .CalculateChanges(oldCode, newCode, CancellationToken.None)
                 .ConfigureAwait(false);
 
             actual.Should().Be(expected);
         }
 
         [Fact]
-        public void CalculateChangeThrowsExceptionWithNullCalculator()
+        public void CalculateChangesThrowsExceptionWithNullCalculator()
         {
             var oldCode = Model.UsingModule<ConfigurationModule>().Create<List<CodeSource>>();
             var newCode = Model.UsingModule<ConfigurationModule>().Create<List<CodeSource>>();
 
             Func<Task> action = async () => await ChangeCalculatorExtensions
-                .CalculateChange(null!, oldCode, newCode, CancellationToken.None)
+                .CalculateChanges(null!, oldCode, newCode, CancellationToken.None)
                 .ConfigureAwait(false);
 
             action.Should().Throw<ArgumentNullException>();
         }
 
         [Fact]
-        public void CalculateChangeThrowsExceptionWithNullNewCode()
+        public void CalculateChangesThrowsExceptionWithNullNewCode()
         {
             var calculator = Substitute.For<IChangeCalculator>();
             var oldCode = Model.UsingModule<ConfigurationModule>().Create<List<CodeSource>>();
 
-            Func<Task> action = async () => await calculator.CalculateChange(oldCode, null!, CancellationToken.None)
+            Func<Task> action = async () => await calculator.CalculateChanges(oldCode, null!, CancellationToken.None)
                 .ConfigureAwait(false);
 
             action.Should().Throw<ArgumentNullException>();
         }
 
         [Fact]
-        public void CalculateChangeThrowsExceptionWithNullOldCode()
+        public void CalculateChangesThrowsExceptionWithNullOldCode()
         {
             var calculator = Substitute.For<IChangeCalculator>();
             var newCode = Model.UsingModule<ConfigurationModule>().Create<List<CodeSource>>();
 
-            Func<Task> action = async () => await calculator.CalculateChange(null!, newCode, CancellationToken.None)
+            Func<Task> action = async () => await calculator.CalculateChanges(null!, newCode, CancellationToken.None)
                 .ConfigureAwait(false);
 
             action.Should().Throw<ArgumentNullException>();
