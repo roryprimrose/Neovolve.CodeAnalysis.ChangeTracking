@@ -37,7 +37,7 @@
         /// <summary>
         ///     Gets or sets the attributes declared on the member.
         /// </summary>
-        public ICollection<AttributeDefinition> Attributes { get; } = new List<AttributeDefinition>();
+        public ICollection<OldAttributeDefinition> Attributes { get; } = new List<OldAttributeDefinition>();
 
         /// <summary>
         ///     Gets or sets the character index that the member declaration starts on in the containing code.

@@ -22,7 +22,7 @@
             return node;
         }
 
-        protected virtual AttributeDefinition ResolveAttribute(AttributeSyntax attributeSyntax)
+        protected virtual OldAttributeDefinition ResolveAttribute(AttributeSyntax attributeSyntax)
         {
             Ensure.Any.IsNotNull(attributeSyntax, nameof(attributeSyntax));
 
@@ -47,7 +47,7 @@
                 name = name[..^9];
             }
 
-            var attribute = new AttributeDefinition
+            var attribute = new OldAttributeDefinition
             {
                 Namespace = namespaceIdentifier,
                 OwningType = typeName,

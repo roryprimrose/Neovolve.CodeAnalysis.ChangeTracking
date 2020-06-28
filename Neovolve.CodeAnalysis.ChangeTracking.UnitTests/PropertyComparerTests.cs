@@ -187,7 +187,7 @@
         [Theory]
         [InlineData(typeof(PropertyDefinition), true)]
         [InlineData(typeof(MemberDefinition), false)]
-        [InlineData(typeof(AttributeDefinition), false)]
+        [InlineData(typeof(OldAttributeDefinition), false)]
         public void IsSupportedReturnsTrueForExactTypeMatch(Type type, bool expected)
         {
             var definition = (MemberDefinition) Model.UsingModule<ConfigurationModule>().Create(type);

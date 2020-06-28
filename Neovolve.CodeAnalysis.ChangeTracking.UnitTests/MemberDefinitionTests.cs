@@ -10,7 +10,7 @@
         [Theory]
         [InlineData(typeof(MemberDefinition))]
         [InlineData(typeof(PropertyDefinition))]
-        [InlineData(typeof(AttributeDefinition))]
+        [InlineData(typeof(OldAttributeDefinition))]
         public void ToStringReturnsMemberDescription(Type definitionType)
         {
             var sut = (MemberDefinition) Model.UsingModule<ConfigurationModule>().Create(definitionType);
@@ -45,7 +45,7 @@
         [Theory]
         [InlineData(typeof(MemberDefinition))]
         [InlineData(typeof(PropertyDefinition))]
-        [InlineData(typeof(AttributeDefinition))]
+        [InlineData(typeof(OldAttributeDefinition))]
         public void ToStringReturnsMemberDescriptionWithoutNamespace(Type definitionType)
         {
             var sut = ((MemberDefinition) Model.UsingModule<ConfigurationModule>().Create(definitionType)).Set(x =>

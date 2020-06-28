@@ -13,8 +13,8 @@
             configuration.AddCreationRule<PropertyDefinition>(x => x.CanWrite, true, 100);
             configuration.AddCreationRule<PropertyDefinition>(x => x.MemberType, MemberType.Property, 100);
 
-            configuration.AddCreationRule<AttributeDefinition>(x => x.MemberType, MemberType.Attribute, 100);
-            configuration.AddIgnoreRule<AttributeDefinition>(x => x.Attributes);
+            configuration.AddCreationRule<OldAttributeDefinition>(x => x.MemberType, MemberType.Attribute, 100);
+            configuration.AddIgnoreRule<OldAttributeDefinition>(x => x.Attributes);
 
             configuration.AddValueGenerator<SemVerChangeTypeValueGenerator>();
             configuration.AddTypeCreator<ComparisonResultTypeCreator>();

@@ -1,6 +1,6 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking
 {
-    public class AttributeDefinition : MemberDefinition
+    public class OldAttributeDefinition : MemberDefinition
     {
         public string Declaration { get; set; } = string.Empty;
     }
