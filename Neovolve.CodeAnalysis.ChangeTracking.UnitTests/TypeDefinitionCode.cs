@@ -68,12 +68,53 @@ namespace MyNamespace
 }
 ";
 
+        public const string ClassWithComplexNamespace = @"
+namespace MyNamespace.OtherNamespace.FinalNamespace
+{
+    public class MyClass
+    {
+    }   
+}
+";
+
         public const string ClassWithGenericType = @"
 namespace MyNamespace 
 {
     public class MyClass<T>
     {
     }  
+}
+";
+
+        public const string ClassWithMultipleAttributes = @"
+namespace MyNamespace 
+{
+    [First]
+    [Second]
+    public class MyClass
+    {
+    }   
+}
+";
+
+        public const string ClassWithMultipleAttributesInMultipleLists = @"
+namespace MyNamespace 
+{
+    [First, Second(123)]
+    [Third, Fourth(true, named: ""stuff""]
+    public class MyClass
+    {
+    }   
+}
+";
+
+        public const string ClassWithMultipleAttributesInSingleList = @"
+namespace MyNamespace 
+{
+    [First, Second]
+    public class MyClass
+    {
+    }   
 }
 ";
 
@@ -86,6 +127,16 @@ public class MyClass
         public const string ClassWithoutParent = @"
 namespace MyNamespace 
 {
+    public class MyClass
+    {
+    }   
+}
+";
+
+        public const string ClassWithSingleAttribute = @"
+namespace MyNamespace 
+{
+    [MyAttribute]
     public class MyClass
     {
     }   

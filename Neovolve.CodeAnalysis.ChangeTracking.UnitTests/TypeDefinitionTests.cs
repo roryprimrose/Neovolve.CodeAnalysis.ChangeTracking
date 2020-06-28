@@ -11,6 +11,76 @@
     public class TypeDefinitionTests
     {
         [Fact]
+        public async Task AttributesReturnsEmptyWhenNoAttributesDeclared()
+        {
+            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithoutParent)
+                .ConfigureAwait(false);
+
+            var sut = new ClassDefinition(node);
+
+            sut.Attributes.Should().BeEmpty();
+        }
+
+        [Fact]
+        public async Task AttributesReturnsMultipleAttributes()
+        {
+            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithMultipleAttributes)
+                .ConfigureAwait(false);
+
+            var sut = new ClassDefinition(node);
+
+            sut.Attributes.Should().HaveCount(2);
+
+            sut.Attributes.First().Name.Should().Be("First");
+            sut.Attributes.Skip(1).First().Name.Should().Be("Second");
+        }
+
+        [Fact]
+        public async Task AttributesReturnsMultipleAttributesOnMultipleLists()
+        {
+            var node = await TestNode
+                .FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithMultipleAttributesInMultipleLists)
+                .ConfigureAwait(false);
+
+            var sut = new ClassDefinition(node);
+
+            sut.Attributes.Should().HaveCount(4);
+
+            sut.Attributes.First().Name.Should().Be("First");
+            sut.Attributes.Skip(1).First().Name.Should().Be("Second");
+            sut.Attributes.Skip(2).First().Name.Should().Be("Third");
+            sut.Attributes.Skip(3).First().Name.Should().Be("Fourth");
+        }
+
+        [Fact]
+        public async Task AttributesReturnsMultipleAttributesOnSingleList()
+        {
+            var node = await TestNode
+                .FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithMultipleAttributesInSingleList)
+                .ConfigureAwait(false);
+
+            var sut = new ClassDefinition(node);
+
+            sut.Attributes.Should().HaveCount(2);
+
+            sut.Attributes.First().Name.Should().Be("First");
+            sut.Attributes.Skip(1).First().Name.Should().Be("Second");
+        }
+
+        [Fact]
+        public async Task AttributesReturnsSingleAttribute()
+        {
+            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithSingleAttribute)
+                .ConfigureAwait(false);
+
+            var sut = new ClassDefinition(node);
+
+            sut.Attributes.Should().HaveCount(1);
+
+            sut.Attributes.First().Name.Should().Be("MyAttribute");
+        }
+
+        [Fact]
         public async Task ChildClassesIncludesHierarchyOfClassesAndInterfaces()
         {
             var node = await TestNode

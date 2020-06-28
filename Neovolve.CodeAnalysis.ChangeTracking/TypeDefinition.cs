@@ -10,7 +10,7 @@
     ///     The <see cref="TypeDefinition" />
     ///     class is used to describe a type.
     /// </summary>
-    public abstract class TypeDefinition
+    public abstract class TypeDefinition : IItemDefinition
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="TypeDefinition" /> class.
@@ -24,13 +24,14 @@
             }
 
             ParentType = null;
-            Namespace = DetermineNamespace(node);
+            Namespace = node.DetermineNamespace();
+            Attributes = node.DetermineAttributes(this);
             IsVisible = node.IsVisible();
             Name = DetermineName(node, null);
+            ImplementedTypes = DetermineImplementedTypes(node);
             ChildClasses = DetermineChildClasses(node);
             ChildInterfaces = DetermineChildInterfaces(node);
-            ImplementedTypes = DetermineImplementedTypes(node);
-            Location = DetermineLocation(node);
+            Location = node.DetermineLocation();
         }
 
         /// <summary>
@@ -48,12 +49,13 @@
             }
 
             Namespace = parentType.Namespace;
+            Attributes = node.DetermineAttributes(this);
             IsVisible = parentType.IsVisible && node.IsVisible();
             Name = DetermineName(node, parentType);
+            ImplementedTypes = DetermineImplementedTypes(node);
             ChildClasses = DetermineChildClasses(node);
             ChildInterfaces = DetermineChildInterfaces(node);
-            ImplementedTypes = DetermineImplementedTypes(node);
-            Location = DetermineLocation(node);
+            Location = node.DetermineLocation();
         }
 
         private static IReadOnlyCollection<string> DetermineImplementedTypes(BaseTypeDeclarationSyntax node)
@@ -68,25 +70,6 @@
             var childTypes = baseList.Types.Select(x => x.ToString()).ToList();
 
             return childTypes.AsReadOnly();
-        }
-
-        private static DefinitionLocation DetermineLocation(BaseTypeDeclarationSyntax declaration)
-        {
-            string filePath = string.Empty;
-            var location = declaration.GetLocation();
-
-            if (location.IsInSource
-                && location.Kind == LocationKind.SourceFile)
-            {
-                filePath = location.SourceTree?.FilePath ?? string.Empty;
-            }
-
-            var startPosition = location.GetLineSpan().StartLinePosition;
-
-            var lineIndex = startPosition.Line;
-            var characterIndex = startPosition.Character;
-
-            return new DefinitionLocation(filePath, lineIndex, characterIndex);
         }
 
         private static string DetermineName(BaseTypeDeclarationSyntax node, TypeDefinition? parentType)
@@ -112,18 +95,6 @@
             return name + parameterList;
         }
 
-        private static string DetermineNamespace(SyntaxNode node)
-        {
-            var containerNamespace = node.FirstAncestorOrSelf<NamespaceDeclarationSyntax>();
-
-            if (containerNamespace == null)
-            {
-                return string.Empty;
-            }
-
-            return containerNamespace.Name.GetText().ToString().Trim();
-        }
-
         private IReadOnlyCollection<ClassDefinition> DetermineChildClasses(SyntaxNode node)
         {
             var childNodes = node.ChildNodes().OfType<ClassDeclarationSyntax>();
@@ -139,6 +110,11 @@
 
             return childTypes.AsReadOnly();
         }
+
+        /// <summary>
+        ///     Gets the attributes defined on the type.
+        /// </summary>
+        public IReadOnlyCollection<AttributeDefinition> Attributes { get; }
 
         /// <summary>
         ///     Gets the child classes defined on this type.
@@ -160,14 +136,10 @@
         /// </summary>
         public bool IsVisible { get; }
 
-        /// <summary>
-        ///     Gets the type location.
-        /// </summary>
+        /// <inheritdoc />
         public DefinitionLocation Location { get; }
 
-        /// <summary>
-        ///     Gets the name of the type.
-        /// </summary>
+        /// <inheritdoc />
         public string Name { get; }
 
         /// <summary>
