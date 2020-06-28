@@ -30,6 +30,7 @@
             ChildClasses = DetermineChildClasses(node);
             ChildInterfaces = DetermineChildInterfaces(node);
             ImplementedTypes = DetermineImplementedTypes(node);
+            Location = DetermineLocation(node);
         }
 
         /// <summary>
@@ -52,6 +53,7 @@
             ChildClasses = DetermineChildClasses(node);
             ChildInterfaces = DetermineChildInterfaces(node);
             ImplementedTypes = DetermineImplementedTypes(node);
+            Location = DetermineLocation(node);
         }
 
         private static IReadOnlyCollection<string> DetermineImplementedTypes(BaseTypeDeclarationSyntax node)
@@ -66,6 +68,25 @@
             var childTypes = baseList.Types.Select(x => x.ToString()).ToList();
 
             return childTypes.AsReadOnly();
+        }
+
+        private static DefinitionLocation DetermineLocation(BaseTypeDeclarationSyntax declaration)
+        {
+            string filePath = string.Empty;
+            var location = declaration.GetLocation();
+
+            if (location.IsInSource
+                && location.Kind == LocationKind.SourceFile)
+            {
+                filePath = location.SourceTree?.FilePath ?? string.Empty;
+            }
+
+            var startPosition = location.GetLineSpan().StartLinePosition;
+
+            var lineIndex = startPosition.Line;
+            var characterIndex = startPosition.Character;
+
+            return new DefinitionLocation(filePath, lineIndex, characterIndex);
         }
 
         private static string DetermineName(BaseTypeDeclarationSyntax node, TypeDefinition? parentType)
@@ -138,6 +159,11 @@
         ///     Gets whether the type is visible.
         /// </summary>
         public bool IsVisible { get; }
+
+        /// <summary>
+        ///     Gets the type location.
+        /// </summary>
+        public DefinitionLocation Location { get; }
 
         /// <summary>
         ///     Gets the name of the type.

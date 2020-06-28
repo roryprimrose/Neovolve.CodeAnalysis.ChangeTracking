@@ -199,6 +199,34 @@
         }
 
         [Fact]
+        public async Task LocationReturnsEmptyWhenNodeLacksSourceInformation()
+        {
+            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithoutParent)
+                .ConfigureAwait(false);
+
+            var sut = new ClassDefinition(node);
+
+            sut.Location.FilePath.Should().BeEmpty();
+            sut.Location.LineIndex.Should().Be(3);
+            sut.Location.CharacterIndex.Should().Be(4);
+        }
+
+        [Fact]
+        public async Task LocationReturnsFilePathWhenNodeIncludesSourceInformation()
+        {
+            var filePath = Guid.NewGuid().ToString();
+
+            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithoutParent, filePath)
+                .ConfigureAwait(false);
+
+            var sut = new ClassDefinition(node);
+
+            sut.Location.FilePath.Should().Be(filePath);
+            sut.Location.LineIndex.Should().Be(3);
+            sut.Location.CharacterIndex.Should().Be(4);
+        }
+
+        [Fact]
         public async Task NameReturnsMultipleGenericTypeDefinitions()
         {
             var node = await TestNode
