@@ -40,7 +40,7 @@
                     member.CanRead = true;
                 }
             }
-
+ 
             var setAccessor =
                 propertySyntax.AccessorList?.Accessors.FirstOrDefault(x =>
                     x.Kind() == SyntaxKind.SetAccessorDeclaration);

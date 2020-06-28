@@ -18,30 +18,6 @@
             return HasVisibleModifiers(modifiers);
         }
 
-        public static bool IsVisible(this ClassDeclarationSyntax declaration)
-        {
-            if (declaration == null)
-            {
-                throw new ArgumentNullException(nameof(declaration));
-            }
-
-            var modifiers = declaration.Modifiers;
-
-            return HasVisibleModifiers(modifiers);
-        }
-
-        public static bool IsVisible(this InterfaceDeclarationSyntax declaration)
-        {
-            if (declaration == null)
-            {
-                throw new ArgumentNullException(nameof(declaration));
-            }
-
-            var modifiers = declaration.Modifiers;
-
-            return HasVisibleModifiers(modifiers);
-        }
-
         public static bool IsVisible(this MemberDeclarationSyntax declaration)
         {
             if (declaration == null)
