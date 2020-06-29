@@ -13,7 +13,7 @@
         [Fact]
         public async Task DetermineAttributesReturnsEmptyWhenNoAttributesDeclared()
         {
-            var declaringItem = Substitute.For<IItemDefinition>();
+            var declaringItem = Substitute.For<IMemberDefinition>();
 
             var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithoutParent)
                 .ConfigureAwait(false);
@@ -26,7 +26,7 @@
         [Fact]
         public async Task DetermineAttributesReturnsMultipleAttributes()
         {
-            var declaringItem = Substitute.For<IItemDefinition>();
+            var declaringItem = Substitute.For<IMemberDefinition>();
 
             var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithMultipleAttributes)
                 .ConfigureAwait(false);
@@ -42,7 +42,7 @@
         [Fact]
         public async Task DetermineAttributesReturnsMultipleAttributesOnMultipleLists()
         {
-            var declaringItem = Substitute.For<IItemDefinition>();
+            var declaringItem = Substitute.For<IMemberDefinition>();
 
             var node = await TestNode
                 .FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithMultipleAttributesInMultipleLists)
@@ -61,7 +61,7 @@
         [Fact]
         public async Task DetermineAttributesReturnsMultipleAttributesOnSingleList()
         {
-            var declaringItem = Substitute.For<IItemDefinition>();
+            var declaringItem = Substitute.For<IMemberDefinition>();
 
             var node = await TestNode
                 .FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithMultipleAttributesInSingleList)
@@ -78,7 +78,7 @@
         [Fact]
         public async Task DetermineAttributesReturnsSingleAttribute()
         {
-            var declaringItem = Substitute.For<IItemDefinition>();
+            var declaringItem = Substitute.For<IMemberDefinition>();
 
             var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithSingleAttribute)
                 .ConfigureAwait(false);
@@ -106,7 +106,7 @@
         [Fact]
         public void DetermineAttributesThrowsExceptionWithNullNode()
         {
-            var declaringItem = Substitute.For<IItemDefinition>();
+            var declaringItem = Substitute.For<IMemberDefinition>();
 
             Action action = () => NodeExtensions.DetermineAttributes(null!, declaringItem);
 

@@ -19,7 +19,7 @@
         /// <param name="declaringItem">The item that is declaring the attributes.</param>
         /// <returns>Returns the set of attributes declared on the node.</returns>
         public static IReadOnlyCollection<AttributeDefinition> DetermineAttributes(this MemberDeclarationSyntax node,
-            IItemDefinition declaringItem)
+            IMemberDefinition declaringItem)
         {
             if (node == null)
             {

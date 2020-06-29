@@ -90,26 +90,31 @@
             var sut = new ClassDefinition(node);
 
             sut.Name.Should().Be("MyGrandparentClass");
+            sut.FullName.Should().Be("MyNamespace.MyGrandparentClass");
             sut.ParentType.Should().BeNull();
 
             var myInterface = sut.ChildInterfaces.Single();
 
-            myInterface.Name.Should().Be("MyGrandparentClass+IMyInterface");
+            myInterface.Name.Should().Be("IMyInterface");
+            myInterface.FullName.Should().Be("MyNamespace.MyGrandparentClass+IMyInterface");
             myInterface.ParentType.Should().Be(sut);
 
             var parent = myInterface.ChildClasses.Single();
 
-            parent.Name.Should().Be("MyGrandparentClass+IMyInterface+MyParentClass");
+            parent.Name.Should().Be("MyParentClass");
+            parent.FullName.Should().Be("MyNamespace.MyGrandparentClass+IMyInterface+MyParentClass");
             parent.ParentType.Should().Be(myInterface);
 
             var myClass = parent.ChildClasses.Single();
 
-            myClass.Name.Should().Be("MyGrandparentClass+IMyInterface+MyParentClass+MyClass");
+            myClass.Name.Should().Be("MyClass");
+            myClass.FullName.Should().Be("MyNamespace.MyGrandparentClass+IMyInterface+MyParentClass+MyClass");
             myClass.ParentType.Should().Be(parent);
 
             var myChildInterface = myClass.ChildInterfaces.Single();
 
-            myChildInterface.Name.Should().Be("MyGrandparentClass+IMyInterface+MyParentClass+MyClass+IChildInterface");
+            myChildInterface.Name.Should().Be("IChildInterface");
+            myChildInterface.FullName.Should().Be("MyNamespace.MyGrandparentClass+IMyInterface+MyParentClass+MyClass+IChildInterface");
             myChildInterface.ParentType.Should().Be(myClass);
         }
 
@@ -137,10 +142,12 @@
             var firstClass = sut.ChildClasses.First();
             var secondClass = sut.ChildClasses.Skip(1).First();
 
-            firstClass.Name.Should().Be("MyClass+FirstChild");
+            firstClass.Name.Should().Be("FirstChild");
+            firstClass.FullName.Should().Be("MyNamespace.MyClass+FirstChild");
             firstClass.ParentType.Should().Be(sut);
 
-            secondClass.Name.Should().Be("MyClass+SecondChild");
+            secondClass.Name.Should().Be("SecondChild");
+            secondClass.FullName.Should().Be("MyNamespace.MyClass+SecondChild");
             secondClass.ParentType.Should().Be(sut);
         }
 
@@ -153,11 +160,13 @@
             var sut = new ClassDefinition(node);
 
             sut.Name.Should().Be("MyParentClass");
+            sut.FullName.Should().Be("MyNamespace.MyParentClass");
             sut.ChildClasses.Should().HaveCount(1);
 
             var childClass = sut.ChildClasses.First();
 
-            childClass.Name.Should().Be("MyParentClass+MyClass");
+            childClass.Name.Should().Be("MyClass");
+            childClass.FullName.Should().Be("MyNamespace.MyParentClass+MyClass");
             childClass.ParentType.Should().Be(sut);
         }
 
@@ -174,11 +183,32 @@
             var firstInterface = sut.ChildInterfaces.First();
             var secondInterface = sut.ChildInterfaces.Skip(1).First();
 
-            firstInterface.Name.Should().Be("MyClass+FirstChild");
+            firstInterface.Name.Should().Be("FirstChild");
+            firstInterface.FullName.Should().Be("MyNamespace.MyClass+FirstChild");
             firstInterface.ParentType.Should().Be(sut);
 
-            secondInterface.Name.Should().Be("MyClass+SecondChild");
+            secondInterface.Name.Should().Be("SecondChild");
+            secondInterface.FullName.Should().Be("MyNamespace.MyClass+SecondChild");
             secondInterface.ParentType.Should().Be(sut);
+        }
+
+        [Fact]
+        public async Task FullNameReturnsNameCombinedWithParentTypeFullName()
+        {
+            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassInGrandparentClass)
+                .ConfigureAwait(false);
+
+            var sut = new ClassDefinition(node);
+
+            sut.FullName.Should().Be("MyNamespace.MyGrandparentClass");
+
+            var parentClass = sut.ChildClasses.Single();
+
+            parentClass.FullName.Should().Be("MyNamespace.MyGrandparentClass+MyParentClass");
+
+            var childClass = parentClass.ChildClasses.Single();
+
+            childClass.FullName.Should().Be("MyNamespace.MyGrandparentClass+MyParentClass+MyClass");
         }
 
         [Fact]
@@ -232,24 +262,7 @@
         }
 
         [Theory]
-        [ClassData(typeof(GrandparentHierarchyIsVisibleDataSet))]
-        public async Task IsVisibleReturnsValueBasedOnParentType(string grandparentScope, string parentScope,
-            string scope, bool expected)
-        {
-            var code = TypeDefinitionCode.BuildHierarchyWithScope(grandparentScope, parentScope, scope);
-
-            var node = await TestNode.FindNode<ClassDeclarationSyntax>(code)
-                .ConfigureAwait(false);
-
-            var sut = new ClassDefinition(node);
-
-            // Find the deepest class
-            var child = sut.ChildClasses.Single().ChildClasses.Single();
-
-            child.IsVisible.Should().Be(expected);
-        }
-
-        [Theory]
+        [InlineData("", false)]
         [InlineData("private", false)]
         [InlineData("internal", false)]
         [InlineData("protected", true)]
@@ -269,7 +282,7 @@
         }
 
         [Fact]
-        public async Task LocationReturnsEmptyWhenNodeLacksSourceInformation()
+        public async Task LocationReturnsEmptyFilePathWhenNodeLacksSourceInformation()
         {
             var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithoutParent)
                 .ConfigureAwait(false);
@@ -277,6 +290,18 @@
             var sut = new ClassDefinition(node);
 
             sut.Location.FilePath.Should().BeEmpty();
+        }
+
+        [Fact]
+        public async Task LocationReturnsFileContentLocation()
+        {
+            var filePath = Guid.NewGuid().ToString();
+
+            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithoutParent, filePath)
+                .ConfigureAwait(false);
+
+            var sut = new ClassDefinition(node);
+
             sut.Location.LineIndex.Should().Be(3);
             sut.Location.CharacterIndex.Should().Be(4);
         }
@@ -292,8 +317,6 @@
             var sut = new ClassDefinition(node);
 
             sut.Location.FilePath.Should().Be(filePath);
-            sut.Location.LineIndex.Should().Be(3);
-            sut.Location.CharacterIndex.Should().Be(4);
         }
 
         [Fact]
@@ -309,29 +332,7 @@
         }
 
         [Fact]
-        public async Task NameReturnsNameFromClassWithGenericType()
-        {
-            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithGenericType)
-                .ConfigureAwait(false);
-
-            var sut = new ClassDefinition(node);
-
-            sut.Name.Should().Be("MyClass<T>");
-        }
-
-        [Fact]
-        public async Task NameReturnsNameFromClassWithoutParentType()
-        {
-            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithoutParent)
-                .ConfigureAwait(false);
-
-            var sut = new ClassDefinition(node);
-
-            sut.Name.Should().Be("MyClass");
-        }
-
-        [Fact]
-        public async Task NameReturnsNameFromClassWithParentTypes()
+        public async Task NameReturnsNameFromClass()
         {
             var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassInGrandparentClass)
                 .ConfigureAwait(false);
@@ -342,11 +343,22 @@
 
             var parentClass = sut.ChildClasses.Single();
 
-            parentClass.Name.Should().Be("MyGrandparentClass+MyParentClass");
+            parentClass.Name.Should().Be("MyParentClass");
 
             var childClass = parentClass.ChildClasses.Single();
 
-            childClass.Name.Should().Be("MyGrandparentClass+MyParentClass+MyClass");
+            childClass.Name.Should().Be("MyClass");
+        }
+
+        [Fact]
+        public async Task NameReturnsNameFromClassWithGenericType()
+        {
+            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithGenericType)
+                .ConfigureAwait(false);
+
+            var sut = new ClassDefinition(node);
+
+            sut.Name.Should().Be("MyClass<T>");
         }
 
         [Fact]

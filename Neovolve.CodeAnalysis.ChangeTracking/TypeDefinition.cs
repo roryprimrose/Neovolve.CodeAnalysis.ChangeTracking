@@ -10,7 +10,7 @@
     ///     The <see cref="TypeDefinition" />
     ///     class is used to describe a type.
     /// </summary>
-    public abstract class TypeDefinition : IItemDefinition
+    public abstract class TypeDefinition : IMemberDefinition
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="TypeDefinition" /> class.
@@ -25,14 +25,16 @@
 
             ParentType = null;
             Namespace = node.DetermineNamespace();
+            Name = DetermineName(node);
+            FullName = Namespace + "." + Name;
+
             Attributes = node.DetermineAttributes(this);
             IsVisible = node.IsVisible();
-            Name = DetermineName(node, null);
             ImplementedTypes = DetermineImplementedTypes(node);
             GenericConstraints = Array.Empty<ConstraintListDefinition>();
+            Location = node.DetermineLocation();
             ChildClasses = DetermineChildClasses(node);
             ChildInterfaces = DetermineChildInterfaces(node);
-            Location = node.DetermineLocation();
         }
 
         /// <summary>
@@ -44,20 +46,17 @@
         {
             ParentType = parentType ?? throw new ArgumentNullException(nameof(parentType));
 
-            if (node == null)
-            {
-                throw new ArgumentNullException(nameof(node));
-            }
+            Namespace = node.DetermineNamespace();
+            Name = DetermineName(node);
+            FullName = ParentType.FullName + "+" + Name;
 
-            Namespace = parentType.Namespace;
             Attributes = node.DetermineAttributes(this);
-            IsVisible = parentType.IsVisible && node.IsVisible();
-            Name = DetermineName(node, parentType);
+            IsVisible = node.IsVisible();
             ImplementedTypes = DetermineImplementedTypes(node);
             GenericConstraints = Array.Empty<ConstraintListDefinition>();
+            Location = node.DetermineLocation();
             ChildClasses = DetermineChildClasses(node);
             ChildInterfaces = DetermineChildInterfaces(node);
-            Location = node.DetermineLocation();
         }
 
         private static IReadOnlyCollection<string> DetermineImplementedTypes(BaseTypeDeclarationSyntax node)
@@ -74,14 +73,9 @@
             return childTypes.AsReadOnly();
         }
 
-        private static string DetermineName(BaseTypeDeclarationSyntax node, TypeDefinition? parentType)
+        private static string DetermineName(BaseTypeDeclarationSyntax node)
         {
             var name = string.Empty;
-
-            if (parentType != null)
-            {
-                name = parentType.Name + "+";
-            }
 
             name += node.Identifier.Text;
 
@@ -113,9 +107,7 @@
             return childTypes.AsReadOnly();
         }
 
-        /// <summary>
-        ///     Gets the attributes defined on the type.
-        /// </summary>
+        /// <inheritdoc />
         public IReadOnlyCollection<AttributeDefinition> Attributes { get; }
 
         /// <summary>
@@ -127,6 +119,9 @@
         ///     Gets the child interfaces defined on this type.
         /// </summary>
         public IReadOnlyCollection<TypeDefinition> ChildInterfaces { get; }
+
+        /// <inheritdoc />
+        public string FullName { get; }
 
         /// <summary>
         ///     Gets the generic constraints declared on the type.

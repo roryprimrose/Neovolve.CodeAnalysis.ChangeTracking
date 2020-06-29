@@ -262,23 +262,5 @@ namespace MyNamespace
 }}  
 ";
         }
-
-        public static string BuildHierarchyWithScope(string grandparentScope, string parentScope, string scope)
-        {
-            return @$"
-namespace MyNamespace 
-{{
-    {grandparentScope} class MyGrandparentClass
-    {{
-        {parentScope} class MyParentClass
-        {{
-            {scope} class MyClass
-            {{
-            }}  
-        }}  
-    }}   
-}}
-";
-        }
     }
 }

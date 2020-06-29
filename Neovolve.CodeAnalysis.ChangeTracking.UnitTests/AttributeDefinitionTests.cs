@@ -1,6 +1,7 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Threading.Tasks;
     using FluentAssertions;
@@ -13,7 +14,7 @@
         [Fact]
         public async Task DeclaredOnReturnsParameterValue()
         {
-            var declaringItem = Substitute.For<IItemDefinition>();
+            var declaringItem = Substitute.For<IMemberDefinition>();
 
             var node = await TestNode.FindNode<AttributeSyntax>(AttributeDefinitionCode.SimpleAttributeWithBrackets)
                 .ConfigureAwait(false);
@@ -24,11 +25,40 @@
         }
 
         [Fact]
-        public async Task LocationReturnsDeclarationLocation()
+        public async Task LocationReturnsEmptyFilePathWhenNodeLacksSourceInformation()
+        {
+            var declaringItem = Substitute.For<IMemberDefinition>();
+
+            var node = await TestNode.FindNode<AttributeSyntax>(AttributeDefinitionCode.SimpleAttribute)
+                .ConfigureAwait(false);
+
+            var sut = new AttributeDefinition(declaringItem, node);
+
+            sut.Location.FilePath.Should().BeEmpty();
+        }
+
+        [Fact]
+        public async Task LocationReturnsFileContentLocation()
         {
             var filePath = Guid.NewGuid().ToString();
 
-            var declaringItem = Substitute.For<IItemDefinition>();
+            var declaringItem = Substitute.For<IMemberDefinition>();
+
+            var node = await TestNode.FindNode<AttributeSyntax>(AttributeDefinitionCode.SimpleAttribute, filePath)
+                .ConfigureAwait(false);
+
+            var sut = new AttributeDefinition(declaringItem, node);
+
+            sut.Location.LineIndex.Should().Be(3);
+            sut.Location.CharacterIndex.Should().Be(5);
+        }
+
+        [Fact]
+        public async Task LocationReturnsFilePathWhenNodeIncludesSourceInformation()
+        {
+            var filePath = Guid.NewGuid().ToString();
+
+            var declaringItem = Substitute.For<IMemberDefinition>();
 
             var node = await TestNode.FindNode<AttributeSyntax>(AttributeDefinitionCode.SimpleAttribute, filePath)
                 .ConfigureAwait(false);
@@ -36,14 +66,12 @@
             var sut = new AttributeDefinition(declaringItem, node);
 
             sut.Location.FilePath.Should().Be(filePath);
-            sut.Location.LineIndex.Should().Be(3);
-            sut.Location.CharacterIndex.Should().Be(5);
         }
 
         [Fact]
         public async Task NameReturnsNameFromAttribute()
         {
-            var declaringItem = Substitute.For<IItemDefinition>();
+            var declaringItem = Substitute.For<IMemberDefinition>();
 
             var node = await TestNode.FindNode<AttributeSyntax>(AttributeDefinitionCode.SimpleAttribute)
                 .ConfigureAwait(false);
@@ -56,7 +84,7 @@
         [Fact]
         public async Task NameReturnsNameFromAttributeWithArguments()
         {
-            var declaringItem = Substitute.For<IItemDefinition>();
+            var declaringItem = Substitute.For<IMemberDefinition>();
 
             var node = await TestNode
                 .FindNode<AttributeSyntax>(AttributeDefinitionCode.AttributeWithMixedOrdinalAndNamedArguments)
@@ -70,7 +98,7 @@
         [Fact]
         public async Task NameReturnsNameFromAttributeWithBrackets()
         {
-            var declaringItem = Substitute.For<IItemDefinition>();
+            var declaringItem = Substitute.For<IMemberDefinition>();
 
             var node = await TestNode.FindNode<AttributeSyntax>(AttributeDefinitionCode.SimpleAttributeWithBrackets)
                 .ConfigureAwait(false);
@@ -85,7 +113,7 @@
         [InlineData(AttributeDefinitionCode.SimpleAttributeWithBrackets)]
         public async Task ParametersReturnsEmptyWhenNoParametersDefined(string code)
         {
-            var declaringItem = Substitute.For<IItemDefinition>();
+            var declaringItem = Substitute.For<IMemberDefinition>();
 
             var node = await TestNode.FindNode<AttributeSyntax>(code)
                 .ConfigureAwait(false);
@@ -98,7 +126,7 @@
         [Fact]
         public async Task ParametersReturnsMixedOrdinalAndNamedArguments()
         {
-            var declaringItem = Substitute.For<IItemDefinition>();
+            var declaringItem = Substitute.For<IMemberDefinition>();
 
             var node = await TestNode
                 .FindNode<AttributeSyntax>(AttributeDefinitionCode.AttributeWithMixedOrdinalAndNamedArguments)
@@ -136,7 +164,7 @@
         [Fact]
         public async Task ParametersReturnsNamedArguments()
         {
-            var declaringItem = Substitute.For<IItemDefinition>();
+            var declaringItem = Substitute.For<IMemberDefinition>();
 
             var node = await TestNode.FindNode<AttributeSyntax>(AttributeDefinitionCode.AttributeWithNamedArguments)
                 .ConfigureAwait(false);
@@ -167,7 +195,7 @@
         [Fact]
         public async Task ParametersReturnsOrdinalArguments()
         {
-            var declaringItem = Substitute.For<IItemDefinition>();
+            var declaringItem = Substitute.For<IMemberDefinition>();
 
             var node = await TestNode.FindNode<AttributeSyntax>(AttributeDefinitionCode.AttributeWithOrdinalArguments)
                 .ConfigureAwait(false);
@@ -196,21 +224,27 @@
         }
 
         [Fact]
+        [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification =
+            "The constructor is the target of the test")]
         public async Task ThrowsExceptionWhenCreatedWithNullDeclaringItem()
         {
             var node = await TestNode.FindNode<AttributeSyntax>(AttributeDefinitionCode.SimpleAttributeWithBrackets)
                 .ConfigureAwait(false);
 
+            // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new AttributeDefinition(null!, node);
 
             action.Should().Throw<ArgumentNullException>();
         }
 
         [Fact]
+        [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification =
+            "The constructor is the target of the test")]
         public void ThrowsExceptionWhenCreatedWithNullNode()
         {
-            var declaringItem = Substitute.For<IItemDefinition>();
+            var declaringItem = Substitute.For<IMemberDefinition>();
 
+            // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new AttributeDefinition(declaringItem, null!);
 
             action.Should().Throw<ArgumentNullException>();
