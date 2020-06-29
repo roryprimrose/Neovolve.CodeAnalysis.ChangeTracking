@@ -29,6 +29,7 @@
             IsVisible = node.IsVisible();
             Name = DetermineName(node, null);
             ImplementedTypes = DetermineImplementedTypes(node);
+            GenericConstraints = Array.Empty<ConstraintListDefinition>();
             ChildClasses = DetermineChildClasses(node);
             ChildInterfaces = DetermineChildInterfaces(node);
             Location = node.DetermineLocation();
@@ -53,6 +54,7 @@
             IsVisible = parentType.IsVisible && node.IsVisible();
             Name = DetermineName(node, parentType);
             ImplementedTypes = DetermineImplementedTypes(node);
+            GenericConstraints = Array.Empty<ConstraintListDefinition>();
             ChildClasses = DetermineChildClasses(node);
             ChildInterfaces = DetermineChildInterfaces(node);
             Location = node.DetermineLocation();
@@ -125,6 +127,11 @@
         ///     Gets the child interfaces defined on this type.
         /// </summary>
         public IReadOnlyCollection<TypeDefinition> ChildInterfaces { get; }
+
+        /// <summary>
+        ///     Gets the generic constraints declared on the type.
+        /// </summary>
+        public IReadOnlyCollection<ConstraintListDefinition> GenericConstraints { get; protected set; }
 
         /// <summary>
         ///     Gets the types implemented/inherited by this type.

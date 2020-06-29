@@ -77,6 +77,15 @@ namespace MyNamespace.OtherNamespace.FinalNamespace
 }
 ";
 
+        public const string ClassWithGenericConstraints = @"
+namespace MyNamespace 
+{
+    public class MyClass<T> : IEnumerable<T> where T : Stream, new()
+    {
+    }
+}
+";
+
         public const string ClassWithGenericType = @"
 namespace MyNamespace 
 {
@@ -118,6 +127,17 @@ namespace MyNamespace
 }
 ";
 
+        public const string ClassWithMultipleGenericConstraints = @"
+namespace MyNamespace
+{
+    using System.Collections.Generic;
+    using System.IO;
+
+    public class MyClass<TKey, TValue> : IEnumerable<TKey> where TKey : Stream, new() where TValue : struct
+    {
+    }
+}";
+
         public const string ClassWithoutNamespace = @"
 public class MyClass
 {
@@ -152,6 +172,15 @@ namespace MyNamespace
 }
 ";
 
+        public const string InterfaceWithGenericConstraints = @"
+namespace MyNamespace 
+{
+    public interface MyInterface<T> : IEnumerable<T> where T : Stream, new()
+    {
+    }
+}
+";
+
         public const string InterfaceWithGenericType = @"
 namespace MyNamespace 
 {
@@ -160,6 +189,17 @@ namespace MyNamespace
     }  
 }
 ";
+
+        public const string InterfaceWithMultipleGenericConstraints = @"
+namespace MyNamespace
+{
+    using System.Collections.Generic;
+    using System.IO;
+
+    public interface MyInterface<TKey, TValue> : IEnumerable<TKey> where TKey : Stream, new() where TValue : struct
+    {
+    }
+}";
 
         public const string InterfaceWithMultipleGenericTypes = @"
 namespace MyNamespace 
