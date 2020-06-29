@@ -5,6 +5,6 @@
 
     public interface INodeScanner
     {
-        IEnumerable<MemberDefinition> FindDefinitions(IEnumerable<SyntaxNode> nodes);
+        IEnumerable<OldMemberDefinition> FindDefinitions(IEnumerable<SyntaxNode> nodes);
     }
 }

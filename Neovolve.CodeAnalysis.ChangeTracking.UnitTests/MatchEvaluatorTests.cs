@@ -48,9 +48,9 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var scanner = Substitute.For<INodeScanner>();
             var matcher = Substitute.For<IMemberMatcher>();
 
-            var member = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
-            var oldMembers = new List<MemberDefinition> {member};
-            var newMembers = new List<MemberDefinition> {member};
+            var member = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
+            var oldMembers = new List<OldMemberDefinition> {member};
+            var newMembers = new List<OldMemberDefinition> {member};
             var matches = new List<IMemberMatcher> {matcher};
             var match = new MemberMatch(member, member);
             var oldNodes = new List<SyntaxNode>
@@ -82,10 +82,10 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var scanner = Substitute.For<INodeScanner>();
             var matcher = Substitute.For<IMemberMatcher>();
 
-            var member = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
-            var memberNotMatched = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
-            var oldMembers = new List<MemberDefinition> {member};
-            var newMembers = new List<MemberDefinition> {member, memberNotMatched};
+            var member = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
+            var memberNotMatched = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>();
+            var oldMembers = new List<OldMemberDefinition> {member};
+            var newMembers = new List<OldMemberDefinition> {member, memberNotMatched};
             var matches = new List<IMemberMatcher> {matcher};
             var match = new MemberMatch(member, member);
             var oldNodes = new List<SyntaxNode>
@@ -99,7 +99,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
             scanner.FindDefinitions(oldNodes).Returns(oldMembers);
             scanner.FindDefinitions(newNodes).Returns(newMembers);
-            matcher.IsSupported(Arg.Any<MemberDefinition>()).Returns(true);
+            matcher.IsSupported(Arg.Any<OldMemberDefinition>()).Returns(true);
             matcher.GetMatch(member, member).Returns(match);
 
             var sut = new MatchEvaluator(scanner, matches, _logger);
@@ -118,10 +118,10 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var scanner = Substitute.For<INodeScanner>();
             var matcher = Substitute.For<IMemberMatcher>();
 
-            var member = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
-            var memberNotMatched = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
-            var oldMembers = new List<MemberDefinition> {member, memberNotMatched};
-            var newMembers = new List<MemberDefinition> {member};
+            var member = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
+            var memberNotMatched = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>();
+            var oldMembers = new List<OldMemberDefinition> {member, memberNotMatched};
+            var newMembers = new List<OldMemberDefinition> {member};
             var matches = new List<IMemberMatcher> {matcher};
             var match = new MemberMatch(member, member);
             var oldNodes = new List<SyntaxNode>
@@ -135,7 +135,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
             scanner.FindDefinitions(oldNodes).Returns(oldMembers);
             scanner.FindDefinitions(newNodes).Returns(newMembers);
-            matcher.IsSupported(Arg.Any<MemberDefinition>()).Returns(true);
+            matcher.IsSupported(Arg.Any<OldMemberDefinition>()).Returns(true);
             matcher.GetMatch(member, member).Returns(match);
 
             var sut = new MatchEvaluator(scanner, matches, _logger);
@@ -154,10 +154,10 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var scanner = Substitute.For<INodeScanner>();
             var matcher = Substitute.For<IMemberMatcher>();
 
-            var member = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
-            var memberNotMatched = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
-            var oldMembers = new List<MemberDefinition> {member};
-            var newMembers = new List<MemberDefinition> {member, memberNotMatched};
+            var member = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
+            var memberNotMatched = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>();
+            var oldMembers = new List<OldMemberDefinition> {member};
+            var newMembers = new List<OldMemberDefinition> {member, memberNotMatched};
             var matches = new List<IMemberMatcher> {matcher};
             var match = new MemberMatch(member, member);
             var oldNodes = new List<SyntaxNode>
@@ -190,9 +190,9 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var scanner = Substitute.For<INodeScanner>();
             var matcher = Substitute.For<IMemberMatcher>();
 
-            var member = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
-            var oldMembers = new List<MemberDefinition> {member};
-            var newMembers = new List<MemberDefinition> {member};
+            var member = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
+            var oldMembers = new List<OldMemberDefinition> {member};
+            var newMembers = new List<OldMemberDefinition> {member};
             var matches = new List<IMemberMatcher> {matcher};
             var match = new MemberMatch(member, member);
             var oldNodes = new List<SyntaxNode>
@@ -224,10 +224,10 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var scanner = Substitute.For<INodeScanner>();
             var matcher = Substitute.For<IMemberMatcher>();
 
-            var member = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
-            var memberNotMatched = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
-            var oldMembers = new List<MemberDefinition> {member, memberNotMatched};
-            var newMembers = new List<MemberDefinition> {member};
+            var member = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
+            var memberNotMatched = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>();
+            var oldMembers = new List<OldMemberDefinition> {member, memberNotMatched};
+            var newMembers = new List<OldMemberDefinition> {member};
             var matches = new List<IMemberMatcher> {matcher};
             var oldNodes = new List<SyntaxNode>
             {

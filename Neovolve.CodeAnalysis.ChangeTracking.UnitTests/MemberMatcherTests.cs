@@ -10,7 +10,7 @@
         [Fact]
         public void GetMatchReturnsMatcherWhenNodesHaveSameIdentifiers()
         {
-            var oldMember = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
+            var oldMember = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>();
             var newMember = oldMember.JsonClone();
 
             var sut = new MemberMatcher();
@@ -25,7 +25,7 @@
         [Fact]
         public void GetMatchReturnsMatcherWhenNodesHaveSameIdentifiersWithNullNamespace()
         {
-            var oldMember = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>().Set(x => x.Namespace = null);
+            var oldMember = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>().Set(x => x.Namespace = null);
             var newMember = oldMember.JsonClone();
 
             var sut = new MemberMatcher();
@@ -42,7 +42,7 @@
         [InlineData("Some", "some")]
         public void GetMatchReturnsNullWhereNameIsDifferent(string oldValue, string newValue)
         {
-            var oldMember = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>().Set(x => x.Name = oldValue);
+            var oldMember = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>().Set(x => x.Name = oldValue);
             var newMember = oldMember.JsonClone().Set(x => x.Name = newValue);
 
             var sut = new MemberMatcher();
@@ -57,7 +57,7 @@
         [InlineData("Some", "some")]
         public void GetMatchReturnsNullWhereNamespaceIsDifferent(string oldValue, string newValue)
         {
-            var oldMember = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>().Set(x => x.Namespace = oldValue);
+            var oldMember = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>().Set(x => x.Namespace = oldValue);
             var newMember = oldMember.JsonClone().Set(x => x.Namespace = newValue);
 
             var sut = new MemberMatcher();
@@ -73,7 +73,7 @@
         public void GetMatchReturnsNullWhereOwningTypeIsDifferent(string oldValue, string newValue)
         {
             var oldMember = Model.UsingModule<ConfigurationModule>()
-                .Create<MemberDefinition>()
+                .Create<OldMemberDefinition>()
                 .Set(x => x.OwningType = oldValue);
             var newMember = oldMember.JsonClone().Set(x => x.OwningType = newValue);
 
@@ -87,7 +87,7 @@
         [Fact]
         public void GetMatchThrowsExceptionWithNullNewNode()
         {
-            var oldMember = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
+            var oldMember = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>();
 
             var sut = new MemberMatcher();
 
@@ -99,7 +99,7 @@
         [Fact]
         public void GetMatchThrowsExceptionWithNullOldNode()
         {
-            var newMember = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
+            var newMember = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>();
 
             var sut = new MemberMatcher();
 
@@ -109,12 +109,12 @@
         }
 
         [Theory]
-        [InlineData(typeof(MemberDefinition), true)]
-        [InlineData(typeof(PropertyDefinition), true)]
+        [InlineData(typeof(OldMemberDefinition), true)]
+        [InlineData(typeof(OldPropertyDefinition), true)]
         [InlineData(typeof(OldAttributeDefinition), false)]
         public void IsSupportedReturnsTrueForExactTypeMatch(Type type, bool expected)
         {
-            var definition = (MemberDefinition) Model.UsingModule<ConfigurationModule>().Create(type);
+            var definition = (OldMemberDefinition) Model.UsingModule<ConfigurationModule>().Create(type);
 
             var sut = new MemberMatcher();
 

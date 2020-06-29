@@ -75,7 +75,7 @@ namespace MyProject
 
             var sut = new PropertyResolver();
 
-            var actual = (PropertyDefinition) sut.Resolve(node);
+            var actual = (OldPropertyDefinition) sut.Resolve(node);
 
             actual.CanRead.Should().Be(expected);
         }
@@ -99,7 +99,7 @@ namespace MyNamespace
 
             var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code).ConfigureAwait(false);
 
-            var actual = (PropertyDefinition) sut.Resolve(node);
+            var actual = (OldPropertyDefinition) sut.Resolve(node);
 
             actual.CanRead.Should().BeFalse();
         }
@@ -121,7 +121,7 @@ namespace MyNamespace
 
             var sut = new PropertyResolver();
 
-            var actual = (PropertyDefinition) sut.Resolve(node);
+            var actual = (OldPropertyDefinition) sut.Resolve(node);
 
             actual.CanWrite.Should().Be(expected);
         }
@@ -145,7 +145,7 @@ namespace MyNamespace
 
             var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code).ConfigureAwait(false);
 
-            var actual = (PropertyDefinition) sut.Resolve(node);
+            var actual = (OldPropertyDefinition) sut.Resolve(node);
 
             actual.CanWrite.Should().BeFalse();
         }
@@ -195,7 +195,7 @@ namespace MyNamespace
 
             var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code).ConfigureAwait(false);
 
-            var actual = (PropertyDefinition) sut.Resolve(node);
+            var actual = (OldPropertyDefinition) sut.Resolve(node);
 
             actual.Name.Should().Be("MyItem");
         }
@@ -220,7 +220,7 @@ namespace MyNamespace
 
             var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code).ConfigureAwait(false);
 
-            var actual = (PropertyDefinition) sut.Resolve(node);
+            var actual = (OldPropertyDefinition) sut.Resolve(node);
 
             actual.Name.Should().Be("MyItem");
         }
@@ -256,7 +256,7 @@ namespace MyNamespace
 
             var sut = new PropertyResolver();
 
-            var actual = (PropertyDefinition) sut.Resolve(node);
+            var actual = (OldPropertyDefinition) sut.Resolve(node);
 
             actual.ReturnType.Should().Be(expected);
         }
@@ -268,7 +268,7 @@ namespace MyNamespace
 
             var sut = new PropertyResolver();
 
-            var actual = (PropertyDefinition) sut.Resolve(node);
+            var actual = (OldPropertyDefinition) sut.Resolve(node);
 
             actual.Name.Should().Be("MyProperty");
         }

@@ -22,11 +22,11 @@
             _logger = logger;
         }
 
-        public IEnumerable<MemberDefinition> FindDefinitions(IEnumerable<SyntaxNode> nodes)
+        public IEnumerable<OldMemberDefinition> FindDefinitions(IEnumerable<SyntaxNode> nodes)
         {
             Ensure.Any.IsNotNull(nodes, nameof(nodes));
 
-            var definitions = new List<MemberDefinition>();
+            var definitions = new List<OldMemberDefinition>();
 
             foreach (var node in nodes)
             {
@@ -38,18 +38,18 @@
             return definitions;
         }
 
-        private IEnumerable<MemberDefinition> FindDefinitions(SyntaxNode node)
+        private IEnumerable<OldMemberDefinition> FindDefinitions(SyntaxNode node)
         {
             Ensure.Any.IsNotNull(node, nameof(node));
 
-            var definitions = new List<MemberDefinition>();
+            var definitions = new List<OldMemberDefinition>();
 
             FindDefinitions(node, definitions);
 
             return definitions;
         }
 
-        private void FindDefinitions(SyntaxNode node, ICollection<MemberDefinition> definitions)
+        private void FindDefinitions(SyntaxNode node, ICollection<OldMemberDefinition> definitions)
         {
             _logger?.LogDebug("Checking member {0}", node.GetType().Name);
 

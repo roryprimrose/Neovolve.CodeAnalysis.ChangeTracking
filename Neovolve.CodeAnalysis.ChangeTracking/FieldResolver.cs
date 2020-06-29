@@ -14,14 +14,14 @@
             return node is FieldDeclarationSyntax;
         }
 
-        public MemberDefinition Resolve(SyntaxNode node)
+        public OldMemberDefinition Resolve(SyntaxNode node)
         {
             Ensure.Any.IsNotNull(node, nameof(node));
             Ensure.Type.IsOfType(node, typeof(FieldDeclarationSyntax), nameof(node));
 
             var syntaxNode = (FieldDeclarationSyntax) node;
 
-            var member = Resolve<MemberDefinition>(syntaxNode);
+            var member = Resolve<OldMemberDefinition>(syntaxNode);
 
             member.MemberType = MemberType.Field;
             member.Name = syntaxNode.Declaration.Variables.Single().Identifier.Text;

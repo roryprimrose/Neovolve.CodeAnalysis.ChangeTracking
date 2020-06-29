@@ -69,12 +69,12 @@
             return ComparisonResult.NoChange(match);
         }
 
-        public virtual bool IsSupported(MemberDefinition member)
+        public virtual bool IsSupported(OldMemberDefinition member)
         {
             Ensure.Any.IsNotNull(member, nameof(member));
 
             // We don't want to support derived types here
-            return member.GetType() == typeof(MemberDefinition);
+            return member.GetType() == typeof(OldMemberDefinition);
         }
     }
 }

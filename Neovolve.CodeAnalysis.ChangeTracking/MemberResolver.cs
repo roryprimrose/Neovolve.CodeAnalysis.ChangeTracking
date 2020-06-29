@@ -9,7 +9,7 @@
 
     public abstract class MemberResolver
     {
-        protected virtual T Resolve<T>(MemberDeclarationSyntax member) where T : MemberDefinition, new()
+        protected virtual T Resolve<T>(MemberDeclarationSyntax member) where T : OldMemberDefinition, new()
         {
             Ensure.Any.IsNotNull(member, nameof(member));
 
@@ -80,7 +80,7 @@
             return parentClasses;
         }
 
-        private static void ResolveDeclarationInfo(MemberDeclarationSyntax declaration, MemberDefinition member)
+        private static void ResolveDeclarationInfo(MemberDeclarationSyntax declaration, OldMemberDefinition member)
         {
             var containerNamespace = declaration.FirstAncestorOrSelf<NamespaceDeclarationSyntax>();
 
@@ -138,7 +138,7 @@
             }
         }
 
-        private static void ResolveLocation(MemberDeclarationSyntax declaration, MemberDefinition member)
+        private static void ResolveLocation(MemberDeclarationSyntax declaration, OldMemberDefinition member)
         {
             var location = declaration.GetLocation();
 
@@ -154,7 +154,7 @@
             member.CharacterIndex = startPosition.Character;
         }
 
-        private void ResolveAttributes(MemberDeclarationSyntax declaration, MemberDefinition member)
+        private void ResolveAttributes(MemberDeclarationSyntax declaration, OldMemberDefinition member)
         {
             foreach (var attributeList in declaration.AttributeLists)
             {

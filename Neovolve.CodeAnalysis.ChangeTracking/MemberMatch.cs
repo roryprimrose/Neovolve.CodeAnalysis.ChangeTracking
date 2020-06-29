@@ -4,7 +4,7 @@
 
     public class MemberMatch
     {
-        public MemberMatch(MemberDefinition oldMember, MemberDefinition newMember)
+        public MemberMatch(OldMemberDefinition oldMember, OldMemberDefinition newMember)
         {
             Ensure.Any.IsNotNull(oldMember, nameof(oldMember));
             Ensure.Any.IsNotNull(newMember, nameof(newMember));
@@ -13,8 +13,8 @@
             NewMember = newMember;
         }
 
-        public MemberDefinition NewMember { get; }
+        public OldMemberDefinition NewMember { get; }
 
-        public MemberDefinition OldMember { get; }
+        public OldMemberDefinition OldMember { get; }
     }
 }

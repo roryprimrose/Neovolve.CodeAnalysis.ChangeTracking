@@ -11,8 +11,8 @@
         [Fact]
         public void CanCreateWithTwoNodes()
         {
-            var oldMember = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
-            var newMember = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
+            var oldMember = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>();
+            var newMember = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>();
 
             var sut = new MemberMatch(oldMember, newMember);
 
@@ -24,7 +24,7 @@
         [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification = "Testing constructor guard clause")]
         public void ThrowsExceptionWhenCreatedWithNullNewNode()
         {
-            var oldMember = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
+            var oldMember = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>();
 
             // ReSharper disable ObjectCreationAsStatement
             Action action = () => new MemberMatch(oldMember, null!);
@@ -36,7 +36,7 @@
         [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification = "Testing constructor guard clause")]
         public void ThrowsExceptionWhenCreatedWithNullOldNode()
         {
-            var newMember = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
+            var newMember = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>();
 
             // ReSharper disable ObjectCreationAsStatement
             Action action = () => new MemberMatch(null!, newMember);

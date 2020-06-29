@@ -26,7 +26,7 @@
             SemVerChangeType expected)
         {
             var oldMember = Model.UsingModule<ConfigurationModule>()
-                .Create<PropertyDefinition>()
+                .Create<OldPropertyDefinition>()
                 .Set(x => x.IsVisible = oldValue);
             var newMember = oldMember.JsonClone().Set(x => x.IsVisible = newValue);
             var match = new MemberMatch(oldMember, newMember);
@@ -44,7 +44,7 @@
         public void CompareReturnsBreakingWhenFeatureAlsoIndicated()
         {
             var oldMember = Model.UsingModule<ConfigurationModule>()
-                .Create<PropertyDefinition>()
+                .Create<OldPropertyDefinition>()
                 .Set(x => { x.CanWrite = false; });
             var newMember = oldMember.JsonClone()
                 .Set(x =>
@@ -67,7 +67,7 @@
         public void CompareReturnsFeatureWhenBreakingChangeOnAccessorsAndPropertyNowVisible()
         {
             var oldMember = Model.UsingModule<ConfigurationModule>()
-                .Create<PropertyDefinition>()
+                .Create<OldPropertyDefinition>()
                 .Set(x => { x.IsVisible = false; });
             var newMember = oldMember.JsonClone()
                 .Set(x =>
@@ -90,7 +90,7 @@
         public void CompareReturnsNoneWhenAccessorLessVisibleButPropertiesNotPublic()
         {
             var oldMember = Model.UsingModule<ConfigurationModule>()
-                .Create<PropertyDefinition>()
+                .Create<OldPropertyDefinition>()
                 .Set(x =>
                 {
                     x.IsVisible = false;
@@ -111,7 +111,7 @@
         [Fact]
         public void CompareReturnsNoneWhenNodesMatch()
         {
-            var oldMember = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
+            var oldMember = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
             var newMember = oldMember.JsonClone();
             var match = new MemberMatch(oldMember, newMember);
 
@@ -135,7 +135,7 @@
             SemVerChangeType expected)
         {
             var oldMember = Model.UsingModule<ConfigurationModule>()
-                .Create<PropertyDefinition>()
+                .Create<OldPropertyDefinition>()
                 .Set(x => x.CanRead = oldValue);
             var newMember = oldMember.JsonClone().Set(x => x.CanRead = newValue);
             var match = new MemberMatch(oldMember, newMember);
@@ -160,7 +160,7 @@
             SemVerChangeType expected)
         {
             var oldMember = Model.UsingModule<ConfigurationModule>()
-                .Create<PropertyDefinition>()
+                .Create<OldPropertyDefinition>()
                 .Set(x => x.CanWrite = oldValue);
             var newMember = oldMember.JsonClone().Set(x => x.CanWrite = newValue);
             var match = new MemberMatch(oldMember, newMember);
@@ -185,12 +185,12 @@
         }
 
         [Theory]
-        [InlineData(typeof(PropertyDefinition), true)]
-        [InlineData(typeof(MemberDefinition), false)]
+        [InlineData(typeof(OldPropertyDefinition), true)]
+        [InlineData(typeof(OldMemberDefinition), false)]
         [InlineData(typeof(OldAttributeDefinition), false)]
         public void IsSupportedReturnsTrueForExactTypeMatch(Type type, bool expected)
         {
-            var definition = (MemberDefinition) Model.UsingModule<ConfigurationModule>().Create(type);
+            var definition = (OldMemberDefinition) Model.UsingModule<ConfigurationModule>().Create(type);
 
             var sut = new PropertyComparer();
 

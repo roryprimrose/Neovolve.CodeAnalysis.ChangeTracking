@@ -5,7 +5,7 @@
 
     public class MemberMatcher : IMemberMatcher
     {
-        public virtual MemberMatch? GetMatch(MemberDefinition oldMember, MemberDefinition newMember)
+        public virtual MemberMatch? GetMatch(OldMemberDefinition oldMember, OldMemberDefinition newMember)
         {
             Ensure.Any.IsNotNull(oldMember, nameof(oldMember));
             Ensure.Any.IsNotNull(newMember, nameof(newMember));
@@ -28,19 +28,19 @@
             return new MemberMatch(oldMember, newMember);
         }
 
-        public virtual bool IsSupported(MemberDefinition member)
+        public virtual bool IsSupported(OldMemberDefinition member)
         {
             Ensure.Any.IsNotNull(member, nameof(member));
 
             var nodeType = member.GetType();
 
-            if (nodeType == typeof(PropertyDefinition))
+            if (nodeType == typeof(OldPropertyDefinition))
             {
                 return true;
             }
 
             // We don't want to support any other derived types here
-            return nodeType == typeof(MemberDefinition);
+            return nodeType == typeof(OldMemberDefinition);
         }
     }
 }

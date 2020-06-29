@@ -4,6 +4,6 @@
     {
         ComparisonResult Compare(MemberMatch match);
 
-        bool IsSupported(MemberDefinition member);
+        bool IsSupported(OldMemberDefinition member);
     }
 }

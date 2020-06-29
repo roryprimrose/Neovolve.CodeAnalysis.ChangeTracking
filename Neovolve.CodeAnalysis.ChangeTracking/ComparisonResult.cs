@@ -4,7 +4,7 @@
 
     public class ComparisonResult
     {
-        private ComparisonResult(SemVerChangeType changeType, MemberDefinition? oldMember, MemberDefinition? newMember,
+        private ComparisonResult(SemVerChangeType changeType, OldMemberDefinition? oldMember, OldMemberDefinition? newMember,
             string message)
         {
             ChangeType = changeType;
@@ -13,7 +13,7 @@
             Message = message;
         }
 
-        public static ComparisonResult MemberAdded(MemberDefinition newMember)
+        public static ComparisonResult MemberAdded(OldMemberDefinition newMember)
         {
             newMember = newMember ?? throw new ArgumentNullException(nameof(newMember));
 
@@ -42,7 +42,7 @@
             return new ComparisonResult(changeType, match.OldMember, match.NewMember, message);
         }
 
-        public static ComparisonResult MemberRemoved(MemberDefinition oldMember)
+        public static ComparisonResult MemberRemoved(OldMemberDefinition oldMember)
         {
             oldMember = oldMember ?? throw new ArgumentNullException(nameof(oldMember));
 
@@ -71,8 +71,8 @@
 
         public string Message { get; }
 
-        public MemberDefinition? NewMember { get; }
+        public OldMemberDefinition? NewMember { get; }
 
-        public MemberDefinition? OldMember { get; }
+        public OldMemberDefinition? OldMember { get; }
     }
 }

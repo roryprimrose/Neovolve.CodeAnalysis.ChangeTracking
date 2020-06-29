@@ -8,8 +8,8 @@
         {
             Ensure.Any.IsNotNull(match, nameof(match));
 
-            var oldProperty = (PropertyDefinition) match.OldMember;
-            var newProperty = (PropertyDefinition) match.NewMember;
+            var oldProperty = (OldPropertyDefinition) match.OldMember;
+            var newProperty = (OldPropertyDefinition) match.NewMember;
 
             var result = base.Compare(match);
 
@@ -59,11 +59,11 @@
                 accessorMessage);
         }
 
-        public override bool IsSupported(MemberDefinition member)
+        public override bool IsSupported(OldMemberDefinition member)
         {
             Ensure.Any.IsNotNull(member, nameof(member));
 
-            return member.GetType() == typeof(PropertyDefinition);
+            return member.GetType() == typeof(OldPropertyDefinition);
         }
     }
 }

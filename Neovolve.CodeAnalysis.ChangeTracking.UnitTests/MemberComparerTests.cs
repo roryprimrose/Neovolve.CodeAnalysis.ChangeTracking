@@ -19,7 +19,7 @@
         public void CompareReturnsFeatureWhenReturnTypeChangedWithPropertyChangedToPublic()
         {
             var oldMember = Model.UsingModule<ConfigurationModule>()
-                .Create<MemberDefinition>()
+                .Create<OldMemberDefinition>()
                 .Set(x =>
                 {
                     x.IsVisible = false;
@@ -45,7 +45,7 @@
         [Fact]
         public void CompareReturnsNoneWhenNodesMatch()
         {
-            var oldMember = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
+            var oldMember = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>();
             var newMember = oldMember.JsonClone();
             var match = new MemberMatch(oldMember, newMember);
 
@@ -62,7 +62,7 @@
         public void CompareReturnsNoneWhenReturnTypeChangedWithPropertyNotPublic()
         {
             var oldMember = Model.UsingModule<ConfigurationModule>()
-                .Create<MemberDefinition>()
+                .Create<OldMemberDefinition>()
                 .Set(x =>
                 {
                     x.IsVisible = false;
@@ -87,7 +87,7 @@
         [InlineData(false, true, SemVerChangeType.Feature)]
         public void CompareReturnsResultBasedOnIsVisible(bool oldValue, bool newValue, SemVerChangeType expected)
         {
-            var oldMember = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>()
+            var oldMember = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>()
                 .Set(x => x.IsVisible = oldValue);
             var newMember = oldMember.JsonClone().Set(x => x.IsVisible = newValue);
             var match = new MemberMatch(oldMember, newMember);
@@ -107,7 +107,7 @@
         public void CompareReturnsResultBasedOnReturnType(string oldValue, string newValue, SemVerChangeType expected)
         {
             var oldMember = Model.UsingModule<ConfigurationModule>()
-                .Create<MemberDefinition>()
+                .Create<OldMemberDefinition>()
                 .Set(x => x.ReturnType = oldValue);
             var newMember = oldMember.JsonClone().Set(x => x.ReturnType = newValue);
             var match = new MemberMatch(oldMember, newMember);
@@ -131,7 +131,7 @@
         [InlineData("OldValue", "NewValue")]
         public void CompareThrowsExceptionWhenNameDoesNotMatch(string oldValue, string newValue)
         {
-            var oldMember = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>()
+            var oldMember = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>()
                 .Set(x => x.Name = oldValue);
             var newMember = oldMember.JsonClone().Set(x => x.Name = newValue);
             var match = new MemberMatch(oldMember, newMember);
@@ -153,7 +153,7 @@
         [InlineData("OldValue", "NewValue")]
         public void CompareThrowsExceptionWhenNamespaceDoesNotMatch(string oldValue, string newValue)
         {
-            var oldMember = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>()
+            var oldMember = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>()
                 .Set(x => x.Namespace = oldValue);
             var newMember = oldMember.JsonClone().Set(x => x.Namespace = newValue);
             var match = new MemberMatch(oldMember, newMember);
@@ -176,7 +176,7 @@
         public void CompareThrowsExceptionWhenOwningTypeDoesNotMatch(string oldValue, string newValue)
         {
             var oldMember = Model.UsingModule<ConfigurationModule>()
-                .Create<MemberDefinition>()
+                .Create<OldMemberDefinition>()
                 .Set(x => x.OwningType = oldValue);
             var newMember = oldMember.JsonClone().Set(x => x.OwningType = newValue);
             var match = new MemberMatch(oldMember, newMember);
@@ -199,12 +199,12 @@
         }
 
         [Theory]
-        [InlineData(typeof(MemberDefinition), true)]
-        [InlineData(typeof(PropertyDefinition), false)]
+        [InlineData(typeof(OldMemberDefinition), true)]
+        [InlineData(typeof(OldPropertyDefinition), false)]
         [InlineData(typeof(OldAttributeDefinition), false)]
         public void IsSupportedReturnsTrueForExactTypeMatch(Type type, bool expected)
         {
-            var definition = (MemberDefinition) Model.UsingModule<ConfigurationModule>().Create(type);
+            var definition = (OldMemberDefinition) Model.UsingModule<ConfigurationModule>().Create(type);
 
             var sut = new MemberComparer();
 

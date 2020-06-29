@@ -30,9 +30,9 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var evaluator = Substitute.For<IMatchEvaluator>();
             var comparer = Substitute.For<IMemberComparer>();
             var comparers = new List<IMemberComparer> {comparer};
-            var oldMemberNotMatched = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
-            var oldMembersNotMatched = new List<MemberDefinition> {oldMemberNotMatched};
-            var newMembersNotMatched = new List<MemberDefinition>();
+            var oldMemberNotMatched = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>();
+            var oldMembersNotMatched = new List<OldMemberDefinition> {oldMemberNotMatched};
+            var newMembersNotMatched = new List<OldMemberDefinition>();
             var matches = new List<MemberMatch>();
             var results = new MatchResults(matches, oldMembersNotMatched, newMembersNotMatched);
             var oldNodes = new List<SyntaxNode>
@@ -56,9 +56,9 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var evaluator = Substitute.For<IMatchEvaluator>();
             var comparer = Substitute.For<IMemberComparer>();
             var comparers = new List<IMemberComparer> {comparer};
-            var oldMemberNotMatched = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
-            var oldMembersNotMatched = new List<MemberDefinition> {oldMemberNotMatched};
-            var newMembersNotMatched = new List<MemberDefinition>();
+            var oldMemberNotMatched = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>();
+            var oldMembersNotMatched = new List<OldMemberDefinition> {oldMemberNotMatched};
+            var newMembersNotMatched = new List<OldMemberDefinition>();
             var matches = new List<MemberMatch>();
             var results = new MatchResults(matches, oldMembersNotMatched, newMembersNotMatched);
             var oldNodes = new List<SyntaxNode>
@@ -82,10 +82,10 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var evaluator = Substitute.For<IMatchEvaluator>();
             var comparer = Substitute.For<IMemberComparer>();
             var comparers = new List<IMemberComparer> {comparer};
-            var oldMember = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
+            var oldMember = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>();
             var newMember = oldMember.JsonClone();
-            var oldMembersNotMatched = new List<MemberDefinition>();
-            var newMembersNotMatched = new List<MemberDefinition>();
+            var oldMembersNotMatched = new List<OldMemberDefinition>();
+            var newMembersNotMatched = new List<OldMemberDefinition>();
             var matches = new List<MemberMatch>
             {
                 new MemberMatch(oldMember, newMember),
@@ -103,7 +103,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var newNodes = new List<SyntaxNode>();
 
             evaluator.CompareNodes(oldNodes, newNodes).Returns(results);
-            comparer.IsSupported(Arg.Any<MemberDefinition>()).Returns(true);
+            comparer.IsSupported(Arg.Any<OldMemberDefinition>()).Returns(true);
             comparer.Compare(Arg.Any<MemberMatch>()).Returns(firstResult, secondResult, thirdResult);
 
             var sut = new ChangeCalculator(evaluator, comparers, _logger);
@@ -122,11 +122,11 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var evaluator = Substitute.For<IMatchEvaluator>();
             var comparer = Substitute.For<IMemberComparer>();
             var comparers = new List<IMemberComparer> {comparer};
-            var oldMember = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
+            var oldMember = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>();
             var newMember = oldMember.JsonClone();
             var match = new MemberMatch(oldMember, newMember);
-            var oldMembersNotMatched = new List<MemberDefinition>();
-            var newMembersNotMatched = new List<MemberDefinition>();
+            var oldMembersNotMatched = new List<OldMemberDefinition>();
+            var newMembersNotMatched = new List<OldMemberDefinition>();
             var matches = new List<MemberMatch>
             {
                 new MemberMatch(oldMember, newMember)
@@ -168,11 +168,11 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var evaluator = Substitute.For<IMatchEvaluator>();
             var comparer = Substitute.For<IMemberComparer>();
             var comparers = new List<IMemberComparer> {comparer};
-            var oldMember = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
+            var oldMember = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>();
             var newMember = oldMember.JsonClone();
             var match = new MemberMatch(oldMember, newMember);
-            var oldMembersNotMatched = new List<MemberDefinition>();
-            var newMembersNotMatched = new List<MemberDefinition>();
+            var oldMembersNotMatched = new List<OldMemberDefinition>();
+            var newMembersNotMatched = new List<OldMemberDefinition>();
             var matches = new List<MemberMatch>
             {
                 new MemberMatch(oldMember, newMember)
@@ -211,9 +211,9 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var evaluator = Substitute.For<IMatchEvaluator>();
             var comparer = Substitute.For<IMemberComparer>();
             var comparers = new List<IMemberComparer> {comparer};
-            var oldMembersNotMatched = new List<MemberDefinition>();
-            var newMemberNotMatched = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
-            var newMembersNotMatched = new List<MemberDefinition> {newMemberNotMatched};
+            var oldMembersNotMatched = new List<OldMemberDefinition>();
+            var newMemberNotMatched = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>();
+            var newMembersNotMatched = new List<OldMemberDefinition> {newMemberNotMatched};
             var matches = new List<MemberMatch>();
             var results = new MatchResults(matches, oldMembersNotMatched, newMembersNotMatched);
             var oldNodes = new List<SyntaxNode>
@@ -238,9 +238,9 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var evaluator = Substitute.For<IMatchEvaluator>();
             var comparer = Substitute.For<IMemberComparer>();
             var comparers = new List<IMemberComparer> {comparer};
-            var oldMembersNotMatched = new List<MemberDefinition>();
-            var newMemberNotMatched = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
-            var newMembersNotMatched = new List<MemberDefinition> {newMemberNotMatched};
+            var oldMembersNotMatched = new List<OldMemberDefinition>();
+            var newMemberNotMatched = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>();
+            var newMembersNotMatched = new List<OldMemberDefinition> {newMemberNotMatched};
             var matches = new List<MemberMatch>();
             var results = new MatchResults(matches, oldMembersNotMatched, newMembersNotMatched);
             var oldNodes = new List<SyntaxNode>
@@ -262,7 +262,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
         public void CompareChangesReturnsNoneWhenEmptyComparisonReturned()
         {
             var matches = Array.Empty<MemberMatch>();
-            var emptyMissingMembers = Array.Empty<MemberDefinition>();
+            var emptyMissingMembers = Array.Empty<OldMemberDefinition>();
             var matchResults = new MatchResults(matches, emptyMissingMembers, emptyMissingMembers);
             var oldNodes = new List<SyntaxNode>();
             var newNodes = new List<SyntaxNode>();
@@ -286,11 +286,11 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var evaluator = Substitute.For<IMatchEvaluator>();
             var comparer = Substitute.For<IMemberComparer>();
             var comparers = new List<IMemberComparer> {comparer};
-            var oldMember = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
+            var oldMember = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>();
             var newMember = oldMember.JsonClone();
             var match = new MemberMatch(oldMember, newMember);
-            var oldMembersNotMatched = new List<MemberDefinition>();
-            var newMembersNotMatched = new List<MemberDefinition>();
+            var oldMembersNotMatched = new List<OldMemberDefinition>();
+            var newMembersNotMatched = new List<OldMemberDefinition>();
             var matches = new List<MemberMatch>
             {
                 new MemberMatch(oldMember, newMember)
@@ -321,8 +321,8 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var evaluator = Substitute.For<IMatchEvaluator>();
             var comparer = Substitute.For<IMemberComparer>();
             var comparers = new List<IMemberComparer> {comparer};
-            var oldMembersNotMatched = new List<MemberDefinition>();
-            var newMembersNotMatched = new List<MemberDefinition>();
+            var oldMembersNotMatched = new List<OldMemberDefinition>();
+            var newMembersNotMatched = new List<OldMemberDefinition>();
             var matches = new List<MemberMatch>();
             var results = new MatchResults(matches, oldMembersNotMatched, newMembersNotMatched);
             var oldNodes = new List<SyntaxNode>();
@@ -373,10 +373,10 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var evaluator = Substitute.For<IMatchEvaluator>();
             var comparer = Substitute.For<IMemberComparer>();
             var comparers = new List<IMemberComparer> {comparer};
-            var oldMember = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
+            var oldMember = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>();
             var newMember = oldMember.JsonClone();
-            var oldMembersNotMatched = new List<MemberDefinition>();
-            var newMembersNotMatched = new List<MemberDefinition>();
+            var oldMembersNotMatched = new List<OldMemberDefinition>();
+            var newMembersNotMatched = new List<OldMemberDefinition>();
             var matches = new List<MemberMatch>
             {
                 new MemberMatch(oldMember, newMember)

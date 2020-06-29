@@ -6,20 +6,20 @@ namespace Neovolve.CodeAnalysis.ChangeTracking
 {
     public class MatchResults
     {
-        public MatchResults(IEnumerable<MemberMatch> matches, IEnumerable<MemberDefinition> oldMembersNotMatched,
-            IEnumerable<MemberDefinition> newMembersNotMatched)
+        public MatchResults(IEnumerable<MemberMatch> matches, IEnumerable<OldMemberDefinition> oldMembersNotMatched,
+            IEnumerable<OldMemberDefinition> newMembersNotMatched)
         {
             Ensure.Any.IsNotNull(matches, nameof(matches));
             Ensure.Any.IsNotNull(oldMembersNotMatched, nameof(oldMembersNotMatched));
             Ensure.Any.IsNotNull(newMembersNotMatched, nameof(newMembersNotMatched));
 
             Matches = new ReadOnlyCollection<MemberMatch>(matches.FastToList());
-            OldMembersNotMatched = new ReadOnlyCollection<MemberDefinition>(oldMembersNotMatched.FastToList());
-            NewMembersNotMatched = new ReadOnlyCollection<MemberDefinition>(newMembersNotMatched.FastToList());
+            OldMembersNotMatched = new ReadOnlyCollection<OldMemberDefinition>(oldMembersNotMatched.FastToList());
+            NewMembersNotMatched = new ReadOnlyCollection<OldMemberDefinition>(newMembersNotMatched.FastToList());
         }
 
-        public IReadOnlyCollection<MemberDefinition> OldMembersNotMatched { get; }
-        public IReadOnlyCollection<MemberDefinition> NewMembersNotMatched { get; }
+        public IReadOnlyCollection<OldMemberDefinition> OldMembersNotMatched { get; }
+        public IReadOnlyCollection<OldMemberDefinition> NewMembersNotMatched { get; }
         public IReadOnlyCollection<MemberMatch> Matches { get; }
     }
 }

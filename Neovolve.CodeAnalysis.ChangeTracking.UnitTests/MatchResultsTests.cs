@@ -15,8 +15,8 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
         [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification = "Testing constructor guard clause")]
         public void ThrowsExceptionWhenCreatedWithNullMatches()
         {
-            var oldMembersNotMatched = Model.UsingModule<ConfigurationModule>().Create<IEnumerable<MemberDefinition>>();
-            var newMembersNotMatched = Model.UsingModule<ConfigurationModule>().Create<IEnumerable<MemberDefinition>>();
+            var oldMembersNotMatched = Model.UsingModule<ConfigurationModule>().Create<IEnumerable<OldMemberDefinition>>();
+            var newMembersNotMatched = Model.UsingModule<ConfigurationModule>().Create<IEnumerable<OldMemberDefinition>>();
 
             Action action = () => new MatchResults(null!, oldMembersNotMatched, newMembersNotMatched);
 
@@ -28,7 +28,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
         public void ThrowsExceptionWhenCreatedWithNullOldMembersNotMatched()
         {
             var matches = Model.UsingModule<ConfigurationModule>().Create<IEnumerable<MemberMatch>>();
-            var newMembersNotMatched = Model.UsingModule<ConfigurationModule>().Create<IEnumerable<MemberDefinition>>();
+            var newMembersNotMatched = Model.UsingModule<ConfigurationModule>().Create<IEnumerable<OldMemberDefinition>>();
 
             Action action = () => new MatchResults(matches, null!, newMembersNotMatched);
 
@@ -40,7 +40,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
         public void ThrowsExceptionWhenCreatedWithNullNewMembersNotMatched()
         {
             var matches = Model.UsingModule<ConfigurationModule>().Create<IEnumerable<MemberMatch>>();
-            var oldMembersNotMatched = Model.UsingModule<ConfigurationModule>().Create<IEnumerable<MemberDefinition>>();
+            var oldMembersNotMatched = Model.UsingModule<ConfigurationModule>().Create<IEnumerable<OldMemberDefinition>>();
 
             Action action = () => new MatchResults(matches, oldMembersNotMatched, null!);
 
@@ -51,8 +51,8 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
         public void CanCreateWithRequiredValues()
         {
             var matches = Model.UsingModule<ConfigurationModule>().Create<IList<MemberMatch>>();
-            var oldMembersNotMatched = Model.UsingModule<ConfigurationModule>().Create<IList<MemberDefinition>>();
-            var newMembersNotMatched = Model.UsingModule<ConfigurationModule>().Create<IList<MemberDefinition>>();
+            var oldMembersNotMatched = Model.UsingModule<ConfigurationModule>().Create<IList<OldMemberDefinition>>();
+            var newMembersNotMatched = Model.UsingModule<ConfigurationModule>().Create<IList<OldMemberDefinition>>();
 
             var sut = new MatchResults(matches, oldMembersNotMatched, newMembersNotMatched);
 

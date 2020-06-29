@@ -3,7 +3,7 @@
     using System.Collections.Generic;
     using System.Globalization;
 
-    public class MemberDefinition
+    public class OldMemberDefinition
     {
         /// <inheritdoc />
         public override string ToString()

@@ -20,7 +20,7 @@
         [InlineData(false, SemVerChangeType.None)]
         public void MemberAddedPopulatesInformationFromParameters(bool isVisible, SemVerChangeType expected)
         {
-            var newMember = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>()
+            var newMember = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>()
                 .Set(x => x.IsVisible = isVisible);
 
             var actual = ComparisonResult.MemberAdded(newMember);
@@ -48,8 +48,8 @@
         [InlineData(SemVerChangeType.Breaking)]
         public void MemberChangedPopulatesInformationFromParameters(SemVerChangeType changeType)
         {
-            var newMember = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
-            var oldMember = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
+            var newMember = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
+            var oldMember = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
             var match = new MemberMatch(oldMember, newMember);
             var message = Guid.NewGuid().ToString();
 
@@ -71,8 +71,8 @@
         [InlineData("  ")]
         public void MemberChangedThrowsExceptionWithInvalidMessage(string message)
         {
-            var newMember = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
-            var oldMember = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
+            var newMember = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
+            var oldMember = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
             var match = new MemberMatch(oldMember, newMember);
 
             Action action = () =>
@@ -84,8 +84,8 @@
         [Fact]
         public void MemberChangedThrowsExceptionWithNoneChangeType()
         {
-            var newMember = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
-            var oldMember = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
+            var newMember = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
+            var oldMember = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
             var match = new MemberMatch(oldMember, newMember);
             var message = Guid.NewGuid().ToString();
 
@@ -109,7 +109,7 @@
         [InlineData(false, SemVerChangeType.None)]
         public void MemberRemovedPopulatesInformationFromParameters(bool isVisible, SemVerChangeType expected)
         {
-            var oldMember = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>()
+            var oldMember = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>()
                 .Set(x => x.IsVisible = isVisible);
 
             var actual = ComparisonResult.MemberRemoved(oldMember);
@@ -135,8 +135,8 @@
         [Fact]
         public void NoChangeReturnsValuesFromParameters()
         {
-            var oldMember = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
-            var newMember = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
+            var oldMember = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
+            var newMember = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
             var match = new MemberMatch(oldMember, newMember);
 
             var actual = ComparisonResult.NoChange(match);

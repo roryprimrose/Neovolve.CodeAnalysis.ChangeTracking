@@ -6,7 +6,7 @@
     {
         bool IsSupported(SyntaxNode node);
 
-        MemberDefinition Resolve(SyntaxNode node);
+        OldMemberDefinition Resolve(SyntaxNode node);
 
         bool EvaluateChildren { get; }
 

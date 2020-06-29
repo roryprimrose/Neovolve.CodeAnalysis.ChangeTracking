@@ -2,8 +2,8 @@
 {
     public interface IMemberMatcher
     {
-        MemberMatch? GetMatch(MemberDefinition oldMember, MemberDefinition newMember);
+        MemberMatch? GetMatch(OldMemberDefinition oldMember, OldMemberDefinition newMember);
 
-        bool IsSupported(MemberDefinition member);
+        bool IsSupported(OldMemberDefinition member);
     }
 }

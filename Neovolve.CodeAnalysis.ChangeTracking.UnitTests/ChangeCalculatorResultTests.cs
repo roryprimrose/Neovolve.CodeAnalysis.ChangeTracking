@@ -11,8 +11,8 @@
         [Fact]
         public void AddDoesNotDowngradeChangeTypeWhenNewResultAddedWithLesserChangeType()
         {
-            var firstMember = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
-            var secondMember = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
+            var firstMember = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
+            var secondMember = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
             var firstResult = ComparisonResult.MemberRemoved(firstMember);
             var secondResult = ComparisonResult.MemberAdded(secondMember);
 
@@ -30,7 +30,7 @@
         [Fact]
         public void AddSetsChangeTypeToInitialResult()
         {
-            var member = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
+            var member = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
             var result = ComparisonResult.MemberAdded(member);
 
             var sut = new ChangeCalculatorResult();
@@ -55,8 +55,8 @@
         [Fact]
         public void AddUpgradesChangeTypeWhenNewResultAddedWithGreaterChangeType()
         {
-            var firstMember = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
-            var secondMember = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
+            var firstMember = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
+            var secondMember = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
             var firstResult = ComparisonResult.MemberAdded(firstMember);
             var secondResult = ComparisonResult.MemberRemoved(secondMember);
 

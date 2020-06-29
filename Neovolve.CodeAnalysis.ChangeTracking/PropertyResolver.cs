@@ -15,14 +15,14 @@
             return node is PropertyDeclarationSyntax;
         }
 
-        public MemberDefinition Resolve(SyntaxNode node)
+        public OldMemberDefinition Resolve(SyntaxNode node)
         {
             Ensure.Any.IsNotNull(node, nameof(node));
             Ensure.Type.IsOfType(node, typeof(PropertyDeclarationSyntax), nameof(node));
 
             var propertySyntax = (PropertyDeclarationSyntax) node;
 
-            var member = Resolve<PropertyDefinition>(propertySyntax);
+            var member = Resolve<OldPropertyDefinition>(propertySyntax);
             
             member.MemberType = MemberType.Property;
             member.Name = propertySyntax.Identifier.Text;
