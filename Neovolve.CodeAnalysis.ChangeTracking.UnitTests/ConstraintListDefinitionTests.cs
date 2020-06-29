@@ -1,6 +1,7 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Threading.Tasks;
     using FluentAssertions;
@@ -10,23 +11,79 @@
     public class ConstraintListDefinitionTests
     {
         [Fact]
-        public async Task GenericConstraintsReturnsDeclaredConstraints()
+        public async Task ConstrainsReturnsDefinedGenericTypeConstraints()
         {
             var node = await TestNode
                 .FindNode<TypeParameterConstraintClauseSyntax>(TypeDefinitionCode.ClassWithGenericConstraints)
                 .ConfigureAwait(false);
 
-            var actual = new ConstraintListDefinition(node);
+            var sut = new ConstraintListDefinition(node);
 
-            actual.Name.Should().Be("T");
-            actual.Constraints.Should().HaveCount(2);
-            actual.Constraints.First().Should().Be("Stream");
-            actual.Constraints.Skip(1).First().Should().Be("new()");
+            sut.Name.Should().Be("T");
+            sut.Constraints.Should().HaveCount(2);
+            sut.Constraints.First().Should().Be("Stream");
+            sut.Constraints.Skip(1).First().Should().Be("new()");
         }
 
         [Fact]
+        public async Task LocationReturnsEmptyFilePathWhenNodeLacksSourceInformation()
+        {
+            var node = await TestNode
+                .FindNode<TypeParameterConstraintClauseSyntax>(TypeDefinitionCode.ClassWithGenericConstraints)
+                .ConfigureAwait(false);
+
+            var sut = new ConstraintListDefinition(node);
+
+            sut.Location.FilePath.Should().BeEmpty();
+        }
+
+        [Fact]
+        public async Task LocationReturnsFileContentLocation()
+        {
+            var filePath = Guid.NewGuid().ToString();
+
+            var node = await TestNode
+                .FindNode<TypeParameterConstraintClauseSyntax>(TypeDefinitionCode.ClassWithGenericConstraints, filePath)
+                .ConfigureAwait(false);
+
+            var sut = new ConstraintListDefinition(node);
+
+            sut.Location.LineIndex.Should().Be(3);
+            sut.Location.CharacterIndex.Should().Be(45);
+        }
+
+        [Fact]
+        public async Task LocationReturnsFilePathWhenNodeIncludesSourceInformation()
+        {
+            var filePath = Guid.NewGuid().ToString();
+
+            var node = await TestNode
+                .FindNode<TypeParameterConstraintClauseSyntax>(TypeDefinitionCode.ClassWithGenericConstraints, filePath)
+                .ConfigureAwait(false);
+
+            var sut = new ConstraintListDefinition(node);
+
+            sut.Location.FilePath.Should().Be(filePath);
+        }
+
+        [Fact]
+        public async Task NameReturnsConstraintName()
+        {
+            var node = await TestNode
+                .FindNode<TypeParameterConstraintClauseSyntax>(TypeDefinitionCode.ClassWithGenericConstraints)
+                .ConfigureAwait(false);
+
+            var sut = new ConstraintListDefinition(node);
+
+            sut.Name.Should().Be("T");
+        }
+
+        [Fact]
+        [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification =
+            "The constructor is the target of the test")]
         public void ThrowsExceptionWhenCreatedWithNullNode()
         {
+            // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new ConstraintListDefinition(null!);
 
             action.Should().Throw<ArgumentNullException>();

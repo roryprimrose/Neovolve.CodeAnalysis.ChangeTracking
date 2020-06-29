@@ -8,8 +8,13 @@
     ///     The <see cref="ConstraintListDefinition" />
     ///     class identifies a set of generic type constraints.
     /// </summary>
-    public class ConstraintListDefinition
+    public class ConstraintListDefinition : IItemDefinition
     {
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ConstraintListDefinition" /> class.
+        /// </summary>
+        /// <param name="node">The node that defines the generic type constraints.</param>
+        /// <exception cref="ArgumentNullException">The <paramref name="node" /> parameter is <c>null</c>.</exception>
         public ConstraintListDefinition(TypeParameterConstraintClauseSyntax node)
         {
             if (node == null)
@@ -19,6 +24,7 @@
 
             Name = node.Name.ToString();
             Constraints = DetermineConstraints(node);
+            Location = node.DetermineLocation();
         }
 
         private static IReadOnlyCollection<string> DetermineConstraints(TypeParameterConstraintClauseSyntax node)
@@ -38,9 +44,10 @@
         /// </summary>
         public IReadOnlyCollection<string> Constraints { get; }
 
-        /// <summary>
-        ///     Gets the name of the generic type definition.
-        /// </summary>
+        /// <inheritdoc />
+        public DefinitionLocation Location { get; }
+
+        /// <inheritdoc />
         public string Name { get; }
     }
 }
