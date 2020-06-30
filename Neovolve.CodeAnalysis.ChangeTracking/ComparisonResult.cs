@@ -4,33 +4,33 @@
 
     public class ComparisonResult
     {
-        private ComparisonResult(SemVerChangeType changeType, OldMemberDefinition? oldMember, OldMemberDefinition? newMember,
+        private ComparisonResult(SemVerChangeType changeType, IItemDefinition? oldDefinition, IItemDefinition? newDefinition,
             string message)
         {
             ChangeType = changeType;
-            OldMember = oldMember;
-            NewMember = newMember;
+            OldDefinition = oldDefinition;
+            NewDefinition = newDefinition;
             Message = message;
         }
 
-        public static ComparisonResult MemberAdded(OldMemberDefinition newMember)
+        public static ComparisonResult DefinitionAdded(IElementDefinition newDefinition)
         {
-            newMember = newMember ?? throw new ArgumentNullException(nameof(newMember));
+            newDefinition = newDefinition ?? throw new ArgumentNullException(nameof(newDefinition));
 
-            var message = newMember + " has been added";
+            var message = newDefinition + " has been added";
 
             var changeType = SemVerChangeType.None;
 
-            if (newMember.IsVisible)
+            if (newDefinition.IsVisible)
             {
                 changeType = SemVerChangeType.Feature;
             }
 
-            return new ComparisonResult(changeType, null, newMember, message);
+            return new ComparisonResult(changeType, null, newDefinition, message);
         }
 
-        public static ComparisonResult MemberChanged(SemVerChangeType changeType, MemberMatch match,
-            string message)
+        public static ComparisonResult DefinitionChanged<T>(SemVerChangeType changeType, ItemMatch<T> match,
+            string message) where T : class, IItemDefinition
         {
             changeType = changeType == SemVerChangeType.None
                 ? throw new ArgumentException("The changeType cannot be None to indicate a change on the member.",
@@ -39,40 +39,40 @@
             match = match ?? throw new ArgumentNullException(nameof(match));
             message = string.IsNullOrWhiteSpace(message) ? throw new ArgumentException(nameof(message)) : message;
 
-            return new ComparisonResult(changeType, match.OldMember, match.NewMember, message);
+            return new ComparisonResult(changeType, match.OldItem, match.NewItem, message);
         }
 
-        public static ComparisonResult MemberRemoved(OldMemberDefinition oldMember)
+        public static ComparisonResult DefinitionRemoved(IElementDefinition oldDefinition)
         {
-            oldMember = oldMember ?? throw new ArgumentNullException(nameof(oldMember));
+            oldDefinition = oldDefinition ?? throw new ArgumentNullException(nameof(oldDefinition));
 
-            var message = oldMember + " has been removed";
+            var message = oldDefinition + " has been removed";
 
             var changeType = SemVerChangeType.None;
 
-            if (oldMember.IsVisible)
+            if (oldDefinition.IsVisible)
             {
                 changeType = SemVerChangeType.Breaking;
             }
 
-            return new ComparisonResult(changeType, oldMember, null, message);
+            return new ComparisonResult(changeType, oldDefinition, null, message);
         }
 
-        public static ComparisonResult NoChange(MemberMatch match)
+        public static ComparisonResult NoChange<T>(ItemMatch<T> match) where T : class, IItemDefinition
         {
             match = match ?? throw new ArgumentNullException(nameof(match));
 
-            var message = "No change on " + match.OldMember;
+            var message = "No change on " + match.OldItem;
 
-            return new ComparisonResult(SemVerChangeType.None, match.OldMember, match.NewMember, message);
+            return new ComparisonResult(SemVerChangeType.None, match.OldItem, match.NewItem, message);
         }
 
         public SemVerChangeType ChangeType { get; }
 
         public string Message { get; }
 
-        public OldMemberDefinition? NewMember { get; }
+        public IItemDefinition? NewDefinition { get; }
 
-        public OldMemberDefinition? OldMember { get; }
+        public IItemDefinition? OldDefinition { get; }
     }
 }

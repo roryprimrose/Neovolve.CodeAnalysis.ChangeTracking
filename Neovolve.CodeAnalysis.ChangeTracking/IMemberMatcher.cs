@@ -2,7 +2,7 @@
 {
     public interface IMemberMatcher
     {
-        MemberMatch? GetMatch(OldMemberDefinition oldMember, OldMemberDefinition newMember);
+        DefinitionMatch? GetMatch(OldMemberDefinition oldMember, OldMemberDefinition newMember);
 
         bool IsSupported(OldMemberDefinition member);
     }

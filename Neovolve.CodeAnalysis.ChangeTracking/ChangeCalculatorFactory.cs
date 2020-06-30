@@ -12,18 +12,11 @@
 
         public static IChangeCalculator BuildCalculator(ILogger? logger)
         {
-            var resolvers = new List<INodeResolver>
-            {
-                new FieldResolver(),
-                new MethodResolver(),
-                new PropertyResolver()
-            };
-            var scanner = new NodeScanner(resolvers, logger);
             var matchers = new List<IMemberMatcher>
             {
                 new MemberMatcher()
             };
-            var evaluator = new MatchEvaluator(scanner, matchers, logger);
+            var evaluator = new MatchEvaluator(matchers, logger);
             var comparers = new List<MemberComparer>
             {
                 new MemberComparer(),

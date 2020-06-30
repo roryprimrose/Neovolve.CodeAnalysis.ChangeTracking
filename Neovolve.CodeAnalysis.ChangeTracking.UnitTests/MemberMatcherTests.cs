@@ -18,8 +18,8 @@
             var actual = sut.GetMatch(oldMember, newMember);
 
             actual.Should().NotBeNull();
-            actual!.NewMember.Should().Be(newMember);
-            actual.OldMember.Should().Be(oldMember);
+            actual!.NewDefinition.Should().Be(newMember);
+            actual.OldDefinition.Should().Be(oldMember);
         }
 
         [Fact]
@@ -33,8 +33,8 @@
             var actual = sut.GetMatch(oldMember, newMember);
 
             actual.Should().NotBeNull();
-            actual!.NewMember.Should().Be(newMember);
-            actual.OldMember.Should().Be(oldMember);
+            actual!.NewDefinition.Should().Be(newMember);
+            actual.OldDefinition.Should().Be(oldMember);
         }
 
         [Theory]

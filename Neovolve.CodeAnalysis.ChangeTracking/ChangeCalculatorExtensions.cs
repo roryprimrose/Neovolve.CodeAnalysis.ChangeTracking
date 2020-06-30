@@ -7,9 +7,24 @@
     using EnsureThat;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
+    using Microsoft.CodeAnalysis.CSharp.Syntax;
 
     public static class ChangeCalculatorExtensions
     {
+        public static ChangeCalculatorResult CalculateChanges(this IChangeCalculator calculator,
+            IEnumerable<SyntaxNode> oldNodes,
+            IEnumerable<SyntaxNode> newNodes)
+        {
+            Ensure.Any.IsNotNull(calculator, nameof(calculator));
+            Ensure.Any.IsNotNull(oldNodes, nameof(oldNodes));
+            Ensure.Any.IsNotNull(newNodes, nameof(newNodes));
+
+            var oldTypes = ResolveDeclaredTypes(oldNodes);
+            var newTypes = ResolveDeclaredTypes(newNodes);
+
+            return calculator.CalculateChanges(oldTypes, newTypes);
+        }
+
         public static async Task<ChangeCalculatorResult> CalculateChanges(this IChangeCalculator calculator,
             IEnumerable<CodeSource> oldCode,
             IEnumerable<CodeSource> newCode, CancellationToken cancellationToken)
@@ -39,6 +54,58 @@
             await Task.WhenAll(tasks).ConfigureAwait(false);
 
             return tasks.Select(x => x.Result);
+        }
+
+        private static IList<ITypeDefinition> ResolveDeclaredTypes(IEnumerable<SyntaxNode> nodes)
+        {
+            var resolvedTypes = new List<ITypeDefinition>();
+
+            foreach (var node in nodes)
+            {
+                var matches = ResolveDeclaredTypes(node);
+
+                if (matches.Count > 0)
+                {
+                    resolvedTypes.AddRange(matches);
+                }
+            }
+
+            return resolvedTypes;
+        }
+
+        private static IList<ITypeDefinition> ResolveDeclaredTypes(SyntaxNode node)
+        {
+            List<ITypeDefinition> resolvedTypes = new List<ITypeDefinition>();
+
+            if (node is ClassDeclarationSyntax classNode)
+            {
+                var typeDefinition = new ClassDefinition(classNode);
+
+                resolvedTypes.Add(typeDefinition);
+            }
+            else if (node is InterfaceDeclarationSyntax interfaceNode)
+            {
+                var typeDefinition = new InterfaceDefinition(interfaceNode);
+
+                resolvedTypes.Add(typeDefinition);
+            }
+            else
+            {
+                // Recursively search all the child nodes
+                var childNodes = node.ChildNodes();
+
+                foreach (var childNode in childNodes)
+                {
+                    var matches = ResolveDeclaredTypes(childNode);
+
+                    if (matches.Count > 0)
+                    {
+                        resolvedTypes.AddRange(matches);
+                    }
+                }
+            }
+
+            return resolvedTypes;
         }
     }
 }

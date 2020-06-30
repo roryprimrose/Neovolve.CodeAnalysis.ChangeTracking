@@ -5,115 +5,104 @@
     using System.Globalization;
     using System.Linq;
     using EnsureThat;
-    using Microsoft.CodeAnalysis;
     using Microsoft.Extensions.Logging;
 
     public class ChangeCalculator : IChangeCalculator
     {
-        private readonly IList<IMemberComparer> _comparers;
+        private readonly ITypeComparer _comparer;
         private readonly IMatchEvaluator _evaluator;
         private readonly ILogger? _logger;
 
-        public ChangeCalculator(IMatchEvaluator evaluator, IEnumerable<IMemberComparer> comparers, ILogger? logger)
+        public ChangeCalculator(IMatchEvaluator evaluator, ITypeComparer comparer, ILogger? logger)
         {
             Ensure.Any.IsNotNull(evaluator, nameof(evaluator));
-            Ensure.Any.IsNotNull(comparers, nameof(comparers));
+            Ensure.Any.IsNotNull(comparer, nameof(comparer));
 
             _evaluator = evaluator;
-            _comparers = comparers.FastToList();
-
-            Ensure.Collection.HasItems(_comparers, nameof(_comparers));
-
+            _comparer = comparer;
             _logger = logger;
         }
 
-        public ChangeCalculatorResult CalculateChanges(IEnumerable<SyntaxNode> oldNodes,
-            IEnumerable<SyntaxNode> newNodes)
+        public ChangeCalculatorResult CalculateChanges(IEnumerable<ITypeDefinition> oldTypes,
+            IEnumerable<ITypeDefinition> newTypes, ComparerOptions options)
         {
-            Ensure.Any.IsNotNull(oldNodes, nameof(oldNodes));
-            Ensure.Any.IsNotNull(newNodes, nameof(newNodes));
+            Ensure.Any.IsNotNull(oldTypes, nameof(oldTypes));
+            Ensure.Any.IsNotNull(newTypes, nameof(newTypes));
 
-            var matchingNodes = _evaluator.CompareNodes(oldNodes, newNodes);
+            var result = new ChangeCalculatorResult();
 
-            var results = new ChangeCalculatorResult();
+            var changes = CalculateTypeChanges(oldTypes.FastToList(), newTypes.FastToList(), options);
+
+            foreach (var change in changes)
+            {
+                result.Add(change);
+            }
+
+            _logger?.LogInformation("Calculated overall result as a {0} change.",
+                result.ChangeType.ToString().ToLower(CultureInfo.CurrentCulture));
+
+            return result;
+        }
+
+        private IEnumerable<ComparisonResult> CalculateTypeChanges(ICollection<ITypeDefinition> oldTypes,
+            ICollection<ITypeDefinition> newTypes, ComparerOptions options)
+        {
+            var oldClasses = oldTypes.OfType<ClassDefinition>();
+            var newClasses = newTypes.OfType<ClassDefinition>();
+
+            var classChanges = CalculateTypeChanges(oldClasses, newClasses,
+                (oldItem, newItem) => oldItem.FullName.Equals(newItem.FullName, StringComparison.Ordinal), options);
+
+            var oldInterfaces = oldTypes.OfType<InterfaceDefinition>();
+            var newInterfaces = newTypes.OfType<InterfaceDefinition>();
+
+            var interfaceChanges = CalculateTypeChanges(oldInterfaces, newInterfaces,
+                (oldItem, newItem) => oldItem.FullName.Equals(newItem.FullName, StringComparison.Ordinal), options);
+
+            return classChanges.Concat(interfaceChanges);
+        }
+
+        private IEnumerable<ComparisonResult> CalculateTypeChanges(IEnumerable<ITypeDefinition> oldTypes,
+            IEnumerable<ITypeDefinition> newTypes, Func<ITypeDefinition, ITypeDefinition, bool> evaluator, ComparerOptions options)
+        {
+            var matchingNodes = _evaluator.MatchItems(oldTypes, newTypes, evaluator);
 
             // Record any public members that have been added
-            foreach (var memberAdded in matchingNodes.NewMembersNotMatched.Where(x => x.IsVisible))
+            foreach (var memberAdded in matchingNodes.DefinitionsAdded.Where(x => x.IsVisible))
             {
-                var memberType = memberAdded.MemberType.ToString().ToLower(CultureInfo.CurrentCulture);
+                var memberRemovedResult = ComparisonResult.DefinitionAdded(memberAdded);
 
-                _logger?.LogInformation(
-                    "Found new public {0} {1} that does not match any old public {2} (feature)",
-                    memberType, memberAdded.ToString(false),
-                    memberType);
-
-                var memberRemovedResult = ComparisonResult.MemberAdded(memberAdded);
-
-                results.Add(memberRemovedResult);
+                yield return memberRemovedResult;
             }
 
             // Record any public members that have been removed
-            foreach (var memberRemoved in matchingNodes.OldMembersNotMatched.Where(x => x.IsVisible))
+            foreach (var memberRemoved in matchingNodes.DefinitionsRemoved.Where(x => x.IsVisible))
             {
-                var memberType = memberRemoved.MemberType.ToString().ToLower(CultureInfo.CurrentCulture);
+                var memberRemovedResult = ComparisonResult.DefinitionRemoved(memberRemoved);
 
-                _logger?.LogInformation(
-                    "Found old public {0} {1} that does not match any new public {2} (breaking)",
-                    memberType, memberRemoved.ToString(false),
-                    memberType);
-
-                var memberRemovedResult = ComparisonResult.MemberRemoved(memberRemoved);
-
-                results.Add(memberRemovedResult);
+                yield return memberRemovedResult;
             }
 
             // Check all the matches for a breaking change or feature added
             foreach (var match in matchingNodes.Matches)
             {
-                var comparer = _comparers.FirstOrDefault(x => x.IsSupported(match.OldMember));
+                var results = _comparer.CompareTypes(match, options);
 
-                if (comparer == null)
+                foreach (var result in results)
                 {
-                    // There is no comparer that supports this member type
-                    var message = string.Format(CultureInfo.CurrentCulture, "No {0} found that supports {1}",
-                        nameof(IMemberComparer), match.OldMember.GetType().FullName);
+                    if (result.ChangeType == SemVerChangeType.None)
+                    {
+                        _logger?.LogDebug(result.Message);
 
-                    throw new InvalidOperationException(message);
-                }
+                        // Don't add comparison results to the outcome where it looks like there is no change
+                        continue;
+                    }
 
-                var result = comparer.Compare(match);
+                    _logger?.LogInformation(result.Message);
 
-                if (result.ChangeType == SemVerChangeType.None)
-                {
-                    _logger?.LogDebug(result.Message);
-
-                    // Don't add comparison results to the outcome where it looks like there is no change
-                    continue;
-                }
-
-                _logger?.LogInformation(result.Message);
-
-                results.Add(result);
-
-                if (result.ChangeType == SemVerChangeType.Breaking)
-                {
-                    _logger?.LogInformation("Identified a potential breaking change in {0} {1}.",
-                        match.OldMember.MemberType.ToString().ToLower(CultureInfo.CurrentCulture),
-                        match.OldMember.ToString(false));
-                }
-                else if (result.ChangeType == SemVerChangeType.Feature)
-                {
-                    _logger?.LogInformation("Identified a potential {0} change in {1} {2}.",
-                        result.ToString().ToLower(CultureInfo.CurrentCulture),
-                        match.OldMember.MemberType.ToString().ToLower(CultureInfo.CurrentCulture),
-                        match.OldMember.ToString(false));
+                    yield return result;
                 }
             }
-
-            _logger?.LogInformation("Calculated overall result as a {0} change.",
-                results.ChangeType.ToString().ToLower(CultureInfo.CurrentCulture));
-
-            return results;
         }
     }
 }

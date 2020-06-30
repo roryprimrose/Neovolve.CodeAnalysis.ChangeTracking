@@ -33,7 +33,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var oldMemberNotMatched = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>();
             var oldMembersNotMatched = new List<OldMemberDefinition> {oldMemberNotMatched};
             var newMembersNotMatched = new List<OldMemberDefinition>();
-            var matches = new List<MemberMatch>();
+            var matches = new List<DefinitionMatch>();
             var results = new MatchResults(matches, oldMembersNotMatched, newMembersNotMatched);
             var oldNodes = new List<SyntaxNode>
             {
@@ -41,7 +41,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             };
             var newNodes = new List<SyntaxNode>();
 
-            evaluator.CompareNodes(oldNodes, newNodes).Returns(results);
+            evaluator.MatchItems(oldNodes, newNodes).Returns(results);
 
             var sut = new ChangeCalculator(evaluator, comparers, _logger);
 
@@ -59,7 +59,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var oldMemberNotMatched = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>();
             var oldMembersNotMatched = new List<OldMemberDefinition> {oldMemberNotMatched};
             var newMembersNotMatched = new List<OldMemberDefinition>();
-            var matches = new List<MemberMatch>();
+            var matches = new List<DefinitionMatch>();
             var results = new MatchResults(matches, oldMembersNotMatched, newMembersNotMatched);
             var oldNodes = new List<SyntaxNode>
             {
@@ -67,7 +67,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             };
             var newNodes = new List<SyntaxNode>();
 
-            evaluator.CompareNodes(oldNodes, newNodes).Returns(results);
+            evaluator.MatchItems(oldNodes, newNodes).Returns(results);
 
             var sut = new ChangeCalculator(evaluator, comparers, null);
 
@@ -86,13 +86,13 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var newMember = oldMember.JsonClone();
             var oldMembersNotMatched = new List<OldMemberDefinition>();
             var newMembersNotMatched = new List<OldMemberDefinition>();
-            var matches = new List<MemberMatch>
+            var matches = new List<DefinitionMatch>
             {
-                new MemberMatch(oldMember, newMember),
-                new MemberMatch(oldMember, newMember),
-                new MemberMatch(oldMember, newMember)
+                new DefinitionMatch(oldMember, newMember),
+                new DefinitionMatch(oldMember, newMember),
+                new DefinitionMatch(oldMember, newMember)
             };
-            var match = new MemberMatch(oldMember, newMember);
+            var match = new DefinitionMatch(oldMember, newMember);
             var firstResult = ComparisonResult.NoChange(match);
             var secondResult = ComparisonResult.MemberChanged(SemVerChangeType.Feature, match, "feature change");
             var thirdResult = ComparisonResult.MemberChanged(SemVerChangeType.Breaking, match, "breaking change");
@@ -102,9 +102,9 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
             var newNodes = new List<SyntaxNode>();
 
-            evaluator.CompareNodes(oldNodes, newNodes).Returns(results);
+            evaluator.MatchItems(oldNodes, newNodes).Returns(results);
             comparer.IsSupported(Arg.Any<OldMemberDefinition>()).Returns(true);
-            comparer.Compare(Arg.Any<MemberMatch>()).Returns(firstResult, secondResult, thirdResult);
+            comparer.Compare(Arg.Any<DefinitionMatch>()).Returns(firstResult, secondResult, thirdResult);
 
             var sut = new ChangeCalculator(evaluator, comparers, _logger);
 
@@ -124,12 +124,12 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var comparers = new List<IMemberComparer> {comparer};
             var oldMember = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>();
             var newMember = oldMember.JsonClone();
-            var match = new MemberMatch(oldMember, newMember);
+            var match = new DefinitionMatch(oldMember, newMember);
             var oldMembersNotMatched = new List<OldMemberDefinition>();
             var newMembersNotMatched = new List<OldMemberDefinition>();
-            var matches = new List<MemberMatch>
+            var matches = new List<DefinitionMatch>
             {
-                new MemberMatch(oldMember, newMember)
+                new DefinitionMatch(oldMember, newMember)
             };
             ComparisonResult result;
 
@@ -147,7 +147,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
             var newNodes = new List<SyntaxNode>();
 
-            evaluator.CompareNodes(oldNodes, newNodes).Returns(results);
+            evaluator.MatchItems(oldNodes, newNodes).Returns(results);
             comparer.IsSupported(oldMember).Returns(true);
             comparer.IsSupported(newMember).Returns(true);
             comparer.Compare(matches[0]).Returns(result);
@@ -170,12 +170,12 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var comparers = new List<IMemberComparer> {comparer};
             var oldMember = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>();
             var newMember = oldMember.JsonClone();
-            var match = new MemberMatch(oldMember, newMember);
+            var match = new DefinitionMatch(oldMember, newMember);
             var oldMembersNotMatched = new List<OldMemberDefinition>();
             var newMembersNotMatched = new List<OldMemberDefinition>();
-            var matches = new List<MemberMatch>
+            var matches = new List<DefinitionMatch>
             {
-                new MemberMatch(oldMember, newMember)
+                new DefinitionMatch(oldMember, newMember)
             };
             ComparisonResult result;
 
@@ -193,7 +193,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
             var newNodes = new List<SyntaxNode>();
 
-            evaluator.CompareNodes(oldNodes, newNodes).Returns(results);
+            evaluator.MatchItems(oldNodes, newNodes).Returns(results);
             comparer.IsSupported(oldMember).Returns(true);
             comparer.IsSupported(newMember).Returns(true);
             comparer.Compare(matches[0]).Returns(result);
@@ -214,7 +214,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var oldMembersNotMatched = new List<OldMemberDefinition>();
             var newMemberNotMatched = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>();
             var newMembersNotMatched = new List<OldMemberDefinition> {newMemberNotMatched};
-            var matches = new List<MemberMatch>();
+            var matches = new List<DefinitionMatch>();
             var results = new MatchResults(matches, oldMembersNotMatched, newMembersNotMatched);
             var oldNodes = new List<SyntaxNode>
             {
@@ -222,7 +222,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             };
             var newNodes = new List<SyntaxNode>();
 
-            evaluator.CompareNodes(oldNodes, newNodes).Returns(results);
+            evaluator.MatchItems(oldNodes, newNodes).Returns(results);
 
             var sut = new ChangeCalculator(evaluator, comparers, _logger);
 
@@ -241,7 +241,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var oldMembersNotMatched = new List<OldMemberDefinition>();
             var newMemberNotMatched = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>();
             var newMembersNotMatched = new List<OldMemberDefinition> {newMemberNotMatched};
-            var matches = new List<MemberMatch>();
+            var matches = new List<DefinitionMatch>();
             var results = new MatchResults(matches, oldMembersNotMatched, newMembersNotMatched);
             var oldNodes = new List<SyntaxNode>
             {
@@ -249,7 +249,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             };
             var newNodes = new List<SyntaxNode>();
 
-            evaluator.CompareNodes(oldNodes, newNodes).Returns(results);
+            evaluator.MatchItems(oldNodes, newNodes).Returns(results);
 
             var sut = new ChangeCalculator(evaluator, comparers, null);
 
@@ -261,7 +261,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
         [Fact]
         public void CompareChangesReturnsNoneWhenEmptyComparisonReturned()
         {
-            var matches = Array.Empty<MemberMatch>();
+            var matches = Array.Empty<DefinitionMatch>();
             var emptyMissingMembers = Array.Empty<OldMemberDefinition>();
             var matchResults = new MatchResults(matches, emptyMissingMembers, emptyMissingMembers);
             var oldNodes = new List<SyntaxNode>();
@@ -271,7 +271,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var comparer = Substitute.For<IMemberComparer>();
             var comparers = new List<IMemberComparer> {comparer};
 
-            evaluator.CompareNodes(oldNodes, newNodes).Returns(matchResults);
+            evaluator.MatchItems(oldNodes, newNodes).Returns(matchResults);
 
             var sut = new ChangeCalculator(evaluator, comparers, _logger);
 
@@ -288,12 +288,12 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var comparers = new List<IMemberComparer> {comparer};
             var oldMember = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>();
             var newMember = oldMember.JsonClone();
-            var match = new MemberMatch(oldMember, newMember);
+            var match = new DefinitionMatch(oldMember, newMember);
             var oldMembersNotMatched = new List<OldMemberDefinition>();
             var newMembersNotMatched = new List<OldMemberDefinition>();
-            var matches = new List<MemberMatch>
+            var matches = new List<DefinitionMatch>
             {
-                new MemberMatch(oldMember, newMember)
+                new DefinitionMatch(oldMember, newMember)
             };
             ComparisonResult result = ComparisonResult.NoChange(match);
 
@@ -302,7 +302,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
             var newNodes = new List<SyntaxNode>();
 
-            evaluator.CompareNodes(oldNodes, newNodes).Returns(results);
+            evaluator.MatchItems(oldNodes, newNodes).Returns(results);
             comparer.IsSupported(oldMember).Returns(true);
             comparer.IsSupported(newMember).Returns(true);
             comparer.Compare(matches[0]).Returns(result);
@@ -323,12 +323,12 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var comparers = new List<IMemberComparer> {comparer};
             var oldMembersNotMatched = new List<OldMemberDefinition>();
             var newMembersNotMatched = new List<OldMemberDefinition>();
-            var matches = new List<MemberMatch>();
+            var matches = new List<DefinitionMatch>();
             var results = new MatchResults(matches, oldMembersNotMatched, newMembersNotMatched);
             var oldNodes = new List<SyntaxNode>();
             var newNodes = new List<SyntaxNode>();
 
-            evaluator.CompareNodes(oldNodes, newNodes).Returns(results);
+            evaluator.MatchItems(oldNodes, newNodes).Returns(results);
 
             var sut = new ChangeCalculator(evaluator, comparers, _logger);
 
@@ -377,9 +377,9 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var newMember = oldMember.JsonClone();
             var oldMembersNotMatched = new List<OldMemberDefinition>();
             var newMembersNotMatched = new List<OldMemberDefinition>();
-            var matches = new List<MemberMatch>
+            var matches = new List<DefinitionMatch>
             {
-                new MemberMatch(oldMember, newMember)
+                new DefinitionMatch(oldMember, newMember)
             };
 
             var results = new MatchResults(matches, oldMembersNotMatched, newMembersNotMatched);
@@ -387,7 +387,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
             var newNodes = new List<SyntaxNode>();
 
-            evaluator.CompareNodes(oldNodes, newNodes).Returns(results);
+            evaluator.MatchItems(oldNodes, newNodes).Returns(results);
 
             var sut = new ChangeCalculator(evaluator, comparers, _logger);
 

@@ -15,6 +15,12 @@
     public class ChangeCalculatorExtensionTests
     {
         [Fact]
+        public void CalculateChangesForSyntaxNodesReturnsCalculatorResult()
+        {
+            throw new NotImplementedException();
+        }
+
+        [Fact]
         public async Task CalculateChangesReturnsCalculatorResult()
         {
             var oldCode = new List<CodeSource>

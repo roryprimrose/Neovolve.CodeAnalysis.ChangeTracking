@@ -50,7 +50,7 @@
         {
             var newMember = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
             var oldMember = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
-            var match = new MemberMatch(oldMember, newMember);
+            var match = new DefinitionMatch(oldMember, newMember);
             var message = Guid.NewGuid().ToString();
 
             var actual = ComparisonResult.MemberChanged(changeType, match, message);
@@ -73,7 +73,7 @@
         {
             var newMember = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
             var oldMember = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
-            var match = new MemberMatch(oldMember, newMember);
+            var match = new DefinitionMatch(oldMember, newMember);
 
             Action action = () =>
                 ComparisonResult.MemberChanged(SemVerChangeType.Feature, match, message);
@@ -86,7 +86,7 @@
         {
             var newMember = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
             var oldMember = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
-            var match = new MemberMatch(oldMember, newMember);
+            var match = new DefinitionMatch(oldMember, newMember);
             var message = Guid.NewGuid().ToString();
 
             Action action = () => ComparisonResult.MemberChanged(SemVerChangeType.None, match, message);
@@ -137,7 +137,7 @@
         {
             var oldMember = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
             var newMember = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
-            var match = new MemberMatch(oldMember, newMember);
+            var match = new DefinitionMatch(oldMember, newMember);
 
             var actual = ComparisonResult.NoChange(match);
 

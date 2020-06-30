@@ -27,7 +27,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
         [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification = "Testing constructor guard clause")]
         public void ThrowsExceptionWhenCreatedWithNullOldMembersNotMatched()
         {
-            var matches = Model.UsingModule<ConfigurationModule>().Create<IEnumerable<MemberMatch>>();
+            var matches = Model.UsingModule<ConfigurationModule>().Create<IEnumerable<DefinitionMatch>>();
             var newMembersNotMatched = Model.UsingModule<ConfigurationModule>().Create<IEnumerable<OldMemberDefinition>>();
 
             Action action = () => new MatchResults(matches, null!, newMembersNotMatched);
@@ -39,7 +39,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
         [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification = "Testing constructor guard clause")]
         public void ThrowsExceptionWhenCreatedWithNullNewMembersNotMatched()
         {
-            var matches = Model.UsingModule<ConfigurationModule>().Create<IEnumerable<MemberMatch>>();
+            var matches = Model.UsingModule<ConfigurationModule>().Create<IEnumerable<DefinitionMatch>>();
             var oldMembersNotMatched = Model.UsingModule<ConfigurationModule>().Create<IEnumerable<OldMemberDefinition>>();
 
             Action action = () => new MatchResults(matches, oldMembersNotMatched, null!);
@@ -50,15 +50,15 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
         [Fact]
         public void CanCreateWithRequiredValues()
         {
-            var matches = Model.UsingModule<ConfigurationModule>().Create<IList<MemberMatch>>();
+            var matches = Model.UsingModule<ConfigurationModule>().Create<IList<DefinitionMatch>>();
             var oldMembersNotMatched = Model.UsingModule<ConfigurationModule>().Create<IList<OldMemberDefinition>>();
             var newMembersNotMatched = Model.UsingModule<ConfigurationModule>().Create<IList<OldMemberDefinition>>();
 
             var sut = new MatchResults(matches, oldMembersNotMatched, newMembersNotMatched);
 
             sut.Matches.Should().BeEquivalentTo(matches);
-            sut.OldMembersNotMatched.Should().BeEquivalentTo(oldMembersNotMatched);
-            sut.NewMembersNotMatched.Should().BeEquivalentTo(newMembersNotMatched);
+            sut.DefinitionsRemoved.Should().BeEquivalentTo(oldMembersNotMatched);
+            sut.DefinitionsAdded.Should().BeEquivalentTo(newMembersNotMatched);
         }
     }
 }

@@ -29,7 +29,7 @@
                 .Create<OldPropertyDefinition>()
                 .Set(x => x.IsVisible = oldValue);
             var newMember = oldMember.JsonClone().Set(x => x.IsVisible = newValue);
-            var match = new MemberMatch(oldMember, newMember);
+            var match = new DefinitionMatch(oldMember, newMember);
 
             var sut = new PropertyComparer();
 
@@ -52,7 +52,7 @@
                     x.ReturnType = Guid.NewGuid().ToString(); // Breaking
                     x.CanWrite = true; // Feature
                 });
-            var match = new MemberMatch(oldMember, newMember);
+            var match = new DefinitionMatch(oldMember, newMember);
 
             var sut = new PropertyComparer();
 
@@ -75,7 +75,7 @@
                     x.IsVisible = true;
                     x.CanWrite = false;
                 });
-            var match = new MemberMatch(oldMember, newMember);
+            var match = new DefinitionMatch(oldMember, newMember);
 
             var sut = new PropertyComparer();
 
@@ -97,7 +97,7 @@
                     x.CanWrite = true;
                 });
             var newMember = oldMember.JsonClone().Set(x => { x.CanWrite = false; });
-            var match = new MemberMatch(oldMember, newMember);
+            var match = new DefinitionMatch(oldMember, newMember);
 
             var sut = new PropertyComparer();
 
@@ -113,7 +113,7 @@
         {
             var oldMember = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
             var newMember = oldMember.JsonClone();
-            var match = new MemberMatch(oldMember, newMember);
+            var match = new DefinitionMatch(oldMember, newMember);
 
             var sut = new PropertyComparer();
 
@@ -138,7 +138,7 @@
                 .Create<OldPropertyDefinition>()
                 .Set(x => x.CanRead = oldValue);
             var newMember = oldMember.JsonClone().Set(x => x.CanRead = newValue);
-            var match = new MemberMatch(oldMember, newMember);
+            var match = new DefinitionMatch(oldMember, newMember);
 
             var sut = new PropertyComparer();
 
@@ -163,7 +163,7 @@
                 .Create<OldPropertyDefinition>()
                 .Set(x => x.CanWrite = oldValue);
             var newMember = oldMember.JsonClone().Set(x => x.CanWrite = newValue);
-            var match = new MemberMatch(oldMember, newMember);
+            var match = new DefinitionMatch(oldMember, newMember);
 
             var sut = new PropertyComparer();
 

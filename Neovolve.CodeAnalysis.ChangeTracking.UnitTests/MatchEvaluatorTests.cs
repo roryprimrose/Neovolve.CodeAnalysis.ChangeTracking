@@ -35,7 +35,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
             var sut = new MatchEvaluator(scanner, matches, _logger);
 
-            var actual = sut.CompareNodes(oldNodes, newNodes);
+            var actual = sut.MatchItems(oldNodes, newNodes);
 
             actual.Matches.Should().BeEmpty();
             actual.NewMembersNotMatched.Should().BeEmpty();
@@ -52,7 +52,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var oldMembers = new List<OldMemberDefinition> {member};
             var newMembers = new List<OldMemberDefinition> {member};
             var matches = new List<IMemberMatcher> {matcher};
-            var match = new MemberMatch(member, member);
+            var match = new ItemMatch<>(member, member);
             var oldNodes = new List<SyntaxNode>
             {
                 await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
@@ -69,7 +69,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
             var sut = new MatchEvaluator(scanner, matches, _logger);
 
-            var actual = sut.CompareNodes(oldNodes, newNodes);
+            var actual = sut.MatchItems(oldNodes, newNodes);
 
             actual.Matches.Should().HaveCount(1);
             actual.NewMembersNotMatched.Should().BeEmpty();
@@ -87,7 +87,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var oldMembers = new List<OldMemberDefinition> {member};
             var newMembers = new List<OldMemberDefinition> {member, memberNotMatched};
             var matches = new List<IMemberMatcher> {matcher};
-            var match = new MemberMatch(member, member);
+            var match = new ItemMatch<>(member, member);
             var oldNodes = new List<SyntaxNode>
             {
                 await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
@@ -104,7 +104,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
             var sut = new MatchEvaluator(scanner, matches, _logger);
 
-            var actual = sut.CompareNodes(oldNodes, newNodes);
+            var actual = sut.MatchItems(oldNodes, newNodes);
 
             actual.Matches.Should().HaveCount(1);
             actual.NewMembersNotMatched.Should().HaveCount(1);
@@ -123,7 +123,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var oldMembers = new List<OldMemberDefinition> {member, memberNotMatched};
             var newMembers = new List<OldMemberDefinition> {member};
             var matches = new List<IMemberMatcher> {matcher};
-            var match = new MemberMatch(member, member);
+            var match = new ItemMatch<>(member, member);
             var oldNodes = new List<SyntaxNode>
             {
                 await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
@@ -140,7 +140,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
             var sut = new MatchEvaluator(scanner, matches, _logger);
 
-            var actual = sut.CompareNodes(oldNodes, newNodes);
+            var actual = sut.MatchItems(oldNodes, newNodes);
 
             actual.Matches.Should().HaveCount(1);
             actual.NewMembersNotMatched.Should().BeEmpty();
@@ -159,7 +159,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var oldMembers = new List<OldMemberDefinition> {member};
             var newMembers = new List<OldMemberDefinition> {member, memberNotMatched};
             var matches = new List<IMemberMatcher> {matcher};
-            var match = new MemberMatch(member, member);
+            var match = new ItemMatch<>(member, member);
             var oldNodes = new List<SyntaxNode>
             {
                 await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
@@ -176,7 +176,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
             var sut = new MatchEvaluator(scanner, matches, _logger);
 
-            var actual = sut.CompareNodes(oldNodes, newNodes);
+            var actual = sut.MatchItems(oldNodes, newNodes);
 
             actual.Matches.Should().HaveCount(1);
             actual.NewMembersNotMatched.Should().HaveCount(1);
@@ -194,7 +194,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var oldMembers = new List<OldMemberDefinition> {member};
             var newMembers = new List<OldMemberDefinition> {member};
             var matches = new List<IMemberMatcher> {matcher};
-            var match = new MemberMatch(member, member);
+            var match = new ItemMatch<>(member, member);
             var oldNodes = new List<SyntaxNode>
             {
                 await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
@@ -211,7 +211,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
             var sut = new MatchEvaluator(scanner, matches, null);
 
-            var actual = sut.CompareNodes(oldNodes, newNodes);
+            var actual = sut.MatchItems(oldNodes, newNodes);
 
             actual.Matches.Should().HaveCount(1);
             actual.NewMembersNotMatched.Should().BeEmpty();
@@ -243,7 +243,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
             var sut = new MatchEvaluator(scanner, matches, _logger);
 
-            Action action = () => sut.CompareNodes(oldNodes, newNodes);
+            Action action = () => sut.MatchItems(oldNodes, newNodes);
 
             action.Should().Throw<InvalidOperationException>();
         }
@@ -261,7 +261,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
             var sut = new MatchEvaluator(scanner, matches, _logger);
 
-            Action action = () => sut.CompareNodes(oldNodes, null!);
+            Action action = () => sut.MatchItems(oldNodes, null!);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -279,7 +279,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
             var sut = new MatchEvaluator(scanner, matches, _logger);
 
-            Action action = () => sut.CompareNodes(null!, newNodes);
+            Action action = () => sut.MatchItems(null!, newNodes);
 
             action.Should().Throw<ArgumentNullException>();
         }

@@ -4,12 +4,12 @@
 
     public class PropertyComparer : MemberComparer
     {
-        public override ComparisonResult Compare(MemberMatch match)
+        public override ComparisonResult Compare(DefinitionMatch match)
         {
             Ensure.Any.IsNotNull(match, nameof(match));
 
-            var oldProperty = (OldPropertyDefinition) match.OldMember;
-            var newProperty = (OldPropertyDefinition) match.NewMember;
+            var oldProperty = (OldPropertyDefinition) match.OldDefinition;
+            var newProperty = (OldPropertyDefinition) match.NewDefinition;
 
             var result = base.Compare(match);
 

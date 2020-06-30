@@ -2,7 +2,7 @@
 {
     public interface IMemberComparer
     {
-        ComparisonResult Compare(MemberMatch match);
+        ComparisonResult Compare(DefinitionMatch match);
 
         bool IsSupported(OldMemberDefinition member);
     }

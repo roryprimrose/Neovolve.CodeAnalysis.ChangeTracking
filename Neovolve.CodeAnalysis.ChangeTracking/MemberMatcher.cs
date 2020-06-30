@@ -5,7 +5,7 @@
 
     public class MemberMatcher : IMemberMatcher
     {
-        public virtual MemberMatch? GetMatch(OldMemberDefinition oldMember, OldMemberDefinition newMember)
+        public virtual DefinitionMatch? GetMatch(OldMemberDefinition oldMember, OldMemberDefinition newMember)
         {
             Ensure.Any.IsNotNull(oldMember, nameof(oldMember));
             Ensure.Any.IsNotNull(newMember, nameof(newMember));
@@ -25,7 +25,7 @@
                 return null;
             }
 
-            return new MemberMatch(oldMember, newMember);
+            return new DefinitionMatch(oldMember, newMember);
         }
 
         public virtual bool IsSupported(OldMemberDefinition member)

@@ -23,7 +23,7 @@
             params object[] args)
         {
             var changeType = (SemVerChangeType) executeStrategy.Create(typeof(SemVerChangeType));
-            var match = (MemberMatch) executeStrategy.Create(typeof(MemberMatch));
+            var match = (DefinitionMatch) executeStrategy.Create(typeof(DefinitionMatch));
             var message = "Some kind of change " + Guid.NewGuid();
 
             return ComparisonResult.MemberChanged(changeType, match, message);

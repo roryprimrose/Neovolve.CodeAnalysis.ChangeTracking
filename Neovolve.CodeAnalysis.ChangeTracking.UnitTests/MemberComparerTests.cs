@@ -31,7 +31,7 @@
                     x.IsVisible = true; // Feature
                     x.ReturnType = "DateTimeOffset"; // Breaking
                 });
-            var match = new MemberMatch(oldMember, newMember);
+            var match = new DefinitionMatch(oldMember, newMember);
 
             var sut = new MemberComparer();
 
@@ -47,7 +47,7 @@
         {
             var oldMember = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>();
             var newMember = oldMember.JsonClone();
-            var match = new MemberMatch(oldMember, newMember);
+            var match = new DefinitionMatch(oldMember, newMember);
 
             var sut = new MemberComparer();
 
@@ -69,7 +69,7 @@
                     x.ReturnType = "string";
                 });
             var newMember = oldMember.JsonClone().Set(x => { x.ReturnType = "DateTimeOffset"; });
-            var match = new MemberMatch(oldMember, newMember);
+            var match = new DefinitionMatch(oldMember, newMember);
 
             var sut = new MemberComparer();
 
@@ -90,7 +90,7 @@
             var oldMember = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>()
                 .Set(x => x.IsVisible = oldValue);
             var newMember = oldMember.JsonClone().Set(x => x.IsVisible = newValue);
-            var match = new MemberMatch(oldMember, newMember);
+            var match = new DefinitionMatch(oldMember, newMember);
 
             var sut = new MemberComparer();
 
@@ -110,7 +110,7 @@
                 .Create<OldMemberDefinition>()
                 .Set(x => x.ReturnType = oldValue);
             var newMember = oldMember.JsonClone().Set(x => x.ReturnType = newValue);
-            var match = new MemberMatch(oldMember, newMember);
+            var match = new DefinitionMatch(oldMember, newMember);
 
             var sut = new MemberComparer();
 
@@ -134,7 +134,7 @@
             var oldMember = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>()
                 .Set(x => x.Name = oldValue);
             var newMember = oldMember.JsonClone().Set(x => x.Name = newValue);
-            var match = new MemberMatch(oldMember, newMember);
+            var match = new DefinitionMatch(oldMember, newMember);
 
             var sut = new MemberComparer();
 
@@ -156,7 +156,7 @@
             var oldMember = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>()
                 .Set(x => x.Namespace = oldValue);
             var newMember = oldMember.JsonClone().Set(x => x.Namespace = newValue);
-            var match = new MemberMatch(oldMember, newMember);
+            var match = new DefinitionMatch(oldMember, newMember);
 
             var sut = new MemberComparer();
 
@@ -179,7 +179,7 @@
                 .Create<OldMemberDefinition>()
                 .Set(x => x.OwningType = oldValue);
             var newMember = oldMember.JsonClone().Set(x => x.OwningType = newValue);
-            var match = new MemberMatch(oldMember, newMember);
+            var match = new DefinitionMatch(oldMember, newMember);
 
             var sut = new MemberComparer();
 

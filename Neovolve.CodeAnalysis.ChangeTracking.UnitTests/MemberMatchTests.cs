@@ -14,10 +14,10 @@
             var oldMember = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>();
             var newMember = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>();
 
-            var sut = new MemberMatch(oldMember, newMember);
+            var sut = new DefinitionMatch(oldMember, newMember);
 
-            sut.OldMember.Should().Be(oldMember);
-            sut.NewMember.Should().Be(newMember);
+            sut.OldDefinition.Should().Be(oldMember);
+            sut.NewDefinition.Should().Be(newMember);
         }
 
         [Fact]
@@ -27,7 +27,7 @@
             var oldMember = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>();
 
             // ReSharper disable ObjectCreationAsStatement
-            Action action = () => new MemberMatch(oldMember, null!);
+            Action action = () => new DefinitionMatch(oldMember, null!);
 
             action.Should().Throw<ArgumentException>();
         }
@@ -39,7 +39,7 @@
             var newMember = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>();
 
             // ReSharper disable ObjectCreationAsStatement
-            Action action = () => new MemberMatch(null!, newMember);
+            Action action = () => new DefinitionMatch(null!, newMember);
 
             action.Should().Throw<ArgumentException>();
         }
