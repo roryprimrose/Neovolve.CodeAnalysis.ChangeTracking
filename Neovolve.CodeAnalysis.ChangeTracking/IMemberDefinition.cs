@@ -22,5 +22,10 @@
         ///     Gets whether the member is publicly visible.
         /// </summary>
         public bool IsVisible { get; }
+
+        /// <summary>
+        ///     Gets the type that declares the member.
+        /// </summary>
+        public ITypeDefinition? DeclaringType { get; }
     }
 }

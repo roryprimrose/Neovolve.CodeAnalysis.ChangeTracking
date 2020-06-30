@@ -25,6 +25,12 @@
                 throw new ArgumentNullException(nameof(declaration));
             }
 
+            if (declaration.Parent is InterfaceDeclarationSyntax)
+            {
+                // Interfaces do not have modifiers and 
+                return true;
+            }
+
             var modifiers = declaration.Modifiers;
 
             return HasVisibleModifiers(modifiers);

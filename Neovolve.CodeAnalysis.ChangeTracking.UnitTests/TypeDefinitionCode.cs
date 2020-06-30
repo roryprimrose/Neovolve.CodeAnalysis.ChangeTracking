@@ -153,6 +153,17 @@ namespace MyNamespace
 }
 ";
 
+        public const string ClassWithProperties = @"
+namespace MyNamespace 
+{
+    public class MyClass
+    {
+        public string First { get; set; }
+        public DateTimeOffset Second { get; set; }
+    }   
+}
+";
+
         public const string ClassWithSingleAttribute = @"
 namespace MyNamespace 
 {
@@ -215,6 +226,17 @@ namespace MyNamespace
 {
     public interface MyInterface
     {
+    }   
+}
+";
+
+        public const string InterfaceWithProperties = @"
+namespace MyNamespace 
+{
+    public interface IMyInterface
+    {
+        string First { get; set; }
+        DateTimeOffset Second { get; set; }
     }   
 }
 ";

@@ -10,7 +10,7 @@
     ///     The <see cref="TypeDefinition" />
     ///     class is used to describe a type.
     /// </summary>
-    public abstract class TypeDefinition : IMemberDefinition
+    public abstract class TypeDefinition : ITypeDefinition
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="TypeDefinition" /> class.
@@ -23,7 +23,7 @@
                 throw new ArgumentNullException(nameof(node));
             }
 
-            ParentType = null;
+            DeclaringType = null;
             Namespace = node.DetermineNamespace();
             Name = DetermineName(node);
             FullName = Namespace + "." + Name;
@@ -33,6 +33,7 @@
             ImplementedTypes = DetermineImplementedTypes(node);
             GenericConstraints = Array.Empty<ConstraintListDefinition>();
             Location = node.DetermineLocation();
+            Properties = DetermineProperties(node);
             ChildClasses = DetermineChildClasses(node);
             ChildInterfaces = DetermineChildInterfaces(node);
         }
@@ -40,21 +41,22 @@
         /// <summary>
         ///     Initializes a new instance of the <see cref="TypeDefinition" /> class.
         /// </summary>
-        /// <param name="parentType">The parent type that declares this type.</param>
+        /// <param name="declaringType">The parent type that declares this type.</param>
         /// <param name="node">The syntax node that defines the type.</param>
-        protected TypeDefinition(TypeDefinition parentType, BaseTypeDeclarationSyntax node)
+        protected TypeDefinition(TypeDefinition declaringType, BaseTypeDeclarationSyntax node)
         {
-            ParentType = parentType ?? throw new ArgumentNullException(nameof(parentType));
+            DeclaringType = declaringType ?? throw new ArgumentNullException(nameof(declaringType));
 
             Namespace = node.DetermineNamespace();
             Name = DetermineName(node);
-            FullName = ParentType.FullName + "+" + Name;
+            FullName = DeclaringType.FullName + "+" + Name;
 
             Attributes = node.DetermineAttributes(this);
             IsVisible = node.IsVisible();
             ImplementedTypes = DetermineImplementedTypes(node);
             GenericConstraints = Array.Empty<ConstraintListDefinition>();
             Location = node.DetermineLocation();
+            Properties = DetermineProperties(node);
             ChildClasses = DetermineChildClasses(node);
             ChildInterfaces = DetermineChildInterfaces(node);
         }
@@ -107,35 +109,36 @@
             return childTypes.AsReadOnly();
         }
 
+        private IReadOnlyCollection<PropertyDefinition> DetermineProperties(SyntaxNode node)
+        {
+            var childNodes = node.ChildNodes().OfType<PropertyDeclarationSyntax>();
+            var childTypes = childNodes.Select(childNode => new PropertyDefinition(this, childNode)).ToList();
+
+            return childTypes.AsReadOnly();
+        }
+
         /// <inheritdoc />
         public IReadOnlyCollection<AttributeDefinition> Attributes { get; }
 
-        /// <summary>
-        ///     Gets the child classes defined on this type.
-        /// </summary>
+        /// <inheritdoc />
         public IReadOnlyCollection<TypeDefinition> ChildClasses { get; }
 
-        /// <summary>
-        ///     Gets the child interfaces defined on this type.
-        /// </summary>
+        /// <inheritdoc />
         public IReadOnlyCollection<TypeDefinition> ChildInterfaces { get; }
+
+        /// <inheritdoc />
+        public ITypeDefinition? DeclaringType { get; }
 
         /// <inheritdoc />
         public string FullName { get; }
 
-        /// <summary>
-        ///     Gets the generic constraints declared on the type.
-        /// </summary>
+        /// <inheritdoc />
         public IReadOnlyCollection<ConstraintListDefinition> GenericConstraints { get; protected set; }
 
-        /// <summary>
-        ///     Gets the types implemented/inherited by this type.
-        /// </summary>
+        /// <inheritdoc />
         public IReadOnlyCollection<string> ImplementedTypes { get; }
 
-        /// <summary>
-        ///     Gets whether the type is visible.
-        /// </summary>
+        /// <inheritdoc />
         public bool IsVisible { get; }
 
         /// <inheritdoc />
@@ -144,14 +147,10 @@
         /// <inheritdoc />
         public string Name { get; }
 
-        /// <summary>
-        ///     Gets the namespace of the type.
-        /// </summary>
+        /// <inheritdoc />
         public string Namespace { get; set; }
 
-        /// <summary>
-        ///     Gets the parent type definition where one is declared.
-        /// </summary>
-        public TypeDefinition? ParentType { get; }
+        /// <inheritdoc />
+        public IReadOnlyCollection<PropertyDefinition> Properties { get; }
     }
 }

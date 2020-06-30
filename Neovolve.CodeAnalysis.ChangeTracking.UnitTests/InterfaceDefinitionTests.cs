@@ -27,7 +27,7 @@ namespace MyNamespace
 
             sut.Name.Should().Be("MyInterface");
             sut.Namespace.Should().Be("MyNamespace");
-            sut.ParentType.Should().BeNull();
+            sut.DeclaringType.Should().BeNull();
             sut.ChildClasses.Should().BeEmpty();
         }
 

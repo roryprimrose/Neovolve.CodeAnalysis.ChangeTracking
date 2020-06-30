@@ -19,7 +19,7 @@
         /// <param name="node">The node that defines the generic type constraints.</param>
         /// <exception cref="ArgumentNullException">The <paramref name="declaringType" /> parameter is <c>null</c>.</exception>
         /// <exception cref="ArgumentNullException">The <paramref name="node" /> parameter is <c>null</c>.</exception>
-        public PropertyDefinition(IMemberDefinition declaringType, PropertyDeclarationSyntax node)
+        public PropertyDefinition(ITypeDefinition declaringType, PropertyDeclarationSyntax node)
         {
             if (node == null)
             {
@@ -83,10 +83,8 @@
         /// </summary>
         public bool CanWrite { get; }
 
-        /// <summary>
-        ///     Gets the type that declares the property.
-        /// </summary>
-        public IMemberDefinition DeclaringType { get; }
+        /// <inheritdoc />
+        public ITypeDefinition DeclaringType { get; }
 
         /// <inheritdoc />
         public string FullName { get; }

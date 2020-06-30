@@ -42,6 +42,17 @@
             action.Should().Throw<ArgumentNullException>();
         }
 
+        [Fact]
+        public async Task IsVisibleReturnsTrueForInterfaceProperty()
+        {
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(TypeDefinitionCode.InterfaceWithProperties)
+                .ConfigureAwait(false);
+
+            var actual = node.IsVisible();
+
+            actual.Should().BeTrue();
+        }
+
         [Theory]
         [InlineData("", false)]
         [InlineData("public", true)]

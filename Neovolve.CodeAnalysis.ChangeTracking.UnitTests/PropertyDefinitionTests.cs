@@ -68,7 +68,7 @@
         [Fact]
         public async Task AttributesReturnsMultipleAttributesOnMultipleLists()
         {
-            var declaringType = Substitute.For<IMemberDefinition>();
+            var declaringType = Substitute.For<ITypeDefinition>();
 
             var node = await TestNode
                 .FindNode<PropertyDeclarationSyntax>(PropertyDefinitionCode
@@ -92,7 +92,7 @@
         {
             var code = PropertyDefinitionCode.BuildPropertyAndGetAccessorWithScope(propertyScope, accessorScope);
 
-            var declaringType = Substitute.For<IMemberDefinition>();
+            var declaringType = Substitute.For<ITypeDefinition>();
 
             var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code)
                 .ConfigureAwait(false);
@@ -109,7 +109,7 @@
         {
             var code = PropertyDefinitionCode.BuildPropertyAndSetAccessorWithScope(propertyScope, accessorScope);
 
-            var declaringType = Substitute.For<IMemberDefinition>();
+            var declaringType = Substitute.For<ITypeDefinition>();
 
             var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code)
                 .ConfigureAwait(false);
@@ -122,7 +122,7 @@
         [Fact]
         public async Task DeclaringTypeReturnsParameterValue()
         {
-            var declaringType = Substitute.For<IMemberDefinition>();
+            var declaringType = Substitute.For<ITypeDefinition>();
 
             var node = await TestNode.FindNode<PropertyDeclarationSyntax>(PropertyDefinitionCode.GetSetProperty)
                 .ConfigureAwait(false);
@@ -137,7 +137,7 @@
         {
             var parentFullName = Guid.NewGuid().ToString();
 
-            var declaringType = Substitute.For<IMemberDefinition>();
+            var declaringType = Substitute.For<ITypeDefinition>();
 
             declaringType.FullName.Returns(parentFullName);
 
@@ -161,7 +161,7 @@
         {
             var code = PropertyDefinitionCode.BuildPropertyWithScope(scope);
 
-            var declaringType = Substitute.For<IMemberDefinition>();
+            var declaringType = Substitute.For<ITypeDefinition>();
 
             var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code)
                 .ConfigureAwait(false);
@@ -174,7 +174,7 @@
         [Fact]
         public async Task LocationReturnsEmptyFilePathWhenNodeLacksSourceInformation()
         {
-            var declaringType = Substitute.For<IMemberDefinition>();
+            var declaringType = Substitute.For<ITypeDefinition>();
 
             var node = await TestNode.FindNode<PropertyDeclarationSyntax>(PropertyDefinitionCode.GetSetProperty)
                 .ConfigureAwait(false);
@@ -189,7 +189,7 @@
         {
             var filePath = Guid.NewGuid().ToString();
 
-            var declaringType = Substitute.For<IMemberDefinition>();
+            var declaringType = Substitute.For<ITypeDefinition>();
 
             var node = await TestNode
                 .FindNode<PropertyDeclarationSyntax>(PropertyDefinitionCode.GetSetProperty, filePath)
@@ -206,7 +206,7 @@
         {
             var filePath = Guid.NewGuid().ToString();
 
-            var declaringType = Substitute.For<IMemberDefinition>();
+            var declaringType = Substitute.For<ITypeDefinition>();
 
             var node = await TestNode
                 .FindNode<PropertyDeclarationSyntax>(PropertyDefinitionCode.GetSetProperty, filePath)
@@ -220,7 +220,7 @@
         [Fact]
         public async Task NameReturnsPropertyName()
         {
-            var declaringType = Substitute.For<IMemberDefinition>();
+            var declaringType = Substitute.For<ITypeDefinition>();
 
             var node = await TestNode.FindNode<PropertyDeclarationSyntax>(PropertyDefinitionCode.GetSetProperty)
                 .ConfigureAwait(false);
@@ -233,7 +233,7 @@
         [Fact]
         public async Task ReturnTypeReturnsGenericPropertyType()
         {
-            var declaringType = Substitute.For<IMemberDefinition>();
+            var declaringType = Substitute.For<ITypeDefinition>();
 
             var node = await TestNode.FindNode<PropertyDeclarationSyntax>(PropertyDefinitionCode.GenericProperty)
                 .ConfigureAwait(false);
@@ -246,7 +246,7 @@
         [Fact]
         public async Task ReturnTypeReturnsPropertyType()
         {
-            var declaringType = Substitute.For<IMemberDefinition>();
+            var declaringType = Substitute.For<ITypeDefinition>();
 
             var node = await TestNode.FindNode<PropertyDeclarationSyntax>(PropertyDefinitionCode.GetSetProperty)
                 .ConfigureAwait(false);
@@ -275,86 +275,12 @@
             "The constructor is the target of the test")]
         public void ThrowsExceptionWhenCreatedWithNullNode()
         {
-            var declaringType = Substitute.For<IMemberDefinition>();
+            var declaringType = Substitute.For<ITypeDefinition>();
 
             // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new PropertyDefinition(declaringType, null!);
 
             action.Should().Throw<ArgumentNullException>();
-        }
-    }
-
-    public static class PropertyDefinitionCode
-    {
-        public const string GenericProperty = @"
-namespace MyNamespace 
-{
-    public class MyClass<T>
-    {
-        public T Value { get; set; }
-    }   
-}
-";
-
-        public const string GetSetProperty = @"
-namespace MyNamespace 
-{
-    public class MyClass
-    {
-        public string Value { get; set; }
-    }   
-}
-";
-
-        public const string PropertyWithMultipleAttributesInMultipleLists = @"
-namespace MyNamespace 
-{
-    public class MyClass
-    {
-        [First, Second(123)]
-        [Third, Fourth(true, named: ""stuff""]
-        public string Value { get; set; }
-    }   
-}
-";
-
-        public static string BuildPropertyAndGetAccessorWithScope(string propertyScope, string accessorScope)
-        {
-            return @$"
-namespace MyNamespace 
-{{
-    public class MyClass
-    {{
-        {propertyScope} string Value {{ {accessorScope} get; set; }}
-    }}  
-}}
-";
-        }
-
-        public static string BuildPropertyAndSetAccessorWithScope(string propertyScope, string accessorScope)
-        {
-            return @$"
-namespace MyNamespace 
-{{
-    public class MyClass
-    {{
-        {propertyScope} string Value {{ get; {accessorScope} set; }}
-    }}  
-}}
-";
-        }
-
-        public static string BuildPropertyWithScope(string scope)
-        {
-            return @$"
-namespace MyNamespace 
-{{
-    public class MyClass
-    {{
-        {scope} string Value {{ get; set; }}
-    }}  
-}}
-";
         }
     }
 }

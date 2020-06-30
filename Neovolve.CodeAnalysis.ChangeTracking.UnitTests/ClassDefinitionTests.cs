@@ -8,6 +8,17 @@
 
     public class ClassDefinitionTests
     {
+        private const string ClassWithFields = @"
+namespace MyNamespace 
+{
+    public class MyClass
+    {
+        public string First;
+        public DateTimeOffset Second;
+    }   
+}
+";
+
         private const string EmptyClass = @"
 namespace MyNamespace 
 {
@@ -27,8 +38,31 @@ namespace MyNamespace
 
             sut.Name.Should().Be("MyClass");
             sut.Namespace.Should().Be("MyNamespace");
-            sut.ParentType.Should().BeNull();
+            sut.DeclaringType.Should().BeNull();
             sut.ChildClasses.Should().BeEmpty();
+        }
+
+        [Fact]
+        public async Task FieldsReturnsDeclaredFields()
+        {
+            var node = await TestNode.FindNode<ClassDeclarationSyntax>(ClassWithFields)
+                .ConfigureAwait(false);
+
+            var sut = new ClassDefinition(node);
+
+            sut.Fields.Should().HaveCount(2);
+
+            var first = sut.Fields.First();
+
+            first.Name.Should().Be("First");
+            first.IsVisible.Should().BeTrue();
+            first.ReturnType.Should().Be("string");
+
+            var second = sut.Fields.Skip(1).First();
+
+            second.Name.Should().Be("Second");
+            second.IsVisible.Should().BeTrue();
+            second.ReturnType.Should().Be("DateTimeOffset");
         }
 
         [Fact]
@@ -40,7 +74,7 @@ namespace MyNamespace
             var actual = new ClassDefinition(node);
 
             actual.GenericConstraints.Should().HaveCount(1);
-            
+
             var constraintList = actual.GenericConstraints.First();
 
             constraintList.Name.Should().Be("T");
@@ -49,9 +83,21 @@ namespace MyNamespace
         }
 
         [Fact]
+        public async Task GenericConstraintsReturnsEmptyWhenNoConstraintsDeclared()
+        {
+            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithoutParent)
+                .ConfigureAwait(false);
+
+            var actual = new ClassDefinition(node);
+
+            actual.GenericConstraints.Should().BeEmpty();
+        }
+
+        [Fact]
         public async Task GenericConstraintsReturnsMultipleDeclaredConstraints()
         {
-            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithMultipleGenericConstraints)
+            var node = await TestNode
+                .FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithMultipleGenericConstraints)
                 .ConfigureAwait(false);
 
             var actual = new ClassDefinition(node);
@@ -68,17 +114,6 @@ namespace MyNamespace
 
             secondConstraintList.Name.Should().Be("TValue");
             secondConstraintList.Constraints.First().Should().Be("struct");
-        }
-
-        [Fact]
-        public async Task GenericConstraintsReturnsEmptyWhenNoConstraintsDeclared()
-        {
-            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithoutParent)
-                .ConfigureAwait(false);
-
-            var actual = new ClassDefinition(node);
-
-            actual.GenericConstraints.Should().BeEmpty();
         }
     }
 }

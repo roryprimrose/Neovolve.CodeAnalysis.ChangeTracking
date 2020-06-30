@@ -7,7 +7,7 @@
     ///     The <see cref="ArgumentDefinition" />
     ///     class describes an argument for an attribute.
     /// </summary>
-    public class ArgumentDefinition
+    public class ArgumentDefinition : IItemDefinition
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ArgumentDefinition" /> class.
@@ -21,6 +21,7 @@
                 throw new ArgumentNullException(nameof(node));
             }
 
+            Location = node.DetermineLocation();
             Value = node.Expression.ToString();
 
             if (node.NameColon == null)
@@ -40,9 +41,10 @@
         /// </summary>
         public ArgumentType ArgumentType { get; }
 
-        /// <summary>
-        ///     Gets the name of the argument.
-        /// </summary>
+        /// <inheritdoc />
+        public DefinitionLocation Location { get; }
+
+        /// <inheritdoc />
         public string Name { get; }
 
         /// <summary>

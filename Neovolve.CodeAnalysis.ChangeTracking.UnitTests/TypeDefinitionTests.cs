@@ -91,31 +91,32 @@
 
             sut.Name.Should().Be("MyGrandparentClass");
             sut.FullName.Should().Be("MyNamespace.MyGrandparentClass");
-            sut.ParentType.Should().BeNull();
+            sut.DeclaringType.Should().BeNull();
 
             var myInterface = sut.ChildInterfaces.Single();
 
             myInterface.Name.Should().Be("IMyInterface");
             myInterface.FullName.Should().Be("MyNamespace.MyGrandparentClass+IMyInterface");
-            myInterface.ParentType.Should().Be(sut);
+            myInterface.DeclaringType.Should().Be(sut);
 
             var parent = myInterface.ChildClasses.Single();
 
             parent.Name.Should().Be("MyParentClass");
             parent.FullName.Should().Be("MyNamespace.MyGrandparentClass+IMyInterface+MyParentClass");
-            parent.ParentType.Should().Be(myInterface);
+            parent.DeclaringType.Should().Be(myInterface);
 
             var myClass = parent.ChildClasses.Single();
 
             myClass.Name.Should().Be("MyClass");
             myClass.FullName.Should().Be("MyNamespace.MyGrandparentClass+IMyInterface+MyParentClass+MyClass");
-            myClass.ParentType.Should().Be(parent);
+            myClass.DeclaringType.Should().Be(parent);
 
             var myChildInterface = myClass.ChildInterfaces.Single();
 
             myChildInterface.Name.Should().Be("IChildInterface");
-            myChildInterface.FullName.Should().Be("MyNamespace.MyGrandparentClass+IMyInterface+MyParentClass+MyClass+IChildInterface");
-            myChildInterface.ParentType.Should().Be(myClass);
+            myChildInterface.FullName.Should()
+                .Be("MyNamespace.MyGrandparentClass+IMyInterface+MyParentClass+MyClass+IChildInterface");
+            myChildInterface.DeclaringType.Should().Be(myClass);
         }
 
         [Fact]
@@ -144,11 +145,11 @@
 
             firstClass.Name.Should().Be("FirstChild");
             firstClass.FullName.Should().Be("MyNamespace.MyClass+FirstChild");
-            firstClass.ParentType.Should().Be(sut);
+            firstClass.DeclaringType.Should().Be(sut);
 
             secondClass.Name.Should().Be("SecondChild");
             secondClass.FullName.Should().Be("MyNamespace.MyClass+SecondChild");
-            secondClass.ParentType.Should().Be(sut);
+            secondClass.DeclaringType.Should().Be(sut);
         }
 
         [Fact]
@@ -167,7 +168,7 @@
 
             childClass.Name.Should().Be("MyClass");
             childClass.FullName.Should().Be("MyNamespace.MyParentClass+MyClass");
-            childClass.ParentType.Should().Be(sut);
+            childClass.DeclaringType.Should().Be(sut);
         }
 
         [Fact]
@@ -185,15 +186,45 @@
 
             firstInterface.Name.Should().Be("FirstChild");
             firstInterface.FullName.Should().Be("MyNamespace.MyClass+FirstChild");
-            firstInterface.ParentType.Should().Be(sut);
+            firstInterface.DeclaringType.Should().Be(sut);
 
             secondInterface.Name.Should().Be("SecondChild");
             secondInterface.FullName.Should().Be("MyNamespace.MyClass+SecondChild");
-            secondInterface.ParentType.Should().Be(sut);
+            secondInterface.DeclaringType.Should().Be(sut);
         }
 
         [Fact]
-        public async Task FullNameReturnsNameCombinedWithParentTypeFullName()
+        public async Task DeclaringTypeReturnsDeclaringClass()
+        {
+            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassInGrandparentClass)
+                .ConfigureAwait(false);
+
+            var sut = new ClassDefinition(node);
+
+            sut.DeclaringType.Should().BeNull();
+
+            var parentClass = sut.ChildClasses.Single();
+
+            parentClass.DeclaringType.Should().Be(sut);
+
+            var childClass = parentClass.ChildClasses.Single();
+
+            childClass.DeclaringType.Should().Be(parentClass);
+        }
+
+        [Fact]
+        public async Task DeclaringTypeReturnsNullWhenNoDeclaringTypeFound()
+        {
+            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithoutParent)
+                .ConfigureAwait(false);
+
+            var sut = new ClassDefinition(node);
+
+            sut.DeclaringType.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task FullNameReturnsNameCombinedWithDeclaringTypeFullName()
         {
             var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassInGrandparentClass)
                 .ConfigureAwait(false);
@@ -373,7 +404,7 @@
         }
 
         [Fact]
-        public async Task NameReturnsNameFromInterfaceWithoutParentType()
+        public async Task NameReturnsNameFromInterfaceWithoutDeclaringType()
         {
             var node = await TestNode.FindNode<InterfaceDeclarationSyntax>(TypeDefinitionCode.InterfaceWithoutParent)
                 .ConfigureAwait(false);
@@ -425,33 +456,63 @@
         }
 
         [Fact]
-        public async Task ParentTypeReturnsNullWhenNoParentTypeFound()
+        public async Task PropertiesReturnsDeclaredPropertiesOnClass()
+        {
+            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithProperties)
+                .ConfigureAwait(false);
+
+            var sut = new ClassDefinition(node);
+
+            sut.Properties.Should().HaveCount(2);
+
+            var first = sut.Properties.First();
+
+            first.Name.Should().Be("First");
+            first.IsVisible.Should().BeTrue();
+            first.ReturnType.Should().Be("string");
+
+            var second = sut.Properties.Skip(1).First();
+
+            second.Name.Should().Be("Second");
+            second.IsVisible.Should().BeTrue();
+            second.ReturnType.Should().Be("DateTimeOffset");
+        }
+
+        [Fact]
+        public async Task PropertiesReturnsDeclaredPropertiesOnInterface()
+        {
+            var node = await TestNode.FindNode<InterfaceDeclarationSyntax>(TypeDefinitionCode.InterfaceWithProperties)
+                .ConfigureAwait(false);
+
+            var sut = new InterfaceDefinition(node);
+
+            sut.Properties.Should().HaveCount(2);
+
+            var first = sut.Properties.First();
+
+            first.Name.Should().Be("First");
+            first.IsVisible.Should().BeTrue();
+            first.ReturnType.Should().Be("string");
+
+            var second = sut.Properties.Skip(1).First();
+
+            second.Name.Should().Be("Second");
+            second.IsVisible.Should().BeTrue();
+            second.ReturnType.Should().Be("DateTimeOffset");
+        }
+
+        [Fact]
+        [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification =
+            "The constructor is the target of the test")]
+        public async Task ThrowsExceptionWhenCreatedWithNullDeclaringType()
         {
             var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithoutParent)
                 .ConfigureAwait(false);
 
-            var sut = new ClassDefinition(node);
+            // ReSharper disable once ObjectCreationAsStatement
+            Action action = () => new ClassDefinition(null!, node);
 
-            sut.ParentType.Should().BeNull();
-        }
-
-        [Fact]
-        public async Task ParentTypeReturnsParentClass()
-        {
-            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassInGrandparentClass)
-                .ConfigureAwait(false);
-
-            var sut = new ClassDefinition(node);
-
-            sut.ParentType.Should().BeNull();
-
-            var parentClass = sut.ChildClasses.Single();
-
-            parentClass.ParentType.Should().Be(sut);
-
-            var childClass = parentClass.ChildClasses.Single();
-
-            childClass.ParentType.Should().Be(parentClass);
+            action.Should().Throw<ArgumentNullException>();
         }
 
         [Fact]
@@ -468,7 +529,7 @@
         [Fact]
         [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification =
             "The constructor is the target of the test")]
-        public async Task ThrowsExceptionWhenCreatedWithNullNodeWithParentType()
+        public async Task ThrowsExceptionWhenCreatedWithNullNodeWithDeclaringType()
         {
             var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithoutParent)
                 .ConfigureAwait(false);
@@ -477,20 +538,6 @@
 
             // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new ClassDefinition(parentType, null!);
-
-            action.Should().Throw<ArgumentNullException>();
-        }
-
-        [Fact]
-        [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification =
-            "The constructor is the target of the test")]
-        public async Task ThrowsExceptionWhenCreatedWithNullParentType()
-        {
-            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithoutParent)
-                .ConfigureAwait(false);
-
-            // ReSharper disable once ObjectCreationAsStatement
-            Action action = () => new ClassDefinition(null!, node);
 
             action.Should().Throw<ArgumentNullException>();
         }
