@@ -6,7 +6,7 @@
     ///     The <see cref="ITypeDefinition" />
     ///     interface defines common properties for types.
     /// </summary>
-    public interface ITypeDefinition : IMemberDefinition
+    public interface ITypeDefinition : IElementDefinition
     {
         /// <summary>
         ///     Gets the child classes defined on this type.

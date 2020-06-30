@@ -52,9 +52,7 @@
         /// <inheritdoc />
         public string Name { get; }
 
-        /// <summary>
-        ///     Gets the return type of the member.
-        /// </summary>
+        /// <inheritdoc />
         public string ReturnType { get; }
     }
 }

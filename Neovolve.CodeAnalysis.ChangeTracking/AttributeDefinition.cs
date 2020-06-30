@@ -17,7 +17,7 @@
         /// <param name="node">The node that describes the attribute.</param>
         /// <exception cref="ArgumentNullException">The <paramref name="declaringItem" /> parameter is <c>null</c>.</exception>
         /// <exception cref="ArgumentNullException">The <paramref name="node" /> parameter is <c>null</c>.</exception>
-        public AttributeDefinition(IMemberDefinition declaringItem, AttributeSyntax node)
+        public AttributeDefinition(IElementDefinition declaringItem, AttributeSyntax node)
         {
             DeclaredOn = declaringItem ?? throw new ArgumentNullException(nameof(declaringItem));
 
@@ -60,7 +60,7 @@
         /// <summary>
         ///     Gets the item that declares the attribute.
         /// </summary>
-        public IMemberDefinition DeclaredOn { get; }
+        public IElementDefinition DeclaredOn { get; }
 
         /// <inheritdoc />
         public DefinitionLocation Location { get; }
