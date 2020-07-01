@@ -4,16 +4,16 @@
 
     public class ComparisonResult
     {
-        private ComparisonResult(SemVerChangeType changeType, IItemDefinition? oldDefinition, IItemDefinition? newDefinition,
+        private ComparisonResult(SemVerChangeType changeType, IItemDefinition? oldItem, IItemDefinition? newItem,
             string message)
         {
             ChangeType = changeType;
-            OldDefinition = oldDefinition;
-            NewDefinition = newDefinition;
+            OldItem = oldItem;
+            NewItem = newItem;
             Message = message;
         }
 
-        public static ComparisonResult DefinitionAdded(IElementDefinition newDefinition)
+        public static ComparisonResult ItemAdded(IElementDefinition newDefinition)
         {
             newDefinition = newDefinition ?? throw new ArgumentNullException(nameof(newDefinition));
 
@@ -29,7 +29,7 @@
             return new ComparisonResult(changeType, null, newDefinition, message);
         }
 
-        public static ComparisonResult DefinitionChanged<T>(SemVerChangeType changeType, ItemMatch<T> match,
+        public static ComparisonResult ItemChanged<T>(SemVerChangeType changeType, ItemMatch<T> match,
             string message) where T : class, IItemDefinition
         {
             changeType = changeType == SemVerChangeType.None
@@ -42,7 +42,7 @@
             return new ComparisonResult(changeType, match.OldItem, match.NewItem, message);
         }
 
-        public static ComparisonResult DefinitionRemoved(IElementDefinition oldDefinition)
+        public static ComparisonResult ItemRemoved(IElementDefinition oldDefinition)
         {
             oldDefinition = oldDefinition ?? throw new ArgumentNullException(nameof(oldDefinition));
 
@@ -71,8 +71,8 @@
 
         public string Message { get; }
 
-        public IItemDefinition? NewDefinition { get; }
+        public IItemDefinition? NewItem { get; }
 
-        public IItemDefinition? OldDefinition { get; }
+        public IItemDefinition? OldItem { get; }
     }
 }

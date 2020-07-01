@@ -23,10 +23,10 @@
             params object[] args)
         {
             var changeType = (SemVerChangeType) executeStrategy.Create(typeof(SemVerChangeType));
-            var match = (DefinitionMatch) executeStrategy.Create(typeof(DefinitionMatch));
+            var match = (ItemMatch<TypeDefinition>) executeStrategy.Create(typeof(ItemMatch<TypeDefinition>));
             var message = "Some kind of change " + Guid.NewGuid();
 
-            return ComparisonResult.MemberChanged(changeType, match, message);
+            return ComparisonResult.ItemChanged(changeType, match, message);
         }
 
         protected override object PopulateInstance(IExecuteStrategy executeStrategy, object instance)

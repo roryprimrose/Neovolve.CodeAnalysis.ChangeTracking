@@ -11,23 +11,21 @@
 
     public static class ChangeCalculatorExtensions
     {
-        public static ChangeCalculatorResult CalculateChanges(this IChangeCalculator calculator,
-            IEnumerable<SyntaxNode> oldNodes,
-            IEnumerable<SyntaxNode> newNodes)
+        public static Task<ChangeCalculatorResult> CalculateChanges(
+            this IChangeCalculator calculator,
+            IEnumerable<CodeSource> oldCode,
+            IEnumerable<CodeSource> newCode,
+            CancellationToken cancellationToken)
         {
-            Ensure.Any.IsNotNull(calculator, nameof(calculator));
-            Ensure.Any.IsNotNull(oldNodes, nameof(oldNodes));
-            Ensure.Any.IsNotNull(newNodes, nameof(newNodes));
-
-            var oldTypes = ResolveDeclaredTypes(oldNodes);
-            var newTypes = ResolveDeclaredTypes(newNodes);
-
-            return calculator.CalculateChanges(oldTypes, newTypes);
+            return CalculateChanges(calculator, oldCode, newCode, ComparerOptions.Default, cancellationToken);
         }
 
-        public static async Task<ChangeCalculatorResult> CalculateChanges(this IChangeCalculator calculator,
+        public static async Task<ChangeCalculatorResult> CalculateChanges(
+            this IChangeCalculator calculator,
             IEnumerable<CodeSource> oldCode,
-            IEnumerable<CodeSource> newCode, CancellationToken cancellationToken)
+            IEnumerable<CodeSource> newCode,
+            ComparerOptions options,
+            CancellationToken cancellationToken)
         {
             Ensure.Any.IsNotNull(calculator, nameof(calculator));
             Ensure.Any.IsNotNull(oldCode, nameof(oldCode));
@@ -42,10 +40,38 @@
             var oldNodes = oldTask.Result;
             var newNodes = newTask.Result;
 
-            return calculator.CalculateChanges(oldNodes, newNodes);
+            return CalculateChanges(calculator, oldNodes, newNodes, options);
         }
 
-        private static async Task<IEnumerable<SyntaxNode>> ParseCode(IEnumerable<CodeSource> sources,
+        public static ChangeCalculatorResult CalculateChanges(
+            this IChangeCalculator calculator,
+            IEnumerable<SyntaxNode> oldNodes,
+            IEnumerable<SyntaxNode> newNodes)
+        {
+            var options = ComparerOptions.Default;
+
+            return CalculateChanges(calculator, oldNodes, newNodes, options);
+        }
+
+        public static ChangeCalculatorResult CalculateChanges(
+            this IChangeCalculator calculator,
+            IEnumerable<SyntaxNode> oldNodes,
+            IEnumerable<SyntaxNode> newNodes,
+            ComparerOptions options)
+        {
+            Ensure.Any.IsNotNull(calculator, nameof(calculator));
+            Ensure.Any.IsNotNull(oldNodes, nameof(oldNodes));
+            Ensure.Any.IsNotNull(newNodes, nameof(newNodes));
+            Ensure.Any.IsNotNull(options, nameof(options));
+
+            var oldTypes = ResolveDeclaredTypes(oldNodes);
+            var newTypes = ResolveDeclaredTypes(newNodes);
+
+            return calculator.CalculateChanges(oldTypes, newTypes, options);
+        }
+
+        private static async Task<IEnumerable<SyntaxNode>> ParseCode(
+            IEnumerable<CodeSource> sources,
             CancellationToken cancellationToken)
         {
             var syntaxTrees = sources.Select(x => CSharpSyntaxTree.ParseText(x.Contents, null, x.FilePath));
@@ -56,7 +82,7 @@
             return tasks.Select(x => x.Result);
         }
 
-        private static IList<ITypeDefinition> ResolveDeclaredTypes(IEnumerable<SyntaxNode> nodes)
+        private static IEnumerable<ITypeDefinition> ResolveDeclaredTypes(IEnumerable<SyntaxNode> nodes)
         {
             var resolvedTypes = new List<ITypeDefinition>();
 

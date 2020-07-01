@@ -36,6 +36,7 @@
             Properties = DetermineProperties(node);
             ChildClasses = DetermineChildClasses(node);
             ChildInterfaces = DetermineChildInterfaces(node);
+            ChildTypes = DetermineChildTypes(ChildClasses, ChildInterfaces);
         }
 
         /// <summary>
@@ -59,6 +60,18 @@
             Properties = DetermineProperties(node);
             ChildClasses = DetermineChildClasses(node);
             ChildInterfaces = DetermineChildInterfaces(node);
+            ChildTypes = DetermineChildTypes(ChildClasses, ChildInterfaces);
+        }
+
+        private static IReadOnlyCollection<ITypeDefinition> DetermineChildTypes(
+            IReadOnlyCollection<ITypeDefinition> childClasses,
+            IReadOnlyCollection<ITypeDefinition> childInterfaces)
+        {
+            var childTypes = new List<ITypeDefinition>(childClasses);
+
+            childTypes.AddRange(childInterfaces);
+
+            return childTypes;
         }
 
         private static IReadOnlyCollection<string> DetermineImplementedTypes(BaseTypeDeclarationSyntax node)
@@ -121,10 +134,13 @@
         public IReadOnlyCollection<AttributeDefinition> Attributes { get; }
 
         /// <inheritdoc />
-        public IReadOnlyCollection<TypeDefinition> ChildClasses { get; }
+        public IReadOnlyCollection<ITypeDefinition> ChildClasses { get; }
 
         /// <inheritdoc />
-        public IReadOnlyCollection<TypeDefinition> ChildInterfaces { get; }
+        public IReadOnlyCollection<ITypeDefinition> ChildInterfaces { get; }
+
+        /// <inheritdoc />
+        public IReadOnlyCollection<ITypeDefinition> ChildTypes { get; }
 
         /// <inheritdoc />
         public ITypeDefinition? DeclaringType { get; }

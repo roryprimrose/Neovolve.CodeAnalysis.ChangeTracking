@@ -31,7 +31,7 @@
 
             var result = new ChangeCalculatorResult();
 
-            var changes = CalculateTypeChanges(oldTypes.FastToList(), newTypes.FastToList(), options);
+            var changes = CalculateChanges(oldTypes.ToList(), newTypes.ToList(), options);
 
             foreach (var change in changes)
             {
@@ -44,41 +44,41 @@
             return result;
         }
 
-        private IEnumerable<ComparisonResult> CalculateTypeChanges(ICollection<ITypeDefinition> oldTypes,
-            ICollection<ITypeDefinition> newTypes, ComparerOptions options)
+        private IEnumerable<ComparisonResult> CalculateChanges(IReadOnlyCollection<ITypeDefinition> oldTypes,
+            IReadOnlyCollection<ITypeDefinition> newTypes, ComparerOptions options)
         {
             var oldClasses = oldTypes.OfType<ClassDefinition>();
             var newClasses = newTypes.OfType<ClassDefinition>();
 
-            var classChanges = CalculateTypeChanges(oldClasses, newClasses,
-                (oldItem, newItem) => oldItem.FullName.Equals(newItem.FullName, StringComparison.Ordinal), options);
+            var classChanges = CalculateChangesByType(oldClasses, newClasses, options);
 
             var oldInterfaces = oldTypes.OfType<InterfaceDefinition>();
             var newInterfaces = newTypes.OfType<InterfaceDefinition>();
 
-            var interfaceChanges = CalculateTypeChanges(oldInterfaces, newInterfaces,
-                (oldItem, newItem) => oldItem.FullName.Equals(newItem.FullName, StringComparison.Ordinal), options);
+            var interfaceChanges = CalculateChangesByType(oldInterfaces, newInterfaces, options);
 
             return classChanges.Concat(interfaceChanges);
         }
 
-        private IEnumerable<ComparisonResult> CalculateTypeChanges(IEnumerable<ITypeDefinition> oldTypes,
-            IEnumerable<ITypeDefinition> newTypes, Func<ITypeDefinition, ITypeDefinition, bool> evaluator, ComparerOptions options)
+        private IEnumerable<ComparisonResult> CalculateChangesByType(IEnumerable<ITypeDefinition> oldTypes,
+            IEnumerable<ITypeDefinition> newTypes, ComparerOptions options)
         {
-            var matchingNodes = _evaluator.MatchItems(oldTypes, newTypes, evaluator);
+            var matchingNodes = _evaluator.MatchItems(oldTypes, newTypes, TypeEvaluator);
 
-            // Record any public members that have been added
+            // Record any visible types that have been added
+            // Types added which are not publicly visible are ignored
             foreach (var memberAdded in matchingNodes.DefinitionsAdded.Where(x => x.IsVisible))
             {
-                var memberRemovedResult = ComparisonResult.DefinitionAdded(memberAdded);
+                var memberRemovedResult = ComparisonResult.ItemAdded(memberAdded);
 
                 yield return memberRemovedResult;
             }
 
-            // Record any public members that have been removed
+            // Record any visible types that have been removed
+            // Types removed which are not publicly visible are ignored
             foreach (var memberRemoved in matchingNodes.DefinitionsRemoved.Where(x => x.IsVisible))
             {
-                var memberRemovedResult = ComparisonResult.DefinitionRemoved(memberRemoved);
+                var memberRemovedResult = ComparisonResult.ItemRemoved(memberRemoved);
 
                 yield return memberRemovedResult;
             }
@@ -86,22 +86,48 @@
             // Check all the matches for a breaking change or feature added
             foreach (var match in matchingNodes.Matches)
             {
-                var results = _comparer.CompareTypes(match, options);
+                var comparisonResults = CompareMatchingItems(match, options);
 
-                foreach (var result in results)
+                foreach (var result in comparisonResults)
                 {
-                    if (result.ChangeType == SemVerChangeType.None)
-                    {
-                        _logger?.LogDebug(result.Message);
-
-                        // Don't add comparison results to the outcome where it looks like there is no change
-                        continue;
-                    }
-
-                    _logger?.LogInformation(result.Message);
-
                     yield return result;
                 }
+            }
+        }
+
+        private static bool TypeEvaluator(ITypeDefinition oldItem, ITypeDefinition newItem)
+        {
+            return oldItem.FullName.Equals(newItem.FullName, StringComparison.Ordinal);
+        }
+
+        private IEnumerable<ComparisonResult> CompareMatchingItems(ItemMatch<ITypeDefinition> match, ComparerOptions options)
+        {
+            var results = _comparer.CompareTypes(match, options);
+
+            foreach (var result in results)
+            {
+                if (result.ChangeType == SemVerChangeType.None)
+                {
+                    _logger?.LogDebug(result.Message);
+
+                    // Don't add comparison results to the outcome where it looks like there is no change
+                    continue;
+                }
+
+                _logger?.LogInformation(result.Message);
+
+                yield return result;
+            }
+
+            // Recurse down into the child types
+            var oldChildTypes = match.OldItem.ChildTypes;
+            var newChildTypes = match.NewItem.ChildTypes;
+
+            var childResults = CalculateChangesByType(oldChildTypes, newChildTypes, options);
+
+            foreach (var result in childResults)
+            {
+                yield return result;
             }
         }
     }

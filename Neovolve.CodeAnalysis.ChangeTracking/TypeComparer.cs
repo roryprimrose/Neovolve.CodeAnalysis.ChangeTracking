@@ -11,7 +11,7 @@
             Ensure.Any.IsNotNull(match, nameof(match));
             Ensure.Any.IsNotNull(options, nameof(options));
             
-            if (string.Equals(match.OldItem.Name, match.NewItem.Name, StringComparison.Ordinal) == false)
+            if (string.Equals(match.OldItem.FullName, match.NewItem.FullName, StringComparison.Ordinal) == false)
             {
                 throw new InvalidOperationException(
                     "The two members cannot be compared because they have different Name values.");
@@ -20,17 +20,17 @@
             if (match.OldItem.IsVisible == false
                 && match.NewItem.IsVisible == false)
             {
-                // It doesn't matter if there is a change to the return type, the member isn't visible anyway
+                // It doesn't matter if there is a change to the type because it isn't visible anyway
                 yield return ComparisonResult.NoChange(match);
             }
 
             if (match.OldItem.IsVisible
                 && match.NewItem.IsVisible == false)
             {
-                // The member was public but isn't now, breaking change
+                // The member was visible but isn't now, breaking change
                 var message = match.OldItem + " changed scope from public";
 
-                yield return ComparisonResult.DefinitionChanged(SemVerChangeType.Breaking, match,
+                yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match,
                     message);
             }
 
@@ -41,11 +41,18 @@
                 // This is a feature because the public API didn't break even if the return type has changed
                 var message = match.OldItem + " changed scope to public";
 
-                yield return ComparisonResult.DefinitionChanged(SemVerChangeType.Feature, match,
+                yield return ComparisonResult.ItemChanged(SemVerChangeType.Feature, match,
                     message);
             }
 
-            // Compare attributes, fields, properties, child classes and child interfaces
+            // Compare the following:
+            // static keyword
+            // generic type definitions
+            // implemented types
+            // generic constraints
+            // attributes
+            // fields
+            // properties
 
             yield return ComparisonResult.NoChange(match);
         }

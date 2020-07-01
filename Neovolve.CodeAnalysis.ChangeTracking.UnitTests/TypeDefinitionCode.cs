@@ -273,6 +273,30 @@ namespace MyNamespace
 }
 ";
 
+        public const string MultipleChildTypes = @"
+namespace MyNamespace 
+{
+    public class MyClass
+    {
+        public class FirstClass
+        {
+        }
+
+        public class SecondClass
+        {
+        }
+
+        public interface FirstInterface
+        {
+        }
+
+        public interface SecondInterface
+        {
+        }
+    }    
+}
+";
+
         public static string BuildClassWithScope(string scope)
         {
             return @$"

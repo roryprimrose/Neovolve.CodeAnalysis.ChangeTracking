@@ -1,9 +1,9 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking
 {
+    using System.Collections.Generic;
+
     public interface IMemberComparer
     {
-        ComparisonResult Compare(DefinitionMatch match);
-
-        bool IsSupported(OldMemberDefinition member);
+        IEnumerable<ComparisonResult> CompareTypes(ItemMatch<IMemberDefinition> match, ComparerOptions options);
     }
 }

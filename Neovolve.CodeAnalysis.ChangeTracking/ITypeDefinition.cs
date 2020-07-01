@@ -11,12 +11,18 @@
         /// <summary>
         ///     Gets the child classes defined on this type.
         /// </summary>
-        public IReadOnlyCollection<TypeDefinition> ChildClasses { get; }
+        public IReadOnlyCollection<ITypeDefinition> ChildClasses { get; }
 
         /// <summary>
         ///     Gets the child interfaces defined on this type.
         /// </summary>
-        public IReadOnlyCollection<TypeDefinition> ChildInterfaces { get; }
+        public IReadOnlyCollection<ITypeDefinition> ChildInterfaces { get; }
+
+        /// <summary>
+        ///     Gets the child types defined on this type.
+        /// </summary>
+        /// <remarks>This should be a combination of child classes and child interfaces.</remarks>
+        public IReadOnlyCollection<ITypeDefinition> ChildTypes { get; }
 
         /// <summary>
         ///     Gets the generic constraints declared on the type.

@@ -114,8 +114,8 @@
             var myChildInterface = myClass.ChildInterfaces.Single();
 
             myChildInterface.Name.Should().Be("IChildInterface");
-            myChildInterface.FullName.Should()
-                .Be("MyNamespace.MyGrandparentClass+IMyInterface+MyParentClass+MyClass+IChildInterface");
+            myChildInterface.FullName.Should().Be(
+                "MyNamespace.MyGrandparentClass+IMyInterface+MyParentClass+MyClass+IChildInterface");
             myChildInterface.DeclaringType.Should().Be(myClass);
         }
 
@@ -191,6 +191,20 @@
             secondInterface.Name.Should().Be("SecondChild");
             secondInterface.FullName.Should().Be("MyNamespace.MyClass+SecondChild");
             secondInterface.DeclaringType.Should().Be(sut);
+        }
+
+        [Fact]
+        public async Task ChildTypesReturnsMultipleTypeDefinitions()
+        {
+            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.MultipleChildTypes)
+                .ConfigureAwait(false);
+
+            var sut = new ClassDefinition(node);
+
+            sut.ChildClasses.Should().HaveCount(4);
+
+            sut.ChildClasses.OfType<ClassDefinition>().Should().HaveCount(2);
+            sut.ChildClasses.OfType<InterfaceDefinition>().Should().HaveCount(2);
         }
 
         [Fact]
@@ -304,8 +318,7 @@
         {
             var code = TypeDefinitionCode.BuildClassWithScope(scope);
 
-            var node = await TestNode.FindNode<ClassDeclarationSyntax>(code)
-                .ConfigureAwait(false);
+            var node = await TestNode.FindNode<ClassDeclarationSyntax>(code).ConfigureAwait(false);
 
             var sut = new ClassDefinition(node);
 
@@ -502,8 +515,10 @@
         }
 
         [Fact]
-        [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification =
-            "The constructor is the target of the test")]
+        [SuppressMessage(
+            "Usage",
+            "CA1806:Do not ignore method results",
+            Justification = "The constructor is the target of the test")]
         public async Task ThrowsExceptionWhenCreatedWithNullDeclaringType()
         {
             var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithoutParent)
@@ -516,8 +531,10 @@
         }
 
         [Fact]
-        [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification =
-            "The constructor is the target of the test")]
+        [SuppressMessage(
+            "Usage",
+            "CA1806:Do not ignore method results",
+            Justification = "The constructor is the target of the test")]
         public void ThrowsExceptionWhenCreatedWithNullNode()
         {
             // ReSharper disable once ObjectCreationAsStatement
@@ -527,8 +544,10 @@
         }
 
         [Fact]
-        [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification =
-            "The constructor is the target of the test")]
+        [SuppressMessage(
+            "Usage",
+            "CA1806:Do not ignore method results",
+            Justification = "The constructor is the target of the test")]
         public async Task ThrowsExceptionWhenCreatedWithNullNodeWithDeclaringType()
         {
             var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithoutParent)
