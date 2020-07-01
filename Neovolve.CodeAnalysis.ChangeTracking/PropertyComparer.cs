@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using EnsureThat;
+    using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
     public class PropertyComparer : IPropertyComparer
     {

@@ -5,6 +5,7 @@
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
+    using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
     /// <summary>
     ///     The <see cref="NodeExtensions" />
@@ -18,7 +19,7 @@
         /// <param name="node">The node to evaluate.</param>
         /// <param name="declaringItem">The item that is declaring the attributes.</param>
         /// <returns>Returns the set of attributes declared on the node.</returns>
-        public static IReadOnlyCollection<AttributeDefinition> DetermineAttributes(this MemberDeclarationSyntax node,
+        public static IReadOnlyCollection<IAttributeDefinition> DetermineAttributes(this MemberDeclarationSyntax node,
             IElementDefinition declaringItem)
         {
             if (node == null)
@@ -31,7 +32,7 @@
                 throw new ArgumentNullException(nameof(declaringItem));
             }
 
-            var definitions = new List<AttributeDefinition>();
+            var definitions = new List<IAttributeDefinition>();
 
             foreach (var list in node.AttributeLists)
             {

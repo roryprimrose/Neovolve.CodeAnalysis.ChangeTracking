@@ -7,119 +7,15 @@
     using System.Threading.Tasks;
     using FluentAssertions;
     using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
     using ModelBuilder;
+    using Neovolve.CodeAnalysis.ChangeTracking.Models;
     using NSubstitute;
     using Xunit;
 
     public class ChangeCalculatorExtensionTests
     {
         [Fact]
-        public void CalculateChangesForSyntaxNodesReturnsCalculatorResult()
-        {
-            throw new NotImplementedException();
-        }
-
-        [Fact]
-        public async Task CalculateChangesReturnsCalculatorResult()
-        {
-            var oldCode = new List<CodeSource>
-            {
-                new CodeSource(TestNode.ClassProperty)
-            };
-            var newCode = new List<CodeSource>
-            {
-                new CodeSource(TestNode.Field)
-            };
-            var expected = Model.UsingModule<ConfigurationModule>().Create<ChangeCalculatorResult>();
-
-            var calculator = Substitute.For<IChangeCalculator>();
-
-            calculator.CalculateChanges(
-                    Arg.Is<IEnumerable<SyntaxNode>>(
-                        x => TestNode.FindNode<PropertyDeclarationSyntax>(x.First()) != null),
-                    Arg.Is<IEnumerable<SyntaxNode>>(x => TestNode.FindNode<FieldDeclarationSyntax>(x.First()) != null))
-                .Returns(expected);
-
-            var actual = await calculator
-                .CalculateChanges(oldCode, newCode, CancellationToken.None)
-                .ConfigureAwait(false);
-
-            actual.Should().Be(expected);
-        }
-
-        [Fact]
-        public async Task CalculateChangesReturnsCalculatorResultFromMultipleNodes()
-        {
-            var oldCode = new List<CodeSource>
-            {
-                new CodeSource(TestNode.ClassProperty),
-                new CodeSource(TestNode.Field)
-            };
-            var newCode = new List<CodeSource>
-            {
-                new CodeSource(TestNode.Field),
-                new CodeSource(TestNode.ClassProperty)
-            };
-            var expected = Model.UsingModule<ConfigurationModule>().Create<ChangeCalculatorResult>();
-
-            var calculator = Substitute.For<IChangeCalculator>();
-
-            calculator.CalculateChanges(
-                    Arg.Any<IEnumerable<SyntaxNode>>(),
-                    Arg.Any<IEnumerable<SyntaxNode>>())
-                .Returns(expected);
-
-            var actual = await calculator
-                .CalculateChanges(oldCode, newCode, CancellationToken.None)
-                .ConfigureAwait(false);
-
-            actual.Should().Be(expected);
-        }
-
-        [Fact]
-        public async Task CalculateChangesReturnsCalculatorResultWithoutCancellationToken()
-        {
-            var oldCode = new List<CodeSource>
-            {
-                new CodeSource(TestNode.ClassProperty)
-            };
-            var newCode = new List<CodeSource>
-            {
-                new CodeSource(TestNode.Field)
-            };
-            var expected = Model.UsingModule<ConfigurationModule>().Create<ChangeCalculatorResult>();
-
-            var calculator = Substitute.For<IChangeCalculator>();
-
-            calculator.CalculateChanges(
-                    Arg.Is<IEnumerable<SyntaxNode>>(
-                        x => TestNode.FindNode<PropertyDeclarationSyntax>(x.First()) != null),
-                    Arg.Is<IEnumerable<SyntaxNode>>(x => TestNode.FindNode<FieldDeclarationSyntax>(x.First()) != null))
-                .Returns(expected);
-
-            var actual = await calculator
-                .CalculateChanges(oldCode, newCode, CancellationToken.None)
-                .ConfigureAwait(false);
-
-            actual.Should().Be(expected);
-        }
-
-        [Fact]
-        public void CalculateChangesThrowsExceptionWithNullCalculator()
-        {
-            var oldCode = Model.UsingModule<ConfigurationModule>().Create<List<CodeSource>>();
-            var newCode = Model.UsingModule<ConfigurationModule>().Create<List<CodeSource>>();
-
-            Func<Task> action = async () => await ChangeCalculatorExtensions
-                .CalculateChanges(null!, oldCode, newCode, CancellationToken.None)
-                .ConfigureAwait(false);
-
-            action.Should().Throw<ArgumentNullException>();
-        }
-
-        [Fact]
-        public void CalculateChangesThrowsExceptionWithNullNewCode()
+        public void CalculateChangesThrowsExceptionWithNullNewCodeSource()
         {
             var calculator = Substitute.For<IChangeCalculator>();
             var oldCode = Model.UsingModule<ConfigurationModule>().Create<List<CodeSource>>();
@@ -131,13 +27,239 @@
         }
 
         [Fact]
-        public void CalculateChangesThrowsExceptionWithNullOldCode()
+        public void CalculateChangesThrowsExceptionWithNullOldCodeSource()
         {
             var calculator = Substitute.For<IChangeCalculator>();
             var newCode = Model.UsingModule<ConfigurationModule>().Create<List<CodeSource>>();
 
             Func<Task> action = async () => await calculator.CalculateChanges(null!, newCode, CancellationToken.None)
                 .ConfigureAwait(false);
+
+            action.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
+        public async Task CalculateChangesWithCodeSourceReturnsResultsForMultipleDefinitions()
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new CodeSource(TestNode.MultipleClasses)
+            };
+            var newCode = new List<CodeSource>
+            {
+                new CodeSource(TestNode.MultipleInterfaces)
+            };
+            var options = new ComparerOptions();
+            var expected = new ChangeCalculatorResult();
+
+            var calculator = Substitute.For<IChangeCalculator>();
+
+            calculator.CalculateChanges(
+                Arg.Is<IEnumerable<ITypeDefinition>>(x => x.OfType<ClassDefinition>().Count() == 2),
+                Arg.Is<IEnumerable<ITypeDefinition>>(x => x.OfType<InterfaceDefinition>().Count() == 2),
+                options).Returns(expected);
+
+            var actual = await calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            actual.Should().Be(expected);
+        }
+
+        [Fact]
+        public async Task CalculateChangesWithCodeSourceReturnsResultsUsingDefaultOptions()
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new CodeSource(TestNode.ClassProperty)
+            };
+            var newCode = new List<CodeSource>
+            {
+                new CodeSource(TestNode.Field)
+            };
+            var expected = new ChangeCalculatorResult();
+
+            var calculator = Substitute.For<IChangeCalculator>();
+
+            calculator.CalculateChanges(
+                Arg.Is<IEnumerable<ITypeDefinition>>(x => x.OfType<ClassDefinition>().First().Fields.Count == 0),
+                Arg.Is<IEnumerable<ITypeDefinition>>(x => x.OfType<ClassDefinition>().First().Fields.Count == 1),
+                Arg.Is<ComparerOptions>(x => x == ComparerOptions.Default)).Returns(expected);
+
+            var actual = await calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            actual.Should().Be(expected);
+        }
+
+        [Fact]
+        public async Task CalculateChangesWithCodeSourceReturnsResultsUsingProvidedOptions()
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new CodeSource(TestNode.ClassProperty)
+            };
+            var newCode = new List<CodeSource>
+            {
+                new CodeSource(TestNode.Field)
+            };
+            var options = new ComparerOptions();
+            var expected = new ChangeCalculatorResult();
+
+            var calculator = Substitute.For<IChangeCalculator>();
+
+            calculator.CalculateChanges(
+                Arg.Is<IEnumerable<ITypeDefinition>>(x => x.OfType<ClassDefinition>().First().Fields.Count == 0),
+                Arg.Is<IEnumerable<ITypeDefinition>>(x => x.OfType<ClassDefinition>().First().Fields.Count == 1),
+                options).Returns(expected);
+
+            var actual = await calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            actual.Should().Be(expected);
+        }
+
+        [Fact]
+        public void CalculateChangesWithCodeSourceThrowsExceptionWithNullCalculator()
+        {
+            var oldCode = Model.UsingModule<ConfigurationModule>().Create<List<CodeSource>>();
+            var newCode = Model.UsingModule<ConfigurationModule>().Create<List<CodeSource>>();
+
+            Func<Task> action = async () => await ChangeCalculatorExtensions
+                .CalculateChanges(null!, oldCode, newCode, CancellationToken.None).ConfigureAwait(false);
+
+            action.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
+        public async Task CalculateChangesWithSyntaxNodesReturnsResultsForMultipleDefinitions()
+        {
+            var oldNode = await TestNode.Parse(TestNode.MultipleClasses).ConfigureAwait(false);
+            var oldNodes = new List<SyntaxNode>
+            {
+                oldNode
+            };
+            var newNode = await TestNode.Parse(TestNode.MultipleInterfaces).ConfigureAwait(false);
+            var newNodes = new List<SyntaxNode>
+            {
+                newNode
+            };
+            var options = new ComparerOptions();
+            var expected = new ChangeCalculatorResult();
+
+            var calculator = Substitute.For<IChangeCalculator>();
+
+            calculator.CalculateChanges(
+                Arg.Is<IEnumerable<ITypeDefinition>>(x => x.OfType<ClassDefinition>().Count() == 2),
+                Arg.Is<IEnumerable<ITypeDefinition>>(x => x.OfType<InterfaceDefinition>().Count() == 2),
+                options).Returns(expected);
+
+            var actual = calculator.CalculateChanges(oldNodes, newNodes, options);
+
+            actual.Should().Be(expected);
+        }
+
+        [Fact]
+        public async Task CalculateChangesWithSyntaxNodesReturnsResultsUsingDefaultOptions()
+        {
+            var oldNode = await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false);
+            var oldNodes = new List<SyntaxNode>
+            {
+                oldNode
+            };
+            var newNode = await TestNode.Parse(TestNode.Field).ConfigureAwait(false);
+            var newNodes = new List<SyntaxNode>
+            {
+                newNode
+            };
+            var expected = new ChangeCalculatorResult();
+
+            var calculator = Substitute.For<IChangeCalculator>();
+
+            calculator.CalculateChanges(
+                Arg.Is<IEnumerable<ITypeDefinition>>(x => x.OfType<ClassDefinition>().First().Fields.Count == 0),
+                Arg.Is<IEnumerable<ITypeDefinition>>(x => x.OfType<ClassDefinition>().First().Fields.Count == 1),
+                Arg.Is<ComparerOptions>(x => x == ComparerOptions.Default)).Returns(expected);
+
+            var actual = calculator.CalculateChanges(oldNodes, newNodes);
+
+            actual.Should().Be(expected);
+        }
+
+        [Fact]
+        public async Task CalculateChangesWithSyntaxNodesReturnsResultsUsingProvidedOptions()
+        {
+            var oldNode = await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false);
+            var oldNodes = new List<SyntaxNode>
+            {
+                oldNode
+            };
+            var newNode = await TestNode.Parse(TestNode.Field).ConfigureAwait(false);
+            var newNodes = new List<SyntaxNode>
+            {
+                newNode
+            };
+            var options = new ComparerOptions();
+            var expected = new ChangeCalculatorResult();
+
+            var calculator = Substitute.For<IChangeCalculator>();
+
+            calculator.CalculateChanges(
+                Arg.Is<IEnumerable<ITypeDefinition>>(x => x.OfType<ClassDefinition>().First().Fields.Count == 0),
+                Arg.Is<IEnumerable<ITypeDefinition>>(x => x.OfType<ClassDefinition>().First().Fields.Count == 1),
+                options).Returns(expected);
+
+            var actual = calculator.CalculateChanges(oldNodes, newNodes, options);
+
+            actual.Should().Be(expected);
+        }
+
+        [Fact]
+        public async Task CalculateChangesWithSyntaxNodesThrowsExceptionWithNullCalculator()
+        {
+            var oldNode = await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false);
+            var oldNodes = new List<SyntaxNode>
+            {
+                oldNode
+            };
+            var newNode = await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false);
+            var newNodes = new List<SyntaxNode>
+            {
+                newNode
+            };
+
+            Action action = () => ChangeCalculatorExtensions.CalculateChanges(null!, oldNodes, newNodes);
+
+            action.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
+        public async Task CalculateChangesWithSyntaxNodesThrowsExceptionWithNullNewNodes()
+        {
+            var oldNode = await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false);
+            var oldNodes = new List<SyntaxNode>
+            {
+                oldNode
+            };
+
+            var calculator = Substitute.For<IChangeCalculator>();
+
+            Action action = () => calculator.CalculateChanges(oldNodes, null!);
+
+            action.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
+        public async Task CalculateChangesWithSyntaxNodesThrowsExceptionWithNullOldNodes()
+        {
+            var newNode = await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false);
+            var newNodes = new List<SyntaxNode>
+            {
+                newNode
+            };
+
+            var calculator = Substitute.For<IChangeCalculator>();
+
+            Action action = () => calculator.CalculateChanges(null!, newNodes);
 
             action.Should().Throw<ArgumentNullException>();
         }

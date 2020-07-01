@@ -6,6 +6,7 @@
     using System.Linq;
     using EnsureThat;
     using Microsoft.Extensions.Logging;
+    using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
     public class ChangeCalculator : IChangeCalculator
     {
@@ -47,13 +48,13 @@
         private IEnumerable<ComparisonResult> CalculateChanges(IReadOnlyCollection<ITypeDefinition> oldTypes,
             IReadOnlyCollection<ITypeDefinition> newTypes, ComparerOptions options)
         {
-            var oldClasses = oldTypes.OfType<ClassDefinition>();
-            var newClasses = newTypes.OfType<ClassDefinition>();
+            var oldClasses = oldTypes.OfType<IClassDefinition>();
+            var newClasses = newTypes.OfType<IClassDefinition>();
 
             var classChanges = CalculateChangesByType(oldClasses, newClasses, options);
 
-            var oldInterfaces = oldTypes.OfType<InterfaceDefinition>();
-            var newInterfaces = newTypes.OfType<InterfaceDefinition>();
+            var oldInterfaces = oldTypes.OfType<IInterfaceDefinition>();
+            var newInterfaces = newTypes.OfType<IInterfaceDefinition>();
 
             var interfaceChanges = CalculateChangesByType(oldInterfaces, newInterfaces, options);
 
@@ -67,7 +68,7 @@
 
             // Record any visible types that have been added
             // Types added which are not publicly visible are ignored
-            foreach (var memberAdded in matchingNodes.DefinitionsAdded.Where(x => x.IsVisible))
+            foreach (var memberAdded in matchingNodes.ItemsAdded.Where(x => x.IsVisible))
             {
                 var memberRemovedResult = ComparisonResult.ItemAdded(memberAdded);
 
@@ -76,7 +77,7 @@
 
             // Record any visible types that have been removed
             // Types removed which are not publicly visible are ignored
-            foreach (var memberRemoved in matchingNodes.DefinitionsRemoved.Where(x => x.IsVisible))
+            foreach (var memberRemoved in matchingNodes.ItemsRemoved.Where(x => x.IsVisible))
             {
                 var memberRemovedResult = ComparisonResult.ItemRemoved(memberRemoved);
 
@@ -84,7 +85,7 @@
             }
 
             // Check all the matches for a breaking change or feature added
-            foreach (var match in matchingNodes.Matches)
+            foreach (var match in matchingNodes.MatchingItems)
             {
                 var comparisonResults = CompareMatchingItems(match, options);
 

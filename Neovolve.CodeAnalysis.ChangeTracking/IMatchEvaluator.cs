@@ -2,10 +2,11 @@
 {
     using System;
     using System.Collections.Generic;
+    using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
     public interface IMatchEvaluator
     {
-        MatchResults<T> MatchItems<T>(IEnumerable<T> oldItems, IEnumerable<T> newItems, Func<T, T, bool> evaluator)
+        IMatchResults<T> MatchItems<T>(IEnumerable<T> oldItems, IEnumerable<T> newItems, Func<T, T, bool> evaluator)
             where T : class, IItemDefinition;
     }
 }

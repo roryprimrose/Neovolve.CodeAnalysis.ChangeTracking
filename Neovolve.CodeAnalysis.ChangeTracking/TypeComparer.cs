@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using EnsureThat;
+    using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
     public class TypeComparer : ITypeComparer
     {

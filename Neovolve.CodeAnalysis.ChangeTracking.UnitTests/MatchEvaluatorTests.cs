@@ -37,7 +37,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
         //    var actual = sut.MatchItems(oldNodes, newNodes);
 
-        //    actual.Matches.Should().BeEmpty();
+        //    actual.MatchingItems.Should().BeEmpty();
         //    actual.NewMembersNotMatched.Should().BeEmpty();
         //    actual.OldMembersNotMatched.Should().BeEmpty();
         //}
@@ -71,7 +71,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
         //    var actual = sut.MatchItems(oldNodes, newNodes);
 
-        //    actual.Matches.Should().HaveCount(1);
+        //    actual.MatchingItems.Should().HaveCount(1);
         //    actual.NewMembersNotMatched.Should().BeEmpty();
         //    actual.OldMembersNotMatched.Should().BeEmpty();
         //}
@@ -106,7 +106,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
         //    var actual = sut.MatchItems(oldNodes, newNodes);
 
-        //    actual.Matches.Should().HaveCount(1);
+        //    actual.MatchingItems.Should().HaveCount(1);
         //    actual.NewMembersNotMatched.Should().HaveCount(1);
         //    actual.NewMembersNotMatched.Should().Contain(memberNotMatched);
         //    actual.OldMembersNotMatched.Should().BeEmpty();
@@ -142,7 +142,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
         //    var actual = sut.MatchItems(oldNodes, newNodes);
 
-        //    actual.Matches.Should().HaveCount(1);
+        //    actual.MatchingItems.Should().HaveCount(1);
         //    actual.NewMembersNotMatched.Should().BeEmpty();
         //    actual.OldMembersNotMatched.Should().HaveCount(1);
         //    actual.OldMembersNotMatched.Should().Contain(memberNotMatched);
@@ -178,7 +178,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
         //    var actual = sut.MatchItems(oldNodes, newNodes);
 
-        //    actual.Matches.Should().HaveCount(1);
+        //    actual.MatchingItems.Should().HaveCount(1);
         //    actual.NewMembersNotMatched.Should().HaveCount(1);
         //    actual.NewMembersNotMatched.Should().Contain(memberNotMatched);
         //    actual.OldMembersNotMatched.Should().BeEmpty();
@@ -213,7 +213,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
         //    var actual = sut.MatchItems(oldNodes, newNodes);
 
-        //    actual.Matches.Should().HaveCount(1);
+        //    actual.MatchingItems.Should().HaveCount(1);
         //    actual.NewMembersNotMatched.Should().BeEmpty();
         //    actual.OldMembersNotMatched.Should().BeEmpty();
         //}

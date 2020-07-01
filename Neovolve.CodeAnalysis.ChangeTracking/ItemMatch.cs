@@ -1,6 +1,7 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking
 {
     using EnsureThat;
+    using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
     public class ItemMatch<T> where T : class, IItemDefinition
     {

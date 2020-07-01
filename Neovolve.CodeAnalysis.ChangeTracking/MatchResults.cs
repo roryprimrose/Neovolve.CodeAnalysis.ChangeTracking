@@ -3,24 +3,42 @@
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using EnsureThat;
+    using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
-    public class MatchResults<T> where T : class, IItemDefinition
+    /// <summary>
+    ///     The <see cref="MatchResults{T}" />
+    ///     class defines items that have been added or removed as well as items that can be matched.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public class MatchResults<T> : IMatchResults<T> where T : class, IItemDefinition
     {
-        public MatchResults(IEnumerable<ItemMatch<T>> matchingItems, IEnumerable<T> itemsRemoved,
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="MatchResults{T}" /> class.
+        /// </summary>
+        /// <param name="matchingItems">The set of old items that match to new items.</param>
+        /// <param name="itemsRemoved">The items that have been removed.</param>
+        /// <param name="itemsAdded">The items that have been added.</param>
+        public MatchResults(
+            IEnumerable<ItemMatch<T>> matchingItems,
+            IEnumerable<T> itemsRemoved,
             IEnumerable<T> itemsAdded)
         {
             Ensure.Any.IsNotNull(matchingItems, nameof(matchingItems));
             Ensure.Any.IsNotNull(itemsRemoved, nameof(itemsRemoved));
             Ensure.Any.IsNotNull(itemsAdded, nameof(itemsAdded));
 
-            Matches = new ReadOnlyCollection<ItemMatch<T>>(matchingItems.FastToList());
-            DefinitionsRemoved = new ReadOnlyCollection<T>(itemsRemoved.FastToList());
-            DefinitionsAdded = new ReadOnlyCollection<T>(itemsAdded.FastToList());
+            MatchingItems = new ReadOnlyCollection<ItemMatch<T>>(matchingItems.FastToList());
+            ItemsRemoved = new ReadOnlyCollection<T>(itemsRemoved.FastToList());
+            ItemsAdded = new ReadOnlyCollection<T>(itemsAdded.FastToList());
         }
 
-        public IReadOnlyCollection<T> DefinitionsAdded { get; }
+        /// <inheritdoc />
+        public IReadOnlyCollection<T> ItemsAdded { get; }
 
-        public IReadOnlyCollection<T> DefinitionsRemoved { get; }
-        public IReadOnlyCollection<ItemMatch<T>> Matches { get; }
+        /// <inheritdoc />
+        public IReadOnlyCollection<T> ItemsRemoved { get; }
+
+        /// <inheritdoc />
+        public IReadOnlyCollection<ItemMatch<T>> MatchingItems { get; }
     }
 }

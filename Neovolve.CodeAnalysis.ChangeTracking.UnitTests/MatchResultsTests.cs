@@ -56,9 +56,9 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
         //    var sut = new MatchResults(matches, oldMembersNotMatched, newMembersNotMatched);
 
-        //    sut.Matches.Should().BeEquivalentTo(matches);
-        //    sut.DefinitionsRemoved.Should().BeEquivalentTo(oldMembersNotMatched);
-        //    sut.DefinitionsAdded.Should().BeEquivalentTo(newMembersNotMatched);
+        //    sut.MatchingItems.Should().BeEquivalentTo(matches);
+        //    sut.ItemsRemoved.Should().BeEquivalentTo(oldMembersNotMatched);
+        //    sut.ItemsAdded.Should().BeEquivalentTo(newMembersNotMatched);
         //}
     }
 }

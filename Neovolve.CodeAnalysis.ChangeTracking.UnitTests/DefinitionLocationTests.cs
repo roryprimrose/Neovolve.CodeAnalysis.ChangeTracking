@@ -10,8 +10,8 @@
         [Fact]
         public void CanCreateWithEmptyFilePath()
         {
-            var lineIndex = Math.Abs(Model.Create<int>());
-            var characterIndex = Math.Abs(Model.Create<int>());
+            var lineIndex = Math.Abs(Model.UsingModule<ConfigurationModule>().Create<int>());
+            var characterIndex = Math.Abs(Model.UsingModule<ConfigurationModule>().Create<int>());
 
             var sut = new DefinitionLocation(string.Empty, lineIndex, characterIndex);
 
@@ -21,8 +21,8 @@
         [Fact]
         public void FilePathTrimsProvidedValue()
         {
-            var lineIndex = Math.Abs(Model.Create<int>());
-            var characterIndex = Math.Abs(Model.Create<int>());
+            var lineIndex = Math.Abs(Model.UsingModule<ConfigurationModule>().Create<int>());
+            var characterIndex = Math.Abs(Model.UsingModule<ConfigurationModule>().Create<int>());
             var expected = Guid.NewGuid().ToString();
             var filePath = "  " + expected + "  ";
 
@@ -34,8 +34,8 @@
         [Fact]
         public void PropertiesReturnProvidedParameters()
         {
-            var lineIndex = Math.Abs(Model.Create<int>());
-            var characterIndex = Math.Abs(Model.Create<int>());
+            var lineIndex = Math.Abs(Model.UsingModule<ConfigurationModule>().Create<int>());
+            var characterIndex = Math.Abs(Model.UsingModule<ConfigurationModule>().Create<int>());
             var filePath = Guid.NewGuid().ToString();
 
             var sut = new DefinitionLocation(filePath, lineIndex, characterIndex);
@@ -48,8 +48,8 @@
         [Fact]
         public void ThrowsExceptionWithNullFilePath()
         {
-            var lineIndex = Math.Abs(Model.Create<int>());
-            var characterIndex = Math.Abs(Model.Create<int>());
+            var lineIndex = Math.Abs(Model.UsingModule<ConfigurationModule>().Create<int>());
+            var characterIndex = Math.Abs(Model.UsingModule<ConfigurationModule>().Create<int>());
 
             Action action = () => new DefinitionLocation(null!, lineIndex, characterIndex);
 

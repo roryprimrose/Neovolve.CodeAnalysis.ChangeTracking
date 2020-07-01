@@ -21,6 +21,32 @@ namespace MyNamespace
 }
 ";
 
+        public const string MultipleClasses = @"
+namespace MyNamespace 
+{
+    public class FirstClass
+    {
+    }   
+
+    public class SecondClass
+    {
+    }   
+}
+";
+
+        public const string MultipleInterfaces = @"
+namespace MyNamespace 
+{
+    public interface FirstInterface
+    {
+    }   
+
+    public interface SecondInterface
+    {
+    }   
+}
+";
+
         public const string Field = @"
 namespace MyNamespace 
 {

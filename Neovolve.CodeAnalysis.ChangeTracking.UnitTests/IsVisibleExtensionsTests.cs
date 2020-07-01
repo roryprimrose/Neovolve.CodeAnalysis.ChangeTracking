@@ -6,6 +6,7 @@
     using FluentAssertions;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
+    using Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Models;
     using Xunit;
 
     public class IsVisibleExtensionsTests

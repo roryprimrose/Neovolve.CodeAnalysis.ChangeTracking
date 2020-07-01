@@ -3,10 +3,11 @@
     using System;
     using System.Collections.Generic;
     using EnsureThat;
+    using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
     public class MatchEvaluator : IMatchEvaluator
     {
-        public MatchResults<T> MatchItems<T>(IEnumerable<T> oldItems, IEnumerable<T> newItems, Func<T, T, bool> evaluator) where T : class, IItemDefinition
+        public IMatchResults<T> MatchItems<T>(IEnumerable<T> oldItems, IEnumerable<T> newItems, Func<T, T, bool> evaluator) where T : class, IItemDefinition
         {
             Ensure.Any.IsNotNull(oldItems, nameof(oldItems));
             Ensure.Any.IsNotNull(newItems, nameof(newItems));
