@@ -5,6 +5,6 @@
 
     public interface IPropertyComparer
     {
-        IEnumerable<ComparisonResult> CompareTypes(ItemMatch<PropertyDefinition> match, ComparerOptions options);
+        IEnumerable<ComparisonResult> CompareTypes(ItemMatch<IPropertyDefinition> match, ComparerOptions options);
     }
 }

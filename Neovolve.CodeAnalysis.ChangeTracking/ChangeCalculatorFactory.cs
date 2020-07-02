@@ -12,7 +12,9 @@
         public static IChangeCalculator BuildCalculator(ILogger? logger)
         {
             var evaluator = new MatchEvaluator();
-            var typeComparer = new TypeComparer();
+            var propertyComparer = new PropertyComparer();
+            var propertyProcessor = new PropertyMatchProcessor(propertyComparer, evaluator, logger);
+            var typeComparer = new TypeComparer(propertyProcessor);
             var processor = new TypeMatchProcessor(typeComparer, evaluator, logger);
 
             return new ChangeCalculator(processor, logger);

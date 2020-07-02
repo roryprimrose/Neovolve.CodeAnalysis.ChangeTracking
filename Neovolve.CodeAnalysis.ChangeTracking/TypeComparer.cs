@@ -7,6 +7,13 @@
 
     public class TypeComparer : ITypeComparer
     {
+        private readonly IPropertyMatchProcessor _propertyProcessor;
+
+        public TypeComparer(IPropertyMatchProcessor propertyProcessor)
+        {
+            _propertyProcessor = propertyProcessor ?? throw new ArgumentNullException(nameof(propertyProcessor));
+        }
+
         public IEnumerable<ComparisonResult> CompareTypes(ItemMatch<ITypeDefinition> match, ComparerOptions options)
         {
             Ensure.Any.IsNotNull(match, nameof(match));
@@ -42,9 +49,14 @@
                 yield return comparisonResult;
             }
 
-            foreach (var comparisonResult in EvaluateClassChanges(match))
+            foreach (var comparisonResult in EvaluateModifierChanges(match))
             {
                 yield return comparisonResult;
+            }
+
+            foreach (var result in EvaluatePropertyChanges(match, options))
+            {
+                yield return result;
             }
 
             // Compare the following:
@@ -53,12 +65,44 @@
             // generic constraints
             // attributes
             // fields
-            // properties
 
             yield return ComparisonResult.NoChange(match);
         }
 
-        private static IEnumerable<ComparisonResult> EvaluateClassChanges(ItemMatch<ITypeDefinition> match)
+        private IEnumerable<ComparisonResult> EvaluatePropertyChanges(ItemMatch<ITypeDefinition> match, ComparerOptions options)
+        {
+            var oldProperties = match.OldItem.Properties;
+            var newProperties = match.NewItem.Properties;
+
+            return _propertyProcessor.CalculateChanges(oldProperties, newProperties, options);
+        }
+
+        private static string DetermineScopeMessage(string scope)
+        {
+            if (string.IsNullOrWhiteSpace(scope))
+            {
+                return "(implicit) private";
+            }
+
+            return scope;
+        }
+
+        private static string DetermineTypeName(ITypeDefinition item)
+        {
+            if (item is IClassDefinition)
+            {
+                return "class";
+            }
+
+            if (item is IInterfaceDefinition)
+            {
+                return "interface";
+            }
+
+            throw new NotSupportedException("Unknown type provided");
+        }
+
+        private static IEnumerable<ComparisonResult> EvaluateModifierChanges(ItemMatch<ITypeDefinition> match)
         {
             var oldClass = match.OldItem as IClassDefinition;
 
@@ -107,31 +151,6 @@
                 yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match,
                     $"{oldClass.Description} has added the static keyword");
             }
-        }
-
-        private static string DetermineScopeMessage(string scope)
-        {
-            if (string.IsNullOrWhiteSpace(scope))
-            {
-                return "(implicit) private";
-            }
-
-            return scope;
-        }
-
-        private static string DetermineTypeName(ITypeDefinition item)
-        {
-            if (item is IClassDefinition)
-            {
-                return "class";
-            }
-
-            if (item is IInterfaceDefinition)
-            {
-                return "interface";
-            }
-
-            throw new NotSupportedException("Unknown type provided");
         }
 
         private static IEnumerable<ComparisonResult> EvaluateScopeChanges(ItemMatch<ITypeDefinition> match)

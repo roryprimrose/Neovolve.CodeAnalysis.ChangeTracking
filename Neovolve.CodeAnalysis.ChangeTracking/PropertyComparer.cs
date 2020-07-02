@@ -1,60 +1,158 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking
 {
+    using System;
     using System.Collections.Generic;
     using EnsureThat;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
     public class PropertyComparer : IPropertyComparer
     {
-        public IEnumerable<ComparisonResult> CompareTypes(ItemMatch<PropertyDefinition> match, ComparerOptions options)
+        public IEnumerable<ComparisonResult> CompareTypes(ItemMatch<IPropertyDefinition> match, ComparerOptions options)
         {
             Ensure.Any.IsNotNull(match, nameof(match));
+            Ensure.Any.IsNotNull(options, nameof(options));
 
-            var oldProperty = match.OldItem;
-            var newProperty = match.NewItem;
+            if (string.Equals(match.OldItem.FullName, match.NewItem.FullName, StringComparison.Ordinal) == false)
+            {
+                throw new InvalidOperationException(
+                    "The two members cannot be compared because they have different Name values.");
+            }
 
-            //var result = base.Compare(match);
+            if (match.OldItem.IsVisible == false
+                && match.NewItem.IsVisible == false)
+            {
+                // It doesn't matter if there is a change to the type because it isn't visible anyway
+                yield return ComparisonResult.NoChange(match);
+            }
 
-            //if (result.ChangeType == SemVerChangeType.Breaking)
-            //{
-            //    // Doesn't matter if the property accessibility indicates feature or no change, breaking trumps everything
-            //    return result;
-            //}
+            foreach (var comparisonResult in EvaluateScopeChanges(match))
+            {
+                yield return comparisonResult;
+            }
 
-            //if (oldProperty.IsVisible == false)
-            //{
-            //    // The property is either still not public or now becoming public
-            //    // It doesn't matter if the accessors have been changed to be less visible
-            //    return result;
-            //}
-
-            //if (oldProperty.CanRead == newProperty.CanRead
-            //    && oldProperty.CanWrite == newProperty.CanWrite)
-            //{
-            //    // The accessibility of the property get/set members are equal so the changeType already calculated will be accurate
-            //    return result;
-            //}
+            foreach (var comparisonResult in EvaluateModifierChanges(match))
+            {
+                yield return comparisonResult;
+            }
 
             // Calculate breaking changes
-            if (oldProperty.CanRead
-                && newProperty.CanRead == false)
+            if (match.OldItem.CanRead
+                && match.NewItem.CanRead == false)
             {
-                var message = oldProperty + " removed get accessor availability";
+                var message = match.OldItem.Description + " removed the get accessor";
 
                 yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match, message);
             }
-            else if (oldProperty.CanWrite
-                && newProperty.CanWrite == false)
+            else if (match.OldItem.CanRead == false
+                     && match.NewItem.CanRead)
             {
-                var message = oldProperty + " removed set accessor availability";
+                var message = match.OldItem.Description + " added a get accessor";
+
+                yield return ComparisonResult.ItemChanged(SemVerChangeType.Feature, match, message);
+            }
+            
+            if (match.OldItem.CanWrite
+                     && match.NewItem.CanWrite == false)
+            {
+                var message = match.OldItem.Description + " removed the set accessor";
 
                 yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match, message);
             }
+            else if (match.OldItem.CanWrite == false
+                     && match.NewItem.CanWrite)
+            {
+                var message = match.OldItem.Description + " added a set accessor";
 
-            // Only other possible scenario at this point is that the old property couldn't read/write but the new property can
-            var accessorMessage = oldProperty + " get and/or set is now available";
+                yield return ComparisonResult.ItemChanged(SemVerChangeType.Feature, match, message);
+            }
+        }
 
-            yield return ComparisonResult.ItemChanged(SemVerChangeType.Feature, match, accessorMessage);
+        private static string DetermineScopeMessage(string scope)
+        {
+            if (string.IsNullOrWhiteSpace(scope))
+            {
+                return "(implicit) private";
+            }
+
+            return scope;
+        }
+
+        private static IEnumerable<ComparisonResult> EvaluateModifierChanges(ItemMatch<IPropertyDefinition> match)
+        {
+            //var oldClass = match.OldItem as IClassDefinition;
+
+            //if (oldClass == null)
+            //{
+            //    yield break;
+            //}
+
+            //var newClass = (IClassDefinition)match.NewItem;
+
+            //if (oldClass.IsAbstract
+            //    && newClass.IsAbstract == false)
+            //{
+            //    yield return ComparisonResult.ItemChanged(SemVerChangeType.Feature, match,
+            //        $"{oldClass.Description} has removed the abstract keyword");
+            //}
+            //else if (oldClass.IsAbstract == false
+            //         && newClass.IsAbstract)
+            //{
+            //    yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match,
+            //        $"{oldClass.Description} has added the abstract keyword");
+            //}
+
+            //if (oldClass.IsSealed
+            //    && newClass.IsSealed == false)
+            //{
+            //    yield return ComparisonResult.ItemChanged(SemVerChangeType.Feature, match,
+            //        $"{oldClass.Description} has removed the sealed keyword");
+            //}
+            //else if (oldClass.IsSealed == false
+            //         && newClass.IsSealed)
+            //{
+            //    yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match,
+            //        $"{oldClass.Description} has added the sealed keyword");
+            //}
+
+            //if (oldClass.IsStatic
+            //    && newClass.IsStatic == false)
+            //{
+            //    yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match,
+            //        $"{oldClass.Description} has removed the static keyword");
+            //}
+            //else if (oldClass.IsStatic == false
+            //         && newClass.IsStatic)
+            //{
+            //    yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match,
+            //        $"{oldClass.Description} has added the static keyword");
+            //}
+            yield break;
+        }
+
+        private static IEnumerable<ComparisonResult> EvaluateScopeChanges(ItemMatch<IPropertyDefinition> match)
+        {
+            var oldScope = DetermineScopeMessage(match.OldItem.Scope);
+            var newScope = DetermineScopeMessage(match.NewItem.Scope);
+
+            if (match.OldItem.IsVisible
+                && match.NewItem.IsVisible == false)
+            {
+                // The member was visible but isn't now, breaking change
+                var message = $"{match.OldItem.Description} changed scope from {oldScope} to {newScope}";
+
+                yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match,
+                    message);
+            }
+            else if (match.OldItem.IsVisible == false
+                     && match.NewItem.IsVisible)
+            {
+                // The member return type may have changed, but the member is only now becoming public
+                // This is a feature because the public API didn't break even if the return type has changed
+                var message = $"{match.OldItem.Description} changed scope from {oldScope} to {newScope}";
+
+                yield return ComparisonResult.ItemChanged(SemVerChangeType.Feature, match,
+                    message);
+            }
         }
     }
 }
