@@ -48,11 +48,38 @@
                 yield return result;
             }
 
+            foreach (var result in EvaluateImplementedTypeChanges(match, options))
+            {
+                yield return result;
+            }
+
             // Compare the following:
-            // implemented types
             // fields
 
             yield return ComparisonResult.NoChange(match);
+        }
+
+        private static IEnumerable<ComparisonResult> EvaluateImplementedTypeChanges(ItemMatch<ITypeDefinition> match, ComparerOptions options)
+        {
+            // Find the old types that have been removed
+            var removedTypes = match.OldItem.ImplementedTypes.Except(match.NewItem.ImplementedTypes);
+
+            foreach (var removedType in removedTypes)
+            {
+                var message = $"{match.OldItem.Description} has removed the implemented type {removedType}";
+
+                yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match, message);
+            }
+
+            // Find the new types that have been added
+            var addedTypes = match.NewItem.ImplementedTypes.Except(match.OldItem.ImplementedTypes);
+
+            foreach (var addedType in addedTypes)
+            {
+                var message = $"{match.OldItem.Description} has added the implemented type {addedType}";
+
+                yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match, message);
+            }
         }
 
         private static IEnumerable<ComparisonResult> EvaluateGenericTypeDefinitionChanges(ItemMatch<ITypeDefinition> match, ComparerOptions options)
