@@ -8,11 +8,15 @@
 
     public class TypeComparer : ElementComparer<ITypeDefinition>, ITypeComparer
     {
+        private readonly IFieldMatchProcessor _fieldProcessor;
         private readonly IPropertyMatchProcessor _propertyProcessor;
 
-        public TypeComparer(IPropertyMatchProcessor propertyProcessor, IAttributeMatchProcessor attributeProcessor) : base(attributeProcessor)
+        public TypeComparer(IFieldMatchProcessor fieldProcessor,
+            IPropertyMatchProcessor propertyProcessor,
+            IAttributeMatchProcessor attributeProcessor) : base(attributeProcessor)
         {
             _propertyProcessor = propertyProcessor ?? throw new ArgumentNullException(nameof(propertyProcessor));
+            _fieldProcessor = fieldProcessor ?? throw new ArgumentNullException(nameof(fieldProcessor));
         }
 
         protected override IEnumerable<ComparisonResult> EvaluateMatch(ItemMatch<ITypeDefinition> match,
@@ -43,6 +47,11 @@
                 yield return result;
             }
 
+            foreach (var result in EvaluateFieldChanges(match, options))
+            {
+                yield return result;
+            }
+
             foreach (var result in EvaluatePropertyChanges(match, options))
             {
                 yield return result;
@@ -53,85 +62,26 @@
                 yield return result;
             }
 
-            // Compare the following:
-            // fields
-
             yield return ComparisonResult.NoChange(match);
         }
 
-        private static IEnumerable<ComparisonResult> EvaluateImplementedTypeChanges(ItemMatch<ITypeDefinition> match, ComparerOptions options)
+        private static string DetermineTypeName(ITypeDefinition item)
         {
-            // Find the old types that have been removed
-            var removedTypes = match.OldItem.ImplementedTypes.Except(match.NewItem.ImplementedTypes);
-
-            foreach (var removedType in removedTypes)
+            if (item is IClassDefinition)
             {
-                var message = $"{match.OldItem.Description} has removed the implemented type {removedType}";
-
-                yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match, message);
+                return "class";
             }
 
-            // Find the new types that have been added
-            var addedTypes = match.NewItem.ImplementedTypes.Except(match.OldItem.ImplementedTypes);
-
-            foreach (var addedType in addedTypes)
+            if (item is IInterfaceDefinition)
             {
-                var message = $"{match.OldItem.Description} has added the implemented type {addedType}";
-
-                yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match, message);
+                return "interface";
             }
+
+            throw new NotSupportedException("Unknown type provided");
         }
 
-        private static IEnumerable<ComparisonResult> EvaluateGenericTypeDefinitionChanges(ItemMatch<ITypeDefinition> match, ComparerOptions options)
-        {
-            var oldTypeParameters = match.OldItem.GenericTypeParameters.ToList();
-            var newTypeParameters = match.NewItem.GenericTypeParameters.ToList();
-
-            var typeParameterShift =
-                oldTypeParameters.Count - newTypeParameters.Count;
-
-            if (typeParameterShift > 0)
-            {
-                // One or more generic type parameters have been removed
-                var suffix = typeParameterShift == 1 ? "" : "s";
-                var message =
-                    $"{match.OldItem.Description} has removed {typeParameterShift} generic type parameter{suffix}";
-
-                yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match, message);
-
-                // No need to look into how the generic type has changed
-                yield break;
-            }
-
-            if (typeParameterShift < 0)
-            {
-                // One or more generic type parameters have been removed
-                var shift = Math.Abs(typeParameterShift);
-                var suffix = shift == 1 ? "" : "s";
-                var message =
-                    $"{match.OldItem.Description} has added {shift} generic type parameter{suffix}";
-
-                // No need to look into how the generic type has changed
-                yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match, message);
-            }
-
-            // We have the same number of generic types, evaluate the constraints
-            for (var index = 0; index < oldTypeParameters.Count; index++)
-            {
-                var oldName = oldTypeParameters[index];
-                var newName = oldTypeParameters[index];
-
-                var oldConstraints = match.OldItem.GenericConstraints.FirstOrDefault(x => x.Name == oldName);
-                var newConstraints = match.NewItem.GenericConstraints.FirstOrDefault(x => x.Name == newName);
-
-                foreach (var result in EvaluateGenericConstraints(match, oldConstraints, newConstraints))
-                {
-                    yield return result;
-                }
-            }
-        }
-
-        private static IEnumerable<ComparisonResult> EvaluateGenericConstraints(ItemMatch<ITypeDefinition> match, IConstraintListDefinition oldConstraintList,
+        private static IEnumerable<ComparisonResult> EvaluateGenericConstraints(ItemMatch<ITypeDefinition> match,
+            IConstraintListDefinition oldConstraintList,
             IConstraintListDefinition newConstraintList)
         {
             var oldConstraintCount = oldConstraintList?.Constraints.Count;
@@ -143,7 +93,7 @@
                 // There are no generic constraints defined on either type
                 yield break;
             }
-            
+
             if (oldConstraintCount == 0)
             {
                 var message = $"{match.OldItem.Description} has added {newConstraintCount} generic type constraint";
@@ -195,19 +145,78 @@
             }
         }
 
-        private static string DetermineTypeName(ITypeDefinition item)
+        private static IEnumerable<ComparisonResult> EvaluateGenericTypeDefinitionChanges(
+            ItemMatch<ITypeDefinition> match, ComparerOptions options)
         {
-            if (item is IClassDefinition)
+            var oldTypeParameters = match.OldItem.GenericTypeParameters.ToList();
+            var newTypeParameters = match.NewItem.GenericTypeParameters.ToList();
+
+            var typeParameterShift =
+                oldTypeParameters.Count - newTypeParameters.Count;
+
+            if (typeParameterShift > 0)
             {
-                return "class";
+                // One or more generic type parameters have been removed
+                var suffix = typeParameterShift == 1 ? "" : "s";
+                var message =
+                    $"{match.OldItem.Description} has removed {typeParameterShift} generic type parameter{suffix}";
+
+                yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match, message);
+
+                // No need to look into how the generic type has changed
+                yield break;
             }
 
-            if (item is IInterfaceDefinition)
+            if (typeParameterShift < 0)
             {
-                return "interface";
+                // One or more generic type parameters have been removed
+                var shift = Math.Abs(typeParameterShift);
+                var suffix = shift == 1 ? "" : "s";
+                var message =
+                    $"{match.OldItem.Description} has added {shift} generic type parameter{suffix}";
+
+                // No need to look into how the generic type has changed
+                yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match, message);
             }
 
-            throw new NotSupportedException("Unknown type provided");
+            // We have the same number of generic types, evaluate the constraints
+            for (var index = 0; index < oldTypeParameters.Count; index++)
+            {
+                var oldName = oldTypeParameters[index];
+                var newName = oldTypeParameters[index];
+
+                var oldConstraints = match.OldItem.GenericConstraints.FirstOrDefault(x => x.Name == oldName);
+                var newConstraints = match.NewItem.GenericConstraints.FirstOrDefault(x => x.Name == newName);
+
+                foreach (var result in EvaluateGenericConstraints(match, oldConstraints, newConstraints))
+                {
+                    yield return result;
+                }
+            }
+        }
+
+        private static IEnumerable<ComparisonResult> EvaluateImplementedTypeChanges(ItemMatch<ITypeDefinition> match,
+            ComparerOptions options)
+        {
+            // Find the old types that have been removed
+            var removedTypes = match.OldItem.ImplementedTypes.Except(match.NewItem.ImplementedTypes);
+
+            foreach (var removedType in removedTypes)
+            {
+                var message = $"{match.OldItem.Description} has removed the implemented type {removedType}";
+
+                yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match, message);
+            }
+
+            // Find the new types that have been added
+            var addedTypes = match.NewItem.ImplementedTypes.Except(match.OldItem.ImplementedTypes);
+
+            foreach (var addedType in addedTypes)
+            {
+                var message = $"{match.OldItem.Description} has added the implemented type {addedType}";
+
+                yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match, message);
+            }
         }
 
         private static IEnumerable<ComparisonResult> EvaluateModifierChanges(ItemMatch<ITypeDefinition> match)
@@ -219,7 +228,7 @@
                 yield break;
             }
 
-            var newClass = (IClassDefinition)match.NewItem;
+            var newClass = (IClassDefinition) match.NewItem;
 
             if (oldClass.IsAbstract
                 && newClass.IsAbstract == false)
@@ -259,6 +268,21 @@
                 yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match,
                     $"{oldClass.Description} has added the static keyword");
             }
+        }
+
+        private IEnumerable<ComparisonResult> EvaluateFieldChanges(ItemMatch<ITypeDefinition> match,
+            ComparerOptions options)
+        {
+            var oldClass = match.OldItem as IClassDefinition;
+
+            if (oldClass == null)
+            {
+                return Array.Empty<ComparisonResult>();
+            }
+
+            var newClass = (IClassDefinition) match.NewItem;
+
+            return _fieldProcessor.CalculateChanges(oldClass.Fields, newClass.Fields, options);
         }
 
         private IEnumerable<ComparisonResult> EvaluatePropertyChanges(ItemMatch<ITypeDefinition> match,

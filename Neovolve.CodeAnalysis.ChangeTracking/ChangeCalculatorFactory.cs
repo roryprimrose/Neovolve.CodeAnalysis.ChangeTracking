@@ -13,10 +13,12 @@
         {
             var evaluator = new MatchEvaluator();
             var attributeComparer = new AttributeComparer();
-            var attributeProcessor =new AttributeMatchProcessor(attributeComparer, evaluator, logger);
+            var attributeProcessor = new AttributeMatchProcessor(attributeComparer, evaluator, logger);
+            var fieldComparer = new FieldComparer(attributeProcessor);
+            var fieldProcessor = new FieldMatchProcessor(fieldComparer, evaluator, logger);
             var propertyComparer = new PropertyComparer(attributeProcessor);
             var propertyProcessor = new PropertyMatchProcessor(propertyComparer, evaluator, logger);
-            var typeComparer = new TypeComparer(propertyProcessor, attributeProcessor);
+            var typeComparer = new TypeComparer(fieldProcessor, propertyProcessor, attributeProcessor);
             var processor = new TypeMatchProcessor(typeComparer, evaluator, logger);
 
             return new ChangeCalculator(processor, logger);

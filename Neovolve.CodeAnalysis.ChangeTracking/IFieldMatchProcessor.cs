@@ -2,7 +2,8 @@
 {
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
-    public interface IMemberComparer<T> : IElementComparer<T> where T : IMemberDefinition
+    public interface IFieldMatchProcessor : IMatchProcessor<IFieldDefinition>
     {
+
     }
 }
