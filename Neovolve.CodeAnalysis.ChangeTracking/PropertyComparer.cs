@@ -1,33 +1,21 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking
 {
-    using System;
     using System.Collections.Generic;
-    using EnsureThat;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
-    public class PropertyComparer : IPropertyComparer
+    public class PropertyComparer : MemberComparer<IPropertyDefinition>, IPropertyComparer
     {
-        public IEnumerable<ComparisonResult> CompareTypes(ItemMatch<IPropertyDefinition> match, ComparerOptions options)
+        public PropertyComparer(IAttributeMatchProcessor attributeProcessor) : base(attributeProcessor)
         {
-            Ensure.Any.IsNotNull(match, nameof(match));
-            Ensure.Any.IsNotNull(options, nameof(options));
+        }
 
-            if (string.Equals(match.OldItem.FullName, match.NewItem.FullName, StringComparison.Ordinal) == false)
+        protected override IEnumerable<ComparisonResult> EvaluateMatch(ItemMatch<IPropertyDefinition> match,
+            ComparerOptions options)
+        {
+            // Include results from the base class
+            foreach (var result in base.EvaluateMatch(match, options))
             {
-                throw new InvalidOperationException(
-                    "The two members cannot be compared because they have different Name values.");
-            }
-
-            if (match.OldItem.IsVisible == false
-                && match.NewItem.IsVisible == false)
-            {
-                // It doesn't matter if there is a change to the type because it isn't visible anyway
-                yield return ComparisonResult.NoChange(match);
-            }
-
-            foreach (var comparisonResult in EvaluateScopeChanges(match))
-            {
-                yield return comparisonResult;
+                yield return result;
             }
 
             foreach (var comparisonResult in EvaluateModifierChanges(match))
@@ -50,9 +38,9 @@
 
                 yield return ComparisonResult.ItemChanged(SemVerChangeType.Feature, match, message);
             }
-            
+
             if (match.OldItem.CanWrite
-                     && match.NewItem.CanWrite == false)
+                && match.NewItem.CanWrite == false)
             {
                 var message = match.OldItem.Description + " removed the set accessor";
 

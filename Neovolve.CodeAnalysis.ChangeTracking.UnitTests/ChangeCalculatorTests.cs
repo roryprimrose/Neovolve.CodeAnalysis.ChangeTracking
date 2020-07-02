@@ -101,7 +101,7 @@
         //        Arg.Any<IEnumerable<ITypeDefinition>>(),
         //        Arg.Any<IEnumerable<ITypeDefinition>>(),
         //        Arg.Any<Func<ITypeDefinition, ITypeDefinition, bool>>()).Returns(classMatches, interfaceMatches);
-        //    comparer.CompareTypes(match, options).Returns(results);
+        //    comparer.CompareItems(match, options).Returns(results);
 
         //    var sut = new ChangeCalculator(evaluator, comparer, _logger);
 
@@ -135,7 +135,7 @@
         //        Arg.Any<IEnumerable<ITypeDefinition>>(),
         //        Arg.Any<IEnumerable<ITypeDefinition>>(),
         //        Arg.Any<Func<ITypeDefinition, ITypeDefinition, bool>>()).Returns(interfaceMatches, classMatches);
-        //    comparer.CompareTypes(match, options).Returns(results);
+        //    comparer.CompareItems(match, options).Returns(results);
 
         //    var sut = new ChangeCalculator(evaluator, comparer, _logger);
 
@@ -225,7 +225,7 @@
         //        Arg.Any<IEnumerable<ITypeDefinition>>(),
         //        Arg.Any<IEnumerable<ITypeDefinition>>(),
         //        Arg.Any<Func<ITypeDefinition, ITypeDefinition, bool>>()).Returns(classMatches, interfaceMatches);
-        //    comparer.CompareTypes(match, options).Returns(results);
+        //    comparer.CompareItems(match, options).Returns(results);
 
         //    var sut = new ChangeCalculator(evaluator, comparer, _logger);
 
@@ -259,7 +259,7 @@
         //        Arg.Any<IEnumerable<ITypeDefinition>>(),
         //        Arg.Any<IEnumerable<ITypeDefinition>>(),
         //        Arg.Any<Func<ITypeDefinition, ITypeDefinition, bool>>()).Returns(interfaceMatches, classMatches);
-        //    comparer.CompareTypes(match, options).Returns(results);
+        //    comparer.CompareItems(match, options).Returns(results);
 
         //    var sut = new ChangeCalculator(evaluator, comparer, _logger);
 
@@ -304,7 +304,7 @@
 
         //        actual.Should().Be(expected);
         //    });
-        //    comparer.CompareTypes(match, options).Returns(results);
+        //    comparer.CompareItems(match, options).Returns(results);
 
         //    var sut = new ChangeCalculator(evaluator, comparer, _logger);
 
@@ -336,7 +336,7 @@
         //        Arg.Any<IEnumerable<ITypeDefinition>>(),
         //        Arg.Any<IEnumerable<ITypeDefinition>>(),
         //        Arg.Any<Func<ITypeDefinition, ITypeDefinition, bool>>()).Returns(classMatches, interfaceMatches);
-        //    comparer.CompareTypes(match, options).Returns(results);
+        //    comparer.CompareItems(match, options).Returns(results);
 
         //    var sut = new ChangeCalculator(evaluator, comparer, _logger);
 
@@ -368,7 +368,7 @@
         //        Arg.Any<IEnumerable<ITypeDefinition>>(),
         //        Arg.Any<IEnumerable<ITypeDefinition>>(),
         //        Arg.Any<Func<ITypeDefinition, ITypeDefinition, bool>>()).Returns(interfaceMatches, classMatches);
-        //    comparer.CompareTypes(match, options).Returns(results);
+        //    comparer.CompareItems(match, options).Returns(results);
 
         //    var sut = new ChangeCalculator(evaluator, comparer, _logger);
 

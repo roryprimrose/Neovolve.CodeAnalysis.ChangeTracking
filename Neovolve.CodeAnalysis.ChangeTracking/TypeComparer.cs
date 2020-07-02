@@ -9,7 +9,7 @@
     {
         private readonly IPropertyMatchProcessor _propertyProcessor;
 
-        public TypeComparer(IPropertyMatchProcessor propertyProcessor)
+        public TypeComparer(IPropertyMatchProcessor propertyProcessor, IAttributeMatchProcessor attributeProcessor) : base(attributeProcessor)
         {
             _propertyProcessor = propertyProcessor ?? throw new ArgumentNullException(nameof(propertyProcessor));
         }

@@ -7,7 +7,14 @@
 
     public abstract class ElementComparer<T> : IElementComparer<T> where T : IElementDefinition
     {
-        public virtual IEnumerable<ComparisonResult> CompareTypes(ItemMatch<T> match, ComparerOptions options)
+        private readonly IAttributeMatchProcessor _attributeProcessor;
+
+        protected ElementComparer(IAttributeMatchProcessor attributeProcessor)
+        {
+            _attributeProcessor = attributeProcessor ?? throw new ArgumentNullException(nameof(attributeProcessor));
+        }
+
+        public virtual IEnumerable<ComparisonResult> CompareItems(ItemMatch<T> match, ComparerOptions options)
         {
             Ensure.Any.IsNotNull(match, nameof(match));
             Ensure.Any.IsNotNull(options, nameof(options));
@@ -34,6 +41,11 @@
             }
 
             foreach (var comparisonResult in EvaluateMatch(match, options))
+            {
+                yield return comparisonResult;
+            }
+
+            foreach (var comparisonResult in EvaluateAttributeChanges(match, options))
             {
                 yield return comparisonResult;
             }
@@ -74,6 +86,17 @@
 
                 yield return ComparisonResult.ItemChanged(SemVerChangeType.Feature, match,
                     message);
+            }
+        }
+
+        private IEnumerable<ComparisonResult> EvaluateAttributeChanges(ItemMatch<T> match, ComparerOptions options)
+        {
+            var attributeResults = _attributeProcessor.CalculateChanges(match.OldItem.Attributes,
+                match.NewItem.Attributes, options);
+
+            foreach (var result in attributeResults)
+            {
+                yield return result;
             }
         }
     }

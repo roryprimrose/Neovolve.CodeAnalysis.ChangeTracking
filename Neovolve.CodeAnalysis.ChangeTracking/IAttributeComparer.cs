@@ -3,7 +3,8 @@
     using System.Collections.Generic;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
-    public interface IMemberComparer<T> : IElementComparer<T> where T : IMemberDefinition
+    public interface IAttributeComparer
     {
+        IEnumerable<ComparisonResult> CompareTypes(ItemMatch<IAttributeDefinition> match, ComparerOptions options);
     }
 }

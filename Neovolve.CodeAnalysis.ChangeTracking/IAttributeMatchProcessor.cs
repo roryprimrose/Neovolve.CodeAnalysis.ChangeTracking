@@ -2,7 +2,7 @@
 {
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
-    public interface IPropertyComparer : IMemberComparer<IPropertyDefinition>
+    public interface IAttributeMatchProcessor : IMatchProcessor<IAttributeDefinition>
     {
     }
 }

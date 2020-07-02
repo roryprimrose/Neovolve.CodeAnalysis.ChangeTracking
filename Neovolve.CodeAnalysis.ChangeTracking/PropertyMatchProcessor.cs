@@ -18,7 +18,7 @@
         protected override IEnumerable<ComparisonResult> EvaluateMatch(ItemMatch<IPropertyDefinition> match,
             ComparerOptions options)
         {
-            return _comparer.CompareTypes(match, options);
+            return _comparer.CompareItems(match, options);
         }
 
         protected override bool IsItemMatch(IPropertyDefinition oldItem, IPropertyDefinition newItem)

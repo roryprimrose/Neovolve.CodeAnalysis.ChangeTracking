@@ -5,6 +5,6 @@
 
     public interface IElementComparer<T> where T : IElementDefinition
     {
-        IEnumerable<ComparisonResult> CompareTypes(ItemMatch<T> match, ComparerOptions options);
+        IEnumerable<ComparisonResult> CompareItems(ItemMatch<T> match, ComparerOptions options);
     }
 }

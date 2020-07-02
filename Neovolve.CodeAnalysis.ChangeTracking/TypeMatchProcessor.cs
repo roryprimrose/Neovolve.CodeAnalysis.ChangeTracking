@@ -26,7 +26,7 @@
 
         protected override IEnumerable<ComparisonResult> EvaluateMatch(ItemMatch<ITypeDefinition> match, ComparerOptions options)
         {
-            var results = _comparer.CompareTypes(match, options);
+            var results = _comparer.CompareItems(match, options);
 
             foreach (var result in results)
             {
