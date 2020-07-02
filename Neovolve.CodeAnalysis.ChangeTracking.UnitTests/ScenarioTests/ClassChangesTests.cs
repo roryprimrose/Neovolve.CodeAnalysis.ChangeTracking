@@ -6,6 +6,7 @@
     using System.Threading.Tasks;
     using FluentAssertions;
     using Microsoft.Extensions.Logging;
+    using Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Models;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -167,6 +168,57 @@
             OutputResult(result);
 
             result.ChangeType.Should().Be(SemVerChangeType.None);
+        }
+
+        [Fact]
+        public async Task ReturnsNoneWhenRenamingGenericTypeParameter()
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new CodeSource(TypeDefinitionCode.ClassWithMultipleGenericConstraints)
+            };
+            var newCode = new List<CodeSource>
+            {
+                new CodeSource(
+                    TypeDefinitionCode.ClassWithMultipleGenericConstraints.Replace("TValue", "TUpdatedValue"))
+            };
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            OutputResult(result);
+
+            result.ChangeType.Should().Be(SemVerChangeType.None);
+        }
+
+        [Fact]
+        public void TestChildClassesAttributes()
+        {
+            throw new NotImplementedException();
+        }
+
+        [Fact]
+        public void TestChildInterfacesAttributes()
+        {
+            throw new NotImplementedException();
+        }
+
+        [Fact]
+        public void TestClassAttributes()
+        {
+            throw new NotImplementedException();
+        }
+
+        [Fact]
+        public void TestGenericTypeConstraints()
+        {
+            throw new NotImplementedException();
+        }
+
+        [Fact]
+        public void TestGenericTypes()
+        {
+            throw new NotImplementedException();
         }
 
         private void OutputResult(ChangeCalculatorResult result)

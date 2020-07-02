@@ -84,8 +84,8 @@
             IConstraintListDefinition oldConstraintList,
             IConstraintListDefinition newConstraintList)
         {
-            var oldConstraintCount = oldConstraintList?.Constraints.Count;
-            var newConstraintCount = newConstraintList?.Constraints.Count;
+            var oldConstraintCount = oldConstraintList?.Constraints.Count ?? 0;
+            var newConstraintCount = newConstraintList?.Constraints.Count ?? 0;
 
             if (oldConstraintCount == 0
                 && newConstraintCount == 0)
@@ -183,7 +183,7 @@
             for (var index = 0; index < oldTypeParameters.Count; index++)
             {
                 var oldName = oldTypeParameters[index];
-                var newName = oldTypeParameters[index];
+                var newName = newTypeParameters[index];
 
                 var oldConstraints = match.OldItem.GenericConstraints.FirstOrDefault(x => x.Name == oldName);
                 var newConstraints = match.NewItem.GenericConstraints.FirstOrDefault(x => x.Name == newName);

@@ -16,7 +16,24 @@
 
         protected override bool IsItemMatch(ITypeDefinition oldItem, ITypeDefinition newItem)
         {
-            return oldItem.FullName == newItem.FullName;
+            // Types are the same if they have the same name with the same number of generic type parameters
+            // Check the number of generic type parameters first because if the number is different then it doesn't matter about the name
+            // If it is a generic type then we need to parse the type parameters out to validate the name
+            if (oldItem.GenericTypeParameters.Count != newItem.GenericTypeParameters.Count)
+            {
+                return false;
+            }
+
+            if (oldItem.GenericTypeParameters.Count == 0)
+            {
+                return oldItem.FullName == newItem.FullName;
+            }
+
+            // Both the types are generic types
+            var oldName = oldItem.GetFullNameWithoutGenericTypes();
+            var newName = newItem.GetFullNameWithoutGenericTypes();
+
+            return oldName == newName;
         }
 
         protected override bool IsVisible(ITypeDefinition item)

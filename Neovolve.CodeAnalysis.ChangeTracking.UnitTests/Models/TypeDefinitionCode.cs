@@ -135,6 +135,9 @@ namespace MyNamespace
 
     public class MyClass<TKey, TValue> : IEnumerable<TKey> where TKey : Stream, new() where TValue : struct
     {
+        public TKey DefaultKey;
+        public TValue GetValue(TKey key);
+        public TValue RandomValue { get; set; }
     }
 }";
 

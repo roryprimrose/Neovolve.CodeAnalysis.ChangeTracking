@@ -19,12 +19,6 @@
             Ensure.Any.IsNotNull(match, nameof(match));
             Ensure.Any.IsNotNull(options, nameof(options));
 
-            if (string.Equals(match.OldItem.FullName, match.NewItem.FullName, StringComparison.Ordinal) == false)
-            {
-                throw new InvalidOperationException(
-                    "The two items cannot be compared because they have different Name values.");
-            }
-
             if (match.OldItem.IsVisible == false
                 && match.NewItem.IsVisible == false)
             {
