@@ -82,10 +82,9 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.ScenarioTests
             result.ChangeType.Should().Be(expected);
         }
 
-        [Fact]
+        [Fact(Skip = "Not implemented yet")]
         public void TestPropertyAttributes()
         {
-            throw new NotImplementedException();
         }
 
         [Theory]

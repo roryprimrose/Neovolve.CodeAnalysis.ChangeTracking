@@ -13,12 +13,7 @@
 
         protected MatchProcessor(IMatchEvaluator evaluator, ILogger? logger)
         {
-            if (evaluator == null)
-            {
-                throw new ArgumentNullException(nameof(evaluator));
-            }
-
-            _evaluator = evaluator;
+            _evaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             _logger = logger;
         }
 

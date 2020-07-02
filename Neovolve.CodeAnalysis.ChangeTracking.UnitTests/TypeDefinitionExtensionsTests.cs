@@ -9,35 +9,35 @@
     public class TypeDefinitionExtensionsTests
     {
         [Fact]
-        public void GetFullNameWithoutGenericTypesReturnsFullNameWhenNotGenericType()
+        public void GetNameWithoutGenericTypesReturnsNameWhenNotGenericType()
         {
             var sut = new TestClassDefinition();
 
-            var actual = sut.GetFullNameWithoutGenericTypes();
+            var actual = sut.GetNameWithoutGenericTypes();
 
-            actual.Should().Be(sut.FullName);
+            actual.Should().Be(sut.Name);
         }
 
         [Fact]
-        public void GetFullNameWithoutGenericTypesReturnsFullNameWithoutGenericTypes()
+        public void GetNameWithoutGenericTypesReturnsNameWithoutGenericTypes()
         {
             var expected = Guid.NewGuid().ToString("N");
             var genericTypeParameters = new List<string> { "TKey","TValue"}.AsReadOnly();
             var sut = new TestClassDefinition
             {
                 GenericTypeParameters = genericTypeParameters,
-                FullName = expected + "<TKey, TValue>"
+                Name = expected + "<TKey, TValue>"
             };
 
-            var actual = sut.GetFullNameWithoutGenericTypes();
+            var actual = sut.GetNameWithoutGenericTypes();
 
             actual.Should().Be(expected);
         }
 
         [Fact]
-        public void GetFullNameWithoutGenericTypesThrowsExceptionWithNullDefinition()
+        public void GetNameWithoutGenericTypesThrowsExceptionWithNullDefinition()
         {
-            Action action = () => TypeDefinitionExtensions.GetFullNameWithoutGenericTypes(null!);
+            Action action = () => TypeDefinitionExtensions.GetNameWithoutGenericTypes(null!);
 
             action.Should().Throw<ArgumentNullException>();
         }

@@ -138,6 +138,11 @@ namespace MyNamespace
         public TKey DefaultKey;
         public TValue GetValue(TKey key);
         public TValue RandomValue { get; set; }
+
+        public class MyChildClass
+        {
+            public TValue Value;
+        }
     }
 }";
 
