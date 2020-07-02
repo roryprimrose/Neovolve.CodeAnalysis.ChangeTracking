@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using EnsureThat;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
     public class TypeComparer : ElementComparer<ITypeDefinition>, ITypeComparer
@@ -22,8 +21,15 @@
         protected override IEnumerable<ComparisonResult> EvaluateMatch(ItemMatch<ITypeDefinition> match,
             ComparerOptions options)
         {
-            Ensure.Any.IsNotNull(match, nameof(match));
-            Ensure.Any.IsNotNull(options, nameof(options));
+            if (match == null)
+            {
+                throw new ArgumentNullException(nameof(match));
+            }
+
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
 
             // Check for a change in type
             if (match.OldItem.GetType() != match.NewItem.GetType())

@@ -1,8 +1,8 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
-    using EnsureThat;
     using Microsoft.Extensions.Logging;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
@@ -13,7 +13,10 @@
 
         protected MatchProcessor(IMatchEvaluator evaluator, ILogger? logger)
         {
-            Ensure.Any.IsNotNull(evaluator, nameof(evaluator));
+            if (evaluator == null)
+            {
+                throw new ArgumentNullException(nameof(evaluator));
+            }
 
             _evaluator = evaluator;
             _logger = logger;

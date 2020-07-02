@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using EnsureThat;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
     public abstract class ElementComparer<T> : IElementComparer<T> where T : IElementDefinition
@@ -16,8 +15,15 @@
 
         public virtual IEnumerable<ComparisonResult> CompareItems(ItemMatch<T> match, ComparerOptions options)
         {
-            Ensure.Any.IsNotNull(match, nameof(match));
-            Ensure.Any.IsNotNull(options, nameof(options));
+            if (match == null)
+            {
+                throw new ArgumentNullException(nameof(match));
+            }
+
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
 
             if (match.OldItem.IsVisible == false
                 && match.NewItem.IsVisible == false)

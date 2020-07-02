@@ -1,10 +1,10 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using EnsureThat;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -28,9 +28,20 @@
             ComparerOptions options,
             CancellationToken cancellationToken)
         {
-            Ensure.Any.IsNotNull(calculator, nameof(calculator));
-            Ensure.Any.IsNotNull(oldCode, nameof(oldCode));
-            Ensure.Any.IsNotNull(newCode, nameof(newCode));
+            if (calculator == null)
+            {
+                throw new ArgumentNullException(nameof(calculator));
+            }
+
+            if (oldCode == null)
+            {
+                throw new ArgumentNullException(nameof(oldCode));
+            }
+
+            if (newCode == null)
+            {
+                throw new ArgumentNullException(nameof(newCode));
+            }
 
             // Convert all the old and new code into SyntaxNode objects
             var oldTask = ParseCode(oldCode, cancellationToken);
@@ -60,10 +71,25 @@
             IEnumerable<SyntaxNode> newNodes,
             ComparerOptions options)
         {
-            Ensure.Any.IsNotNull(calculator, nameof(calculator));
-            Ensure.Any.IsNotNull(oldNodes, nameof(oldNodes));
-            Ensure.Any.IsNotNull(newNodes, nameof(newNodes));
-            Ensure.Any.IsNotNull(options, nameof(options));
+            if (calculator == null)
+            {
+                throw new ArgumentNullException(nameof(calculator));
+            }
+
+            if (oldNodes == null)
+            {
+                throw new ArgumentNullException(nameof(oldNodes));
+            }
+
+            if (newNodes == null)
+            {
+                throw new ArgumentNullException(nameof(newNodes));
+            }
+
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
 
             var oldTypes = ResolveDeclaredTypes(oldNodes);
             var newTypes = ResolveDeclaredTypes(newNodes);

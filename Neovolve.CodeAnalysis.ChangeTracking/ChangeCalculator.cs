@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.Globalization;
-    using EnsureThat;
     using Microsoft.Extensions.Logging;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
@@ -21,8 +20,15 @@
         public ChangeCalculatorResult CalculateChanges(IEnumerable<ITypeDefinition> oldTypes,
             IEnumerable<ITypeDefinition> newTypes, ComparerOptions options)
         {
-            Ensure.Any.IsNotNull(oldTypes, nameof(oldTypes));
-            Ensure.Any.IsNotNull(newTypes, nameof(newTypes));
+            if (oldTypes == null)
+            {
+                throw new ArgumentNullException(nameof(oldTypes));
+            }
+
+            if (newTypes == null)
+            {
+                throw new ArgumentNullException(nameof(newTypes));
+            }
 
             var result = new ChangeCalculatorResult();
 

@@ -3,15 +3,21 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using EnsureThat;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
     public class MatchEvaluator : IMatchEvaluator
     {
         public IMatchResults<T> MatchItems<T>(IEnumerable<T> oldItems, IEnumerable<T> newItems, Func<T, T, bool> evaluator) where T : IItemDefinition
         {
-            Ensure.Any.IsNotNull(oldItems, nameof(oldItems));
-            Ensure.Any.IsNotNull(newItems, nameof(newItems));
+            if (oldItems == null)
+            {
+                throw new ArgumentNullException(nameof(oldItems));
+            }
+
+            if (newItems == null)
+            {
+                throw new ArgumentNullException(nameof(newItems));
+            }
 
             var matches = new List<ItemMatch<T>>();
 

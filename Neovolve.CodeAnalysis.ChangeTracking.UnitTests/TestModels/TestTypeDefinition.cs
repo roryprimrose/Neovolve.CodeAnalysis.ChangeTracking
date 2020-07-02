@@ -20,7 +20,7 @@
         public IReadOnlyCollection<IConstraintListDefinition> GenericConstraints { get; set; } =
             new List<IConstraintListDefinition>();
 
-        public IReadOnlyCollection<string> GenericTypeParameters { get; } = new List<string>();
+        public IReadOnlyCollection<string> GenericTypeParameters { get; set; } = new List<string>();
 
         public IReadOnlyCollection<string> ImplementedTypes { get; set; } = new List<string>();
         public bool IsVisible { get; set; } = true;

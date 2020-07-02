@@ -1,8 +1,8 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking
 {
+    using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using EnsureThat;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
     /// <summary>
@@ -23,9 +23,20 @@
             IEnumerable<T> itemsRemoved,
             IEnumerable<T> itemsAdded)
         {
-            Ensure.Any.IsNotNull(matchingItems, nameof(matchingItems));
-            Ensure.Any.IsNotNull(itemsRemoved, nameof(itemsRemoved));
-            Ensure.Any.IsNotNull(itemsAdded, nameof(itemsAdded));
+            if (matchingItems == null)
+            {
+                throw new ArgumentNullException(nameof(matchingItems));
+            }
+
+            if (itemsRemoved == null)
+            {
+                throw new ArgumentNullException(nameof(itemsRemoved));
+            }
+
+            if (itemsAdded == null)
+            {
+                throw new ArgumentNullException(nameof(itemsAdded));
+            }
 
             MatchingItems = new ReadOnlyCollection<ItemMatch<T>>(matchingItems.FastToList());
             ItemsRemoved = new ReadOnlyCollection<T>(itemsRemoved.FastToList());
