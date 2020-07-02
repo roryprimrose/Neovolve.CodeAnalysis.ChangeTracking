@@ -258,6 +258,43 @@
         }
 
         [Fact]
+        public async Task GenericTypeParametersReturnsEmptyWhenNotGenericType()
+        {
+            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithoutParent)
+                .ConfigureAwait(false);
+
+            var sut = new ClassDefinition(node);
+
+            sut.GenericTypeParameters.Should().BeEmpty();
+        }
+
+        [Fact]
+        public async Task GenericTypeParametersReturnsNameOfSingleGenericType()
+        {
+            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithGenericType)
+                .ConfigureAwait(false);
+
+            var sut = new ClassDefinition(node);
+
+            sut.GenericTypeParameters.Should().HaveCount(1);
+            sut.GenericTypeParameters.Single().Should().Be("T");
+        }
+
+        [Fact]
+        public async Task GenericTypeParametersReturnsNamesOfMultipleGenericTypes()
+        {
+            var node = await TestNode
+                .FindNode<InterfaceDeclarationSyntax>(TypeDefinitionCode.InterfaceWithMultipleGenericTypes)
+                .ConfigureAwait(false);
+
+            var sut = new InterfaceDefinition(node);
+
+            sut.GenericTypeParameters.Should().HaveCount(2);
+            sut.GenericTypeParameters.First().Should().Be("T");
+            sut.GenericTypeParameters.Skip(1).First().Should().Be("V");
+        }
+
+        [Fact]
         public async Task ImplementedTypesReturnsEmptyWhenNoImplementedTypesDeclared()
         {
             var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithoutParent)

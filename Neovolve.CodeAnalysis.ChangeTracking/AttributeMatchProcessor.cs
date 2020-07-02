@@ -15,6 +15,18 @@
             _comparer = comparer ?? throw new ArgumentNullException(nameof(comparer));
         }
 
+        public override IEnumerable<ComparisonResult> CalculateChanges(IEnumerable<IAttributeDefinition> oldItems,
+            IEnumerable<IAttributeDefinition> newItems, ComparerOptions options)
+        {
+            if (options.SkipAttributes)
+            {
+                // We are not going to evaluate any attributes
+                return Array.Empty<ComparisonResult>();
+            }
+
+            return base.CalculateChanges(oldItems, newItems, options);
+        }
+
         protected override IEnumerable<ComparisonResult> EvaluateMatch(ItemMatch<IAttributeDefinition> match,
             ComparerOptions options)
         {
@@ -23,6 +35,8 @@
 
         protected override bool IsItemMatch(IAttributeDefinition oldItem, IAttributeDefinition newItem)
         {
+            // NOTE: This is not able to adequately handle multiple attribute definitions
+            // Unfortunately there is no accurate way to match up different usages of the same attribute type when the argument list may have been altered
             return oldItem.Name == newItem.Name;
         }
 

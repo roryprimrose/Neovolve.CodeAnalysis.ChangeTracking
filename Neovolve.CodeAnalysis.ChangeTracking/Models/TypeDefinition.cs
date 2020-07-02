@@ -32,12 +32,12 @@
             Attributes = node.DetermineAttributes(this);
             IsVisible = node.IsVisible();
             ImplementedTypes = DetermineImplementedTypes(node);
-            GenericConstraints = Array.Empty<ConstraintListDefinition>();
             Location = node.DetermineLocation();
             Properties = DetermineProperties(node);
             ChildClasses = DetermineChildClasses(node);
             ChildInterfaces = DetermineChildInterfaces(node);
             ChildTypes = DetermineChildTypes(ChildClasses, ChildInterfaces);
+            GenericTypeParameters = DetermineGenericTypeParameters(node);
             GenericConstraints = DetermineGenericConstraints(node);
         }
 
@@ -58,12 +58,12 @@
             Attributes = node.DetermineAttributes(this);
             IsVisible = node.IsVisible();
             ImplementedTypes = DetermineImplementedTypes(node);
-            GenericConstraints = Array.Empty<ConstraintListDefinition>();
             Location = node.DetermineLocation();
             Properties = DetermineProperties(node);
             ChildClasses = DetermineChildClasses(node);
             ChildInterfaces = DetermineChildInterfaces(node);
             ChildTypes = DetermineChildTypes(ChildClasses, ChildInterfaces);
+            GenericTypeParameters = DetermineGenericTypeParameters(node);
             GenericConstraints = DetermineGenericConstraints(node);
         }
 
@@ -91,6 +91,23 @@
             }
 
             return constraintLists.AsReadOnly();
+        }
+
+        private static IReadOnlyCollection<string> DetermineGenericTypeParameters(TypeDeclarationSyntax node)
+        {
+            var typeParameters = new List<string>();
+
+            if (node.TypeParameterList == null)
+            {
+                return typeParameters;
+            }
+
+            foreach (var typeParameter in node.TypeParameterList.Parameters)
+            {
+                typeParameters.Add(typeParameter.Identifier.Text);
+            }
+
+            return typeParameters;
         }
 
         private static IReadOnlyCollection<string> DetermineImplementedTypes(BaseTypeDeclarationSyntax node)
@@ -172,6 +189,9 @@
 
         /// <inheritdoc />
         public IReadOnlyCollection<IConstraintListDefinition> GenericConstraints { get; protected set; }
+
+        /// <inheritdoc />
+        public IReadOnlyCollection<string> GenericTypeParameters { get; }
 
         /// <inheritdoc />
         public IReadOnlyCollection<string> ImplementedTypes { get; }

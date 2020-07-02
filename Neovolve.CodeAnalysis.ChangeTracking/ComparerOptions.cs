@@ -8,5 +8,10 @@
         {
             return new ComparerOptions();
         }
+
+        /// <summary>
+        ///     Determines whether attribute changes should be evaluated.
+        /// </summary>
+        public bool SkipAttributes { get; set; } = false;
     }
 }

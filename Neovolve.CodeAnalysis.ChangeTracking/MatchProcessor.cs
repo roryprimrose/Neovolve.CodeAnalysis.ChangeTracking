@@ -19,7 +19,7 @@
             _logger = logger;
         }
 
-        public IEnumerable<ComparisonResult> CalculateChanges(IEnumerable<T> oldItems,
+        public virtual IEnumerable<ComparisonResult> CalculateChanges(IEnumerable<T> oldItems,
             IEnumerable<T> newItems, ComparerOptions options)
         {
             var matchingNodes = _evaluator.MatchItems(oldItems, newItems, IsItemMatch);

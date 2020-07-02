@@ -30,6 +30,11 @@
         public IReadOnlyCollection<IConstraintListDefinition> GenericConstraints { get; }
 
         /// <summary>
+        ///     Gets the generic type parameters declared on the type.
+        /// </summary>
+        public IReadOnlyCollection<string> GenericTypeParameters { get; }
+
+        /// <summary>
         ///     Gets the types implemented/inherited by this type.
         /// </summary>
         public IReadOnlyCollection<string> ImplementedTypes { get; }
