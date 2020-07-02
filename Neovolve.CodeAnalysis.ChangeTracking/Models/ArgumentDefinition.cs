@@ -13,8 +13,9 @@
         ///     Initializes a new instance of the <see cref="ArgumentDefinition" /> class.
         /// </summary>
         /// <param name="node">The node that defines the argument.</param>
+        /// <param name="ordinalIndex">The ordinal index where the argument exists in the list of arguments.</param>
         /// <exception cref="ArgumentNullException">The <paramref name="node" /> parameter is <c>null</c>.</exception>
-        public ArgumentDefinition(AttributeArgumentSyntax node)
+        public ArgumentDefinition(AttributeArgumentSyntax node, int? ordinalIndex)
         {
             if (node == null)
             {
@@ -26,12 +27,14 @@
 
             if (node.NameColon == null)
             {
+                OrdinalIndex = ordinalIndex;
                 Name = string.Empty;
                 ArgumentType = ArgumentType.Ordinal;
                 Description = $"Ordinal argument {Value}";
             }
             else
             {
+                OrdinalIndex = null;
                 Name = node.NameColon.Name.ToString();
                 ArgumentType = ArgumentType.Named;
                 Description = $"Named argument {Name}";
@@ -42,15 +45,18 @@
         public ArgumentType ArgumentType { get; }
 
         /// <inheritdoc />
+        public string Description { get; }
+
+        /// <inheritdoc />
         public DefinitionLocation Location { get; }
 
         /// <inheritdoc />
         public string Name { get; }
 
         /// <inheritdoc />
-        public string Value { get; }
+        public int? OrdinalIndex { get; }
 
         /// <inheritdoc />
-        public string Description { get; }
+        public string Value { get; }
     }
 }

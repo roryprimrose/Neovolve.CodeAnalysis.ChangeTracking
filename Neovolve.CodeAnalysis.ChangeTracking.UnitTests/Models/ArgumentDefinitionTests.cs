@@ -15,9 +15,33 @@
             var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.NamedArgument)
                 .ConfigureAwait(false);
 
-            var sut = new ArgumentDefinition(node);
+            var sut = new ArgumentDefinition(node, null);
 
             sut.ArgumentType.Should().Be(ArgumentType.Named);
+        }
+
+        [Fact]
+        public async Task OrdinalIndexReturnsNullForNamedArgument()
+        {
+            var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.NamedArgument)
+                .ConfigureAwait(false);
+
+            var sut = new ArgumentDefinition(node, 1);
+
+            sut.OrdinalIndex.Should().NotHaveValue();
+        }
+
+        [Fact]
+        public async Task OrdinalIndexReturnsParameterValueForOrdinalArgument()
+        {
+            var index = Environment.TickCount;
+
+            var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.OrdinalArgument)
+                .ConfigureAwait(false);
+
+            var sut = new ArgumentDefinition(node, index);
+
+            sut.OrdinalIndex.Should().Be(index);
         }
 
         [Fact]
@@ -26,7 +50,7 @@
             var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.OrdinalArgument)
                 .ConfigureAwait(false);
 
-            var sut = new ArgumentDefinition(node);
+            var sut = new ArgumentDefinition(node, 1);
 
             sut.ArgumentType.Should().Be(ArgumentType.Ordinal);
         }
@@ -37,7 +61,7 @@
             var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.OrdinalArgument)
                 .ConfigureAwait(false);
 
-            var sut = new ArgumentDefinition(node);
+            var sut = new ArgumentDefinition(node, 1);
 
             sut.Location.FilePath.Should().BeEmpty();
         }
@@ -50,7 +74,7 @@
             var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.OrdinalArgument, filePath)
                 .ConfigureAwait(false);
 
-            var sut = new ArgumentDefinition(node);
+            var sut = new ArgumentDefinition(node, 1);
 
             sut.Location.LineIndex.Should().Be(3);
             sut.Location.CharacterIndex.Should().Be(21);
@@ -64,7 +88,7 @@
             var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.OrdinalArgument, filePath)
                 .ConfigureAwait(false);
 
-            var sut = new ArgumentDefinition(node);
+            var sut = new ArgumentDefinition(node, 1);
 
             sut.Location.FilePath.Should().Be(filePath);
         }
@@ -75,7 +99,7 @@
             var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.OrdinalArgument)
                 .ConfigureAwait(false);
 
-            var sut = new ArgumentDefinition(node);
+            var sut = new ArgumentDefinition(node, 1);
 
             sut.Name.Should().BeEmpty();
         }
@@ -86,7 +110,7 @@
             var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.NamedArgument)
                 .ConfigureAwait(false);
 
-            var sut = new ArgumentDefinition(node);
+            var sut = new ArgumentDefinition(node, null);
 
             sut.Name.Should().Be("first");
         }
@@ -94,7 +118,7 @@
         [Fact]
         public void ThrowsExceptionWhenCreatedWithNullNode()
         {
-            Action action = () => new ArgumentDefinition(null!);
+            Action action = () => new ArgumentDefinition(null!, 1);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -105,7 +129,7 @@
             var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.NamedArgument)
                 .ConfigureAwait(false);
 
-            var sut = new ArgumentDefinition(node);
+            var sut = new ArgumentDefinition(node, 1);
 
             sut.Value.Should().Be("123");
         }
@@ -116,7 +140,7 @@
             var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.OrdinalArgument)
                 .ConfigureAwait(false);
 
-            var sut = new ArgumentDefinition(node);
+            var sut = new ArgumentDefinition(node, 1);
 
             sut.Value.Should().Be("123");
         }

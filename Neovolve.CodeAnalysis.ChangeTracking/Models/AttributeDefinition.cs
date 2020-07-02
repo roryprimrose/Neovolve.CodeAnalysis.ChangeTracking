@@ -42,11 +42,14 @@
 
             var definitions = new List<ArgumentDefinition>();
 
+            var index = 0;
+
             foreach (var argument in arguments.Arguments)
             {
-                var definition = new ArgumentDefinition(argument);
+                var definition = new ArgumentDefinition(argument, index);
 
                 definitions.Add(definition);
+                index++;
             }
 
             return definitions.AsReadOnly();

@@ -12,6 +12,11 @@
         ArgumentType ArgumentType { get; }
 
         /// <summary>
+        ///     Gets the ordinal index for where the argument exists in the list of arguments.
+        /// </summary>
+        public int? OrdinalIndex { get; }
+
+        /// <summary>
         ///     Gets the value of the argument.
         /// </summary>
         string Value { get; }

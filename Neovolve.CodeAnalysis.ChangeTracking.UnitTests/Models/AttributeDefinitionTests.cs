@@ -12,6 +12,131 @@
 
     public class AttributeDefinitionTests
     {
+        [Theory]
+        [InlineData(AttributeDefinitionCode.SimpleAttribute)]
+        [InlineData(AttributeDefinitionCode.SimpleAttributeWithBrackets)]
+        public async Task ArgumentsReturnsEmptyWhenNoParametersDefined(string code)
+        {
+            var declaringItem = Substitute.For<IMemberDefinition>();
+
+            var node = await TestNode.FindNode<AttributeSyntax>(code)
+                .ConfigureAwait(false);
+
+            var sut = new AttributeDefinition(declaringItem, node);
+
+            sut.Arguments.Should().BeEmpty();
+        }
+
+        [Fact]
+        public async Task ArgumentsReturnsMixedOrdinalAndNamedArguments()
+        {
+            var declaringItem = Substitute.For<IMemberDefinition>();
+
+            var node = await TestNode
+                .FindNode<AttributeSyntax>(AttributeDefinitionCode.AttributeWithMixedOrdinalAndNamedArguments)
+                .ConfigureAwait(false);
+
+            var sut = new AttributeDefinition(declaringItem, node);
+
+            sut.Arguments.Should().HaveCount(4);
+
+            var firstArgument = sut.Arguments.First();
+
+            firstArgument.Value.Should().Be("\"stringValue\"");
+            firstArgument.OrdinalIndex.Should().Be(0);
+            firstArgument.Name.Should().BeEmpty();
+            firstArgument.ArgumentType.Should().Be(ArgumentType.Ordinal);
+
+            var secondArgument = sut.Arguments.Skip(1).First();
+
+            secondArgument.Value.Should().Be("123");
+            secondArgument.OrdinalIndex.Should().Be(1);
+            secondArgument.Name.Should().BeEmpty();
+            secondArgument.ArgumentType.Should().Be(ArgumentType.Ordinal);
+
+            var thirdArgument = sut.Arguments.Skip(2).First();
+
+            thirdArgument.Value.Should().Be("true");
+            thirdArgument.OrdinalIndex.Should().NotHaveValue();
+            thirdArgument.Name.Should().Be("first");
+            thirdArgument.ArgumentType.Should().Be(ArgumentType.Named);
+
+            var fourthArgument = sut.Arguments.Skip(3).First();
+
+            fourthArgument.Value.Should().Be("SomeConstant");
+            fourthArgument.OrdinalIndex.Should().NotHaveValue();
+            fourthArgument.Name.Should().Be("second");
+            fourthArgument.ArgumentType.Should().Be(ArgumentType.Named);
+        }
+
+        [Fact]
+        public async Task ArgumentsReturnsNamedArguments()
+        {
+            var declaringItem = Substitute.For<IMemberDefinition>();
+
+            var node = await TestNode.FindNode<AttributeSyntax>(AttributeDefinitionCode.AttributeWithNamedArguments)
+                .ConfigureAwait(false);
+
+            var sut = new AttributeDefinition(declaringItem, node);
+
+            sut.Arguments.Should().HaveCount(3);
+
+            var firstArgument = sut.Arguments.First();
+
+            firstArgument.Value.Should().Be("\"stringValue\"");
+            firstArgument.OrdinalIndex.Should().NotHaveValue();
+            firstArgument.Name.Should().Be("first");
+            firstArgument.ArgumentType.Should().Be(ArgumentType.Named);
+
+            var secondArgument = sut.Arguments.Skip(1).First();
+
+            secondArgument.Value.Should().Be("123");
+            secondArgument.OrdinalIndex.Should().NotHaveValue();
+            secondArgument.Name.Should().Be("second");
+            secondArgument.ArgumentType.Should().Be(ArgumentType.Named);
+
+            var thirdArgument = sut.Arguments.Skip(2).First();
+
+            thirdArgument.Value.Should().Be("true");
+            thirdArgument.OrdinalIndex.Should().NotHaveValue();
+            thirdArgument.Name.Should().Be("third");
+            thirdArgument.ArgumentType.Should().Be(ArgumentType.Named);
+        }
+
+        [Fact]
+        public async Task ArgumentsReturnsOrdinalArguments()
+        {
+            var declaringItem = Substitute.For<IMemberDefinition>();
+
+            var node = await TestNode.FindNode<AttributeSyntax>(AttributeDefinitionCode.AttributeWithOrdinalArguments)
+                .ConfigureAwait(false);
+
+            var sut = new AttributeDefinition(declaringItem, node);
+
+            sut.Arguments.Should().HaveCount(3);
+
+            var firstArgument = sut.Arguments.First();
+
+            firstArgument.Value.Should().Be("\"stringValue\"");
+            firstArgument.OrdinalIndex.Should().Be(0);
+            firstArgument.Name.Should().BeEmpty();
+            firstArgument.ArgumentType.Should().Be(ArgumentType.Ordinal);
+
+            var secondArgument = sut.Arguments.Skip(1).First();
+
+            secondArgument.Value.Should().Be("123");
+            secondArgument.OrdinalIndex.Should().Be(1);
+            secondArgument.Name.Should().BeEmpty();
+            secondArgument.ArgumentType.Should().Be(ArgumentType.Ordinal);
+
+            var thirdArgument = sut.Arguments.Skip(2).First();
+
+            thirdArgument.Value.Should().Be("true");
+            thirdArgument.OrdinalIndex.Should().Be(2);
+            thirdArgument.Name.Should().BeEmpty();
+            thirdArgument.ArgumentType.Should().Be(ArgumentType.Ordinal);
+        }
+
         [Fact]
         public async Task DeclaredOnReturnsParameterValue()
         {
@@ -107,121 +232,6 @@
             var sut = new AttributeDefinition(declaringItem, node);
 
             sut.Name.Should().Be("SimpleAttribute");
-        }
-
-        [Theory]
-        [InlineData(AttributeDefinitionCode.SimpleAttribute)]
-        [InlineData(AttributeDefinitionCode.SimpleAttributeWithBrackets)]
-        public async Task ParametersReturnsEmptyWhenNoParametersDefined(string code)
-        {
-            var declaringItem = Substitute.For<IMemberDefinition>();
-
-            var node = await TestNode.FindNode<AttributeSyntax>(code)
-                .ConfigureAwait(false);
-
-            var sut = new AttributeDefinition(declaringItem, node);
-
-            sut.Arguments.Should().BeEmpty();
-        }
-
-        [Fact]
-        public async Task ParametersReturnsMixedOrdinalAndNamedArguments()
-        {
-            var declaringItem = Substitute.For<IMemberDefinition>();
-
-            var node = await TestNode
-                .FindNode<AttributeSyntax>(AttributeDefinitionCode.AttributeWithMixedOrdinalAndNamedArguments)
-                .ConfigureAwait(false);
-
-            var sut = new AttributeDefinition(declaringItem, node);
-
-            sut.Arguments.Should().HaveCount(4);
-
-            var firstArgument = sut.Arguments.First();
-
-            firstArgument.Value.Should().Be("\"stringValue\"");
-            firstArgument.Name.Should().BeEmpty();
-            firstArgument.ArgumentType.Should().Be(ArgumentType.Ordinal);
-
-            var secondArgument = sut.Arguments.Skip(1).First();
-
-            secondArgument.Value.Should().Be("123");
-            secondArgument.Name.Should().BeEmpty();
-            secondArgument.ArgumentType.Should().Be(ArgumentType.Ordinal);
-
-            var thirdArgument = sut.Arguments.Skip(2).First();
-
-            thirdArgument.Value.Should().Be("true");
-            thirdArgument.Name.Should().Be("first");
-            thirdArgument.ArgumentType.Should().Be(ArgumentType.Named);
-
-            var fourthArgument = sut.Arguments.Skip(3).First();
-
-            fourthArgument.Value.Should().Be("SomeConstant");
-            fourthArgument.Name.Should().Be("second");
-            fourthArgument.ArgumentType.Should().Be(ArgumentType.Named);
-        }
-
-        [Fact]
-        public async Task ParametersReturnsNamedArguments()
-        {
-            var declaringItem = Substitute.For<IMemberDefinition>();
-
-            var node = await TestNode.FindNode<AttributeSyntax>(AttributeDefinitionCode.AttributeWithNamedArguments)
-                .ConfigureAwait(false);
-
-            var sut = new AttributeDefinition(declaringItem, node);
-
-            sut.Arguments.Should().HaveCount(3);
-
-            var firstArgument = sut.Arguments.First();
-
-            firstArgument.Value.Should().Be("\"stringValue\"");
-            firstArgument.Name.Should().Be("first");
-            firstArgument.ArgumentType.Should().Be(ArgumentType.Named);
-
-            var secondArgument = sut.Arguments.Skip(1).First();
-
-            secondArgument.Value.Should().Be("123");
-            secondArgument.Name.Should().Be("second");
-            secondArgument.ArgumentType.Should().Be(ArgumentType.Named);
-
-            var thirdArgument = sut.Arguments.Skip(2).First();
-
-            thirdArgument.Value.Should().Be("true");
-            thirdArgument.Name.Should().Be("third");
-            thirdArgument.ArgumentType.Should().Be(ArgumentType.Named);
-        }
-
-        [Fact]
-        public async Task ParametersReturnsOrdinalArguments()
-        {
-            var declaringItem = Substitute.For<IMemberDefinition>();
-
-            var node = await TestNode.FindNode<AttributeSyntax>(AttributeDefinitionCode.AttributeWithOrdinalArguments)
-                .ConfigureAwait(false);
-
-            var sut = new AttributeDefinition(declaringItem, node);
-
-            sut.Arguments.Should().HaveCount(3);
-
-            var firstArgument = sut.Arguments.First();
-
-            firstArgument.Value.Should().Be("\"stringValue\"");
-            firstArgument.Name.Should().BeEmpty();
-            firstArgument.ArgumentType.Should().Be(ArgumentType.Ordinal);
-
-            var secondArgument = sut.Arguments.Skip(1).First();
-
-            secondArgument.Value.Should().Be("123");
-            secondArgument.Name.Should().BeEmpty();
-            secondArgument.ArgumentType.Should().Be(ArgumentType.Ordinal);
-
-            var thirdArgument = sut.Arguments.Skip(2).First();
-
-            thirdArgument.Value.Should().Be("true");
-            thirdArgument.Name.Should().BeEmpty();
-            thirdArgument.ArgumentType.Should().Be(ArgumentType.Ordinal);
         }
 
         [Fact]
