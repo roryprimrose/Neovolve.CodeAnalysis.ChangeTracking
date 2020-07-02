@@ -14,20 +14,27 @@
             Message = message;
         }
 
-        public static ComparisonResult ItemAdded(IElementDefinition newDefinition)
+        public static ComparisonResult ItemAdded(IItemDefinition newItem)
         {
-            newDefinition = newDefinition ?? throw new ArgumentNullException(nameof(newDefinition));
+            newItem = newItem ?? throw new ArgumentNullException(nameof(newItem));
 
-            var message = newDefinition + " has been added";
+            var isVisible = true;
+
+            if (newItem is IElementDefinition element)
+            {
+                isVisible = element.IsVisible;
+            }
+
+            var message = newItem.Description + " has been added";
 
             var changeType = SemVerChangeType.None;
 
-            if (newDefinition.IsVisible)
+            if (isVisible)
             {
                 changeType = SemVerChangeType.Feature;
             }
 
-            return new ComparisonResult(changeType, null, newDefinition, message);
+            return new ComparisonResult(changeType, null, newItem, message);
         }
 
         public static ComparisonResult ItemChanged<T>(SemVerChangeType changeType, ItemMatch<T> match,
@@ -43,27 +50,34 @@
             return new ComparisonResult(changeType, match.OldItem, match.NewItem, message);
         }
 
-        public static ComparisonResult ItemRemoved(IElementDefinition oldDefinition)
+        public static ComparisonResult ItemRemoved(IItemDefinition oldItem)
         {
-            oldDefinition = oldDefinition ?? throw new ArgumentNullException(nameof(oldDefinition));
+            oldItem = oldItem ?? throw new ArgumentNullException(nameof(oldItem));
 
-            var message = oldDefinition + " has been removed";
+            var isVisible = true;
+
+            if (oldItem is IElementDefinition element)
+            {
+                isVisible = element.IsVisible;
+            }
+
+            var message = oldItem.Description + " has been removed";
 
             var changeType = SemVerChangeType.None;
 
-            if (oldDefinition.IsVisible)
+            if (isVisible)
             {
                 changeType = SemVerChangeType.Breaking;
             }
 
-            return new ComparisonResult(changeType, oldDefinition, null, message);
+            return new ComparisonResult(changeType, oldItem, null, message);
         }
 
         public static ComparisonResult NoChange<T>(ItemMatch<T> match) where T : class, IItemDefinition
         {
             match = match ?? throw new ArgumentNullException(nameof(match));
 
-            var message = "No change on " + match.OldItem;
+            var message = "No change on " + match.OldItem.Description;
 
             return new ComparisonResult(SemVerChangeType.None, match.OldItem, match.NewItem, message);
         }

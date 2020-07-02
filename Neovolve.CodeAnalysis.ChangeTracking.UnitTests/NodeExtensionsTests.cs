@@ -4,6 +4,7 @@
     using System.Linq;
     using System.Threading.Tasks;
     using FluentAssertions;
+    using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
     using Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Models;
@@ -12,6 +13,15 @@
 
     public class NodeExtensionsTests
     {
+        private const string EmptyClass = @"
+namespace MyNamespace 
+{
+    public class MyClass
+    {
+    }   
+}
+";
+
         [Fact]
         public async Task DetermineAttributesReturnsEmptyWhenNoAttributesDeclared()
         {
@@ -196,6 +206,103 @@
         public void DetermineNamespaceThrowsExceptionWithNullNode()
         {
             Action action = () => NodeExtensions.DetermineNamespace(null!);
+
+            action.Should().Throw<ArgumentNullException>();
+        }
+
+        [Theory]
+        [InlineData("", "")]
+        [InlineData("private", "private")]
+        [InlineData("internal", "internal")]
+        [InlineData("protected", "protected")]
+        [InlineData("private protected", "private protected")]
+        [InlineData("protected internal", "protected internal")]
+        [InlineData("protected private", "protected private")]
+        [InlineData("internal protected", "internal protected")]
+        [InlineData("public", "public")]
+        [InlineData("private static", "private")]
+        [InlineData("internal static", "internal")]
+        [InlineData("protected static", "protected")]
+        [InlineData("private protected static", "private protected")]
+        [InlineData("protected internal static", "protected internal")]
+        [InlineData("protected private static", "protected private")]
+        [InlineData("internal protected static", "internal protected")]
+        [InlineData("public static", "public")]
+        [InlineData("private partial", "private")]
+        [InlineData("internal partial", "internal")]
+        [InlineData("protected partial", "protected")]
+        [InlineData("private protected partial", "private protected")]
+        [InlineData("protected internal partial", "protected internal")]
+        [InlineData("protected private partial", "protected private")]
+        [InlineData("internal protected partial", "internal protected")]
+        [InlineData("public partial", "public")]
+        [InlineData("private sealed", "private")]
+        [InlineData("internal sealed", "internal")]
+        [InlineData("protected sealed", "protected")]
+        [InlineData("private protected sealed", "private protected")]
+        [InlineData("protected internal sealed", "protected internal")]
+        [InlineData("protected private sealed", "protected private")]
+        [InlineData("internal protected sealed", "internal protected")]
+        [InlineData("public sealed", "public")]
+        [InlineData("private abstract", "private")]
+        [InlineData("internal abstract", "internal")]
+        [InlineData("protected abstract", "protected")]
+        [InlineData("private protected abstract", "private protected")]
+        [InlineData("protected internal abstract", "protected internal")]
+        [InlineData("protected private abstract", "protected private")]
+        [InlineData("internal protected abstract", "internal protected")]
+        [InlineData("public abstract", "public")]
+        public async Task DetermineScopeReturnsScopeModifiers(string modifiers, string expected)
+        {
+            var code = EmptyClass.Replace("public class MyClass", modifiers + " class MyClass");
+
+            var node = await TestNode.FindNode<ClassDeclarationSyntax>(code)
+                .ConfigureAwait(false);
+
+            var actual = node.DetermineScope();
+
+            actual.Should().Be(expected);
+        }
+
+        [Fact]
+        public void DetermineScopeThrowsExceptionWithNullNode()
+        {
+            Action action = () => NodeExtensions.DetermineScope(null!);
+
+            action.Should().Throw<ArgumentNullException>();
+        }
+
+        [Theory]
+        [InlineData("", SyntaxKind.PublicKeyword, false)]
+        [InlineData("public", SyntaxKind.PublicKeyword, true)]
+        [InlineData("private", SyntaxKind.PrivateKeyword, true)]
+        [InlineData("internal", SyntaxKind.InternalKeyword, true)]
+        [InlineData("protected", SyntaxKind.ProtectedKeyword, true)]
+        [InlineData("sealed", SyntaxKind.SealedKeyword, true)]
+        [InlineData("static", SyntaxKind.StaticKeyword, true)]
+        [InlineData("new", SyntaxKind.NewKeyword, true)]
+        [InlineData("abstract", SyntaxKind.AbstractKeyword, true)]
+        [InlineData("partial", SyntaxKind.PartialKeyword, true)]
+        [InlineData("internal protected abstract", SyntaxKind.PublicKeyword, false)]
+        [InlineData("internal protected abstract", SyntaxKind.AbstractKeyword, true)]
+        [InlineData("internal protected abstract", SyntaxKind.ProtectedKeyword, true)]
+        [InlineData("internal protected abstract", SyntaxKind.InternalKeyword, true)]
+        public async Task HasModifierReturnsWhetherModifierExists(string modifiers, SyntaxKind kind, bool expected)
+        {
+            var code = EmptyClass.Replace("public class MyClass", modifiers + " class MyClass");
+
+            var node = await TestNode.FindNode<ClassDeclarationSyntax>(code)
+                .ConfigureAwait(false);
+
+            var actual = node.HasModifier(kind);
+
+            actual.Should().Be(expected);
+        }
+
+        [Fact]
+        public void HasModifierThrowsExceptionWithNullNode()
+        {
+            Action action = () => NodeExtensions.HasModifier(null!, SyntaxKind.SealedKeyword);
 
             action.Should().Throw<ArgumentNullException>();
         }

@@ -13,7 +13,9 @@
         public DefinitionLocation Location { get; set; } = new DefinitionLocation(string.Empty, 0, 0);
         public string Name { get; set; } = Guid.NewGuid().ToString();
         public string ReturnType { get; set; } = Guid.NewGuid().ToString();
-        public bool CanRead { get; } = true;
-        public bool CanWrite { get; } = true;
+        public bool CanRead { get; set; } = true;
+        public bool CanWrite { get; set; } = true;
+        public string Description { get; set; } = Guid.NewGuid().ToString();
+        public string Scope { get; set; } = Guid.NewGuid().ToString();
     }
 }

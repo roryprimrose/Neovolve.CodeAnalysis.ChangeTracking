@@ -27,6 +27,7 @@
             }
 
             DeclaringType = declaringType ?? throw new ArgumentNullException(nameof(declaringType));
+            Scope = node.DetermineScope();
             Name = node.Identifier.Text;
             FullName = declaringType.FullName + "." + Name;
 
@@ -83,10 +84,16 @@
         public ITypeDefinition DeclaringType { get; }
 
         /// <inheritdoc />
+        public string Description => $"Property {FullName}";
+
+        /// <inheritdoc />
         public string FullName { get; }
 
         /// <inheritdoc />
         public bool IsVisible { get; }
+
+        /// <inheritdoc />
+        public string Scope { get; }
 
         /// <inheritdoc />
         public DefinitionLocation Location { get; }

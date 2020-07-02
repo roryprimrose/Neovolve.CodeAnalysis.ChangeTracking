@@ -13,8 +13,9 @@
         {
             var evaluator = new MatchEvaluator();
             var typeComparer = new TypeComparer();
+            var processor = new TypeMatchProcessor(typeComparer, evaluator, logger);
 
-            return new ChangeCalculator(evaluator, typeComparer, logger);
+            return new ChangeCalculator(processor, logger);
         }
     }
 }

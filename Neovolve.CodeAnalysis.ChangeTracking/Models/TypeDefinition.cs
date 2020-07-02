@@ -25,6 +25,7 @@
 
             DeclaringType = null;
             Namespace = node.DetermineNamespace();
+            Scope = node.DetermineScope();
             Name = DetermineName(node);
             FullName = Namespace + "." + Name;
 
@@ -50,6 +51,7 @@
             DeclaringType = declaringType ?? throw new ArgumentNullException(nameof(declaringType));
 
             Namespace = node.DetermineNamespace();
+            Scope = node.DetermineScope();
             Name = DetermineName(node);
             FullName = DeclaringType.FullName + "+" + Name;
 
@@ -74,6 +76,21 @@
             childTypes.AddRange(childInterfaces);
 
             return childTypes;
+        }
+
+        private static IReadOnlyCollection<IConstraintListDefinition> DetermineGenericConstraints(
+            TypeDeclarationSyntax node)
+        {
+            var constraintLists = new List<ConstraintListDefinition>();
+
+            foreach (var clauses in node.ConstraintClauses)
+            {
+                var constraintList = new ConstraintListDefinition(clauses);
+
+                constraintLists.Add(constraintList);
+            }
+
+            return constraintLists.AsReadOnly();
         }
 
         private static IReadOnlyCollection<string> DetermineImplementedTypes(BaseTypeDeclarationSyntax node)
@@ -132,21 +149,6 @@
             return childTypes.AsReadOnly();
         }
 
-        private static IReadOnlyCollection<IConstraintListDefinition> DetermineGenericConstraints(
-            TypeDeclarationSyntax node)
-        {
-            var constraintLists = new List<ConstraintListDefinition>();
-
-            foreach (var clauses in node.ConstraintClauses)
-            {
-                var constraintList = new ConstraintListDefinition(clauses);
-
-                constraintLists.Add(constraintList);
-            }
-
-            return constraintLists.AsReadOnly();
-        }
-
         /// <inheritdoc />
         public IReadOnlyCollection<IAttributeDefinition> Attributes { get; }
 
@@ -161,6 +163,9 @@
 
         /// <inheritdoc />
         public ITypeDefinition? DeclaringType { get; }
+
+        /// <inheritdoc />
+        public abstract string Description { get; }
 
         /// <inheritdoc />
         public string FullName { get; }
@@ -185,5 +190,8 @@
 
         /// <inheritdoc />
         public IReadOnlyCollection<IPropertyDefinition> Properties { get; }
+
+        /// <inheritdoc />
+        public string Scope { get; }
     }
 }

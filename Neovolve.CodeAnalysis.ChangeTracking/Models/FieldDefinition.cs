@@ -27,6 +27,7 @@
             }
 
             Location = node.DetermineLocation();
+            Scope = node.DetermineScope();
             Name = node.Declaration.Variables.Single().Identifier.Text;
             Attributes = node.DetermineAttributes(this);
             FullName = declaringType.FullName + "." + Name;
@@ -47,6 +48,9 @@
         public bool IsVisible { get; }
 
         /// <inheritdoc />
+        public string Scope { get; }
+
+        /// <inheritdoc />
         public DefinitionLocation Location { get; }
 
         /// <inheritdoc />
@@ -54,5 +58,8 @@
 
         /// <inheritdoc />
         public string ReturnType { get; }
+
+        /// <inheritdoc />
+        public string Description => $"Field {FullName}";
     }
 }

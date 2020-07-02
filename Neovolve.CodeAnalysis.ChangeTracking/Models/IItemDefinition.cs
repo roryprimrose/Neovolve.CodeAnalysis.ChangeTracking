@@ -7,6 +7,11 @@
     public interface IItemDefinition
     {
         /// <summary>
+        ///     Gets the description for this item.
+        /// </summary>
+        public string Description { get; }
+
+        /// <summary>
         ///     Gets the type location.
         /// </summary>
         public DefinitionLocation Location { get; }

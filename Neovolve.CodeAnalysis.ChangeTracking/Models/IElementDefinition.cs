@@ -23,5 +23,10 @@
         ///     Gets whether the member is publicly visible.
         /// </summary>
         bool IsVisible { get; }
+
+        /// <summary>
+        ///     Gets the scope of the element.
+        /// </summary>
+        string Scope { get; }
     }
 }

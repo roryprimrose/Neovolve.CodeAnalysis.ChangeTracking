@@ -11,7 +11,7 @@
         {
             Ensure.Any.IsNotNull(match, nameof(match));
             Ensure.Any.IsNotNull(options, nameof(options));
-            
+
             if (string.Equals(match.OldItem.FullName, match.NewItem.FullName, StringComparison.Ordinal) == false)
             {
                 throw new InvalidOperationException(
@@ -25,29 +25,29 @@
                 yield return ComparisonResult.NoChange(match);
             }
 
-            if (match.OldItem.IsVisible
-                && match.NewItem.IsVisible == false)
+            // Check for a change in type
+            if (match.OldItem.GetType() != match.NewItem.GetType())
             {
-                // The member was visible but isn't now, breaking change
-                var message = match.OldItem + " changed scope from public";
+                var newType = DetermineTypeName(match.NewItem);
 
                 yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match,
-                    message);
+                    $"{match.OldItem.Description} has changed to {newType}");
+
+                // This is a fundamental change to the type. No point continuing to identify differences
+                yield break;
             }
 
-            if (match.OldItem.IsVisible == false
-                && match.NewItem.IsVisible)
+            foreach (var comparisonResult in EvaluateScopeChanges(match))
             {
-                // The member return type may have changed, but the member is only now becoming public
-                // This is a feature because the public API didn't break even if the return type has changed
-                var message = match.OldItem + " changed scope to public";
+                yield return comparisonResult;
+            }
 
-                yield return ComparisonResult.ItemChanged(SemVerChangeType.Feature, match,
-                    message);
+            foreach (var comparisonResult in EvaluateClassChanges(match))
+            {
+                yield return comparisonResult;
             }
 
             // Compare the following:
-            // static keyword
             // generic type definitions
             // implemented types
             // generic constraints
@@ -56,6 +56,108 @@
             // properties
 
             yield return ComparisonResult.NoChange(match);
+        }
+
+        private static IEnumerable<ComparisonResult> EvaluateClassChanges(ItemMatch<ITypeDefinition> match)
+        {
+            var oldClass = match.OldItem as IClassDefinition;
+
+            if (oldClass == null)
+            {
+                yield break;
+            }
+
+            var newClass = (IClassDefinition) match.NewItem;
+
+            if (oldClass.IsAbstract
+                && newClass.IsAbstract == false)
+            {
+                yield return ComparisonResult.ItemChanged(SemVerChangeType.Feature, match,
+                    $"{oldClass.Description} has removed the abstract keyword");
+            }
+            else if (oldClass.IsAbstract == false
+                     && newClass.IsAbstract)
+            {
+                yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match,
+                    $"{oldClass.Description} has added the abstract keyword");
+            }
+
+            if (oldClass.IsSealed
+                && newClass.IsSealed == false)
+            {
+                yield return ComparisonResult.ItemChanged(SemVerChangeType.Feature, match,
+                    $"{oldClass.Description} has removed the sealed keyword");
+            }
+            else if (oldClass.IsSealed == false
+                     && newClass.IsSealed)
+            {
+                yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match,
+                    $"{oldClass.Description} has added the sealed keyword");
+            }
+
+            if (oldClass.IsStatic
+                && newClass.IsStatic == false)
+            {
+                yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match,
+                    $"{oldClass.Description} has removed the static keyword");
+            }
+            else if (oldClass.IsStatic == false
+                     && newClass.IsStatic)
+            {
+                yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match,
+                    $"{oldClass.Description} has added the static keyword");
+            }
+        }
+
+        private static string DetermineScopeMessage(string scope)
+        {
+            if (string.IsNullOrWhiteSpace(scope))
+            {
+                return "(implicit) private";
+            }
+
+            return scope;
+        }
+
+        private static string DetermineTypeName(ITypeDefinition item)
+        {
+            if (item is IClassDefinition)
+            {
+                return "class";
+            }
+
+            if (item is IInterfaceDefinition)
+            {
+                return "interface";
+            }
+
+            throw new NotSupportedException("Unknown type provided");
+        }
+
+        private static IEnumerable<ComparisonResult> EvaluateScopeChanges(ItemMatch<ITypeDefinition> match)
+        {
+            var oldScope = DetermineScopeMessage(match.OldItem.Scope);
+            var newScope = DetermineScopeMessage(match.NewItem.Scope);
+
+            if (match.OldItem.IsVisible
+                && match.NewItem.IsVisible == false)
+            {
+                // The member was visible but isn't now, breaking change
+                var message = $"{match.OldItem.Description} changed scope from {oldScope} to {newScope}";
+
+                yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match,
+                    message);
+            }
+            else if (match.OldItem.IsVisible == false
+                     && match.NewItem.IsVisible)
+            {
+                // The member return type may have changed, but the member is only now becoming public
+                // This is a feature because the public API didn't break even if the return type has changed
+                var message = $"{match.OldItem.Description} changed scope from {oldScope} to {newScope}";
+
+                yield return ComparisonResult.ItemChanged(SemVerChangeType.Feature, match,
+                    message);
+            }
         }
     }
 }

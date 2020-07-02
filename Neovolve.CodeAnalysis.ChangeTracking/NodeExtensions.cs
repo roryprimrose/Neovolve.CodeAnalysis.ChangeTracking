@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -96,6 +97,43 @@
             }
 
             return containerNamespace.Name.GetText().ToString().Trim();
+        }
+
+        public static string DetermineScope(this MemberDeclarationSyntax node)
+        {
+            if (node == null)
+            {
+                throw new ArgumentNullException(nameof(node));
+            }
+
+            var values = new List<string>();
+
+            foreach (var modifier in node.Modifiers)
+            {
+                switch (modifier.RawKind)
+                {
+                    case (int) SyntaxKind.PublicKeyword:
+                    case (int) SyntaxKind.PrivateKeyword:
+                    case (int) SyntaxKind.InternalKeyword:
+                    case (int) SyntaxKind.ProtectedKeyword:
+
+                        values.Add(modifier.Text);
+
+                        break;
+                }
+            }
+
+            return string.Join(" ", values);
+        }
+
+        public static bool HasModifier(this MemberDeclarationSyntax node, SyntaxKind kind)
+        {
+            if (node == null)
+            {
+                throw new ArgumentNullException(nameof(node));
+            }
+
+            return node.Modifiers.Any(x => x.RawKind == (int) kind);
         }
     }
 }

@@ -3,6 +3,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
     /// <summary>
@@ -18,6 +19,10 @@
         public ClassDefinition(ClassDeclarationSyntax node) : base(node)
         {
             Fields = DetermineFields(node);
+            IsAbstract = node.HasModifier(SyntaxKind.AbstractKeyword);
+            IsPartial = node.HasModifier(SyntaxKind.PartialKeyword);
+            IsSealed = node.HasModifier(SyntaxKind.SealedKeyword);
+            IsStatic = node.HasModifier(SyntaxKind.StaticKeyword);
         }
 
         /// <summary>
@@ -28,6 +33,10 @@
         public ClassDefinition(ITypeDefinition declaringType, ClassDeclarationSyntax node) : base(declaringType, node)
         {
             Fields = DetermineFields(node);
+            IsAbstract = node.HasModifier(SyntaxKind.AbstractKeyword);
+            IsPartial = node.HasModifier(SyntaxKind.PartialKeyword);
+            IsSealed = node.HasModifier(SyntaxKind.SealedKeyword);
+            IsStatic = node.HasModifier(SyntaxKind.StaticKeyword);
         }
 
         private IReadOnlyCollection<FieldDefinition> DetermineFields(SyntaxNode node)
@@ -39,6 +48,21 @@
         }
 
         /// <inheritdoc />
+        public override string Description => $"Class {FullName}";
+
+        /// <inheritdoc />
         public IReadOnlyCollection<IFieldDefinition> Fields { get; }
+
+        /// <inheritdoc />
+        public bool IsAbstract { get; }
+
+        /// <inheritdoc />
+        public bool IsPartial { get; }
+
+        /// <inheritdoc />
+        public bool IsSealed { get; }
+
+        /// <inheritdoc />
+        public bool IsStatic { get; }
     }
 }

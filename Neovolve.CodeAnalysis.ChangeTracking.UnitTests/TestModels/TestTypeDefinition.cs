@@ -21,5 +21,7 @@
         public string Name { get; set; } = Guid.NewGuid().ToString();
         public string Namespace { get; set; } = Guid.NewGuid().ToString();
         public IReadOnlyCollection<IPropertyDefinition> Properties { get; set; } = new List<IPropertyDefinition>();
+        public string Description { get; set; } = Guid.NewGuid().ToString();
+        public string Scope { get; set; } = Guid.NewGuid().ToString();
     }
 }

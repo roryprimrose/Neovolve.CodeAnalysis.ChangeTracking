@@ -28,11 +28,13 @@
             {
                 Name = string.Empty;
                 ArgumentType = ArgumentType.Ordinal;
+                Description = $"Ordinal argument {Value}";
             }
             else
             {
                 Name = node.NameColon.Name.ToString();
                 ArgumentType = ArgumentType.Named;
+                Description = $"Named argument {Name}";
             }
         }
 
@@ -47,5 +49,8 @@
 
         /// <inheritdoc />
         public string Value { get; }
+
+        /// <inheritdoc />
+        public string Description { get; }
     }
 }
