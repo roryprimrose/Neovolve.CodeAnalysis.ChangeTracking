@@ -38,7 +38,7 @@
         }
 
         public static ComparisonResult ItemChanged<T>(SemVerChangeType changeType, ItemMatch<T> match,
-            string message) where T : class, IItemDefinition
+            string message) where T : IItemDefinition
         {
             changeType = changeType == SemVerChangeType.None
                 ? throw new ArgumentException("The changeType cannot be None to indicate a change on the member.",
@@ -73,7 +73,7 @@
             return new ComparisonResult(changeType, oldItem, null, message);
         }
 
-        public static ComparisonResult NoChange<T>(ItemMatch<T> match) where T : class, IItemDefinition
+        public static ComparisonResult NoChange<T>(ItemMatch<T> match) where T : IItemDefinition
         {
             match = match ?? throw new ArgumentNullException(nameof(match));
 

@@ -6,7 +6,7 @@
     using Microsoft.Extensions.Logging;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
-    public abstract class MatchProcessor<T> : IMatchProcessor<T> where T : class, IItemDefinition
+    public abstract class MatchProcessor<T> : IMatchProcessor<T> where T : IItemDefinition
     {
         private readonly IMatchEvaluator _evaluator;
         private readonly ILogger? _logger;

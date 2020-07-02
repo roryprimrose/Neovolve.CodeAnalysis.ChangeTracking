@@ -1,15 +1,11 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking
 {
-    using EnsureThat;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
-    public class ItemMatch<T> where T : class, IItemDefinition
+    public class ItemMatch<T> where T : IItemDefinition
     {
         public ItemMatch(T oldItem, T newItem)
         {
-            Ensure.Any.IsNotNull(oldItem, nameof(oldItem));
-            Ensure.Any.IsNotNull(newItem, nameof(newItem));
-
             OldItem = oldItem;
             NewItem = newItem;
         }

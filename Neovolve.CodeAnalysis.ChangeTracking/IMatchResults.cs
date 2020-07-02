@@ -8,7 +8,7 @@
     ///     interface defines the members that describe how items have changed.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public interface IMatchResults<T> where T : class, IItemDefinition
+    public interface IMatchResults<T> where T : IItemDefinition
     {
         /// <summary>
         ///     Returns the items that have been added.

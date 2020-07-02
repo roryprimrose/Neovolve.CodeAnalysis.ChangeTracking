@@ -10,7 +10,7 @@
     ///     class defines items that have been added or removed as well as items that can be matched.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class MatchResults<T> : IMatchResults<T> where T : class, IItemDefinition
+    public class MatchResults<T> : IMatchResults<T> where T : IItemDefinition
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="MatchResults{T}" /> class.
