@@ -33,35 +33,12 @@
             var oldCode = new List<CodeSource>
             {
                 new CodeSource(
-                    SingleInterface.Replace("interface MyInterface", oldModifiers + " interface MyInterface"))
+                    SingleInterface.Replace("public interface MyInterface", oldModifiers + " interface MyInterface"))
             };
             var newCode = new List<CodeSource>
             {
                 new CodeSource(
-                    SingleInterface.Replace("interface MyInterface", newModifiers + " interface MyInterface"))
-            };
-
-            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
-                .ConfigureAwait(false);
-
-            OutputResult(result);
-
-            result.ChangeType.Should().Be(expected);
-        }
-
-        [Theory]
-        [ClassData(typeof(ScopeChangeDataSet))]
-        public async Task EvaluatesChangeOfInterfaceScope(string oldScope, string newScope, SemVerChangeType expected)
-        {
-            var oldCode = new List<CodeSource>
-            {
-                new CodeSource(
-                    SingleInterface.Replace("public interface MyInterface", oldScope + " interface MyInterface"))
-            };
-            var newCode = new List<CodeSource>
-            {
-                new CodeSource(
-                    SingleInterface.Replace("public interface MyInterface", newScope + " interface MyInterface"))
+                    SingleInterface.Replace("public interface MyInterface", newModifiers + " interface MyInterface"))
             };
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)

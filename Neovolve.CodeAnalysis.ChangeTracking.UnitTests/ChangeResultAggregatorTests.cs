@@ -52,7 +52,19 @@
         [Fact]
         public void MergeResultsCopiesAcrossResultsFromAggregator()
         {
-            var childResults = Model.Create<List<ComparisonResult>>();
+            var childResults = new List<ComparisonResult>
+            {
+                ComparisonResult.ItemAdded(new TestClassDefinition()),
+                ComparisonResult.ItemRemoved(new TestInterfaceDefinition()),
+                ComparisonResult.ItemChanged(
+                    SemVerChangeType.Feature,
+                    new ItemMatch<IPropertyDefinition>(new TestPropertyDefinition(), new TestPropertyDefinition()),
+                    Guid.NewGuid().ToString()),
+                ComparisonResult.ItemChanged(
+                    SemVerChangeType.Breaking,
+                    new ItemMatch<IAttributeDefinition>(new TestAttributeDefinition(), new TestAttributeDefinition()),
+                    Guid.NewGuid().ToString()),
+            };
             var aggregator = new ChangeResultAggregator
             {
                 ExitNodeAnalysis = true

@@ -33,11 +33,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleClass.Replace("class MyClass", oldModifiers + " class MyClass"))
+                new CodeSource(SingleClass.Replace("public class MyClass", oldModifiers + " class MyClass"))
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleClass.Replace("class MyClass", newModifiers + " class MyClass"))
+                new CodeSource(SingleClass.Replace("public class MyClass", newModifiers + " class MyClass"))
             };
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
@@ -71,27 +71,6 @@
             var newCode = new List<CodeSource>
             {
                 new CodeSource(SingleClass.Replace("class MyClass", newModifiers + " class MyClass"))
-            };
-
-            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
-                .ConfigureAwait(false);
-
-            OutputResult(result);
-
-            result.ChangeType.Should().Be(expected);
-        }
-
-        [Theory]
-        [ClassData(typeof(ScopeChangeDataSet))]
-        public async Task EvaluatesChangeOfClassScope(string oldScope, string newScope, SemVerChangeType expected)
-        {
-            var oldCode = new List<CodeSource>
-            {
-                new CodeSource(SingleClass.Replace("public class MyClass", oldScope + " class MyClass"))
-            };
-            var newCode = new List<CodeSource>
-            {
-                new CodeSource(SingleClass.Replace("public class MyClass", newScope + " class MyClass"))
             };
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
