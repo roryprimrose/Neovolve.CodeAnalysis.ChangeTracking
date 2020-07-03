@@ -25,6 +25,30 @@
         }
 
         [Theory]
+        [ClassData(typeof(TypeAccessModifierDataSet))]
+        public async Task EvaluatesChangeOfClassAccessModifiers(
+            string oldModifiers,
+            string newModifiers,
+            SemVerChangeType expected)
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new CodeSource(SingleClass.Replace("class MyClass", oldModifiers + " class MyClass"))
+            };
+            var newCode = new List<CodeSource>
+            {
+                new CodeSource(SingleClass.Replace("class MyClass", newModifiers + " class MyClass"))
+            };
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            OutputResult(result);
+
+            result.ChangeType.Should().Be(expected);
+        }
+
+        [Theory]
         [InlineData("", "", SemVerChangeType.None)]
         [InlineData("sealed", "sealed", SemVerChangeType.None)]
         [InlineData("static", "static", SemVerChangeType.None)]
@@ -35,7 +59,9 @@
         [InlineData("", "sealed", SemVerChangeType.Breaking)]
         [InlineData("", "static", SemVerChangeType.Breaking)]
         [InlineData("", "abstract", SemVerChangeType.Breaking)]
-        public async Task EvaluatesChangeOfClassModifiers(string oldModifiers, string newModifiers,
+        public async Task EvaluatesChangeOfClassModifiers(
+            string oldModifiers,
+            string newModifiers,
             SemVerChangeType expected)
         {
             var oldCode = new List<CodeSource>
@@ -227,7 +253,8 @@
             }
         }
 
-        public string SingleClass => @"
+        public string SingleClass =>
+            @"
 namespace MyNamespace 
 {
     [ClassAttribute(123, false, myName: ""on the class"")]

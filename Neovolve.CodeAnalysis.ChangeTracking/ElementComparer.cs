@@ -25,33 +25,56 @@
                 throw new ArgumentNullException(nameof(options));
             }
 
+            var aggregator = new ChangeResultAggregator();
+
             if (match.OldItem.IsVisible == false
                 && match.NewItem.IsVisible == false)
             {
                 // It doesn't matter if there is a change to the type because it isn't visible anyway
-                yield return ComparisonResult.NoChange(match);
-
                 // No need to check for further changes
-                yield break;
+                return aggregator.Results;
             }
 
-            foreach (var comparisonResult in EvaluateAccessModifiers(match))
-            {
-                yield return comparisonResult;
-            }
+            RunComparisonStep(EvaluateAccessModifiers, match, options, aggregator);
+            RunComparisonStep(EvaluateMatch, match, options, aggregator);
+            RunComparisonStep(EvaluateAttributeChanges, match, options, aggregator);
 
-            foreach (var comparisonResult in EvaluateMatch(match, options))
-            {
-                yield return comparisonResult;
-            }
-
-            foreach (var comparisonResult in EvaluateAttributeChanges(match, options))
-            {
-                yield return comparisonResult;
-            }
+            return aggregator.Results;
         }
 
-        protected abstract IEnumerable<ComparisonResult> EvaluateMatch(ItemMatch<T> match, ComparerOptions options);
+        protected abstract void EvaluateMatch(
+            ItemMatch<T> match,
+            ComparerOptions options,
+            ChangeResultAggregator aggregator);
+
+        protected void RunComparisonStep(
+            Action<ItemMatch<T>, ComparerOptions, ChangeResultAggregator> step,
+            ItemMatch<T> match,
+            ComparerOptions options,
+            ChangeResultAggregator aggregator)
+        {
+            if (match == null)
+            {
+                throw new ArgumentNullException(nameof(match));
+            }
+
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            if (aggregator == null)
+            {
+                throw new ArgumentNullException(nameof(aggregator));
+            }
+
+            if (aggregator.ExitNodeAnalysis)
+            {
+                return;
+            }
+
+            step(match, options, aggregator);
+        }
 
         private static string DetermineScopeMessage(string scope)
         {
@@ -63,7 +86,10 @@
             return scope;
         }
 
-        private static IEnumerable<ComparisonResult> EvaluateAccessModifiers(ItemMatch<T> match)
+        private static void EvaluateAccessModifiers(
+            ItemMatch<T> match,
+            ComparerOptions options,
+            ChangeResultAggregator aggregator)
         {
             var oldScope = DetermineScopeMessage(match.OldItem.AccessModifiers);
             var newScope = DetermineScopeMessage(match.NewItem.AccessModifiers);
@@ -74,8 +100,10 @@
                 // The member was visible but isn't now, breaking change
                 var message = $"{match.NewItem.Description} changed scope from {oldScope} to {newScope}";
 
-                yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match,
-                    message);
+                var result = ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match, message);
+
+                aggregator.AddResult(result);
+                aggregator.ExitNodeAnalysis = true;
             }
             else if (match.OldItem.IsVisible == false
                      && match.NewItem.IsVisible)
@@ -84,19 +112,26 @@
                 // This is a feature because the public API didn't break even if the return type has changed
                 var message = $"{match.NewItem.Description} changed scope from {oldScope} to {newScope}";
 
-                yield return ComparisonResult.ItemChanged(SemVerChangeType.Feature, match,
-                    message);
+                var result = ComparisonResult.ItemChanged(SemVerChangeType.Feature, match, message);
+
+                aggregator.AddResult(result);
+                aggregator.ExitNodeAnalysis = true;
             }
         }
 
-        private IEnumerable<ComparisonResult> EvaluateAttributeChanges(ItemMatch<T> match, ComparerOptions options)
+        private void EvaluateAttributeChanges(
+            ItemMatch<T> match,
+            ComparerOptions options,
+            ChangeResultAggregator aggregator)
         {
-            var attributeResults = _attributeProcessor.CalculateChanges(match.OldItem.Attributes,
-                match.NewItem.Attributes, options);
+            var attributeResults = _attributeProcessor.CalculateChanges(
+                match.OldItem.Attributes,
+                match.NewItem.Attributes,
+                options);
 
             foreach (var result in attributeResults)
             {
-                yield return result;
+                aggregator.AddResult(result);
             }
         }
     }

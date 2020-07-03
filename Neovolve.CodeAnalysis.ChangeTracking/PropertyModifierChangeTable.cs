@@ -38,7 +38,7 @@
         }
 
         private static void AddModifierChange(
-            Dictionary<PropertyModifiers, Dictionary<PropertyModifiers, SemVerChangeType>> changes,
+            IDictionary<PropertyModifiers, Dictionary<PropertyModifiers, SemVerChangeType>> changes,
             PropertyModifiers oldModifier, PropertyModifiers newModifiers, SemVerChangeType changeType)
         {
             if (changes.ContainsKey(oldModifier) == false)

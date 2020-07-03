@@ -1,6 +1,5 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking
 {
-    using System.Collections.Generic;
     using System.Linq;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
@@ -8,20 +7,6 @@
     {
         protected MemberComparer(IAttributeMatchProcessor attributeProcessor) : base(attributeProcessor)
         {
-        }
-
-        protected override IEnumerable<ComparisonResult> EvaluateMatch(ItemMatch<T> match, ComparerOptions options)
-        {
-            if (match.OldItem.ReturnType != match.NewItem.ReturnType)
-            {
-                var genericTypeMatch = MapGenericTypeName(match);
-
-                if (genericTypeMatch != match.NewItem.ReturnType)
-                {
-                    yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match,
-                        $"{match.NewItem.Description} return type has changed from {match.OldItem.ReturnType} {match.NewItem.ReturnType}");
-                }
-            }
         }
 
         public string MapGenericTypeName(ItemMatch<T> match)
@@ -36,15 +21,27 @@
             return ResolveRenamedGenericTypeParameter(typeName, oldDeclaringType, newDeclaringType);
         }
 
-        private static string ResolveRenamedGenericTypeParameter(string originalTypeName, ITypeDefinition oldDeclaringType,
+        protected override void EvaluateMatch(
+            ItemMatch<T> match,
+            ComparerOptions options,
+            ChangeResultAggregator aggregator)
+        {
+            RunComparisonStep(CompareReturnType, match, options, aggregator);
+        }
+
+        private static string ResolveRenamedGenericTypeParameter(
+            string originalTypeName,
+            ITypeDefinition oldDeclaringType,
             ITypeDefinition newDeclaringType)
         {
             if (oldDeclaringType.DeclaringType != null
                 && newDeclaringType.DeclaringType != null)
             {
                 // Search the parents
-                var mappedTypeName = ResolveRenamedGenericTypeParameter(originalTypeName,
-                    oldDeclaringType.DeclaringType, newDeclaringType.DeclaringType);
+                var mappedTypeName = ResolveRenamedGenericTypeParameter(
+                    originalTypeName,
+                    oldDeclaringType.DeclaringType,
+                    newDeclaringType.DeclaringType);
 
                 if (mappedTypeName != originalTypeName)
                 {
@@ -69,6 +66,24 @@
             }
 
             return newGenericTypes[typeIndex];
+        }
+
+        private void CompareReturnType(ItemMatch<T> match, ComparerOptions options, ChangeResultAggregator aggregator)
+        {
+            if (match.OldItem.ReturnType != match.NewItem.ReturnType)
+            {
+                var genericTypeMatch = MapGenericTypeName(match);
+
+                if (genericTypeMatch != match.NewItem.ReturnType)
+                {
+                    var result = ComparisonResult.ItemChanged(
+                        SemVerChangeType.Breaking,
+                        match,
+                        $"{match.NewItem.Description} return type has changed from {match.OldItem.ReturnType} {match.NewItem.ReturnType}");
+
+                    aggregator.AddResult(result);
+                }
+            }
         }
     }
 }
