@@ -11,6 +11,10 @@
         Override = 4,
         Sealed = 8,
         Static = 16,
-        Virtual = 32
+        Virtual = 32,
+        NewAbstract = New | Abstract,
+        NewStatic = New | Static,
+        NewVirtual = New | Virtual,
+        SealedVirtual = Sealed | Override
     }
 }

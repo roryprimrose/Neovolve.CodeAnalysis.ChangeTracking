@@ -57,7 +57,7 @@
 
         private static IEnumerable<ComparisonResult> EvaluateModifierChanges(ItemMatch<IPropertyDefinition> match)
         {
-            var change = PropertyAccessorChangeTable.CalculateChange(match);
+            var change = PropertyModifierChangeTable.CalculateChange(match);
 
             if (change == SemVerChangeType.None)
             {
