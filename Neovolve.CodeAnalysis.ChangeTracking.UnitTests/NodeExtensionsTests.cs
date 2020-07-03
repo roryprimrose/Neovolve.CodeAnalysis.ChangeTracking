@@ -259,7 +259,7 @@ namespace MyNamespace
             var node = await TestNode.FindNode<ClassDeclarationSyntax>(code)
                 .ConfigureAwait(false);
 
-            var actual = node.DetermineScope();
+            var actual = node.DetermineAccessModifiers();
 
             actual.Should().Be(expected);
         }
@@ -267,7 +267,7 @@ namespace MyNamespace
         [Fact]
         public void DetermineScopeThrowsExceptionWithNullNode()
         {
-            Action action = () => NodeExtensions.DetermineScope(null!);
+            Action action = () => NodeExtensions.DetermineAccessModifiers(null!);
 
             action.Should().Throw<ArgumentNullException>();
         }

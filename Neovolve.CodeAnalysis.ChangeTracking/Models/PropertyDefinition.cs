@@ -1,7 +1,6 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.Models
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -10,7 +9,7 @@
     ///     The <see cref="ConstraintListDefinition" />
     ///     class is used to describe a property.
     /// </summary>
-    public class PropertyDefinition : IPropertyDefinition
+    public class PropertyDefinition : ElementDefinition, IPropertyDefinition
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="PropertyDeclarationSyntax" /> class.
@@ -19,7 +18,7 @@
         /// <param name="node">The node that defines the generic type constraints.</param>
         /// <exception cref="ArgumentNullException">The <paramref name="declaringType" /> parameter is <c>null</c>.</exception>
         /// <exception cref="ArgumentNullException">The <paramref name="node" /> parameter is <c>null</c>.</exception>
-        public PropertyDefinition(ITypeDefinition declaringType, PropertyDeclarationSyntax node)
+        public PropertyDefinition(ITypeDefinition declaringType, PropertyDeclarationSyntax node) : base(node)
         {
             DeclaringType = declaringType ?? throw new ArgumentNullException(nameof(declaringType));
 
@@ -28,17 +27,14 @@
                 throw new ArgumentNullException(nameof(node));
             }
 
-            Location = node.DetermineLocation();
+            var name = node.Identifier.Text;
 
-            Scope = node.DetermineScope();
-            Name = node.Identifier.Text;
-            RawName = Name;
-            FullRawName = declaringType.FullRawName + "." + RawName;
-            FullName = declaringType.FullName + "." + Name;
+            Name = name;
+            RawName = name;
+            FullName = DeclaringType.FullName + "." + name;
+            FullRawName = DeclaringType.FullRawName + "." + name;
 
-            Attributes = node.DetermineAttributes(this);
             ReturnType = node.Type.ToString();
-            IsVisible = node.IsVisible();
             IsAbstract = node.HasModifier(SyntaxKind.AbstractKeyword);
             IsNew = node.HasModifier(SyntaxKind.NewKeyword);
             IsOverride = node.HasModifier(SyntaxKind.OverrideKeyword);
@@ -82,9 +78,6 @@
         }
 
         /// <inheritdoc />
-        public IReadOnlyCollection<IAttributeDefinition> Attributes { get; }
-
-        /// <inheritdoc />
         public bool CanRead { get; }
 
         /// <inheritdoc />
@@ -94,13 +87,13 @@
         public ITypeDefinition DeclaringType { get; }
 
         /// <inheritdoc />
-        public string Description => $"Property {FullName}";
+        public override string Description => $"Property {FullName}";
 
         /// <inheritdoc />
-        public string FullName { get; }
+        public override string FullName { get; }
 
         /// <inheritdoc />
-        public string FullRawName { get; }
+        public override string FullRawName { get; }
 
         public bool IsAbstract { get; }
 
@@ -120,21 +113,12 @@
         public bool IsVirtual { get; }
 
         /// <inheritdoc />
-        public bool IsVisible { get; }
+        public override string Name { get; }
 
         /// <inheritdoc />
-        public DefinitionLocation Location { get; }
-
-        /// <inheritdoc />
-        public string Name { get; }
-
-        /// <inheritdoc />
-        public string RawName { get; }
+        public override string RawName { get; }
 
         /// <inheritdoc />
         public string ReturnType { get; }
-
-        /// <inheritdoc />
-        public string Scope { get; }
     }
 }

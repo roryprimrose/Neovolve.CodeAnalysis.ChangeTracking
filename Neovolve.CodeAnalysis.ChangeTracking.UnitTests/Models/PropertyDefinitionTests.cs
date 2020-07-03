@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
-    using System.Linq;
     using System.Threading.Tasks;
     using FluentAssertions;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -64,26 +63,6 @@
             yield return new object[] {"public", "private protected", true};
             yield return new object[] {"public", "protected internal", true};
             yield return new object[] {"public", "public", true};
-        }
-
-        [Fact]
-        public async Task AttributesReturnsMultipleAttributesOnMultipleLists()
-        {
-            var declaringType = Substitute.For<ITypeDefinition>();
-
-            var node = await TestNode
-                .FindNode<PropertyDeclarationSyntax>(PropertyDefinitionCode
-                    .PropertyWithMultipleAttributesInMultipleLists)
-                .ConfigureAwait(false);
-
-            var sut = new PropertyDefinition(declaringType, node);
-
-            sut.Attributes.Should().HaveCount(4);
-
-            sut.Attributes.First().Name.Should().Be("First");
-            sut.Attributes.Skip(1).First().Name.Should().Be("Second");
-            sut.Attributes.Skip(2).First().Name.Should().Be("Third");
-            sut.Attributes.Skip(3).First().Name.Should().Be("Fourth");
         }
 
         [Theory]
@@ -267,74 +246,6 @@
             var sut = new PropertyDefinition(declaringType, node);
 
             sut.IsVirtual.Should().Be(expected);
-        }
-
-        [Theory]
-        [InlineData("", false)]
-        [InlineData("private", false)]
-        [InlineData("internal", false)]
-        [InlineData("protected", true)]
-        [InlineData("private protected", true)]
-        [InlineData("protected internal", true)]
-        [InlineData("public", true)]
-        public async Task IsVisibleReturnsValueBasedOnScope(string scope, bool expected)
-        {
-            var code = PropertyDefinitionCode.BuildPropertyWithModifiers(scope);
-
-            var declaringType = Substitute.For<ITypeDefinition>();
-
-            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code)
-                .ConfigureAwait(false);
-
-            var sut = new PropertyDefinition(declaringType, node);
-
-            sut.IsVisible.Should().Be(expected);
-        }
-
-        [Fact]
-        public async Task LocationReturnsEmptyFilePathWhenNodeLacksSourceInformation()
-        {
-            var declaringType = Substitute.For<ITypeDefinition>();
-
-            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(PropertyDefinitionCode.GetSetProperty)
-                .ConfigureAwait(false);
-
-            var sut = new PropertyDefinition(declaringType, node);
-
-            sut.Location.FilePath.Should().BeEmpty();
-        }
-
-        [Fact]
-        public async Task LocationReturnsFileContentLocation()
-        {
-            var filePath = Guid.NewGuid().ToString();
-
-            var declaringType = Substitute.For<ITypeDefinition>();
-
-            var node = await TestNode
-                .FindNode<PropertyDeclarationSyntax>(PropertyDefinitionCode.GetSetProperty, filePath)
-                .ConfigureAwait(false);
-
-            var sut = new PropertyDefinition(declaringType, node);
-
-            sut.Location.LineIndex.Should().Be(5);
-            sut.Location.CharacterIndex.Should().Be(8);
-        }
-
-        [Fact]
-        public async Task LocationReturnsFilePathWhenNodeIncludesSourceInformation()
-        {
-            var filePath = Guid.NewGuid().ToString();
-
-            var declaringType = Substitute.For<ITypeDefinition>();
-
-            var node = await TestNode
-                .FindNode<PropertyDeclarationSyntax>(PropertyDefinitionCode.GetSetProperty, filePath)
-                .ConfigureAwait(false);
-
-            var sut = new PropertyDefinition(declaringType, node);
-
-            sut.Location.FilePath.Should().Be(filePath);
         }
 
         [Fact]

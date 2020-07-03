@@ -10,31 +10,30 @@
     ///     The <see cref="TypeDefinition" />
     ///     class is used to describe a type.
     /// </summary>
-    public abstract class TypeDefinition : ITypeDefinition
+    public abstract class TypeDefinition : ElementDefinition, ITypeDefinition
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="TypeDefinition" /> class.
         /// </summary>
         /// <param name="node">The syntax node that defines the type.</param>
-        protected TypeDefinition(TypeDeclarationSyntax node)
+        protected TypeDefinition(TypeDeclarationSyntax node) : base(node)
         {
             if (node == null)
             {
                 throw new ArgumentNullException(nameof(node));
             }
 
-            Location = node.DetermineLocation();
+            var name = DetermineName(node);
+            var rawName = node.Identifier.Text;
+
             DeclaringType = null;
             Namespace = node.DetermineNamespace();
-            Scope = node.DetermineScope();
-            Name = DetermineName(node);
-            RawName = node.Identifier.Text;
-            FullRawName = Namespace + "." + RawName;
-            FullName = Namespace + "." + Name;
+            Name = name;
+            RawName = rawName;
+            FullRawName = Namespace + "." + rawName;
+            FullName = Namespace + "." + name;
 
-            IsVisible = node.IsVisible();
             ImplementedTypes = DetermineImplementedTypes(node);
-            Attributes = node.DetermineAttributes(this);
             Properties = DetermineProperties(node);
             ChildClasses = DetermineChildClasses(node);
             ChildInterfaces = DetermineChildInterfaces(node);
@@ -48,20 +47,19 @@
         /// </summary>
         /// <param name="declaringType">The parent type that declares this type.</param>
         /// <param name="node">The syntax node that defines the type.</param>
-        protected TypeDefinition(ITypeDefinition declaringType, TypeDeclarationSyntax node)
+        protected TypeDefinition(ITypeDefinition declaringType, TypeDeclarationSyntax node) : base(node)
         {
             DeclaringType = declaringType ?? throw new ArgumentNullException(nameof(declaringType));
 
-            Location = node.DetermineLocation();
-            Namespace = node.DetermineNamespace();
-            Scope = node.DetermineScope();
-            Name = DetermineName(node);
-            RawName = node.Identifier.Text;
-            FullRawName = DeclaringType.FullRawName + "+" + RawName;
-            FullName = DeclaringType.FullName + "+" + Name;
+            var name = DetermineName(node);
+            var rawName = node.Identifier.Text;
 
-            Attributes = node.DetermineAttributes(this);
-            IsVisible = node.IsVisible();
+            Namespace = node.DetermineNamespace();
+            Name = name;
+            RawName = rawName;
+            FullRawName = DeclaringType.FullRawName + "+" + rawName;
+            FullName = DeclaringType.FullName + "+" + name;
+
             ImplementedTypes = DetermineImplementedTypes(node);
             Properties = DetermineProperties(node);
             ChildClasses = DetermineChildClasses(node);
@@ -171,9 +169,6 @@
         }
 
         /// <inheritdoc />
-        public IReadOnlyCollection<IAttributeDefinition> Attributes { get; }
-
-        /// <inheritdoc />
         public IReadOnlyCollection<IClassDefinition> ChildClasses { get; }
 
         /// <inheritdoc />
@@ -186,13 +181,10 @@
         public ITypeDefinition? DeclaringType { get; }
 
         /// <inheritdoc />
-        public abstract string Description { get; }
+        public override string FullName { get; }
 
         /// <inheritdoc />
-        public string FullName { get; }
-
-        /// <inheritdoc />
-        public string FullRawName { get; }
+        public override string FullRawName { get; }
 
         /// <inheritdoc />
         public IReadOnlyCollection<IConstraintListDefinition> GenericConstraints { get; protected set; }
@@ -204,13 +196,7 @@
         public IReadOnlyCollection<string> ImplementedTypes { get; }
 
         /// <inheritdoc />
-        public bool IsVisible { get; }
-
-        /// <inheritdoc />
-        public DefinitionLocation Location { get; }
-
-        /// <inheritdoc />
-        public string Name { get; }
+        public override string Name { get; }
 
         /// <inheritdoc />
         public string Namespace { get; set; }
@@ -219,9 +205,6 @@
         public IReadOnlyCollection<IPropertyDefinition> Properties { get; }
 
         /// <inheritdoc />
-        public string RawName { get; }
-
-        /// <inheritdoc />
-        public string Scope { get; }
+        public override string RawName { get; }
     }
 }

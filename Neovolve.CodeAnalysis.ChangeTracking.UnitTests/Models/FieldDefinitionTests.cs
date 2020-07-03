@@ -13,26 +13,6 @@
     public class FieldDefinitionTests
     {
         [Fact]
-        public async Task AttributesReturnsMultipleAttributesOnMultipleLists()
-        {
-            var declaringType = Substitute.For<ITypeDefinition>();
-
-            var node = await TestNode
-                .FindNode<FieldDeclarationSyntax>(FieldDefinitionCode
-                    .FieldWithMultipleAttributesInMultipleLists)
-                .ConfigureAwait(false);
-
-            var sut = new FieldDefinition(declaringType, node);
-
-            sut.Attributes.Should().HaveCount(4);
-
-            sut.Attributes.First().Name.Should().Be("First");
-            sut.Attributes.Skip(1).First().Name.Should().Be("Second");
-            sut.Attributes.Skip(2).First().Name.Should().Be("Third");
-            sut.Attributes.Skip(3).First().Name.Should().Be("Fourth");
-        }
-
-        [Fact]
         public async Task DeclaringTypeReturnsParameterValue()
         {
             var declaringType = Substitute.For<ITypeDefinition>();
@@ -77,74 +57,6 @@
             var sut = new FieldDefinition(declaringType, node);
 
             sut.FullRawName.Should().Be(parentFullRawName + ".Value");
-        }
-
-        [Theory]
-        [InlineData("", false)]
-        [InlineData("private", false)]
-        [InlineData("internal", false)]
-        [InlineData("protected", true)]
-        [InlineData("private protected", true)]
-        [InlineData("protected internal", true)]
-        [InlineData("public", true)]
-        public async Task IsVisibleReturnsValueBasedOnScope(string scope, bool expected)
-        {
-            var code = FieldDefinitionCode.BuildFieldWithScope(scope);
-
-            var declaringType = Substitute.For<ITypeDefinition>();
-
-            var node = await TestNode.FindNode<FieldDeclarationSyntax>(code)
-                .ConfigureAwait(false);
-
-            var sut = new FieldDefinition(declaringType, node);
-
-            sut.IsVisible.Should().Be(expected);
-        }
-
-        [Fact]
-        public async Task LocationReturnsEmptyFilePathWhenNodeLacksSourceInformation()
-        {
-            var declaringType = Substitute.For<ITypeDefinition>();
-
-            var node = await TestNode.FindNode<FieldDeclarationSyntax>(FieldDefinitionCode.GetSetField)
-                .ConfigureAwait(false);
-
-            var sut = new FieldDefinition(declaringType, node);
-
-            sut.Location.FilePath.Should().BeEmpty();
-        }
-
-        [Fact]
-        public async Task LocationReturnsFileContentLocation()
-        {
-            var filePath = Guid.NewGuid().ToString();
-
-            var declaringType = Substitute.For<ITypeDefinition>();
-
-            var node = await TestNode
-                .FindNode<FieldDeclarationSyntax>(FieldDefinitionCode.GetSetField, filePath)
-                .ConfigureAwait(false);
-
-            var sut = new FieldDefinition(declaringType, node);
-
-            sut.Location.LineIndex.Should().Be(5);
-            sut.Location.CharacterIndex.Should().Be(8);
-        }
-
-        [Fact]
-        public async Task LocationReturnsFilePathWhenNodeIncludesSourceInformation()
-        {
-            var filePath = Guid.NewGuid().ToString();
-
-            var declaringType = Substitute.For<ITypeDefinition>();
-
-            var node = await TestNode
-                .FindNode<FieldDeclarationSyntax>(FieldDefinitionCode.GetSetField, filePath)
-                .ConfigureAwait(false);
-
-            var sut = new FieldDefinition(declaringType, node);
-
-            sut.Location.FilePath.Should().Be(filePath);
         }
 
         [Fact]

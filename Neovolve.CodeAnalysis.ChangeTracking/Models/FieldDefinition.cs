@@ -1,7 +1,6 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.Models
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -9,7 +8,7 @@
     ///     The <see cref="FieldDefinition" />
     ///     class describes a field on a type.
     /// </summary>
-    public class FieldDefinition : IFieldDefinition
+    public class FieldDefinition : ElementDefinition, IFieldDefinition
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="FieldDefinition" /> class.
@@ -17,7 +16,7 @@
         /// <param name="declaringType">The type that declares the field.</param>
         /// <param name="node">The node that defines the argument.</param>
         /// <exception cref="ArgumentNullException">The <paramref name="node" /> parameter is <c>null</c>.</exception>
-        public FieldDefinition(ITypeDefinition declaringType, FieldDeclarationSyntax node)
+        public FieldDefinition(ITypeDefinition declaringType, FieldDeclarationSyntax node) : base(node)
         {
             DeclaringType = declaringType ?? throw new ArgumentNullException(nameof(declaringType));
 
@@ -26,49 +25,35 @@
                 throw new ArgumentNullException(nameof(node));
             }
 
-            Location = node.DetermineLocation();
-            Scope = node.DetermineScope();
-            Name = node.Declaration.Variables.Single().Identifier.Text;
-            RawName = Name;
-            FullRawName = declaringType.FullRawName + "." + RawName;
-            FullName = declaringType.FullName + "." + Name;
+            var name = node.Declaration.Variables.Single().Identifier.Text;
 
-            IsVisible = node.IsVisible();
+            Name = name;
+            RawName = name;
+            FullName = DeclaringType.FullName + "." + name;
+            FullRawName = DeclaringType.FullRawName + "." + name;
+
             ReturnType = node.Declaration.Type.ToString();
-            Attributes = node.DetermineAttributes(this);
         }
-
-        /// <inheritdoc />
-        public IReadOnlyCollection<IAttributeDefinition> Attributes { get; }
 
         /// <inheritdoc />
         public ITypeDefinition DeclaringType { get; }
 
         /// <inheritdoc />
-        public string Description => $"Field {FullName}";
+        public override string Description => $"Field {FullName}";
 
         /// <inheritdoc />
-        public string FullName { get; }
+        public override string FullName { get; }
 
         /// <inheritdoc />
-        public string FullRawName { get; }
+        public override string FullRawName { get; }
 
         /// <inheritdoc />
-        public bool IsVisible { get; }
+        public override string Name { get; }
 
         /// <inheritdoc />
-        public DefinitionLocation Location { get; }
-
-        /// <inheritdoc />
-        public string Name { get; }
-
-        /// <inheritdoc />
-        public string RawName { get; }
+        public override string RawName { get; }
 
         /// <inheritdoc />
         public string ReturnType { get; }
-
-        /// <inheritdoc />
-        public string Scope { get; }
     }
 }

@@ -35,7 +35,7 @@
                 yield break;
             }
 
-            foreach (var comparisonResult in EvaluateScopeChanges(match))
+            foreach (var comparisonResult in EvaluateAccessModifiers(match))
             {
                 yield return comparisonResult;
             }
@@ -63,10 +63,10 @@
             return scope;
         }
 
-        private static IEnumerable<ComparisonResult> EvaluateScopeChanges(ItemMatch<T> match)
+        private static IEnumerable<ComparisonResult> EvaluateAccessModifiers(ItemMatch<T> match)
         {
-            var oldScope = DetermineScopeMessage(match.OldItem.Scope);
-            var newScope = DetermineScopeMessage(match.NewItem.Scope);
+            var oldScope = DetermineScopeMessage(match.OldItem.AccessModifiers);
+            var newScope = DetermineScopeMessage(match.NewItem.AccessModifiers);
 
             if (match.OldItem.IsVisible
                 && match.NewItem.IsVisible == false)

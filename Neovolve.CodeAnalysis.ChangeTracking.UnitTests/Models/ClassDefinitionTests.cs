@@ -384,7 +384,7 @@ namespace MyNamespace
 
             var sut = new ClassDefinition(node);
 
-            sut.Scope.Should().Be(expected);
+            sut.AccessModifiers.Should().Be(expected);
         }
     }
 }

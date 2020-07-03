@@ -99,7 +99,7 @@
             return containerNamespace.Name.GetText().ToString().Trim();
         }
 
-        public static string DetermineScope(this MemberDeclarationSyntax node)
+        public static string DetermineAccessModifiers(this MemberDeclarationSyntax node)
         {
             if (node == null)
             {

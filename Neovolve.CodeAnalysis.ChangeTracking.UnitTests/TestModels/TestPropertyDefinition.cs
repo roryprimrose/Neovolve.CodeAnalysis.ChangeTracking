@@ -6,6 +6,7 @@
 
     public class TestPropertyDefinition : IPropertyDefinition
     {
+        public string AccessModifiers { get; set; } = Guid.NewGuid().ToString();
         public IReadOnlyCollection<IAttributeDefinition> Attributes { get; set; } = new List<IAttributeDefinition>();
         public bool CanRead { get; set; } = true;
         public bool CanWrite { get; set; } = true;
@@ -21,9 +22,9 @@
         public bool IsVirtual { get; set; } = false;
         public bool IsVisible { get; set; } = true;
         public DefinitionLocation Location { get; set; } = new DefinitionLocation(string.Empty, 0, 0);
+        public string Modifiers { get; set; } = Guid.NewGuid().ToString();
         public string Name { get; set; } = Guid.NewGuid().ToString();
         public string RawName { get; set; } = Guid.NewGuid().ToString();
         public string ReturnType { get; set; } = Guid.NewGuid().ToString();
-        public string Scope { get; set; } = Guid.NewGuid().ToString();
     }
 }
