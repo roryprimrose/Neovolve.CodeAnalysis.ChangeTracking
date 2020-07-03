@@ -34,6 +34,7 @@
             }
 
             RunComparisonStep(CompareDefinitionType, match, options, aggregator);
+            RunComparisonStep(EvaluateAccessModifierChanges, match, options, aggregator);
             RunComparisonStep(EvaluateModifierChanges, match, options, aggregator);
             RunComparisonStep(EvaluateGenericTypeDefinitionChanges, match, options, aggregator);
             RunComparisonStep(EvaluateFieldChanges, match, options, aggregator);
@@ -77,6 +78,50 @@
             }
 
             throw new NotSupportedException("Unknown type provided");
+        }
+
+        private static void EvaluateAccessModifierChanges(
+            ItemMatch<ITypeDefinition> match,
+            ComparerOptions options,
+            ChangeResultAggregator aggregator)
+        {
+            var change = TypeAccessModifierChangeTable.CalculateChange(match);
+
+            if (change == SemVerChangeType.None)
+            {
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(match.OldItem.AccessModifiers))
+            {
+                // Modifiers have been added where there were previously none defined
+                var result = ComparisonResult.ItemChanged(
+                    change,
+                    match,
+                    $"{match.NewItem.Description} has added the access modifiers {match.NewItem.AccessModifiers}");
+
+                aggregator.AddResult(result);
+            }
+            else if (string.IsNullOrWhiteSpace(match.NewItem.AccessModifiers))
+            {
+                // All previous modifiers have been removed
+                var result = ComparisonResult.ItemChanged(
+                    change,
+                    match,
+                    $"{match.NewItem.Description} has removed the access modifiers {match.OldItem.AccessModifiers}");
+
+                aggregator.AddResult(result);
+            }
+            else
+            {
+                // Modifiers have been changed
+                var result = ComparisonResult.ItemChanged(
+                    change,
+                    match,
+                    $"{match.NewItem.Description} has changed access modifiers from {match.OldItem.AccessModifiers} to {match.NewItem.AccessModifiers}");
+
+                aggregator.AddResult(result);
+            }
         }
 
         private static void EvaluateGenericConstraints(
