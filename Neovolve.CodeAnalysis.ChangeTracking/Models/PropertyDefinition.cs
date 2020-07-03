@@ -39,6 +39,12 @@
             Attributes = node.DetermineAttributes(this);
             ReturnType = node.Type.ToString();
             IsVisible = node.IsVisible();
+            IsAbstract = node.HasModifier(SyntaxKind.AbstractKeyword);
+            IsNew = node.HasModifier(SyntaxKind.NewKeyword);
+            IsOverride = node.HasModifier(SyntaxKind.OverrideKeyword);
+            IsSealed = node.HasModifier(SyntaxKind.SealedKeyword);
+            IsStatic = node.HasModifier(SyntaxKind.StaticKeyword);
+            IsVirtual = node.HasModifier(SyntaxKind.VirtualKeyword);
             CanRead = HasVisibleAccessor(node, IsVisible, SyntaxKind.GetAccessorDeclaration);
             CanWrite = HasVisibleAccessor(node, IsVisible, SyntaxKind.SetAccessorDeclaration);
         }
@@ -95,6 +101,23 @@
 
         /// <inheritdoc />
         public string FullRawName { get; }
+
+        public bool IsAbstract { get; }
+
+        /// <inheritdoc />
+        public bool IsNew { get; }
+
+        /// <inheritdoc />
+        public bool IsOverride { get; }
+
+        /// <inheritdoc />
+        public bool IsSealed { get; }
+
+        /// <inheritdoc />
+        public bool IsStatic { get; }
+
+        /// <inheritdoc />
+        public bool IsVirtual { get; }
 
         /// <inheritdoc />
         public bool IsVisible { get; }

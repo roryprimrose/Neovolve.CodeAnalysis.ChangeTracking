@@ -60,14 +60,14 @@ namespace MyNamespace
 ";
         }
 
-        public static string BuildPropertyWithScope(string scope)
+        public static string BuildPropertyWithModifiers(string modifiers)
         {
             return @$"
 namespace MyNamespace 
 {{
     public class MyClass
     {{
-        {scope} string Value {{ get; set; }}
+        {modifiers} string Value {{ get; set; }}
     }}  
 }}
 ";

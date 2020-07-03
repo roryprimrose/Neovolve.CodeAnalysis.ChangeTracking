@@ -67,54 +67,147 @@
 
         private static IEnumerable<ComparisonResult> EvaluateModifierChanges(ItemMatch<IPropertyDefinition> match)
         {
-            //var oldClass = match.OldItem as IClassDefinition;
+            var oldItem = match.OldItem;
+            var newItem = match.NewItem;
 
-            //if (oldClass == null)
-            //{
-            //    yield break;
-            //}
+            if (oldItem.IsStatic
+                && newItem.IsStatic == false)
+            {
+                yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match,
+                    $"{newItem.Description} has removed the static keyword");
+            }
+            else if (oldItem.IsStatic == false
+                     && newItem.IsStatic)
+            {
+                yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match,
+                    $"{newItem.Description} has added the static keyword");
+            }
 
-            //var newClass = (IClassDefinition)match.NewItem;
+            if (oldItem.IsSealed
+                && newItem.IsSealed == false
+                && newItem.IsOverride == false 
+                && newItem.IsVirtual == false)
+            {
+                // We couldn't override the member and still can't
+                // No-op
+            }
+            else if (oldItem.IsSealed
+                     && newItem.IsSealed == false)
+            {
+                yield return ComparisonResult.ItemChanged(SemVerChangeType.Feature, match,
+                    $"{newItem.Description} has removed the sealed keyword");
+            }
+            else if (oldItem.IsSealed == false
+                     && oldItem.IsOverride == false
+                     && newItem.IsOverride
+                     && newItem.IsSealed)
+            {
+                // We couldn't override the member and still can't
+                // No-op
+            }
+            else if (oldItem.IsSealed == false
+                     && (oldItem.IsVirtual || oldItem.IsOverride)
+                     && newItem.IsSealed)
+            {
+                yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match,
+                    $"{newItem.Description} has added the sealed keyword");
+            }
 
-            //if (oldClass.IsAbstract
-            //    && newClass.IsAbstract == false)
-            //{
-            //    yield return ComparisonResult.ItemChanged(SemVerChangeType.Feature, match,
-            //        $"{oldClass.Description} has removed the abstract keyword");
-            //}
-            //else if (oldClass.IsAbstract == false
-            //         && newClass.IsAbstract)
-            //{
-            //    yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match,
-            //        $"{oldClass.Description} has added the abstract keyword");
-            //}
+            if (oldItem.IsAbstract
+                && newItem.IsAbstract == false
+                && newItem.IsSealed
+                && newItem.IsOverride)
+            {
+                yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match,
+                    $"{newItem.Description} has replaced the abstract keyword with sealed override");
+            }
+            else if (oldItem.IsAbstract
+                     && newItem.IsAbstract == false
+                     && newItem.IsOverride)
+            {
+                yield return ComparisonResult.ItemChanged(SemVerChangeType.Feature, match,
+                    $"{newItem.Description} has replaced the abstract keyword with override");
+            }
+            else if (oldItem.IsAbstract
+                     && newItem.IsAbstract == false
+                     && newItem.IsVirtual)
+            {
+                yield return ComparisonResult.ItemChanged(SemVerChangeType.Feature, match,
+                    $"{newItem.Description} has replaced the abstract keyword with virtual");
+            }
+            else if (oldItem.IsAbstract
+                     && newItem.IsAbstract == false)
+            {
+                yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match,
+                    $"{newItem.Description} has removed the abstract keyword");
+            }
+            else if (oldItem.IsAbstract == false
+                     && newItem.IsAbstract)
+            {
+                yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match,
+                    $"{newItem.Description} has added the abstract keyword");
+            }
 
-            //if (oldClass.IsSealed
-            //    && newClass.IsSealed == false)
-            //{
-            //    yield return ComparisonResult.ItemChanged(SemVerChangeType.Feature, match,
-            //        $"{oldClass.Description} has removed the sealed keyword");
-            //}
-            //else if (oldClass.IsSealed == false
-            //         && newClass.IsSealed)
-            //{
-            //    yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match,
-            //        $"{oldClass.Description} has added the sealed keyword");
-            //}
+            if (oldItem.IsVirtual
+                && newItem.IsVirtual == false
+                && newItem.IsSealed
+                && newItem.IsOverride)
+            {
+                yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match,
+                    $"{newItem.Description} has replaced the virtual keyword with sealed override");
+            }
+            else if (oldItem.IsVirtual
+                     && newItem.IsVirtual == false
+                     && newItem.IsOverride)
+            {
+                // The property can still be overridden and callers don't need to change
+                // No-op
+            }
+            else if (oldItem.IsVirtual
+                     && newItem.IsVirtual == false
+                     && newItem.IsOverride == false)
+            {
+                // The property can no longer be overridden
+                yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match,
+                    $"{newItem.Description} has removed the virtual keyword");
+            }
+            else if (oldItem.IsVirtual == false
+                     && oldItem.IsOverride == false
+                     && newItem.IsVirtual)
+            {
+                yield return ComparisonResult.ItemChanged(SemVerChangeType.Feature, match,
+                    $"{newItem.Description} has added the virtual keyword");
+            }
 
-            //if (oldClass.IsStatic
-            //    && newClass.IsStatic == false)
-            //{
-            //    yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match,
-            //        $"{oldClass.Description} has removed the static keyword");
-            //}
-            //else if (oldClass.IsStatic == false
-            //         && newClass.IsStatic)
-            //{
-            //    yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match,
-            //        $"{oldClass.Description} has added the static keyword");
-            //}
-            yield break;
+            if (oldItem.IsOverride
+                && oldItem.IsSealed
+                && newItem.IsOverride == false)
+            {
+                // The property still can't be overridden and callers don't need to change
+                // No-op
+            }
+            else if (oldItem.IsOverride
+                     && newItem.IsOverride == false
+                     && newItem.IsVirtual == false)
+            {
+                yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match,
+                    $"{newItem.Description} has removed the override keyword");
+            }
+            else if (oldItem.IsOverride
+                     && newItem.IsOverride == false
+                     && newItem.IsVirtual)
+            {
+                // The property can still be overridden and callers don't need to change
+                // No-op
+            }
+            else if (oldItem.IsOverride == false
+                     && oldItem.IsVirtual == false
+                     && newItem.IsSealed == false
+                     && newItem.IsOverride)
+            {
+                yield return ComparisonResult.ItemChanged(SemVerChangeType.Feature, match,
+                    $"{newItem.Description} has added the override keyword");
+            }
         }
 
         private static IEnumerable<ComparisonResult> EvaluateScopeChanges(ItemMatch<IPropertyDefinition> match)

@@ -227,52 +227,52 @@
 
         private static IEnumerable<ComparisonResult> EvaluateModifierChanges(ItemMatch<ITypeDefinition> match)
         {
-            var oldClass = match.OldItem as IClassDefinition;
+            var oldItem = match.OldItem as IClassDefinition;
 
-            if (oldClass == null)
+            if (oldItem == null)
             {
                 yield break;
             }
 
-            var newClass = (IClassDefinition) match.NewItem;
+            var newItem = (IClassDefinition) match.NewItem;
 
-            if (oldClass.IsAbstract
-                && newClass.IsAbstract == false)
+            if (oldItem.IsAbstract
+                && newItem.IsAbstract == false)
             {
                 yield return ComparisonResult.ItemChanged(SemVerChangeType.Feature, match,
-                    $"{oldClass.Description} has removed the abstract keyword");
+                    $"{newItem.Description} has removed the abstract keyword");
             }
-            else if (oldClass.IsAbstract == false
-                     && newClass.IsAbstract)
+            else if (oldItem.IsAbstract == false
+                     && newItem.IsAbstract)
             {
                 yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match,
-                    $"{oldClass.Description} has added the abstract keyword");
+                    $"{newItem.Description} has added the abstract keyword");
             }
 
-            if (oldClass.IsSealed
-                && newClass.IsSealed == false)
+            if (oldItem.IsSealed
+                && newItem.IsSealed == false)
             {
                 yield return ComparisonResult.ItemChanged(SemVerChangeType.Feature, match,
-                    $"{oldClass.Description} has removed the sealed keyword");
+                    $"{newItem.Description} has removed the sealed keyword");
             }
-            else if (oldClass.IsSealed == false
-                     && newClass.IsSealed)
+            else if (oldItem.IsSealed == false
+                     && newItem.IsSealed)
             {
                 yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match,
-                    $"{oldClass.Description} has added the sealed keyword");
+                    $"{newItem.Description} has added the sealed keyword");
             }
 
-            if (oldClass.IsStatic
-                && newClass.IsStatic == false)
+            if (oldItem.IsStatic
+                && newItem.IsStatic == false)
             {
                 yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match,
-                    $"{oldClass.Description} has removed the static keyword");
+                    $"{newItem.Description} has removed the static keyword");
             }
-            else if (oldClass.IsStatic == false
-                     && newClass.IsStatic)
+            else if (oldItem.IsStatic == false
+                     && newItem.IsStatic)
             {
                 yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match,
-                    $"{oldClass.Description} has added the static keyword");
+                    $"{newItem.Description} has added the static keyword");
             }
         }
 

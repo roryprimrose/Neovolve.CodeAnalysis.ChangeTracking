@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.ScenarioTests
+﻿namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.ScenarioTests
 {
+    using System;
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using FluentAssertions;
@@ -26,42 +24,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.ScenarioTests
         }
 
         [Theory]
-        [InlineData("","", SemVerChangeType.None)]
-        [InlineData("","sealed override", SemVerChangeType.Breaking)]
-        [InlineData("","virtual", SemVerChangeType.Feature)]
-        [InlineData("","static", SemVerChangeType.Breaking)]
-        [InlineData("","abstract", SemVerChangeType.Breaking)]
-        [InlineData("","override", SemVerChangeType.None)]
-        [InlineData("sealed override","", SemVerChangeType.Feature)]
-        [InlineData("sealed override","sealed override", SemVerChangeType.None)]
-        [InlineData("sealed override","virtual", SemVerChangeType.Feature)]
-        [InlineData("sealed override","static", SemVerChangeType.Breaking)]
-        [InlineData("sealed override","abstract", SemVerChangeType.Breaking)]
-        [InlineData("sealed override","override", SemVerChangeType.Feature)]
-        [InlineData("virtual","", SemVerChangeType.None)]
-        [InlineData("virtual","sealed override", SemVerChangeType.Breaking)]
-        [InlineData("virtual","virtual", SemVerChangeType.None)]
-        [InlineData("virtual","static", SemVerChangeType.Breaking)]
-        [InlineData("virtual","abstract", SemVerChangeType.Breaking)]
-        [InlineData("virtual","override", SemVerChangeType.None)]
-        [InlineData("static","", SemVerChangeType.Breaking)]
-        [InlineData("static","sealed override", SemVerChangeType.Breaking)]
-        [InlineData("static","virtual", SemVerChangeType.Breaking)]
-        [InlineData("static","static", SemVerChangeType.None)]
-        [InlineData("static","abstract", SemVerChangeType.Breaking)]
-        [InlineData("static","override", SemVerChangeType.Breaking)]
-        [InlineData("abstract","", SemVerChangeType.Breaking)]
-        [InlineData("abstract","sealed override", SemVerChangeType.Breaking)]
-        [InlineData("abstract","virtual", SemVerChangeType.None)]
-        [InlineData("abstract","static", SemVerChangeType.Breaking)]
-        [InlineData("abstract","abstract", SemVerChangeType.None)]
-        [InlineData("abstract","override", SemVerChangeType.Feature)]
-        [InlineData("override","", SemVerChangeType.None)]
-        [InlineData("override","sealed override", SemVerChangeType.Breaking)]
-        [InlineData("override","virtual", SemVerChangeType.None)]
-        [InlineData("override","static", SemVerChangeType.Breaking)]
-        [InlineData("override","abstract", SemVerChangeType.Breaking)]
-        [InlineData("override","override", SemVerChangeType.None)]
+        [ClassData(typeof(PropertyModifierDataSet))]
         public async Task EvaluatesChangeOfPropertyModifiers(string oldModifiers, string newModifiers,
             SemVerChangeType expected)
         {
@@ -80,11 +43,6 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.ScenarioTests
             OutputResult(result);
 
             result.ChangeType.Should().Be(expected);
-        }
-
-        [Fact(Skip = "Not implemented yet")]
-        public void TestPropertyAttributes()
-        {
         }
 
         [Theory]
@@ -180,6 +138,11 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.ScenarioTests
             OutputResult(result);
 
             result.ChangeType.Should().Be(SemVerChangeType.None);
+        }
+
+        [Fact(Skip = "Not implemented yet")]
+        public void TestPropertyAttributes()
+        {
         }
 
         private void OutputResult(ChangeCalculatorResult result)

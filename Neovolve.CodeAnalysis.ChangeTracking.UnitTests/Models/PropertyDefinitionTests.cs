@@ -169,6 +169,108 @@
 
         [Theory]
         [InlineData("", false)]
+        [InlineData("abstract", true)]
+        public async Task IsAbstractReturnsValueBasedOnModifiers(string modifiers, bool expected)
+        {
+            var code = PropertyDefinitionCode.BuildPropertyWithModifiers(modifiers);
+
+            var declaringType = Substitute.For<ITypeDefinition>();
+
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code)
+                .ConfigureAwait(false);
+
+            var sut = new PropertyDefinition(declaringType, node);
+
+            sut.IsAbstract.Should().Be(expected);
+        }
+
+        [Theory]
+        [InlineData("", false)]
+        [InlineData("new", true)]
+        public async Task IsNewReturnsValueBasedOnModifiers(string modifiers, bool expected)
+        {
+            var code = PropertyDefinitionCode.BuildPropertyWithModifiers(modifiers);
+
+            var declaringType = Substitute.For<ITypeDefinition>();
+
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code)
+                .ConfigureAwait(false);
+
+            var sut = new PropertyDefinition(declaringType, node);
+
+            sut.IsNew.Should().Be(expected);
+        }
+
+        [Theory]
+        [InlineData("", false)]
+        [InlineData("override", true)]
+        public async Task IsOverrideReturnsValueBasedOnModifiers(string modifiers, bool expected)
+        {
+            var code = PropertyDefinitionCode.BuildPropertyWithModifiers(modifiers);
+
+            var declaringType = Substitute.For<ITypeDefinition>();
+
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code)
+                .ConfigureAwait(false);
+
+            var sut = new PropertyDefinition(declaringType, node);
+
+            sut.IsOverride.Should().Be(expected);
+        }
+
+        [Theory]
+        [InlineData("", false)]
+        [InlineData("sealed", true)]
+        public async Task IsSealedReturnsValueBasedOnModifiers(string modifiers, bool expected)
+        {
+            var code = PropertyDefinitionCode.BuildPropertyWithModifiers(modifiers);
+
+            var declaringType = Substitute.For<ITypeDefinition>();
+
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code)
+                .ConfigureAwait(false);
+
+            var sut = new PropertyDefinition(declaringType, node);
+
+            sut.IsSealed.Should().Be(expected);
+        }
+
+        [Theory]
+        [InlineData("", false)]
+        [InlineData("static", true)]
+        public async Task IsStaticReturnsValueBasedOnModifiers(string modifiers, bool expected)
+        {
+            var code = PropertyDefinitionCode.BuildPropertyWithModifiers(modifiers);
+
+            var declaringType = Substitute.For<ITypeDefinition>();
+
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code)
+                .ConfigureAwait(false);
+
+            var sut = new PropertyDefinition(declaringType, node);
+
+            sut.IsStatic.Should().Be(expected);
+        }
+
+        [Theory]
+        [InlineData("", false)]
+        [InlineData("virtual", true)]
+        public async Task IsVirtualReturnsValueBasedOnModifiers(string modifiers, bool expected)
+        {
+            var code = PropertyDefinitionCode.BuildPropertyWithModifiers(modifiers);
+
+            var declaringType = Substitute.For<ITypeDefinition>();
+
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code)
+                .ConfigureAwait(false);
+
+            var sut = new PropertyDefinition(declaringType, node);
+
+            sut.IsVirtual.Should().Be(expected);
+        }
+
+        [Theory]
+        [InlineData("", false)]
         [InlineData("private", false)]
         [InlineData("internal", false)]
         [InlineData("protected", true)]
@@ -177,7 +279,7 @@
         [InlineData("public", true)]
         public async Task IsVisibleReturnsValueBasedOnScope(string scope, bool expected)
         {
-            var code = PropertyDefinitionCode.BuildPropertyWithScope(scope);
+            var code = PropertyDefinitionCode.BuildPropertyWithModifiers(scope);
 
             var declaringType = Substitute.For<ITypeDefinition>();
 
