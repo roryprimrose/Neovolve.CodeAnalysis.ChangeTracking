@@ -24,7 +24,7 @@
             var rawName = node.Identifier.Text;
 
             DeclaringType = null;
-            Namespace = node.DetermineNamespace();
+            Namespace = DetermineNamespace(node);
             Name = name;
             RawName = rawName;
             FullRawName = Namespace + "." + rawName;
@@ -51,7 +51,7 @@
             var name = DetermineName(node);
             var rawName = node.Identifier.Text;
 
-            Namespace = node.DetermineNamespace();
+            Namespace = DetermineNamespace(node);
             Name = name;
             RawName = rawName;
             FullRawName = DeclaringType.FullRawName + "+" + rawName;
@@ -64,6 +64,34 @@
             ChildTypes = DetermineChildTypes(ChildClasses, ChildInterfaces);
             GenericTypeParameters = DetermineGenericTypeParameters(node);
             GenericConstraints = DetermineGenericConstraints(node);
+        }
+
+        /// <summary>
+        ///     Gets the namespace that contains the node.
+        /// </summary>
+        /// <param name="node">The node to evaluate.</param>
+        /// <returns>The namespace that contains the node or <see cref="string.Empty" /> if no namespace is found.</returns>
+        public static string DetermineNamespace(SyntaxNode node)
+        {
+            node = node ?? throw new ArgumentNullException(nameof(node));
+
+            var containerNamespace = node.FirstAncestorOrSelf<NamespaceDeclarationSyntax>(x => x != node);
+
+            if (containerNamespace != null)
+            {
+                var parentNamespace = DetermineNamespace(containerNamespace);
+                
+                var namespaceValue = containerNamespace.Name.GetText().ToString().Trim();
+
+                if (string.IsNullOrWhiteSpace(parentNamespace))
+                {
+                    return namespaceValue;
+                }
+
+                return parentNamespace + "." + namespaceValue;
+            }
+
+            return string.Empty;
         }
 
         private static IReadOnlyCollection<ITypeDefinition> DetermineChildTypes(

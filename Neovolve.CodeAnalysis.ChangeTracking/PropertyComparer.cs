@@ -14,6 +14,8 @@
         {
             RunComparisonStep(EvaluateModifierChanges, match, options, aggregator);
             RunComparisonStep(EvaluatePropertyAccessors, match, options, aggregator);
+
+            base.EvaluateMatch(match, options, aggregator);
         }
 
         private static void EvaluatePropertyAccessors(

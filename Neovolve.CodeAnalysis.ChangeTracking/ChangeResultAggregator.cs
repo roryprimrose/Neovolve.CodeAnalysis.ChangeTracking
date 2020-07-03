@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     /// <summary>
     ///     The <see cref="ChangeResultAggregator" />
@@ -53,7 +54,23 @@
         public bool ExitNodeAnalysis { get; set; }
 
         /// <summary>
-        ///     Returns the results that have been added to the aggregator.
+        ///     Gets the overall change type.
+        /// </summary>
+        public SemVerChangeType OverallChangeType
+        {
+            get
+            {
+                if (_results.Count == 0)
+                {
+                    return SemVerChangeType.None;
+                }
+
+                return _results.Max(x => x.ChangeType);
+            }
+        }
+
+        /// <summary>
+        ///     Gets the results that have been added to the aggregator.
         /// </summary>
         public IReadOnlyCollection<ComparisonResult> Results => _results;
     }

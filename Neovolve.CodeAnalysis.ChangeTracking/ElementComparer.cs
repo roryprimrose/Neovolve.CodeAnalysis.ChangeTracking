@@ -28,7 +28,6 @@
                 return aggregator.Results;
             }
 
-            RunComparisonStep(EvaluateAccessModifiers, match, options, aggregator);
             RunComparisonStep(EvaluateMatch, match, options, aggregator);
             RunComparisonStep(EvaluateAttributeChanges, match, options, aggregator);
 
@@ -46,7 +45,17 @@
             ComparerOptions options,
             ChangeResultAggregator aggregator)
         {
-            match = match ??  throw new ArgumentNullException(nameof(match));
+            RunComparisonStep(step, match, options, aggregator, false);
+        }
+
+        protected void RunComparisonStep(
+            Action<ItemMatch<T>, ComparerOptions, ChangeResultAggregator> step,
+            ItemMatch<T> match,
+            ComparerOptions options,
+            ChangeResultAggregator aggregator,
+            bool exitOnBreakingChange)
+        {
+            match = match ?? throw new ArgumentNullException(nameof(match));
             options = options ?? throw new ArgumentNullException(nameof(options));
             aggregator = aggregator ?? throw new ArgumentNullException(nameof(aggregator));
 
@@ -56,47 +65,15 @@
             }
 
             step(match, options, aggregator);
-        }
 
-        private static string DetermineScopeMessage(string scope)
-        {
-            if (string.IsNullOrWhiteSpace(scope))
+            if (exitOnBreakingChange == false)
             {
-                return "(implicit) private";
+                // Don't bother calculating the biggest outcome if we are not going to set the exit flag anyway
+                return;
             }
 
-            return scope;
-        }
-
-        private static void EvaluateAccessModifiers(
-            ItemMatch<T> match,
-            ComparerOptions options,
-            ChangeResultAggregator aggregator)
-        {
-            var oldScope = DetermineScopeMessage(match.OldItem.AccessModifiers);
-            var newScope = DetermineScopeMessage(match.NewItem.AccessModifiers);
-
-            if (match.OldItem.IsVisible
-                && match.NewItem.IsVisible == false)
+            if (aggregator.OverallChangeType == SemVerChangeType.Breaking)
             {
-                // The member was visible but isn't now, breaking change
-                var message = $"{match.NewItem.Description} changed scope from {oldScope} to {newScope}";
-
-                var result = ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match, message);
-
-                aggregator.AddResult(result);
-                aggregator.ExitNodeAnalysis = true;
-            }
-            else if (match.OldItem.IsVisible == false
-                     && match.NewItem.IsVisible)
-            {
-                // The member return type may have changed, but the member is only now becoming public
-                // This is a feature because the public API didn't break even if the return type has changed
-                var message = $"{match.NewItem.Description} changed scope from {oldScope} to {newScope}";
-
-                var result = ComparisonResult.ItemChanged(SemVerChangeType.Feature, match, message);
-
-                aggregator.AddResult(result);
                 aggregator.ExitNodeAnalysis = true;
             }
         }
@@ -106,15 +83,12 @@
             ComparerOptions options,
             ChangeResultAggregator aggregator)
         {
-            var attributeResults = _attributeProcessor.CalculateChanges(
+            var results = _attributeProcessor.CalculateChanges(
                 match.OldItem.Attributes,
                 match.NewItem.Attributes,
                 options);
 
-            foreach (var result in attributeResults)
-            {
-                aggregator.AddResult(result);
-            }
+            aggregator.AddResults(results);
         }
     }
 }

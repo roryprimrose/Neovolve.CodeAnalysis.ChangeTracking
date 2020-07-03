@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using FluentAssertions;
-    using ModelBuilder;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
     using Neovolve.CodeAnalysis.ChangeTracking.UnitTests.TestModels;
     using Xunit;
@@ -26,16 +25,6 @@
             var sut = new ChangeResultAggregator();
 
             Action action = () => sut.AddResult(null!);
-
-            action.Should().Throw<ArgumentNullException>();
-        }
-
-        [Fact]
-        public void MergeResultsThrowsExceptionWithNullResult()
-        {
-            var sut = new ChangeResultAggregator();
-
-            Action action = () => sut.MergeResults(null!);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -80,6 +69,56 @@
 
             actual.Should().BeEquivalentTo(childResults);
             sut.ExitNodeAnalysis.Should().Be(aggregator.ExitNodeAnalysis);
+        }
+
+        [Fact]
+        public void MergeResultsThrowsExceptionWithNullResult()
+        {
+            var sut = new ChangeResultAggregator();
+
+            Action action = () => sut.MergeResults(null!);
+
+            action.Should().Throw<ArgumentNullException>();
+        }
+
+        [Theory]
+        [InlineData(SemVerChangeType.None, SemVerChangeType.None, SemVerChangeType.None)]
+        [InlineData(SemVerChangeType.None, SemVerChangeType.Feature, SemVerChangeType.Feature)]
+        [InlineData(SemVerChangeType.None, SemVerChangeType.Breaking, SemVerChangeType.Breaking)]
+        [InlineData(SemVerChangeType.Feature, SemVerChangeType.None, SemVerChangeType.Feature)]
+        [InlineData(SemVerChangeType.Feature, SemVerChangeType.Feature, SemVerChangeType.Feature)]
+        [InlineData(SemVerChangeType.Feature, SemVerChangeType.Breaking, SemVerChangeType.Breaking)]
+        [InlineData(SemVerChangeType.Breaking, SemVerChangeType.None, SemVerChangeType.Breaking)]
+        [InlineData(SemVerChangeType.Breaking, SemVerChangeType.Feature, SemVerChangeType.Breaking)]
+        [InlineData(SemVerChangeType.Breaking, SemVerChangeType.Breaking, SemVerChangeType.Breaking)]
+        public void OverallChangeTypeReturnsHighestResult(SemVerChangeType firstType,
+            SemVerChangeType secondType, SemVerChangeType expected)
+        {
+            var firstItem = new TestPropertyDefinition();
+            var secondItem = new TestPropertyDefinition();
+            var match = new ItemMatch<IPropertyDefinition>(firstItem, secondItem);
+
+            var firstResult = firstType == SemVerChangeType.None ? ComparisonResult.NoChange(match) : ComparisonResult.ItemChanged(firstType, match, Guid.NewGuid().ToString());
+            var secondResult = secondType == SemVerChangeType.None ? ComparisonResult.NoChange(match) : ComparisonResult.ItemChanged(secondType, match, Guid.NewGuid().ToString());
+
+            var sut = new ChangeResultAggregator();
+
+            sut.AddResult(firstResult);
+            sut.AddResult(secondResult);
+
+            var actual = sut.OverallChangeType;
+
+            actual.Should().Be(expected);
+        }
+
+        [Fact]
+        public void OverallChangeTypeReturnsNoneWhenNoResultsEntered()
+        {
+            var sut = new ChangeResultAggregator();
+
+            var actual = sut.OverallChangeType;
+
+            actual.Should().Be(SemVerChangeType.None);
         }
 
         [Fact]

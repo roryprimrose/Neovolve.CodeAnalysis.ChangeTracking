@@ -169,47 +169,6 @@ namespace MyNamespace
             action.Should().Throw<ArgumentNullException>();
         }
 
-        [Fact]
-        public async Task DetermineNamespaceReturnsEmptyWhenNoNamespaceFound()
-        {
-            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithoutNamespace)
-                .ConfigureAwait(false);
-
-            var actual = node.DetermineNamespace();
-
-            actual.Should().BeEmpty();
-        }
-
-        [Fact]
-        public async Task DetermineNamespaceReturnsOwningComplexNamespace()
-        {
-            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithComplexNamespace)
-                .ConfigureAwait(false);
-
-            var actual = node.DetermineNamespace();
-
-            actual.Should().Be("MyNamespace.OtherNamespace.FinalNamespace");
-        }
-
-        [Fact]
-        public async Task DetermineNamespaceReturnsOwningNamespace()
-        {
-            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithoutParent)
-                .ConfigureAwait(false);
-
-            var actual = node.DetermineNamespace();
-
-            actual.Should().Be("MyNamespace");
-        }
-
-        [Fact]
-        public void DetermineNamespaceThrowsExceptionWithNullNode()
-        {
-            Action action = () => NodeExtensions.DetermineNamespace(null!);
-
-            action.Should().Throw<ArgumentNullException>();
-        }
-
         [Theory]
         [InlineData("", "")]
         [InlineData("private", "private")]

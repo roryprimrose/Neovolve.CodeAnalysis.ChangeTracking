@@ -146,6 +146,18 @@ namespace MyNamespace
     }
 }";
 
+        public const string ClassWithNestedNamespace = @"
+namespace MyNamespace 
+{
+    namespace ChildNamespace
+    {
+        public class MyClass
+        {
+        }   
+    }
+}
+";
+
         public const string ClassWithoutNamespace = @"
 public class MyClass
 {

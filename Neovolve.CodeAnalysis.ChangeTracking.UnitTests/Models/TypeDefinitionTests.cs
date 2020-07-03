@@ -455,6 +455,17 @@
         }
 
         [Fact]
+        public async Task NamespaceReturnsDeclarationWhenInComplexNamespace()
+        {
+            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithComplexNamespace)
+                .ConfigureAwait(false);
+
+            var sut = new ClassDefinition(node);
+
+            sut.Namespace.Should().Be("MyNamespace.OtherNamespace.FinalNamespace");
+        }
+
+        [Fact]
         public async Task NamespaceReturnsDeclarationWhenInNamespace()
         {
             var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithoutParent)
@@ -463,6 +474,17 @@
             var sut = new ClassDefinition(node);
 
             sut.Namespace.Should().Be("MyNamespace");
+        }
+
+        [Fact]
+        public async Task NamespaceReturnsDeclarationWhenInNestedNamespace()
+        {
+            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithNestedNamespace)
+                .ConfigureAwait(false);
+
+            var sut = new ClassDefinition(node);
+
+            sut.Namespace.Should().Be("MyNamespace.ChildNamespace");
         }
 
         [Fact]

@@ -26,13 +26,13 @@
             match = match ?? throw new ArgumentNullException(nameof(match));
             options = options ?? throw new ArgumentNullException(nameof(options));
 
-            RunComparisonStep(CompareDefinitionType, match, options, aggregator);
-            RunComparisonStep(EvaluateAccessModifierChanges, match, options, aggregator);
-            RunComparisonStep(EvaluateModifierChanges, match, options, aggregator);
-            RunComparisonStep(EvaluateGenericTypeDefinitionChanges, match, options, aggregator);
+            RunComparisonStep(CompareDefinitionType, match, options, aggregator, true);
+            RunComparisonStep(EvaluateAccessModifierChanges, match, options, aggregator, true);
+            RunComparisonStep(EvaluateModifierChanges, match, options, aggregator, true);
+            RunComparisonStep(EvaluateGenericTypeDefinitionChanges, match, options, aggregator, true);
+            RunComparisonStep(EvaluateImplementedTypeChanges, match, options, aggregator, true);
             RunComparisonStep(EvaluateFieldChanges, match, options, aggregator);
             RunComparisonStep(EvaluatePropertyChanges, match, options, aggregator);
-            RunComparisonStep(EvaluateImplementedTypeChanges, match, options, aggregator);
         }
 
         private static void CompareDefinitionType(
@@ -51,10 +51,6 @@
                     $"{match.OldItem.Description} has changed to {newType}");
 
                 aggregator.AddResult(result);
-
-                // This is a fundamental change to the type. No point continuing to identify differences
-
-                aggregator.ExitNodeAnalysis = true;
             }
         }
 

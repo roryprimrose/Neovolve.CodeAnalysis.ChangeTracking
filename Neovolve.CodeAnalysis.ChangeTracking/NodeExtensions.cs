@@ -67,25 +67,6 @@
             return new DefinitionLocation(filePath, lineIndex, characterIndex);
         }
 
-        /// <summary>
-        ///     Gets the namespace that contains the node.
-        /// </summary>
-        /// <param name="node">The node to evaluate.</param>
-        /// <returns>The namespace that contains the node or <see cref="string.Empty" /> if no namespace is found.</returns>
-        public static string DetermineNamespace(this SyntaxNode node)
-        {
-            node = node ?? throw new ArgumentNullException(nameof(node));
-
-            var containerNamespace = node.FirstAncestorOrSelf<NamespaceDeclarationSyntax>();
-
-            if (containerNamespace == null)
-            {
-                return string.Empty;
-            }
-
-            return containerNamespace.Name.GetText().ToString().Trim();
-        }
-
         public static string DetermineAccessModifiers(this MemberDeclarationSyntax node)
         {
             node = node ?? throw new ArgumentNullException(nameof(node));
