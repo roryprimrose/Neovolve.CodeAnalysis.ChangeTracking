@@ -23,15 +23,8 @@
             ComparerOptions options,
             ChangeResultAggregator aggregator)
         {
-            if (match == null)
-            {
-                throw new ArgumentNullException(nameof(match));
-            }
-
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
+            match = match ?? throw new ArgumentNullException(nameof(match));
+            options = options ?? throw new ArgumentNullException(nameof(options));
 
             RunComparisonStep(CompareDefinitionType, match, options, aggregator);
             RunComparisonStep(EvaluateAccessModifierChanges, match, options, aggregator);

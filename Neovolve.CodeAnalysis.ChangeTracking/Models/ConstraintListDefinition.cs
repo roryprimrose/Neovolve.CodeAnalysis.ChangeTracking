@@ -17,10 +17,7 @@
         /// <exception cref="ArgumentNullException">The <paramref name="node" /> parameter is <c>null</c>.</exception>
         public ConstraintListDefinition(TypeParameterConstraintClauseSyntax node)
         {
-            if (node == null)
-            {
-                throw new ArgumentNullException(nameof(node));
-            }
+            node = node ?? throw new ArgumentNullException(nameof(node));
 
             Name = node.Name.ToString();
             Constraints = DetermineConstraints(node);

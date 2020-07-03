@@ -20,15 +20,8 @@
         public ChangeCalculatorResult CalculateChanges(IEnumerable<ITypeDefinition> oldTypes,
             IEnumerable<ITypeDefinition> newTypes, ComparerOptions options)
         {
-            if (oldTypes == null)
-            {
-                throw new ArgumentNullException(nameof(oldTypes));
-            }
-
-            if (newTypes == null)
-            {
-                throw new ArgumentNullException(nameof(newTypes));
-            }
+            oldTypes = oldTypes ?? throw new ArgumentNullException(nameof(oldTypes));
+            newTypes = newTypes ?? throw new ArgumentNullException(nameof(newTypes));
 
             var result = new ChangeCalculatorResult();
 

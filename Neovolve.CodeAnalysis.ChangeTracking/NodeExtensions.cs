@@ -23,15 +23,8 @@
         public static IReadOnlyCollection<IAttributeDefinition> DetermineAttributes(this MemberDeclarationSyntax node,
             IElementDefinition declaringItem)
         {
-            if (node == null)
-            {
-                throw new ArgumentNullException(nameof(node));
-            }
-
-            if (declaringItem == null)
-            {
-                throw new ArgumentNullException(nameof(declaringItem));
-            }
+            node = node ?? throw new ArgumentNullException(nameof(node));
+            declaringItem = declaringItem ?? throw new ArgumentNullException(nameof(declaringItem));
 
             var definitions = new List<IAttributeDefinition>();
 
@@ -55,10 +48,7 @@
         /// <returns>The node location.</returns>
         public static DefinitionLocation DetermineLocation(this CSharpSyntaxNode node)
         {
-            if (node == null)
-            {
-                throw new ArgumentNullException(nameof(node));
-            }
+            node = node ?? throw new ArgumentNullException(nameof(node));
 
             string filePath = string.Empty;
             var location = node.GetLocation();
@@ -84,10 +74,7 @@
         /// <returns>The namespace that contains the node or <see cref="string.Empty" /> if no namespace is found.</returns>
         public static string DetermineNamespace(this SyntaxNode node)
         {
-            if (node == null)
-            {
-                throw new ArgumentNullException(nameof(node));
-            }
+            node = node ?? throw new ArgumentNullException(nameof(node));
 
             var containerNamespace = node.FirstAncestorOrSelf<NamespaceDeclarationSyntax>();
 
@@ -101,10 +88,7 @@
 
         public static string DetermineAccessModifiers(this MemberDeclarationSyntax node)
         {
-            if (node == null)
-            {
-                throw new ArgumentNullException(nameof(node));
-            }
+            node = node ?? throw new ArgumentNullException(nameof(node));
 
             var values = new List<string>();
 
@@ -128,10 +112,7 @@
 
         public static bool HasModifier(this MemberDeclarationSyntax node, SyntaxKind kind)
         {
-            if (node == null)
-            {
-                throw new ArgumentNullException(nameof(node));
-            }
+            node = node ?? throw new ArgumentNullException(nameof(node));
 
             return node.Modifiers.Any(x => x.RawKind == (int) kind);
         }

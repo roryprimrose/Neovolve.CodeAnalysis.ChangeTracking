@@ -28,20 +28,9 @@
             ComparerOptions options,
             CancellationToken cancellationToken)
         {
-            if (calculator == null)
-            {
-                throw new ArgumentNullException(nameof(calculator));
-            }
-
-            if (oldCode == null)
-            {
-                throw new ArgumentNullException(nameof(oldCode));
-            }
-
-            if (newCode == null)
-            {
-                throw new ArgumentNullException(nameof(newCode));
-            }
+            calculator = calculator ?? throw new ArgumentNullException(nameof(calculator));
+            oldCode = oldCode ?? throw new ArgumentNullException(nameof(oldCode));
+            newCode = newCode ?? throw new ArgumentNullException(nameof(newCode));
 
             // Convert all the old and new code into SyntaxNode objects
             var oldTask = ParseCode(oldCode, cancellationToken);
@@ -71,25 +60,10 @@
             IEnumerable<SyntaxNode> newNodes,
             ComparerOptions options)
         {
-            if (calculator == null)
-            {
-                throw new ArgumentNullException(nameof(calculator));
-            }
-
-            if (oldNodes == null)
-            {
-                throw new ArgumentNullException(nameof(oldNodes));
-            }
-
-            if (newNodes == null)
-            {
-                throw new ArgumentNullException(nameof(newNodes));
-            }
-
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
+            calculator = calculator ?? throw new ArgumentNullException(nameof(calculator));
+            oldNodes = oldNodes ?? throw new ArgumentNullException(nameof(oldNodes));
+            newNodes = newNodes ?? throw new ArgumentNullException(nameof(newNodes));
+            options = options ?? throw new ArgumentNullException(nameof(options));
 
             var oldTypes = ResolveDeclaredTypes(oldNodes);
             var newTypes = ResolveDeclaredTypes(newNodes);

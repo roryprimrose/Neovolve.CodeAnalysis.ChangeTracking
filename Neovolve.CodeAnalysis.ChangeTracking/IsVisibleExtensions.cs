@@ -8,10 +8,7 @@
     {
         public static bool IsVisible(this AccessorDeclarationSyntax declaration)
         {
-            if (declaration == null)
-            {
-                throw new ArgumentNullException(nameof(declaration));
-            }
+            declaration = declaration ?? throw new ArgumentNullException(nameof(declaration));
 
             var modifiers = declaration.Modifiers;
 
@@ -20,10 +17,7 @@
 
         public static bool IsVisible(this MemberDeclarationSyntax declaration)
         {
-            if (declaration == null)
-            {
-                throw new ArgumentNullException(nameof(declaration));
-            }
+            declaration = declaration ?? throw new ArgumentNullException(nameof(declaration));
 
             if (declaration.Parent is InterfaceDeclarationSyntax)
             {

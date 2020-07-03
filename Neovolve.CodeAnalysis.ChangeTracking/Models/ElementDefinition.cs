@@ -13,10 +13,7 @@
         /// <param name="node">The syntax node that defines the type.</param>
         protected ElementDefinition(MemberDeclarationSyntax node)
         {
-            if (node == null)
-            {
-                throw new ArgumentNullException(nameof(node));
-            }
+            node = node ?? throw new ArgumentNullException(nameof(node));
 
             Location = node.DetermineLocation();
             AccessModifiers = node.DetermineAccessModifiers();
@@ -28,10 +25,7 @@
 
         private static string DetermineModifiers(MemberDeclarationSyntax node)
         {
-            if (node == null)
-            {
-                throw new ArgumentNullException(nameof(node));
-            }
+            node = node ?? throw new ArgumentNullException(nameof(node));
 
             var values = new List<string>();
 

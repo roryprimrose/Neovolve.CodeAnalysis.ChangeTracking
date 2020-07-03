@@ -9,15 +9,8 @@
     {
         public IMatchResults<T> MatchItems<T>(IEnumerable<T> oldItems, IEnumerable<T> newItems, Func<T, T, bool> evaluator) where T : IItemDefinition
         {
-            if (oldItems == null)
-            {
-                throw new ArgumentNullException(nameof(oldItems));
-            }
-
-            if (newItems == null)
-            {
-                throw new ArgumentNullException(nameof(newItems));
-            }
+            oldItems = oldItems ?? throw new ArgumentNullException(nameof(oldItems));
+            newItems = newItems ?? throw new ArgumentNullException(nameof(newItems));
 
             var matches = new List<ItemMatch<T>>();
 

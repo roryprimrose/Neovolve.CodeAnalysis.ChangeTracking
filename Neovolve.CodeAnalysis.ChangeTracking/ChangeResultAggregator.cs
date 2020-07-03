@@ -18,10 +18,7 @@
         /// <exception cref="ArgumentNullException">The <paramref name="result" /> parameter if <c>null</c>.</exception>
         public void AddResult(ComparisonResult result)
         {
-            if (result == null)
-            {
-                throw new ArgumentNullException(nameof(result));
-            }
+            result = result ?? throw new ArgumentNullException(nameof(result));
 
             _results.Add(result);
         }
@@ -33,10 +30,7 @@
         /// <exception cref="ArgumentNullException">The <paramref name="results" /> parameter if <c>null</c>.</exception>
         public void AddResults(IEnumerable<ComparisonResult> results)
         {
-            if (results == null)
-            {
-                throw new ArgumentNullException(nameof(results));
-            }
+            results = results ?? throw new ArgumentNullException(nameof(results));
 
             _results.AddRange(results);
         }
@@ -47,10 +41,7 @@
         /// <param name="aggregator">The aggregator data to merge.</param>
         public void MergeResults(ChangeResultAggregator aggregator)
         {
-            if (aggregator == null)
-            {
-                throw new ArgumentNullException(nameof(aggregator));
-            }
+            aggregator = aggregator ?? throw new ArgumentNullException(nameof(aggregator));
 
             _results.AddRange(aggregator.Results);
             ExitNodeAnalysis = aggregator.ExitNodeAnalysis;

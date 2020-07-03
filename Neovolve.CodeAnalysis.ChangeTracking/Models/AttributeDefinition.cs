@@ -20,11 +20,7 @@
         public AttributeDefinition(IItemDefinition declaringItem, AttributeSyntax node)
         {
             DeclaredOn = declaringItem ?? throw new ArgumentNullException(nameof(declaringItem));
-
-            if (node == null)
-            {
-                throw new ArgumentNullException(nameof(node));
-            }
+            node = node ?? throw new ArgumentNullException(nameof(node));
 
             Name = node.Name.ToString();
             Location = node.DetermineLocation();

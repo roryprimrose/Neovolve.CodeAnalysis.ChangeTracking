@@ -15,15 +15,8 @@
 
         public virtual IEnumerable<ComparisonResult> CompareItems(ItemMatch<T> match, ComparerOptions options)
         {
-            if (match == null)
-            {
-                throw new ArgumentNullException(nameof(match));
-            }
-
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
+            match = match ?? throw new ArgumentNullException(nameof(match));
+            options = options ?? throw new ArgumentNullException(nameof(options));
 
             var aggregator = new ChangeResultAggregator();
 
@@ -53,20 +46,9 @@
             ComparerOptions options,
             ChangeResultAggregator aggregator)
         {
-            if (match == null)
-            {
-                throw new ArgumentNullException(nameof(match));
-            }
-
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-
-            if (aggregator == null)
-            {
-                throw new ArgumentNullException(nameof(aggregator));
-            }
+            match = match ??  throw new ArgumentNullException(nameof(match));
+            options = options ?? throw new ArgumentNullException(nameof(options));
+            aggregator = aggregator ?? throw new ArgumentNullException(nameof(aggregator));
 
             if (aggregator.ExitNodeAnalysis)
             {

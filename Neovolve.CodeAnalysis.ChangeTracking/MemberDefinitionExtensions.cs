@@ -8,10 +8,7 @@
     {
         public static bool ReturnTypeIsGeneric(this IMemberDefinition definition)
         {
-            if (definition == null)
-            {
-                throw new ArgumentNullException(nameof(definition));
-            }
+            definition = definition ?? throw new ArgumentNullException(nameof(definition));
 
             var returnType = definition.ReturnType;
 

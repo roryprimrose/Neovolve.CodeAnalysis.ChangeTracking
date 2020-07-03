@@ -19,11 +19,7 @@
         public FieldDefinition(ITypeDefinition declaringType, FieldDeclarationSyntax node) : base(node)
         {
             DeclaringType = declaringType ?? throw new ArgumentNullException(nameof(declaringType));
-
-            if (node == null)
-            {
-                throw new ArgumentNullException(nameof(node));
-            }
+            node = node ?? throw new ArgumentNullException(nameof(node));
 
             var name = node.Declaration.Variables.Single().Identifier.Text;
 

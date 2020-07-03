@@ -23,20 +23,9 @@
             IEnumerable<T> itemsRemoved,
             IEnumerable<T> itemsAdded)
         {
-            if (matchingItems == null)
-            {
-                throw new ArgumentNullException(nameof(matchingItems));
-            }
-
-            if (itemsRemoved == null)
-            {
-                throw new ArgumentNullException(nameof(itemsRemoved));
-            }
-
-            if (itemsAdded == null)
-            {
-                throw new ArgumentNullException(nameof(itemsAdded));
-            }
+            matchingItems = matchingItems ?? throw new ArgumentNullException(nameof(matchingItems));
+            itemsRemoved = itemsRemoved ?? throw new ArgumentNullException(nameof(itemsRemoved));
+            itemsAdded = itemsAdded ?? throw new ArgumentNullException(nameof(itemsAdded));
 
             MatchingItems = new ReadOnlyCollection<ItemMatch<T>>(matchingItems.FastToList());
             ItemsRemoved = new ReadOnlyCollection<T>(itemsRemoved.FastToList());
