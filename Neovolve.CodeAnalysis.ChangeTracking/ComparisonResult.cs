@@ -77,7 +77,7 @@
         {
             match = match ?? throw new ArgumentNullException(nameof(match));
 
-            var message = "No change on " + match.OldItem.Description;
+            var message = "No change on " + match.NewItem.Description;
 
             return new ComparisonResult(SemVerChangeType.None, match.OldItem, match.NewItem, message);
         }

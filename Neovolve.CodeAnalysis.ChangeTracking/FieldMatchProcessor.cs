@@ -28,7 +28,7 @@
 
         protected override bool IsItemMatch(IFieldDefinition oldItem, IFieldDefinition newItem)
         {
-            return oldItem.FullName == newItem.FullName;
+            return oldItem.Name == newItem.Name;
         }
 
         protected override bool IsVisible(IFieldDefinition item)

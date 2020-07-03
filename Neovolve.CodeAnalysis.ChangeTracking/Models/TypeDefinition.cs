@@ -23,16 +23,18 @@
                 throw new ArgumentNullException(nameof(node));
             }
 
+            Location = node.DetermineLocation();
             DeclaringType = null;
             Namespace = node.DetermineNamespace();
             Scope = node.DetermineScope();
             Name = DetermineName(node);
+            RawName = node.Identifier.Text;
+            FullRawName = Namespace + "." + RawName;
             FullName = Namespace + "." + Name;
 
-            Attributes = node.DetermineAttributes(this);
             IsVisible = node.IsVisible();
             ImplementedTypes = DetermineImplementedTypes(node);
-            Location = node.DetermineLocation();
+            Attributes = node.DetermineAttributes(this);
             Properties = DetermineProperties(node);
             ChildClasses = DetermineChildClasses(node);
             ChildInterfaces = DetermineChildInterfaces(node);
@@ -50,15 +52,17 @@
         {
             DeclaringType = declaringType ?? throw new ArgumentNullException(nameof(declaringType));
 
+            Location = node.DetermineLocation();
             Namespace = node.DetermineNamespace();
             Scope = node.DetermineScope();
             Name = DetermineName(node);
+            RawName = node.Identifier.Text;
+            FullRawName = DeclaringType.FullRawName + "+" + RawName;
             FullName = DeclaringType.FullName + "+" + Name;
 
             Attributes = node.DetermineAttributes(this);
             IsVisible = node.IsVisible();
             ImplementedTypes = DetermineImplementedTypes(node);
-            Location = node.DetermineLocation();
             Properties = DetermineProperties(node);
             ChildClasses = DetermineChildClasses(node);
             ChildInterfaces = DetermineChildInterfaces(node);
@@ -188,6 +192,9 @@
         public string FullName { get; }
 
         /// <inheritdoc />
+        public string FullRawName { get; }
+
+        /// <inheritdoc />
         public IReadOnlyCollection<IConstraintListDefinition> GenericConstraints { get; protected set; }
 
         /// <inheritdoc />
@@ -210,6 +217,9 @@
 
         /// <inheritdoc />
         public IReadOnlyCollection<IPropertyDefinition> Properties { get; }
+
+        /// <inheritdoc />
+        public string RawName { get; }
 
         /// <inheritdoc />
         public string Scope { get; }

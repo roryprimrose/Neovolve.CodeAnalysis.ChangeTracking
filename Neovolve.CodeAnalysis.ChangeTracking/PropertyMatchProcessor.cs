@@ -23,7 +23,7 @@
 
         protected override bool IsItemMatch(IPropertyDefinition oldItem, IPropertyDefinition newItem)
         {
-            return oldItem.FullName == newItem.FullName;
+            return oldItem.Name == newItem.Name;
         }
 
         protected override bool IsVisible(IPropertyDefinition item)

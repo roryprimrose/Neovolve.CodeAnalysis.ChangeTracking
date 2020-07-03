@@ -62,6 +62,23 @@
             sut.FullName.Should().Be(parentFullName + ".Value");
         }
 
+        [Fact]
+        public async Task FullRawNameReturnsFieldNameCombinedWithParentFullRawName()
+        {
+            var parentFullRawName = Guid.NewGuid().ToString();
+
+            var declaringType = Substitute.For<ITypeDefinition>();
+
+            declaringType.FullRawName.Returns(parentFullRawName);
+
+            var node = await TestNode.FindNode<FieldDeclarationSyntax>(FieldDefinitionCode.GetSetField)
+                .ConfigureAwait(false);
+
+            var sut = new FieldDefinition(declaringType, node);
+
+            sut.FullRawName.Should().Be(parentFullRawName + ".Value");
+        }
+
         [Theory]
         [InlineData("", false)]
         [InlineData("private", false)]
@@ -141,6 +158,19 @@
             var sut = new FieldDefinition(declaringType, node);
 
             sut.Name.Should().Be("Value");
+        }
+
+        [Fact]
+        public async Task RawNameReturnsFieldName()
+        {
+            var declaringType = Substitute.For<ITypeDefinition>();
+
+            var node = await TestNode.FindNode<FieldDeclarationSyntax>(FieldDefinitionCode.GetSetField)
+                .ConfigureAwait(false);
+
+            var sut = new FieldDefinition(declaringType, node);
+
+            sut.RawName.Should().Be("Value");
         }
 
         [Fact]

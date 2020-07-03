@@ -36,6 +36,8 @@
 
             foreach (var change in changes)
             {
+                _logger?.LogInformation(change.Message);
+
                 result.Add(change);
             }
 

@@ -29,26 +29,32 @@
             Location = node.DetermineLocation();
             Scope = node.DetermineScope();
             Name = node.Declaration.Variables.Single().Identifier.Text;
-            Attributes = node.DetermineAttributes(this);
+            RawName = Name;
+            FullRawName = declaringType.FullRawName + "." + RawName;
             FullName = declaringType.FullName + "." + Name;
+
             IsVisible = node.IsVisible();
             ReturnType = node.Declaration.Type.ToString();
+            Attributes = node.DetermineAttributes(this);
         }
 
         /// <inheritdoc />
         public IReadOnlyCollection<IAttributeDefinition> Attributes { get; }
 
         /// <inheritdoc />
-        public ITypeDefinition? DeclaringType { get; }
+        public ITypeDefinition DeclaringType { get; }
+
+        /// <inheritdoc />
+        public string Description => $"Field {FullName}";
 
         /// <inheritdoc />
         public string FullName { get; }
 
         /// <inheritdoc />
-        public bool IsVisible { get; }
+        public string FullRawName { get; }
 
         /// <inheritdoc />
-        public string Scope { get; }
+        public bool IsVisible { get; }
 
         /// <inheritdoc />
         public DefinitionLocation Location { get; }
@@ -57,9 +63,12 @@
         public string Name { get; }
 
         /// <inheritdoc />
+        public string RawName { get; }
+
+        /// <inheritdoc />
         public string ReturnType { get; }
 
         /// <inheritdoc />
-        public string Description => $"Field {FullName}";
+        public string Scope { get; }
     }
 }

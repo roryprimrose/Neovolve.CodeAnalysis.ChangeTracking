@@ -27,14 +27,14 @@
             if (match.OldItem.CanRead
                 && match.NewItem.CanRead == false)
             {
-                var message = match.OldItem.Description + " removed the get accessor";
+                var message = match.NewItem.Description + " removed the get accessor";
 
                 yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match, message);
             }
             else if (match.OldItem.CanRead == false
                      && match.NewItem.CanRead)
             {
-                var message = match.OldItem.Description + " added a get accessor";
+                var message = match.NewItem.Description + " added a get accessor";
 
                 yield return ComparisonResult.ItemChanged(SemVerChangeType.Feature, match, message);
             }
@@ -42,14 +42,14 @@
             if (match.OldItem.CanWrite
                 && match.NewItem.CanWrite == false)
             {
-                var message = match.OldItem.Description + " removed the set accessor";
+                var message = match.NewItem.Description + " removed the set accessor";
 
                 yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match, message);
             }
             else if (match.OldItem.CanWrite == false
                      && match.NewItem.CanWrite)
             {
-                var message = match.OldItem.Description + " added a set accessor";
+                var message = match.NewItem.Description + " added a set accessor";
 
                 yield return ComparisonResult.ItemChanged(SemVerChangeType.Feature, match, message);
             }
@@ -126,7 +126,7 @@
                 && match.NewItem.IsVisible == false)
             {
                 // The member was visible but isn't now, breaking change
-                var message = $"{match.OldItem.Description} changed scope from {oldScope} to {newScope}";
+                var message = $"{match.NewItem.Description} changed scope from {oldScope} to {newScope}";
 
                 yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match,
                     message);
@@ -136,7 +136,7 @@
             {
                 // The member return type may have changed, but the member is only now becoming public
                 // This is a feature because the public API didn't break even if the return type has changed
-                var message = $"{match.OldItem.Description} changed scope from {oldScope} to {newScope}";
+                var message = $"{match.NewItem.Description} changed scope from {oldScope} to {newScope}";
 
                 yield return ComparisonResult.ItemChanged(SemVerChangeType.Feature, match,
                     message);

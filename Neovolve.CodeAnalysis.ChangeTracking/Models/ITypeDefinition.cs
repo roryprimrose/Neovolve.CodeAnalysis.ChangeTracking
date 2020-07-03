@@ -25,6 +25,11 @@
         IReadOnlyCollection<ITypeDefinition> ChildTypes { get; }
 
         /// <summary>
+        ///     Gets the type that declares the member.
+        /// </summary>
+        public ITypeDefinition? DeclaringType { get; }
+
+        /// <summary>
         ///     Gets the generic constraints declared on the type.
         /// </summary>
         IReadOnlyCollection<IConstraintListDefinition> GenericConstraints { get; }

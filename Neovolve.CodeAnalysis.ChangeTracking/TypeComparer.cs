@@ -102,7 +102,7 @@
 
             if (oldConstraintCount == 0)
             {
-                var message = $"{match.OldItem.Description} has added {newConstraintCount} generic type constraint";
+                var message = $"{match.NewItem.Description} has added {newConstraintCount} generic type constraint";
 
                 if (newConstraintCount != 1)
                 {
@@ -117,7 +117,7 @@
 
             if (newConstraintCount == 0)
             {
-                var message = $"{match.OldItem.Description} has removed {oldConstraintCount} generic type constraint";
+                var message = $"{match.NewItem.Description} has removed {oldConstraintCount} generic type constraint";
 
                 if (oldConstraintCount != 1)
                 {
@@ -135,7 +135,7 @@
 
             foreach (var constraint in removedConstraints)
             {
-                var message = $"{match.OldItem.Description} has removed the generic type constraint {constraint}";
+                var message = $"{match.NewItem.Description} has removed the generic type constraint {constraint}";
 
                 yield return ComparisonResult.ItemChanged(SemVerChangeType.Feature, match, message);
             }
@@ -145,7 +145,7 @@
 
             foreach (var constraint in addedConstraints)
             {
-                var message = $"{match.OldItem.Description} has added the generic type constraint {constraint}";
+                var message = $"{match.NewItem.Description} has added the generic type constraint {constraint}";
 
                 yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match, message);
             }
@@ -165,7 +165,7 @@
                 // One or more generic type parameters have been removed
                 var suffix = typeParameterShift == 1 ? "" : "s";
                 var message =
-                    $"{match.OldItem.Description} has removed {typeParameterShift} generic type parameter{suffix}";
+                    $"{match.NewItem.Description} has removed {typeParameterShift} generic type parameter{suffix}";
 
                 yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match, message);
 
@@ -179,7 +179,7 @@
                 var shift = Math.Abs(typeParameterShift);
                 var suffix = shift == 1 ? "" : "s";
                 var message =
-                    $"{match.OldItem.Description} has added {shift} generic type parameter{suffix}";
+                    $"{match.NewItem.Description} has added {shift} generic type parameter{suffix}";
 
                 // No need to look into how the generic type has changed
                 yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match, message);
@@ -209,7 +209,7 @@
 
             foreach (var removedType in removedTypes)
             {
-                var message = $"{match.OldItem.Description} has removed the implemented type {removedType}";
+                var message = $"{match.NewItem.Description} has removed the implemented type {removedType}";
 
                 yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match, message);
             }
@@ -219,7 +219,7 @@
 
             foreach (var addedType in addedTypes)
             {
-                var message = $"{match.OldItem.Description} has added the implemented type {addedType}";
+                var message = $"{match.NewItem.Description} has added the implemented type {addedType}";
 
                 yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match, message);
             }

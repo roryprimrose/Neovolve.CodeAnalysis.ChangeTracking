@@ -19,7 +19,7 @@
                 if (genericTypeMatch != match.NewItem.ReturnType)
                 {
                     yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match,
-                        $"{match.OldItem.Description} return type has changed from {match.OldItem.ReturnType} {match.NewItem.ReturnType}");
+                        $"{match.NewItem.Description} return type has changed from {match.OldItem.ReturnType} {match.NewItem.ReturnType}");
                 }
             }
         }
@@ -28,29 +28,44 @@
         {
             var typeName = match.OldItem.ReturnType;
 
-            if (match.OldItem.DeclaringType == null)
+            // We need to determine all the generic type parameters from the complete parent hierarchy not just the parent type
+
+            var oldDeclaringType = match.OldItem.DeclaringType;
+            var newDeclaringType = match.NewItem.DeclaringType;
+
+            return ResolveRenamedGenericTypeParameter(typeName, oldDeclaringType, newDeclaringType);
+        }
+
+        private static string ResolveRenamedGenericTypeParameter(string originalTypeName, ITypeDefinition oldDeclaringType,
+            ITypeDefinition newDeclaringType)
+        {
+            if (oldDeclaringType.DeclaringType != null
+                && newDeclaringType.DeclaringType != null)
             {
-                return typeName;
+                // Search the parents
+                var mappedTypeName = ResolveRenamedGenericTypeParameter(originalTypeName,
+                    oldDeclaringType.DeclaringType, newDeclaringType.DeclaringType);
+
+                if (mappedTypeName != originalTypeName)
+                {
+                    // We have found the generic type parameter that has been renamed somewhere in the parent type hierarchy
+                    return mappedTypeName;
+                }
             }
 
-            if (match.NewItem.DeclaringType == null)
-            {
-                return typeName;
-            }
-
-            var oldGenericTypes = match.OldItem.DeclaringType.GenericTypeParameters.ToList();
+            var oldGenericTypes = oldDeclaringType.GenericTypeParameters.ToList();
 
             if (oldGenericTypes.Count == 0)
             {
-                return typeName;
+                return originalTypeName;
             }
 
-            var newGenericTypes = match.NewItem.DeclaringType.GenericTypeParameters.ToList();
-            var typeIndex = newGenericTypes.IndexOf(typeName);
+            var newGenericTypes = newDeclaringType.GenericTypeParameters.ToList();
+            var typeIndex = oldGenericTypes.IndexOf(originalTypeName);
 
             if (typeIndex == -1)
             {
-                return typeName;
+                return originalTypeName;
             }
 
             return newGenericTypes[typeIndex];

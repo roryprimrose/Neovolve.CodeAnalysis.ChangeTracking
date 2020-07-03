@@ -16,6 +16,7 @@
         public ITypeDefinition? DeclaringType { get; set; } = null;
         public string Description { get; set; } = Guid.NewGuid().ToString();
         public string FullName { get; set; } = Guid.NewGuid().ToString();
+        public string FullRawName { get; set; } = Guid.NewGuid().ToString();
 
         public IReadOnlyCollection<IConstraintListDefinition> GenericConstraints { get; set; } =
             new List<IConstraintListDefinition>();
@@ -28,6 +29,7 @@
         public string Name { get; set; } = Guid.NewGuid().ToString();
         public string Namespace { get; set; } = Guid.NewGuid().ToString();
         public IReadOnlyCollection<IPropertyDefinition> Properties { get; set; } = new List<IPropertyDefinition>();
+        public string RawName { get; set; } = Guid.NewGuid().ToString();
         public string Scope { get; set; } = Guid.NewGuid().ToString();
     }
 }

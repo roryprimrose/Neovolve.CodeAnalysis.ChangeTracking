@@ -216,7 +216,15 @@ namespace MyNamespace
     using System.IO;
 
     public interface MyInterface<TKey, TValue> : IEnumerable<TKey> where TKey : Stream, new() where TValue : struct
-    {
+    {        
+        TKey DefaultKey;
+        TValue GetValue(TKey key);
+        TValue RandomValue { get; set; }
+
+        public interface MyChildInterface
+        {
+            TValue RunProcess(TKey key);
+        }
     }
 }";
 

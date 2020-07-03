@@ -21,18 +21,22 @@
         /// <exception cref="ArgumentNullException">The <paramref name="node" /> parameter is <c>null</c>.</exception>
         public PropertyDefinition(ITypeDefinition declaringType, PropertyDeclarationSyntax node)
         {
+            DeclaringType = declaringType ?? throw new ArgumentNullException(nameof(declaringType));
+
             if (node == null)
             {
                 throw new ArgumentNullException(nameof(node));
             }
 
-            DeclaringType = declaringType ?? throw new ArgumentNullException(nameof(declaringType));
+            Location = node.DetermineLocation();
+
             Scope = node.DetermineScope();
             Name = node.Identifier.Text;
+            RawName = Name;
+            FullRawName = declaringType.FullRawName + "." + RawName;
             FullName = declaringType.FullName + "." + Name;
 
             Attributes = node.DetermineAttributes(this);
-            Location = node.DetermineLocation();
             ReturnType = node.Type.ToString();
             IsVisible = node.IsVisible();
             CanRead = HasVisibleAccessor(node, IsVisible, SyntaxKind.GetAccessorDeclaration);
@@ -90,10 +94,10 @@
         public string FullName { get; }
 
         /// <inheritdoc />
-        public bool IsVisible { get; }
+        public string FullRawName { get; }
 
         /// <inheritdoc />
-        public string Scope { get; }
+        public bool IsVisible { get; }
 
         /// <inheritdoc />
         public DefinitionLocation Location { get; }
@@ -102,6 +106,12 @@
         public string Name { get; }
 
         /// <inheritdoc />
+        public string RawName { get; }
+
+        /// <inheritdoc />
         public string ReturnType { get; }
+
+        /// <inheritdoc />
+        public string Scope { get; }
     }
 }

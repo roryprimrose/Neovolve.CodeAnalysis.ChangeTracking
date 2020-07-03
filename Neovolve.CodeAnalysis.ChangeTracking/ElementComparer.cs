@@ -72,7 +72,7 @@
                 && match.NewItem.IsVisible == false)
             {
                 // The member was visible but isn't now, breaking change
-                var message = $"{match.OldItem.Description} changed scope from {oldScope} to {newScope}";
+                var message = $"{match.NewItem.Description} changed scope from {oldScope} to {newScope}";
 
                 yield return ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match,
                     message);
@@ -82,7 +82,7 @@
             {
                 // The member return type may have changed, but the member is only now becoming public
                 // This is a feature because the public API didn't break even if the return type has changed
-                var message = $"{match.OldItem.Description} changed scope from {oldScope} to {newScope}";
+                var message = $"{match.NewItem.Description} changed scope from {oldScope} to {newScope}";
 
                 yield return ComparisonResult.ItemChanged(SemVerChangeType.Feature, match,
                     message);

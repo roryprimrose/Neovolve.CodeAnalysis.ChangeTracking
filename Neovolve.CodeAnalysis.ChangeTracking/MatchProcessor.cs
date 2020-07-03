@@ -26,18 +26,18 @@
             // Types added which are not publicly visible are ignored
             foreach (var memberAdded in matchingNodes.ItemsAdded.Where(IsVisible))
             {
-                var itemAdded = ComparisonResult.ItemAdded(memberAdded);
+                var result = ComparisonResult.ItemAdded(memberAdded);
 
-                yield return itemAdded;
+                yield return result;
             }
 
             // Record any visible types that have been removed
             // Types removed which are not publicly visible are ignored
             foreach (var memberRemoved in matchingNodes.ItemsRemoved.Where(IsVisible))
             {
-                var itemRemoved = ComparisonResult.ItemRemoved(memberRemoved);
+                var result = ComparisonResult.ItemRemoved(memberRemoved);
 
-                yield return itemRemoved;
+                yield return result;
             }
 
             // Check all the matches for a breaking change or feature added
@@ -71,8 +71,6 @@
                     // Don't add comparison results to the outcome where it looks like there is no change
                     continue;
                 }
-
-                _logger?.LogInformation(result.Message);
 
                 yield return result;
             }
