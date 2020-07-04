@@ -34,7 +34,7 @@ namespace MyNamespace
 }
 ";
 
-        public static string BuildFieldWithScope(string scope)
+        public static string BuildFieldWithModifiers(string scope)
         {
             return @$"
 namespace MyNamespace 

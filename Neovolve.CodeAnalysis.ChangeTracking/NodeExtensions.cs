@@ -17,9 +17,7 @@
         public static AccessModifier DetermineAccessModifier(this TypeDeclarationSyntax node,
             ITypeDefinition? declaringType)
         {
-            var parentType = node.FirstAncestorOrSelf<TypeDeclarationSyntax>(x => x != node);
-
-            if (parentType == null)
+            if (declaringType == null)
             {
                 return DetermineAccessModifier(node, AccessModifier.Internal);
             }
@@ -27,9 +25,25 @@
             return DetermineAccessModifier(node, AccessModifier.Private);
         }
 
-        public static AccessModifier DetermineAccessModifier(this MemberDeclarationSyntax node)
+        public static AccessModifier DetermineAccessModifier(this MemberDeclarationSyntax node, ITypeDefinition declaringType)
         {
-            return DetermineAccessModifier(node, AccessModifier.Private);
+            declaringType = declaringType ?? throw new ArgumentNullException(nameof(declaringType));
+
+            // See default values as identified at https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/accessibility-levels
+            if (declaringType is IInterfaceDefinition)
+            {
+                return DetermineAccessModifier(node, AccessModifier.Public);
+            }
+
+            if (declaringType is IClassDefinition)
+            {
+                return DetermineAccessModifier(node, AccessModifier.Private);
+            }
+
+            // TODO: Fill these out when the types are supported
+            throw new NotSupportedException();
+            // Struct default accessmodifier is private
+            // Struct default enum is public
         }
 
         /// <summary>
@@ -92,7 +106,7 @@
             return node.Modifiers.Any(x => x.RawKind == (int) kind);
         }
 
-        internal static AccessModifier DetermineAccessModifier(MemberDeclarationSyntax node,
+        private static AccessModifier DetermineAccessModifier(MemberDeclarationSyntax node,
             AccessModifier defaultValue)
         {
             if (node.HasModifier(SyntaxKind.ProtectedKeyword))
@@ -125,8 +139,7 @@
                 return AccessModifier.Public;
             }
 
-            // Nested types are private by default
-            return AccessModifier.Private;
+            return defaultValue;
         }
     }
 }

@@ -25,7 +25,7 @@
 
             DeclaringType = null;
             Namespace = DetermineNamespace(node);
-            AccessModifier = node.DetermineAccessModifier();
+            AccessModifier = node.DetermineAccessModifier(DeclaringType);
             Name = name;
             RawName = rawName;
             FullRawName = Namespace + "." + rawName;
@@ -53,6 +53,7 @@
             var rawName = node.Identifier.Text;
 
             Namespace = DetermineNamespace(node);
+            AccessModifier = node.DetermineAccessModifier(DeclaringType);
             Name = name;
             RawName = rawName;
             FullRawName = DeclaringType.FullRawName + "+" + rawName;

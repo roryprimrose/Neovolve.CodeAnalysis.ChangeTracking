@@ -9,7 +9,7 @@
     ///     The <see cref="ConstraintListDefinition" />
     ///     class is used to describe a property.
     /// </summary>
-    public class PropertyDefinition : ElementDefinition, IPropertyDefinition
+    public class PropertyDefinition : MemberDefinition, IPropertyDefinition
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="PropertyDeclarationSyntax" /> class.
@@ -18,20 +18,20 @@
         /// <param name="node">The node that defines the generic type constraints.</param>
         /// <exception cref="ArgumentNullException">The <paramref name="declaringType" /> parameter is <c>null</c>.</exception>
         /// <exception cref="ArgumentNullException">The <paramref name="node" /> parameter is <c>null</c>.</exception>
-        public PropertyDefinition(ITypeDefinition declaringType, PropertyDeclarationSyntax node) : base(node)
+        public PropertyDefinition(ITypeDefinition declaringType, PropertyDeclarationSyntax node) : base(
+            declaringType,
+            node)
         {
-            DeclaringType = declaringType ?? throw new ArgumentNullException(nameof(declaringType));
             node = node ?? throw new ArgumentNullException(nameof(node));
 
             var name = node.Identifier.Text;
 
-            AccessModifier = node.DetermineAccessModifier();
+            ReturnType = node.Type.ToString();
             Name = name;
             RawName = name;
             FullName = DeclaringType.FullName + "." + name;
             FullRawName = DeclaringType.FullRawName + "." + name;
 
-            ReturnType = node.Type.ToString();
             IsAbstract = node.HasModifier(SyntaxKind.AbstractKeyword);
             IsNew = node.HasModifier(SyntaxKind.NewKeyword);
             IsOverride = node.HasModifier(SyntaxKind.OverrideKeyword);
@@ -42,7 +42,8 @@
             CanWrite = HasVisibleAccessor(node, IsVisible, SyntaxKind.SetAccessorDeclaration);
         }
 
-        private static bool HasVisibleAccessor(PropertyDeclarationSyntax node,
+        private static bool HasVisibleAccessor(
+            PropertyDeclarationSyntax node,
             bool propertyIsVisible,
             SyntaxKind accessorType)
         {
@@ -52,9 +53,7 @@
                 return false;
             }
 
-            var accessor =
-                node.AccessorList?.Accessors.FirstOrDefault(x =>
-                    x.Kind() == accessorType);
+            var accessor = node.AccessorList?.Accessors.FirstOrDefault(x => x.Kind() == accessorType);
 
             if (accessor == null)
             {
@@ -76,16 +75,10 @@
         }
 
         /// <inheritdoc />
-        public AccessModifier AccessModifier { get; }
-
-        /// <inheritdoc />
         public bool CanRead { get; }
 
         /// <inheritdoc />
         public bool CanWrite { get; }
-
-        /// <inheritdoc />
-        public ITypeDefinition DeclaringType { get; }
 
         /// <inheritdoc />
         public override string Description => $"Property {FullName}";
@@ -120,6 +113,6 @@
         public override string RawName { get; }
 
         /// <inheritdoc />
-        public string ReturnType { get; }
+        public override string ReturnType { get; }
     }
 }

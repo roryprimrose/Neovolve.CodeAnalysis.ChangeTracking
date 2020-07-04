@@ -51,7 +51,7 @@
                     Guid.NewGuid().ToString()),
                 ComparisonResult.ItemChanged(
                     SemVerChangeType.Breaking,
-                    new ItemMatch<IAttributeDefinition>(new TestAttributeDefinition(), new TestAttributeDefinition()),
+                    new ItemMatch<IFieldDefinition>(new TestFieldDefinition(), new TestFieldDefinition()),
                     Guid.NewGuid().ToString()),
             };
             var aggregator = new ChangeResultAggregator

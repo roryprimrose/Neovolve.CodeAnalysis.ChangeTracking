@@ -11,25 +11,6 @@
 
     public class ElementDefinitionTests
     {
-        [Theory]
-        [InlineData("")]
-        [InlineData("private")]
-        [InlineData("internal")]
-        [InlineData("protected")]
-        [InlineData("private protected")]
-        [InlineData("protected internal")]
-        [InlineData("public")]
-        public async Task AccessModifiersReturnsValueBasedOnAccessModifiers(string accessModifiers)
-        {
-            var code = TypeDefinitionCode.BuildClassWithScope(accessModifiers);
-
-            var node = await TestNode.FindNode<ClassDeclarationSyntax>(code).ConfigureAwait(false);
-
-            var sut = new Wrapper(node);
-
-            sut.AccessModifiers.Should().Be(accessModifiers);
-        }
-
         [Fact]
         public async Task AttributesReturnsEmptyWhenNoAttributesDeclared()
         {
@@ -155,30 +136,6 @@
             var sut = new Wrapper(node);
 
             sut.Location.FilePath.Should().Be(filePath);
-        }
-
-        [Theory]
-        [InlineData("")]
-        [InlineData("abstract")]
-        [InlineData("new")]
-        [InlineData("override")]
-        [InlineData("sealed")]
-        [InlineData("static")]
-        [InlineData("virtual")]
-        [InlineData("new abstract")]
-        [InlineData("new static")]
-        [InlineData("new virtual")]
-        [InlineData("sealed override")]
-        public async Task ModifiersReturnsValueBasedOnModifiers(string modifiers)
-        {
-            var code = PropertyDefinitionCode.BuildPropertyWithModifiers(modifiers);
-
-            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code)
-                .ConfigureAwait(false);
-
-            var sut = new Wrapper(node);
-
-            sut.Modifiers.Should().Be(modifiers);
         }
 
         [Fact]

@@ -14,68 +14,216 @@
     {
         public static IEnumerable<object[]> AccessorScopeDataSet()
         {
-            yield return new object[] {"", "", false};
-            yield return new object[] {"", "private", false};
-            yield return new object[] {"", "internal", false};
-            yield return new object[] {"", "protected", false};
-            yield return new object[] {"", "private protected", false};
-            yield return new object[] {"", "protected internal", false};
-            yield return new object[] {"", "public", false};
-            yield return new object[] {"private", "", false};
-            yield return new object[] {"private", "private", false};
-            yield return new object[] {"private", "internal", false};
-            yield return new object[] {"private", "protected", false};
-            yield return new object[] {"private", "private protected", false};
-            yield return new object[] {"private", "protected internal", false};
-            yield return new object[] {"private", "public", false};
-            yield return new object[] {"internal", "", false};
-            yield return new object[] {"internal", "private", false};
-            yield return new object[] {"internal", "internal", false};
-            yield return new object[] {"internal", "protected", false};
-            yield return new object[] {"internal", "private protected", false};
-            yield return new object[] {"internal", "protected internal", false};
-            yield return new object[] {"internal", "public", false};
-            yield return new object[] {"protected", "", true};
-            yield return new object[] {"protected", "private", false};
-            yield return new object[] {"protected", "internal", false};
-            yield return new object[] {"protected", "protected", true};
-            yield return new object[] {"protected", "private protected", true};
-            yield return new object[] {"protected", "protected internal", true};
-            yield return new object[] {"protected", "public", true};
-            yield return new object[] {"private protected", "", true};
-            yield return new object[] {"private protected", "private", false};
-            yield return new object[] {"private protected", "internal", false};
-            yield return new object[] {"private protected", "protected", true};
-            yield return new object[] {"private protected", "private protected", true};
-            yield return new object[] {"private protected", "protected internal", true};
-            yield return new object[] {"private protected", "public", true};
-            yield return new object[] {"protected internal", "", true};
-            yield return new object[] {"protected internal", "private", false};
-            yield return new object[] {"protected internal", "internal", false};
-            yield return new object[] {"protected internal", "protected", true};
-            yield return new object[] {"protected internal", "private protected", true};
-            yield return new object[] {"protected internal", "protected internal", true};
-            yield return new object[] {"protected internal", "public", true};
-            yield return new object[] {"public", "", true};
-            yield return new object[] {"public", "private", false};
-            yield return new object[] {"public", "internal", false};
-            yield return new object[] {"public", "protected", true};
-            yield return new object[] {"public", "private protected", true};
-            yield return new object[] {"public", "protected internal", true};
-            yield return new object[] {"public", "public", true};
+            yield return new object[]
+            {
+                "", "", false
+            };
+            yield return new object[]
+            {
+                "", "private", false
+            };
+            yield return new object[]
+            {
+                "", "internal", false
+            };
+            yield return new object[]
+            {
+                "", "protected", false
+            };
+            yield return new object[]
+            {
+                "", "private protected", false
+            };
+            yield return new object[]
+            {
+                "", "protected internal", false
+            };
+            yield return new object[]
+            {
+                "", "public", false
+            };
+            yield return new object[]
+            {
+                "private", "", false
+            };
+            yield return new object[]
+            {
+                "private", "private", false
+            };
+            yield return new object[]
+            {
+                "private", "internal", false
+            };
+            yield return new object[]
+            {
+                "private", "protected", false
+            };
+            yield return new object[]
+            {
+                "private", "private protected", false
+            };
+            yield return new object[]
+            {
+                "private", "protected internal", false
+            };
+            yield return new object[]
+            {
+                "private", "public", false
+            };
+            yield return new object[]
+            {
+                "internal", "", false
+            };
+            yield return new object[]
+            {
+                "internal", "private", false
+            };
+            yield return new object[]
+            {
+                "internal", "internal", false
+            };
+            yield return new object[]
+            {
+                "internal", "protected", false
+            };
+            yield return new object[]
+            {
+                "internal", "private protected", false
+            };
+            yield return new object[]
+            {
+                "internal", "protected internal", false
+            };
+            yield return new object[]
+            {
+                "internal", "public", false
+            };
+            yield return new object[]
+            {
+                "protected", "", true
+            };
+            yield return new object[]
+            {
+                "protected", "private", false
+            };
+            yield return new object[]
+            {
+                "protected", "internal", false
+            };
+            yield return new object[]
+            {
+                "protected", "protected", true
+            };
+            yield return new object[]
+            {
+                "protected", "private protected", true
+            };
+            yield return new object[]
+            {
+                "protected", "protected internal", true
+            };
+            yield return new object[]
+            {
+                "protected", "public", true
+            };
+            yield return new object[]
+            {
+                "private protected", "", true
+            };
+            yield return new object[]
+            {
+                "private protected", "private", false
+            };
+            yield return new object[]
+            {
+                "private protected", "internal", false
+            };
+            yield return new object[]
+            {
+                "private protected", "protected", true
+            };
+            yield return new object[]
+            {
+                "private protected", "private protected", true
+            };
+            yield return new object[]
+            {
+                "private protected", "protected internal", true
+            };
+            yield return new object[]
+            {
+                "private protected", "public", true
+            };
+            yield return new object[]
+            {
+                "protected internal", "", true
+            };
+            yield return new object[]
+            {
+                "protected internal", "private", false
+            };
+            yield return new object[]
+            {
+                "protected internal", "internal", false
+            };
+            yield return new object[]
+            {
+                "protected internal", "protected", true
+            };
+            yield return new object[]
+            {
+                "protected internal", "private protected", true
+            };
+            yield return new object[]
+            {
+                "protected internal", "protected internal", true
+            };
+            yield return new object[]
+            {
+                "protected internal", "public", true
+            };
+            yield return new object[]
+            {
+                "public", "", true
+            };
+            yield return new object[]
+            {
+                "public", "private", false
+            };
+            yield return new object[]
+            {
+                "public", "internal", false
+            };
+            yield return new object[]
+            {
+                "public", "protected", true
+            };
+            yield return new object[]
+            {
+                "public", "private protected", true
+            };
+            yield return new object[]
+            {
+                "public", "protected internal", true
+            };
+            yield return new object[]
+            {
+                "public", "public", true
+            };
         }
 
         [Theory]
         [MemberData(nameof(AccessorScopeDataSet))]
-        public async Task CanReadReturnsWhetherGetAccessorScopeAndPropertyScopeAreVisible(string propertyScope,
-            string accessorScope, bool expected)
+        public async Task CanReadReturnsWhetherGetAccessorScopeAndPropertyScopeAreVisible(
+            string propertyScope,
+            string accessorScope,
+            bool expected)
         {
             var code = PropertyDefinitionCode.BuildPropertyAndGetAccessorWithScope(propertyScope, accessorScope);
 
-            var declaringType = Substitute.For<ITypeDefinition>();
+            var declaringType = Substitute.For<IClassDefinition>();
 
-            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code)
-                .ConfigureAwait(false);
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code).ConfigureAwait(false);
 
             var sut = new PropertyDefinition(declaringType, node);
 
@@ -84,15 +232,16 @@
 
         [Theory]
         [MemberData(nameof(AccessorScopeDataSet))]
-        public async Task CanReadReturnsWhetherSetAccessorScopeAndPropertyScopeAreVisible(string propertyScope,
-            string accessorScope, bool expected)
+        public async Task CanReadReturnsWhetherSetAccessorScopeAndPropertyScopeAreVisible(
+            string propertyScope,
+            string accessorScope,
+            bool expected)
         {
             var code = PropertyDefinitionCode.BuildPropertyAndSetAccessorWithScope(propertyScope, accessorScope);
 
-            var declaringType = Substitute.For<ITypeDefinition>();
+            var declaringType = Substitute.For<IClassDefinition>();
 
-            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code)
-                .ConfigureAwait(false);
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code).ConfigureAwait(false);
 
             var sut = new PropertyDefinition(declaringType, node);
 
@@ -100,24 +249,11 @@
         }
 
         [Fact]
-        public async Task DeclaringTypeReturnsParameterValue()
-        {
-            var declaringType = Substitute.For<ITypeDefinition>();
-
-            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(PropertyDefinitionCode.GetSetProperty)
-                .ConfigureAwait(false);
-
-            var sut = new PropertyDefinition(declaringType, node);
-
-            sut.DeclaringType.Should().Be(declaringType);
-        }
-
-        [Fact]
         public async Task FullNameReturnsPropertyNameCombinedWithParentFullName()
         {
             var parentFullName = Guid.NewGuid().ToString();
 
-            var declaringType = Substitute.For<ITypeDefinition>();
+            var declaringType = Substitute.For<IClassDefinition>();
 
             declaringType.FullName.Returns(parentFullName);
 
@@ -134,7 +270,7 @@
         {
             var parentFullRawName = Guid.NewGuid().ToString();
 
-            var declaringType = Substitute.For<ITypeDefinition>();
+            var declaringType = Substitute.For<IClassDefinition>();
 
             declaringType.FullRawName.Returns(parentFullRawName);
 
@@ -153,10 +289,9 @@
         {
             var code = PropertyDefinitionCode.BuildPropertyWithModifiers(modifiers);
 
-            var declaringType = Substitute.For<ITypeDefinition>();
+            var declaringType = Substitute.For<IClassDefinition>();
 
-            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code)
-                .ConfigureAwait(false);
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code).ConfigureAwait(false);
 
             var sut = new PropertyDefinition(declaringType, node);
 
@@ -170,10 +305,9 @@
         {
             var code = PropertyDefinitionCode.BuildPropertyWithModifiers(modifiers);
 
-            var declaringType = Substitute.For<ITypeDefinition>();
+            var declaringType = Substitute.For<IClassDefinition>();
 
-            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code)
-                .ConfigureAwait(false);
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code).ConfigureAwait(false);
 
             var sut = new PropertyDefinition(declaringType, node);
 
@@ -187,10 +321,9 @@
         {
             var code = PropertyDefinitionCode.BuildPropertyWithModifiers(modifiers);
 
-            var declaringType = Substitute.For<ITypeDefinition>();
+            var declaringType = Substitute.For<IClassDefinition>();
 
-            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code)
-                .ConfigureAwait(false);
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code).ConfigureAwait(false);
 
             var sut = new PropertyDefinition(declaringType, node);
 
@@ -204,10 +337,9 @@
         {
             var code = PropertyDefinitionCode.BuildPropertyWithModifiers(modifiers);
 
-            var declaringType = Substitute.For<ITypeDefinition>();
+            var declaringType = Substitute.For<IClassDefinition>();
 
-            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code)
-                .ConfigureAwait(false);
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code).ConfigureAwait(false);
 
             var sut = new PropertyDefinition(declaringType, node);
 
@@ -221,10 +353,9 @@
         {
             var code = PropertyDefinitionCode.BuildPropertyWithModifiers(modifiers);
 
-            var declaringType = Substitute.For<ITypeDefinition>();
+            var declaringType = Substitute.For<IClassDefinition>();
 
-            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code)
-                .ConfigureAwait(false);
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code).ConfigureAwait(false);
 
             var sut = new PropertyDefinition(declaringType, node);
 
@@ -238,10 +369,9 @@
         {
             var code = PropertyDefinitionCode.BuildPropertyWithModifiers(modifiers);
 
-            var declaringType = Substitute.For<ITypeDefinition>();
+            var declaringType = Substitute.For<IClassDefinition>();
 
-            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code)
-                .ConfigureAwait(false);
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code).ConfigureAwait(false);
 
             var sut = new PropertyDefinition(declaringType, node);
 
@@ -251,7 +381,7 @@
         [Fact]
         public async Task NameReturnsPropertyName()
         {
-            var declaringType = Substitute.For<ITypeDefinition>();
+            var declaringType = Substitute.For<IClassDefinition>();
 
             var node = await TestNode.FindNode<PropertyDeclarationSyntax>(PropertyDefinitionCode.GetSetProperty)
                 .ConfigureAwait(false);
@@ -264,7 +394,7 @@
         [Fact]
         public async Task RawNameReturnsPropertyName()
         {
-            var declaringType = Substitute.For<ITypeDefinition>();
+            var declaringType = Substitute.For<IClassDefinition>();
 
             var node = await TestNode.FindNode<PropertyDeclarationSyntax>(PropertyDefinitionCode.GetSetProperty)
                 .ConfigureAwait(false);
@@ -277,7 +407,7 @@
         [Fact]
         public async Task ReturnTypeReturnsGenericPropertyType()
         {
-            var declaringType = Substitute.For<ITypeDefinition>();
+            var declaringType = Substitute.For<IClassDefinition>();
 
             var node = await TestNode.FindNode<PropertyDeclarationSyntax>(PropertyDefinitionCode.GenericProperty)
                 .ConfigureAwait(false);
@@ -290,7 +420,7 @@
         [Fact]
         public async Task ReturnTypeReturnsPropertyType()
         {
-            var declaringType = Substitute.For<ITypeDefinition>();
+            var declaringType = Substitute.For<IClassDefinition>();
 
             var node = await TestNode.FindNode<PropertyDeclarationSyntax>(PropertyDefinitionCode.GetSetProperty)
                 .ConfigureAwait(false);
@@ -301,8 +431,10 @@
         }
 
         [Fact]
-        [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification =
-            "The constructor is the target of the test")]
+        [SuppressMessage(
+            "Usage",
+            "CA1806:Do not ignore method results",
+            Justification = "The constructor is the target of the test")]
         public async Task ThrowsExceptionWhenCreatedWithNullDeclaringType()
         {
             var node = await TestNode.FindNode<PropertyDeclarationSyntax>(PropertyDefinitionCode.GetSetProperty)
@@ -315,11 +447,13 @@
         }
 
         [Fact]
-        [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification =
-            "The constructor is the target of the test")]
+        [SuppressMessage(
+            "Usage",
+            "CA1806:Do not ignore method results",
+            Justification = "The constructor is the target of the test")]
         public void ThrowsExceptionWhenCreatedWithNullNode()
         {
-            var declaringType = Substitute.For<ITypeDefinition>();
+            var declaringType = Substitute.For<IClassDefinition>();
 
             // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new PropertyDefinition(declaringType, null!);

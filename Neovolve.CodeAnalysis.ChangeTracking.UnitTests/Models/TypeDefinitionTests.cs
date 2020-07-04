@@ -35,7 +35,8 @@
         [InlineData("protected internal", AccessModifier.ProtectedInternal)]
         [InlineData("internal protected", AccessModifier.ProtectedInternal)]
         [InlineData("public", AccessModifier.Public)]
-        public async Task AccessModifierReturnsValueBasedOnAccessModifiers(string accessModifiers,
+        public async Task AccessModifierReturnsValueBasedOnAccessModifiers(
+            string accessModifiers,
             AccessModifier expected)
         {
             var code = TypeDefinitionCode.BuildClassWithScope(accessModifiers);

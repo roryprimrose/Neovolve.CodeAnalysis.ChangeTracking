@@ -2,7 +2,6 @@
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
-    using System.Linq;
     using System.Threading.Tasks;
     using FluentAssertions;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -13,24 +12,11 @@
     public class FieldDefinitionTests
     {
         [Fact]
-        public async Task DeclaringTypeReturnsParameterValue()
-        {
-            var declaringType = Substitute.For<ITypeDefinition>();
-
-            var node = await TestNode.FindNode<FieldDeclarationSyntax>(FieldDefinitionCode.GetSetField)
-                .ConfigureAwait(false);
-
-            var sut = new FieldDefinition(declaringType, node);
-
-            sut.DeclaringType.Should().Be(declaringType);
-        }
-
-        [Fact]
         public async Task FullNameReturnsFieldNameCombinedWithParentFullName()
         {
             var parentFullName = Guid.NewGuid().ToString();
 
-            var declaringType = Substitute.For<ITypeDefinition>();
+            var declaringType = Substitute.For<IClassDefinition>();
 
             declaringType.FullName.Returns(parentFullName);
 
@@ -47,7 +33,7 @@
         {
             var parentFullRawName = Guid.NewGuid().ToString();
 
-            var declaringType = Substitute.For<ITypeDefinition>();
+            var declaringType = Substitute.For<IClassDefinition>();
 
             declaringType.FullRawName.Returns(parentFullRawName);
 
@@ -62,7 +48,7 @@
         [Fact]
         public async Task NameReturnsFieldName()
         {
-            var declaringType = Substitute.For<ITypeDefinition>();
+            var declaringType = Substitute.For<IClassDefinition>();
 
             var node = await TestNode.FindNode<FieldDeclarationSyntax>(FieldDefinitionCode.GetSetField)
                 .ConfigureAwait(false);
@@ -75,7 +61,7 @@
         [Fact]
         public async Task RawNameReturnsFieldName()
         {
-            var declaringType = Substitute.For<ITypeDefinition>();
+            var declaringType = Substitute.For<IClassDefinition>();
 
             var node = await TestNode.FindNode<FieldDeclarationSyntax>(FieldDefinitionCode.GetSetField)
                 .ConfigureAwait(false);
@@ -88,7 +74,7 @@
         [Fact]
         public async Task ReturnTypeReturnsFieldType()
         {
-            var declaringType = Substitute.For<ITypeDefinition>();
+            var declaringType = Substitute.For<IClassDefinition>();
 
             var node = await TestNode.FindNode<FieldDeclarationSyntax>(FieldDefinitionCode.GetSetField)
                 .ConfigureAwait(false);
@@ -101,7 +87,7 @@
         [Fact]
         public async Task ReturnTypeReturnsGenericFieldType()
         {
-            var declaringType = Substitute.For<ITypeDefinition>();
+            var declaringType = Substitute.For<IClassDefinition>();
 
             var node = await TestNode.FindNode<FieldDeclarationSyntax>(FieldDefinitionCode.GenericField)
                 .ConfigureAwait(false);
@@ -112,8 +98,10 @@
         }
 
         [Fact]
-        [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification =
-            "The constructor is the target of the test")]
+        [SuppressMessage(
+            "Usage",
+            "CA1806:Do not ignore method results",
+            Justification = "The constructor is the target of the test")]
         public async Task ThrowsExceptionWhenCreatedWithNullDeclaringType()
         {
             var node = await TestNode.FindNode<FieldDeclarationSyntax>(FieldDefinitionCode.GetSetField)
@@ -126,11 +114,13 @@
         }
 
         [Fact]
-        [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification =
-            "The constructor is the target of the test")]
+        [SuppressMessage(
+            "Usage",
+            "CA1806:Do not ignore method results",
+            Justification = "The constructor is the target of the test")]
         public void ThrowsExceptionWhenCreatedWithNullNode()
         {
-            var declaringType = Substitute.For<ITypeDefinition>();
+            var declaringType = Substitute.For<IClassDefinition>();
 
             // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new FieldDefinition(declaringType, null!);
