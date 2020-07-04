@@ -25,6 +25,7 @@
 
             var name = node.Identifier.Text;
 
+            AccessModifier = node.DetermineAccessModifier();
             Name = name;
             RawName = name;
             FullName = DeclaringType.FullName + "." + name;
@@ -65,6 +66,7 @@
                 return propertyIsVisible;
             }
 
+            // Need to evaluate the actual access modifiers on the property accessor to determine the difference between Feature and Breaking
             if (accessor.IsVisible())
             {
                 return true;
@@ -72,6 +74,9 @@
 
             return false;
         }
+
+        /// <inheritdoc />
+        public AccessModifier AccessModifier { get; }
 
         /// <inheritdoc />
         public bool CanRead { get; }

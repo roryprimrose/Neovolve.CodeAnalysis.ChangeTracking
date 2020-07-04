@@ -75,23 +75,23 @@
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(match.OldItem.Modifiers))
+            if (match.OldItem.AccessModifier == AccessModifier.None)
             {
                 // Modifiers have been added where there were previously none defined
                 var result = ComparisonResult.ItemChanged(
                     change,
                     match,
-                    $"{match.NewItem.Description} has added the modifiers {match.NewItem.Modifiers}");
+                    $"{match.NewItem.Description} has added the modifiers {match.NewItem.AccessModifier}");
 
                 aggregator.AddResult(result);
             }
-            else if (string.IsNullOrWhiteSpace(match.NewItem.Modifiers))
+            else if (match.NewItem.AccessModifier == AccessModifier.None)
             {
                 // All previous modifiers have been removed
                 var result = ComparisonResult.ItemChanged(
                     change,
                     match,
-                    $"{match.NewItem.Description} has removed the modifiers {match.OldItem.Modifiers}");
+                    $"{match.NewItem.Description} has removed the modifiers {match.OldItem.AccessModifier}");
 
                 aggregator.AddResult(result);
             }
@@ -101,7 +101,7 @@
                 var result = ComparisonResult.ItemChanged(
                     change,
                     match,
-                    $"{match.NewItem.Description} has changed modifiers from {match.OldItem.Modifiers} to {match.NewItem.Modifiers}");
+                    $"{match.NewItem.Description} has changed modifiers from {match.OldItem.AccessModifier} to {match.NewItem.AccessModifier}");
 
                 aggregator.AddResult(result);
             }

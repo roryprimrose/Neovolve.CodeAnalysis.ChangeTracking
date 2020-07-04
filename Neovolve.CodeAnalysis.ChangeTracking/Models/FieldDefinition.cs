@@ -23,6 +23,7 @@
 
             var name = node.Declaration.Variables.Single().Identifier.Text;
 
+            AccessModifier = node.DetermineAccessModifier();
             Name = name;
             RawName = name;
             FullName = DeclaringType.FullName + "." + name;
@@ -30,6 +31,9 @@
 
             ReturnType = node.Declaration.Type.ToString();
         }
+
+        /// <inheritdoc />
+        public AccessModifier AccessModifier { get; }
 
         /// <inheritdoc />
         public ITypeDefinition DeclaringType { get; }

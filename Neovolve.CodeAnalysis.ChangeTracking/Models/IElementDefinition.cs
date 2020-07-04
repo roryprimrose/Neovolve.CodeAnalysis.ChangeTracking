@@ -5,11 +5,6 @@
     public interface IElementDefinition : IItemDefinition
     {
         /// <summary>
-        ///     Gets the access modifiers of the element.
-        /// </summary>
-        string AccessModifiers { get; }
-
-        /// <summary>
         ///     Gets the attributes defined on the type.
         /// </summary>
         IReadOnlyCollection<IAttributeDefinition> Attributes { get; }
@@ -28,11 +23,6 @@
         ///     Gets whether the member is publicly visible.
         /// </summary>
         bool IsVisible { get; }
-
-        /// <summary>
-        ///     Gets the modifiers of the element.
-        /// </summary>
-        string Modifiers { get; }
 
         /// <summary>
         ///     Gets the name of the element without any parent hierarchy or generic type parameters.

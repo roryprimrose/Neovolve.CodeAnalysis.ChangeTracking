@@ -19,9 +19,11 @@
         {
             declaration = declaration ?? throw new ArgumentNullException(nameof(declaration));
 
-            if (declaration.Parent is InterfaceDeclarationSyntax)
+            if (declaration.Parent is InterfaceDeclarationSyntax
+                && declaration.Modifiers.Count == 0)
             {
-                // Interfaces do not have modifiers and 
+                // Interfaces members without modifiers inherit the parent access modifier
+                // As IsVisible here is about the member not the interface, assume the member is visible
                 return true;
             }
 

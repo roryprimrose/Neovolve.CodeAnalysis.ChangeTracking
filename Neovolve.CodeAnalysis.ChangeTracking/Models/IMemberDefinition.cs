@@ -7,6 +7,11 @@
     public interface IMemberDefinition : IElementDefinition
     {
         /// <summary>
+        ///     Gets the access modifier for the type.
+        /// </summary>
+        AccessModifier AccessModifier { get; }
+
+        /// <summary>
         ///     Gets the type that declares the member.
         /// </summary>
         public ITypeDefinition DeclaringType { get; }

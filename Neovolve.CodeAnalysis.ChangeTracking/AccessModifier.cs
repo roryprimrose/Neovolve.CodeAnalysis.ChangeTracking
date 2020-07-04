@@ -1,6 +1,6 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking
 {
-    public enum TypeAccessModifier
+    public enum AccessModifier
     {
         None = 0,
         Internal,
@@ -8,6 +8,6 @@
         Protected,
         Public,
         ProtectedInternal,
-        InternalPrivate
+        ProtectedPrivate
     }
 }

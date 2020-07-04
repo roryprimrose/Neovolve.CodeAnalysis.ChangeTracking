@@ -74,30 +74,30 @@
             ComparerOptions options,
             ChangeResultAggregator aggregator)
         {
-            var change = TypeAccessModifierChangeTable.CalculateChange(match);
+            var change = AccessModifierChangeTable.CalculateChange(match);
 
             if (change == SemVerChangeType.None)
             {
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(match.OldItem.AccessModifiers))
+            if (match.OldItem.AccessModifier == AccessModifier.None)
             {
                 // Modifiers have been added where there were previously none defined
                 var result = ComparisonResult.ItemChanged(
                     change,
                     match,
-                    $"{match.NewItem.Description} has added the access modifiers {match.NewItem.AccessModifiers}");
+                    $"{match.NewItem.Description} has added the access modifiers {match.NewItem.AccessModifier}");
 
                 aggregator.AddResult(result);
             }
-            else if (string.IsNullOrWhiteSpace(match.NewItem.AccessModifiers))
+            else if (match.NewItem.AccessModifier == AccessModifier.None)
             {
                 // All previous modifiers have been removed
                 var result = ComparisonResult.ItemChanged(
                     change,
                     match,
-                    $"{match.NewItem.Description} has removed the access modifiers {match.OldItem.AccessModifiers}");
+                    $"{match.NewItem.Description} has removed the access modifiers {match.OldItem.AccessModifier}");
 
                 aggregator.AddResult(result);
             }
@@ -107,7 +107,7 @@
                 var result = ComparisonResult.ItemChanged(
                     change,
                     match,
-                    $"{match.NewItem.Description} has changed access modifiers from {match.OldItem.AccessModifiers} to {match.NewItem.AccessModifiers}");
+                    $"{match.NewItem.Description} has changed access modifiers from {match.OldItem.AccessModifier} to {match.NewItem.AccessModifier}");
 
                 aggregator.AddResult(result);
             }

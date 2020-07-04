@@ -16,43 +16,10 @@
             node = node ?? throw new ArgumentNullException(nameof(node));
 
             Location = node.DetermineLocation();
-            AccessModifiers = node.DetermineAccessModifiers();
-            Modifiers = DetermineModifiers(node);
 
             IsVisible = node.IsVisible();
             Attributes = node.DetermineAttributes(this);
         }
-
-        private static string DetermineModifiers(MemberDeclarationSyntax node)
-        {
-            node = node ?? throw new ArgumentNullException(nameof(node));
-
-            var values = new List<string>();
-
-            foreach (var modifier in node.Modifiers)
-            {
-                switch (modifier.RawKind)
-                {
-                    case (int) SyntaxKind.PublicKeyword:
-                    case (int) SyntaxKind.PrivateKeyword:
-                    case (int) SyntaxKind.InternalKeyword:
-                    case (int) SyntaxKind.ProtectedKeyword:
-
-                        break;
-
-                    default:
-
-                        values.Add(modifier.Text);
-
-                        break;
-                }
-            }
-
-            return string.Join(" ", values);
-        }
-
-        /// <inheritdoc />
-        public string AccessModifiers { get; }
 
         /// <inheritdoc />
         public IReadOnlyCollection<IAttributeDefinition> Attributes { get; }
@@ -71,9 +38,6 @@
 
         /// <inheritdoc />
         public DefinitionLocation Location { get; }
-
-        /// <inheritdoc />
-        public string Modifiers { get; }
 
         /// <inheritdoc />
         public abstract string Name { get; }

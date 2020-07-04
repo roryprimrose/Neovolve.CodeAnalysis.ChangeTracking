@@ -25,6 +25,7 @@
 
             DeclaringType = null;
             Namespace = DetermineNamespace(node);
+            AccessModifier = node.DetermineAccessModifier();
             Name = name;
             RawName = rawName;
             FullRawName = Namespace + "." + rawName;
@@ -80,7 +81,7 @@
             if (containerNamespace != null)
             {
                 var parentNamespace = DetermineNamespace(containerNamespace);
-                
+
                 var namespaceValue = containerNamespace.Name.GetText().ToString().Trim();
 
                 if (string.IsNullOrWhiteSpace(parentNamespace))
@@ -192,6 +193,9 @@
 
             return childTypes.AsReadOnly();
         }
+
+        /// <inheritdoc />
+        public AccessModifier AccessModifier { get; }
 
         /// <inheritdoc />
         public IReadOnlyCollection<IClassDefinition> ChildClasses { get; }

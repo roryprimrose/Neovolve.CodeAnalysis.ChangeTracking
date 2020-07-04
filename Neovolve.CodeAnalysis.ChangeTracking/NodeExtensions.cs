@@ -14,6 +14,24 @@
     /// </summary>
     public static class NodeExtensions
     {
+        public static AccessModifier DetermineAccessModifier(this TypeDeclarationSyntax node,
+            ITypeDefinition? declaringType)
+        {
+            var parentType = node.FirstAncestorOrSelf<TypeDeclarationSyntax>(x => x != node);
+
+            if (parentType == null)
+            {
+                return DetermineAccessModifier(node, AccessModifier.Internal);
+            }
+
+            return DetermineAccessModifier(node, AccessModifier.Private);
+        }
+
+        public static AccessModifier DetermineAccessModifier(this MemberDeclarationSyntax node)
+        {
+            return DetermineAccessModifier(node, AccessModifier.Private);
+        }
+
         /// <summary>
         ///     Gets the attributes declared on the node.
         /// </summary>
@@ -67,35 +85,48 @@
             return new DefinitionLocation(filePath, lineIndex, characterIndex);
         }
 
-        public static string DetermineAccessModifiers(this MemberDeclarationSyntax node)
-        {
-            node = node ?? throw new ArgumentNullException(nameof(node));
-
-            var values = new List<string>();
-
-            foreach (var modifier in node.Modifiers)
-            {
-                switch (modifier.RawKind)
-                {
-                    case (int) SyntaxKind.PublicKeyword:
-                    case (int) SyntaxKind.PrivateKeyword:
-                    case (int) SyntaxKind.InternalKeyword:
-                    case (int) SyntaxKind.ProtectedKeyword:
-
-                        values.Add(modifier.Text);
-
-                        break;
-                }
-            }
-
-            return string.Join(" ", values);
-        }
-
         public static bool HasModifier(this MemberDeclarationSyntax node, SyntaxKind kind)
         {
             node = node ?? throw new ArgumentNullException(nameof(node));
 
             return node.Modifiers.Any(x => x.RawKind == (int) kind);
+        }
+
+        internal static AccessModifier DetermineAccessModifier(MemberDeclarationSyntax node,
+            AccessModifier defaultValue)
+        {
+            if (node.HasModifier(SyntaxKind.ProtectedKeyword))
+            {
+                if (node.HasModifier(SyntaxKind.InternalKeyword))
+                {
+                    return AccessModifier.ProtectedInternal;
+                }
+
+                if (node.HasModifier(SyntaxKind.PrivateKeyword))
+                {
+                    return AccessModifier.ProtectedPrivate;
+                }
+
+                return AccessModifier.Protected;
+            }
+
+            if (node.HasModifier(SyntaxKind.InternalKeyword))
+            {
+                return AccessModifier.Internal;
+            }
+
+            if (node.HasModifier(SyntaxKind.PrivateKeyword))
+            {
+                return AccessModifier.Private;
+            }
+
+            if (node.HasModifier(SyntaxKind.PublicKeyword))
+            {
+                return AccessModifier.Public;
+            }
+
+            // Nested types are private by default
+            return AccessModifier.Private;
         }
     }
 }

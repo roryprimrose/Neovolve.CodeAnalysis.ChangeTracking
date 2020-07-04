@@ -6,8 +6,8 @@
 
     public class TestFieldDefinition : IFieldDefinition
     {
-        public string AccessModifiers { get; set; } = Guid.NewGuid().ToString();
         public IReadOnlyCollection<IAttributeDefinition> Attributes { get; set; } = new List<IAttributeDefinition>();
+        public AccessModifier AccessModifier { get; set; } = AccessModifier.Public;
         public ITypeDefinition DeclaringType { get; set; } = new TestClassDefinition();
         public string Description { get; set; } = Guid.NewGuid().ToString();
         public string FullName { get; set; } = Guid.NewGuid().ToString();

@@ -9,6 +9,11 @@
     public interface ITypeDefinition : IElementDefinition
     {
         /// <summary>
+        ///     Gets the access modifier for the type.
+        /// </summary>
+        AccessModifier AccessModifier { get; }
+
+        /// <summary>
         ///     Gets the child classes defined on this type.
         /// </summary>
         IReadOnlyCollection<IClassDefinition> ChildClasses { get; }

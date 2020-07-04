@@ -6,7 +6,7 @@
 
     public class TestPropertyDefinition : IPropertyDefinition
     {
-        public string AccessModifiers { get; set; } = Guid.NewGuid().ToString();
+        public AccessModifier AccessModifier { get; set; } = AccessModifier.Public;
         public IReadOnlyCollection<IAttributeDefinition> Attributes { get; set; } = new List<IAttributeDefinition>();
         public bool CanRead { get; set; } = true;
         public bool CanWrite { get; set; } = true;
