@@ -2,20 +2,17 @@
 {
     using System;
     using System.Collections.Generic;
-    using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-    public abstract class ElementDefinition : IElementDefinition
+    public abstract class ElementDefinition : ItemDefinition, IElementDefinition
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ElementDefinition" /> class.
         /// </summary>
         /// <param name="node">The syntax node that defines the type.</param>
-        protected ElementDefinition(MemberDeclarationSyntax node)
+        protected ElementDefinition(MemberDeclarationSyntax node) : base(node)
         {
             node = node ?? throw new ArgumentNullException(nameof(node));
-
-            Location = node.DetermineLocation();
 
             IsVisible = node.IsVisible();
             Attributes = node.DetermineAttributes(this);
@@ -25,9 +22,6 @@
         public IReadOnlyCollection<IAttributeDefinition> Attributes { get; }
 
         /// <inheritdoc />
-        public abstract string Description { get; }
-
-        /// <inheritdoc />
         public abstract string FullName { get; }
 
         /// <inheritdoc />
@@ -35,12 +29,6 @@
 
         /// <inheritdoc />
         public bool IsVisible { get; }
-
-        /// <inheritdoc />
-        public DefinitionLocation Location { get; }
-
-        /// <inheritdoc />
-        public abstract string Name { get; }
 
         /// <inheritdoc />
         public abstract string RawName { get; }

@@ -101,44 +101,6 @@
         }
 
         [Fact]
-        public async Task LocationReturnsEmptyFilePathWhenNodeLacksSourceInformation()
-        {
-            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithoutParent)
-                .ConfigureAwait(false);
-
-            var sut = new Wrapper(node);
-
-            sut.Location.FilePath.Should().BeEmpty();
-        }
-
-        [Fact]
-        public async Task LocationReturnsFileContentLocation()
-        {
-            var filePath = Guid.NewGuid().ToString();
-
-            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithoutParent, filePath)
-                .ConfigureAwait(false);
-
-            var sut = new Wrapper(node);
-
-            sut.Location.LineIndex.Should().Be(3);
-            sut.Location.CharacterIndex.Should().Be(4);
-        }
-
-        [Fact]
-        public async Task LocationReturnsFilePathWhenNodeIncludesSourceInformation()
-        {
-            var filePath = Guid.NewGuid().ToString();
-
-            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithoutParent, filePath)
-                .ConfigureAwait(false);
-
-            var sut = new Wrapper(node);
-
-            sut.Location.FilePath.Should().Be(filePath);
-        }
-
-        [Fact]
         [SuppressMessage(
             "Usage",
             "CA1806:Do not ignore method results",
