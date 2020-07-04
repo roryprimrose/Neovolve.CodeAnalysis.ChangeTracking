@@ -14,7 +14,6 @@
         {
             node = node ?? throw new ArgumentNullException(nameof(node));
 
-            IsVisible = node.IsVisible();
             Attributes = node.DetermineAttributes(this);
         }
 
@@ -28,7 +27,7 @@
         public abstract string FullRawName { get; }
 
         /// <inheritdoc />
-        public bool IsVisible { get; }
+        public abstract bool IsVisible { get; }
 
         /// <inheritdoc />
         public abstract string RawName { get; }

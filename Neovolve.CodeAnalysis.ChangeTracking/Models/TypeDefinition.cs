@@ -38,6 +38,17 @@
             ChildTypes = DetermineChildTypes(ChildClasses, ChildInterfaces);
             GenericTypeParameters = DetermineGenericTypeParameters(node);
             GenericConstraints = DetermineGenericConstraints(node);
+
+            if (DeclaringType != null
+                && DeclaringType.IsVisible == false)
+            {
+                IsVisible = false;
+            }
+            else
+            {
+                // Determine visibility based on the access modifier
+                IsVisible = AccessModifier.IsVisible();
+            }
         }
 
         /// <summary>
@@ -66,6 +77,17 @@
             ChildTypes = DetermineChildTypes(ChildClasses, ChildInterfaces);
             GenericTypeParameters = DetermineGenericTypeParameters(node);
             GenericConstraints = DetermineGenericConstraints(node);
+
+            if (DeclaringType != null
+                && DeclaringType.IsVisible == false)
+            {
+                IsVisible = false;
+            }
+            else
+            {
+                // Determine visibility based on the access modifier
+                IsVisible = AccessModifier.IsVisible();
+            }
         }
 
         /// <summary>
@@ -224,6 +246,9 @@
 
         /// <inheritdoc />
         public IReadOnlyCollection<string> ImplementedTypes { get; }
+
+        /// <inheritdoc />
+        public override bool IsVisible { get; }
 
         /// <inheritdoc />
         public override string Name { get; }
