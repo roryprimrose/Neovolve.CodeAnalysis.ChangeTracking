@@ -191,17 +191,9 @@ namespace MyNamespace
             var node = await TestNode.FindNode<ClassDeclarationSyntax>(code)
                 .ConfigureAwait(false);
 
-            var actual = node.HasModifier(kind);
+            var actual = node.Modifiers.HasModifier(kind);
 
             actual.Should().Be(expected);
-        }
-
-        [Fact]
-        public void HasModifierThrowsExceptionWithNullNode()
-        {
-            Action action = () => NodeExtensions.HasModifier(null!, SyntaxKind.SealedKeyword);
-
-            action.Should().Throw<ArgumentNullException>();
         }
     }
 }

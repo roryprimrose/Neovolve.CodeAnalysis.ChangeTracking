@@ -567,14 +567,10 @@
             var first = sut.Properties.First();
 
             first.Name.Should().Be("First");
-            first.IsVisible.Should().BeTrue();
-            first.ReturnType.Should().Be("string");
 
             var second = sut.Properties.Skip(1).First();
 
             second.Name.Should().Be("Second");
-            second.IsVisible.Should().BeTrue();
-            second.ReturnType.Should().Be("DateTimeOffset");
         }
 
         [Fact]
@@ -590,14 +586,10 @@
             var first = sut.Properties.First();
 
             first.Name.Should().Be("First");
-            first.IsVisible.Should().BeTrue();
-            first.ReturnType.Should().Be("string");
 
             var second = sut.Properties.Skip(1).First();
 
             second.Name.Should().Be("Second");
-            second.IsVisible.Should().BeTrue();
-            second.ReturnType.Should().Be("DateTimeOffset");
         }
 
         [Fact]

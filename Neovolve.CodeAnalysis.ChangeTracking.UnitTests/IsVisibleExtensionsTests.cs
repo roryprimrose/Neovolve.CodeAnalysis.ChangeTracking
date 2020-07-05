@@ -1,12 +1,12 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 {
     using System;
-    using System.Linq;
     using System.Threading.Tasks;
     using FluentAssertions;
-    using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
+    using Neovolve.CodeAnalysis.ChangeTracking.Models;
     using Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Models;
+    using NSubstitute;
     using Xunit;
 
     public class IsVisibleExtensionsTests
@@ -14,31 +14,62 @@
         [Fact]
         public void IsVisibleForAccessorThrowsExceptionWithNullDeclaration()
         {
-            Action action = () => ((AccessorDeclarationSyntax) null!).IsVisible();
+            var declaringProperty = Substitute.For<IPropertyDefinition>();
+
+            Action action = () => IsVisibleExtensions.IsVisible(null!, declaringProperty);
 
             action.Should().Throw<ArgumentNullException>();
         }
 
-        [Fact]
-        public void IsVisibleForClassThrowsExceptionWithNullDeclaration()
+        [Theory]
+        [InlineData("", true, false)]
+        [InlineData("public", true, true)]
+        [InlineData("private", true, false)]
+        [InlineData("internal", true, false)]
+        [InlineData("protected", true, true)]
+        [InlineData("protected internal", true, true)]
+        [InlineData("protected private", true, true)]
+        [InlineData("", false, false)]
+        [InlineData("public", false, false)]
+        [InlineData("private", false, false)]
+        [InlineData("internal", false, false)]
+        [InlineData("protected", false, false)]
+        [InlineData("protected internal", false, false)]
+        [InlineData("protected private", false, false)]
+        public async Task IsVisibleForMemberReturnsValueBasedOnModifier(
+            string accessors,
+            bool typeIsVisible,
+            bool expected)
         {
-            Action action = () => ((ClassDeclarationSyntax) null!).IsVisible();
+            var code = TestNode.ClassProperty.Replace("public string MyProperty",
+                accessors + " string MyProperty",
+                StringComparison.Ordinal);
 
-            action.Should().Throw<ArgumentNullException>();
-        }
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code).ConfigureAwait(false);
 
-        [Fact]
-        public void IsVisibleForInterfaceThrowsExceptionWithNullDeclaration()
-        {
-            Action action = () => ((InterfaceDeclarationSyntax) null!).IsVisible();
+            var declaringType = Substitute.For<IClassDefinition>();
 
-            action.Should().Throw<ArgumentNullException>();
+            declaringType.IsVisible.Returns(typeIsVisible);
+
+            var actual = node.IsVisible(declaringType);
+
+            actual.Should().Be(expected);
         }
 
         [Fact]
         public void IsVisibleForMemberThrowsExceptionWithNullDeclaration()
         {
-            Action action = () => ((MemberDeclarationSyntax) null!).IsVisible();
+            var declaringType = Substitute.For<ITypeDefinition>();
+
+            Action action = () => ((MemberDeclarationSyntax) null!).IsVisible(declaringType);
+
+            action.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
+        public void IsVisibleForTypeThrowsExceptionWithNullDeclaration()
+        {
+            Action action = () => ((TypeDeclarationSyntax) null!).IsVisible(null);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -49,112 +80,13 @@
             var node = await TestNode.FindNode<PropertyDeclarationSyntax>(TypeDefinitionCode.InterfaceWithProperties)
                 .ConfigureAwait(false);
 
-            var actual = node.IsVisible();
+            var declaringType = Substitute.For<IInterfaceDefinition>();
+
+            declaringType.IsVisible.Returns(true);
+
+            var actual = node.IsVisible(declaringType);
 
             actual.Should().BeTrue();
-        }
-
-        [Theory]
-        [InlineData("", false)]
-        [InlineData("public", true)]
-        [InlineData("public readonly", true)]
-        [InlineData("public virtual", true)]
-        [InlineData("private", false)]
-        [InlineData("internal", false)]
-        [InlineData("internal virtual", false)]
-        [InlineData("protected", true)]
-        [InlineData("protected virtual", true)]
-        public async Task IsVisibleReturnsValueBasedOnMemberModifier(
-            string accessors,
-            bool expected)
-        {
-            var code = TestNode.ClassProperty.Replace("public string MyProperty",
-                accessors + " string MyProperty",
-                StringComparison.Ordinal);
-
-            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code).ConfigureAwait(false);
-
-            var actual = node.IsVisible();
-
-            actual.Should().Be(expected);
-        }
-
-        [Theory]
-        [InlineData("", false)]
-        [InlineData("public", true)]
-        [InlineData("public readonly", true)]
-        [InlineData("public virtual", true)]
-        [InlineData("private", false)]
-        [InlineData("internal", false)]
-        [InlineData("internal virtual", false)]
-        [InlineData("protected", true)]
-        [InlineData("protected virtual", true)]
-        public async Task IsVisibleReturnsValueBasedOnParentClassScopeForClassProperty(
-            string accessors,
-            bool expected)
-        {
-            var code = TestNode.ClassProperty.Replace("public class MyClass",
-                accessors + " class MyClass",
-                StringComparison.Ordinal);
-
-            var node = await TestNode.FindNode<ClassDeclarationSyntax>(code).ConfigureAwait(false);
-
-            var actual = node.IsVisible();
-
-            actual.Should().Be(expected);
-        }
-
-        [Theory]
-        [InlineData("", false)]
-        [InlineData("public", true)]
-        [InlineData("public readonly", true)]
-        [InlineData("public virtual", true)]
-        [InlineData("private", false)]
-        [InlineData("internal", false)]
-        [InlineData("internal virtual", false)]
-        [InlineData("protected", true)]
-        [InlineData("protected virtual", true)]
-        public async Task IsVisibleReturnsValueBasedOnParentInterfaceScopeForInterfaceProperty(
-            string accessors,
-            bool expected)
-        {
-            var code = TestNode.InterfaceProperty.Replace("public interface MyInterface",
-                accessors + " interface MyInterface",
-                StringComparison.Ordinal);
-
-            var node = await TestNode.FindNode<InterfaceDeclarationSyntax>(code).ConfigureAwait(false);
-
-            var actual = node.IsVisible();
-
-            actual.Should().Be(expected);
-        }
-
-        [Theory]
-        [InlineData("", false)]
-        [InlineData("public", true)]
-        [InlineData("public readonly", true)]
-        [InlineData("public virtual", true)]
-        [InlineData("private", false)]
-        [InlineData("internal", false)]
-        [InlineData("internal virtual", false)]
-        [InlineData("protected", true)]
-        [InlineData("protected virtual", true)]
-        public async Task IsVisibleReturnsValueBasedOnPropertyAccessorModifier(
-            string accessors,
-            bool expected)
-        {
-            var code = TestNode.ClassProperty.Replace("get;", accessors + " get;", StringComparison.Ordinal);
-
-            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code).ConfigureAwait(false);
-
-            var getAccessor =
-                node.AccessorList?.Accessors.FirstOrDefault(x => x.Kind() == SyntaxKind.GetAccessorDeclaration);
-
-            getAccessor.Should().NotBeNull();
-
-            var actual = getAccessor!.IsVisible();
-
-            actual.Should().Be(expected);
         }
     }
 }

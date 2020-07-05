@@ -19,10 +19,10 @@
         public ClassDefinition(ClassDeclarationSyntax node) : base(node)
         {
             Fields = DetermineFields(node);
-            IsAbstract = node.HasModifier(SyntaxKind.AbstractKeyword);
-            IsPartial = node.HasModifier(SyntaxKind.PartialKeyword);
-            IsSealed = node.HasModifier(SyntaxKind.SealedKeyword);
-            IsStatic = node.HasModifier(SyntaxKind.StaticKeyword);
+            IsAbstract = node.Modifiers.HasModifier(SyntaxKind.AbstractKeyword);
+            IsPartial = node.Modifiers.HasModifier(SyntaxKind.PartialKeyword);
+            IsSealed = node.Modifiers.HasModifier(SyntaxKind.SealedKeyword);
+            IsStatic = node.Modifiers.HasModifier(SyntaxKind.StaticKeyword);
         }
 
         /// <summary>
@@ -33,10 +33,10 @@
         public ClassDefinition(ITypeDefinition declaringType, ClassDeclarationSyntax node) : base(declaringType, node)
         {
             Fields = DetermineFields(node);
-            IsAbstract = node.HasModifier(SyntaxKind.AbstractKeyword);
-            IsPartial = node.HasModifier(SyntaxKind.PartialKeyword);
-            IsSealed = node.HasModifier(SyntaxKind.SealedKeyword);
-            IsStatic = node.HasModifier(SyntaxKind.StaticKeyword);
+            IsAbstract = node.Modifiers.HasModifier(SyntaxKind.AbstractKeyword);
+            IsPartial = node.Modifiers.HasModifier(SyntaxKind.PartialKeyword);
+            IsSealed = node.Modifiers.HasModifier(SyntaxKind.SealedKeyword);
+            IsStatic = node.Modifiers.HasModifier(SyntaxKind.StaticKeyword);
         }
 
         private IReadOnlyCollection<FieldDefinition> DetermineFields(SyntaxNode node)

@@ -16,7 +16,7 @@
         /// <param name="declaringType">The type that declares the field.</param>
         /// <param name="node">The node that defines the argument.</param>
         /// <exception cref="ArgumentNullException">The <paramref name="node" /> parameter is <c>null</c>.</exception>
-        public FieldDefinition(ITypeDefinition declaringType, FieldDeclarationSyntax node) : base(declaringType, node)
+        public FieldDefinition(ITypeDefinition declaringType, FieldDeclarationSyntax node) : base(node, declaringType)
         {
             node = node ?? throw new ArgumentNullException(nameof(node));
 

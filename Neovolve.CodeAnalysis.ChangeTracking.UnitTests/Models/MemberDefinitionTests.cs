@@ -76,7 +76,7 @@
 
         private class Wrapper : MemberDefinition
         {
-            public Wrapper(ITypeDefinition declaringType, MemberDeclarationSyntax node) : base(declaringType, node)
+            public Wrapper(ITypeDefinition declaringType, MemberDeclarationSyntax node) : base(node, declaringType)
             {
             }
 
