@@ -9,9 +9,9 @@
     public class ChangeCalculator : IChangeCalculator
     {
         private readonly ILogger? _logger;
-        private readonly IMatchProcessor<ITypeDefinition> _matchProcessor;
+        private readonly ITypeMatchProcessor _matchProcessor;
 
-        public ChangeCalculator(IMatchProcessor<ITypeDefinition> matchProcessor, ILogger? logger)
+        public ChangeCalculator(ITypeMatchProcessor matchProcessor, ILogger? logger)
         {
             _matchProcessor = matchProcessor ?? throw new ArgumentNullException(nameof(matchProcessor));
             _logger = logger;

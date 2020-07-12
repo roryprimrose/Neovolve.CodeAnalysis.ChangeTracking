@@ -395,6 +395,25 @@
             sut.ImplementedTypes.First().Should().Be("MyBase");
         }
 
+        [Theory]
+        [InlineData("", false)]
+        [InlineData("private", false)]
+        [InlineData("internal", false)]
+        [InlineData("protected", true)]
+        [InlineData("private protected", true)]
+        [InlineData("protected internal", true)]
+        [InlineData("public", true)]
+        public async Task IsVisibleReturnsValueBasedOnAccessModifiers(string accessModifiers, bool expected)
+        {
+            var code = TypeDefinitionCode.BuildClassWithScope(accessModifiers);
+
+            var node = await TestNode.FindNode<ClassDeclarationSyntax>(code).ConfigureAwait(false);
+
+            var sut = new ClassDefinition(node);
+
+            sut.IsVisible.Should().Be(expected);
+        }
+
         [Fact]
         public async Task NameReturnsMultipleGenericTypeDefinitions()
         {

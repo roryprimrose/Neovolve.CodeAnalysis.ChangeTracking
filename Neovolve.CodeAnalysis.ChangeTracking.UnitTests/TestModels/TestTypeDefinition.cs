@@ -7,7 +7,6 @@
     public abstract class TestTypeDefinition : ITypeDefinition
     {
         public AccessModifier AccessModifier { get; set; } = AccessModifier.Public;
-        public string AccessModifiers { get; set; } = Guid.NewGuid().ToString();
         public IReadOnlyCollection<IAttributeDefinition> Attributes { get; set; } = new List<IAttributeDefinition>();
         public IReadOnlyCollection<IClassDefinition> ChildClasses { get; set; } = new List<IClassDefinition>();
 
@@ -27,7 +26,6 @@
         public IReadOnlyCollection<string> ImplementedTypes { get; set; } = new List<string>();
         public bool IsVisible { get; set; } = true;
         public DefinitionLocation Location { get; set; } = new DefinitionLocation(string.Empty, 0, 0);
-        public string Modifiers { get; set; } = Guid.NewGuid().ToString();
         public string Name { get; set; } = Guid.NewGuid().ToString();
         public string Namespace { get; set; } = Guid.NewGuid().ToString();
         public IReadOnlyCollection<IPropertyDefinition> Properties { get; set; } = new List<IPropertyDefinition>();

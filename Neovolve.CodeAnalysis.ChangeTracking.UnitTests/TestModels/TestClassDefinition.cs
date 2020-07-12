@@ -10,5 +10,6 @@
         public bool IsPartial { get; set; } = false;
         public bool IsSealed { get; set; } = false;
         public bool IsStatic { get; set; } = false;
+        public ClassModifiers Modifiers { get; set;  } = ClassModifiers.None;
     }
 }

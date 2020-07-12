@@ -284,71 +284,46 @@
             }
 
             var newItem = (IClassDefinition)match.NewItem;
+            var classMatch = new ItemMatch<IClassDefinition>(oldItem, newItem);
 
-            if (oldItem.IsAbstract
-                && newItem.IsAbstract == false)
+            var change = ClassModifierChangeTable.CalculateChange(classMatch);
+
+            if (change == SemVerChangeType.None)
             {
+                return;
+            }
+
+            if (match.OldItem.AccessModifier == AccessModifier.None)
+            {
+                // Modifiers have been added where there were previously none defined
                 var result = ComparisonResult.ItemChanged(
-                    SemVerChangeType.Feature,
+                    change,
                     match,
-                    $"{newItem.Description} has removed the abstract keyword");
+                    $"{match.NewItem.Description} has added the modifiers {match.NewItem.AccessModifier}");
 
                 aggregator.AddResult(result);
             }
-            else if (oldItem.IsAbstract == false
-                     && newItem.IsAbstract)
+            else if (match.NewItem.AccessModifier == AccessModifier.None)
             {
+                // All previous modifiers have been removed
                 var result = ComparisonResult.ItemChanged(
-                    SemVerChangeType.Breaking,
+                    change,
                     match,
-                    $"{newItem.Description} has added the abstract keyword");
+                    $"{match.NewItem.Description} has removed the modifiers {match.OldItem.AccessModifier}");
 
                 aggregator.AddResult(result);
             }
-
-            if (oldItem.IsSealed
-                && newItem.IsSealed == false)
+            else
             {
+                // Modifiers have been changed
                 var result = ComparisonResult.ItemChanged(
-                    SemVerChangeType.Feature,
+                    change,
                     match,
-                    $"{newItem.Description} has removed the sealed keyword");
-
-                aggregator.AddResult(result);
-            }
-            else if (oldItem.IsSealed == false
-                     && newItem.IsSealed)
-            {
-                var result = ComparisonResult.ItemChanged(
-                    SemVerChangeType.Breaking,
-                    match,
-                    $"{newItem.Description} has added the sealed keyword");
-
-                aggregator.AddResult(result);
-            }
-
-            if (oldItem.IsStatic
-                && newItem.IsStatic == false)
-            {
-                var result = ComparisonResult.ItemChanged(
-                    SemVerChangeType.Breaking,
-                    match,
-                    $"{newItem.Description} has removed the static keyword");
-
-                aggregator.AddResult(result);
-            }
-            else if (oldItem.IsStatic == false
-                     && newItem.IsStatic)
-            {
-                var result = ComparisonResult.ItemChanged(
-                    SemVerChangeType.Breaking,
-                    match,
-                    $"{newItem.Description} has added the static keyword");
+                    $"{match.NewItem.Description} has changed modifiers from {match.OldItem.AccessModifier} to {match.NewItem.AccessModifier}");
 
                 aggregator.AddResult(result);
             }
         }
-
         private void EvaluateFieldChanges(
             ItemMatch<ITypeDefinition> match,
             ComparerOptions options,

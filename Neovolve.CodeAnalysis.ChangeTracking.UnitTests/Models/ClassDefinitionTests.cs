@@ -118,219 +118,27 @@ namespace MyNamespace
         }
 
         [Theory]
-        [InlineData("", false)]
-        [InlineData("private", false)]
-        [InlineData("internal", false)]
-        [InlineData("protected", false)]
-        [InlineData("private protected", false)]
-        [InlineData("protected internal", false)]
-        [InlineData("protected private", false)]
-        [InlineData("internal protected", false)]
-        [InlineData("public", false)]
-        [InlineData("private abstract", true)]
-        [InlineData("internal abstract", true)]
-        [InlineData("protected abstract", true)]
-        [InlineData("private protected abstract", true)]
-        [InlineData("protected internal abstract", true)]
-        [InlineData("protected private abstract", true)]
-        [InlineData("internal protected abstract", true)]
-        [InlineData("public abstract", true)]
-        [InlineData("private sealed", false)]
-        [InlineData("internal sealed", false)]
-        [InlineData("protected sealed", false)]
-        [InlineData("private protected sealed", false)]
-        [InlineData("protected internal sealed", false)]
-        [InlineData("protected private sealed", false)]
-        [InlineData("internal protected sealed", false)]
-        [InlineData("public sealed", false)]
-        [InlineData("private static", false)]
-        [InlineData("internal static", false)]
-        [InlineData("protected static", false)]
-        [InlineData("private protected static", false)]
-        [InlineData("protected internal static", false)]
-        [InlineData("protected private static", false)]
-        [InlineData("internal protected static", false)]
-        [InlineData("public static", false)]
-        [InlineData("private partial", false)]
-        [InlineData("internal partial", false)]
-        [InlineData("protected partial", false)]
-        [InlineData("private protected partial", false)]
-        [InlineData("protected internal partial", false)]
-        [InlineData("protected private partial", false)]
-        [InlineData("internal protected partial", false)]
-        [InlineData("public partial", false)]
-        public async Task IsAbstractReturnsWhetherClassDeclaresSealedModifier(string modifiers, bool expected)
+        [InlineData("", ClassModifiers.None)]
+        [InlineData("abstract", ClassModifiers.Abstract)]
+        [InlineData("partial abstract", ClassModifiers.AbstractPartial)]
+        [InlineData("abstract partial", ClassModifiers.AbstractPartial)]
+        [InlineData("partial", ClassModifiers.Partial)]
+        [InlineData("sealed", ClassModifiers.Sealed)]
+        [InlineData("partial sealed", ClassModifiers.SealedPartial)]
+        [InlineData("sealed partial", ClassModifiers.SealedPartial)]
+        [InlineData("static", ClassModifiers.Static)]
+        [InlineData("partial static", ClassModifiers.StaticPartial)]
+        [InlineData("static partial", ClassModifiers.StaticPartial)]
+        public async Task ModifiersReturnsExpectedValue(string modifiers, ClassModifiers expected)
         {
-            var code = EmptyClass.Replace("public class MyClass", modifiers + " class MyClass");
+            var code = EmptyClass.Replace("public class MyClass", "public " + modifiers + " class MyClass");
 
             var node = await TestNode.FindNode<ClassDeclarationSyntax>(code)
                 .ConfigureAwait(false);
 
             var sut = new ClassDefinition(node);
 
-            sut.IsAbstract.Should().Be(expected);
-        }
-
-        [Theory]
-        [InlineData("", false)]
-        [InlineData("private", false)]
-        [InlineData("internal", false)]
-        [InlineData("protected", false)]
-        [InlineData("private protected", false)]
-        [InlineData("protected internal", false)]
-        [InlineData("protected private", false)]
-        [InlineData("internal protected", false)]
-        [InlineData("public", false)]
-        [InlineData("private abstract", false)]
-        [InlineData("internal abstract", false)]
-        [InlineData("protected abstract", false)]
-        [InlineData("private protected abstract", false)]
-        [InlineData("protected internal abstract", false)]
-        [InlineData("protected private abstract", false)]
-        [InlineData("internal protected abstract", false)]
-        [InlineData("public abstract", false)]
-        [InlineData("private sealed", false)]
-        [InlineData("internal sealed", false)]
-        [InlineData("protected sealed", false)]
-        [InlineData("private protected sealed", false)]
-        [InlineData("protected internal sealed", false)]
-        [InlineData("protected private sealed", false)]
-        [InlineData("internal protected sealed", false)]
-        [InlineData("public sealed", false)]
-        [InlineData("private static", false)]
-        [InlineData("internal static", false)]
-        [InlineData("protected static", false)]
-        [InlineData("private protected static", false)]
-        [InlineData("protected internal static", false)]
-        [InlineData("protected private static", false)]
-        [InlineData("internal protected static", false)]
-        [InlineData("public static", false)]
-        [InlineData("private partial", true)]
-        [InlineData("internal partial", true)]
-        [InlineData("protected partial", true)]
-        [InlineData("private protected partial", true)]
-        [InlineData("protected internal partial", true)]
-        [InlineData("protected private partial", true)]
-        [InlineData("internal protected partial", true)]
-        [InlineData("public partial", true)]
-        public async Task IsPartialReturnsWhetherClassDeclaresSealedModifier(string modifiers, bool expected)
-        {
-            var code = EmptyClass.Replace("public class MyClass", modifiers + " class MyClass");
-
-            var node = await TestNode.FindNode<ClassDeclarationSyntax>(code)
-                .ConfigureAwait(false);
-
-            var sut = new ClassDefinition(node);
-
-            sut.IsPartial.Should().Be(expected);
-        }
-
-        [Theory]
-        [InlineData("", false)]
-        [InlineData("private", false)]
-        [InlineData("internal", false)]
-        [InlineData("protected", false)]
-        [InlineData("private protected", false)]
-        [InlineData("protected internal", false)]
-        [InlineData("protected private", false)]
-        [InlineData("internal protected", false)]
-        [InlineData("public", false)]
-        [InlineData("private abstract", false)]
-        [InlineData("internal abstract", false)]
-        [InlineData("protected abstract", false)]
-        [InlineData("private protected abstract", false)]
-        [InlineData("protected internal abstract", false)]
-        [InlineData("protected private abstract", false)]
-        [InlineData("internal protected abstract", false)]
-        [InlineData("public abstract", false)]
-        [InlineData("private sealed", true)]
-        [InlineData("internal sealed", true)]
-        [InlineData("protected sealed", true)]
-        [InlineData("private protected sealed", true)]
-        [InlineData("protected internal sealed", true)]
-        [InlineData("protected private sealed", true)]
-        [InlineData("internal protected sealed", true)]
-        [InlineData("public sealed", true)]
-        [InlineData("private static", false)]
-        [InlineData("internal static", false)]
-        [InlineData("protected static", false)]
-        [InlineData("private protected static", false)]
-        [InlineData("protected internal static", false)]
-        [InlineData("protected private static", false)]
-        [InlineData("internal protected static", false)]
-        [InlineData("public static", false)]
-        [InlineData("private partial", false)]
-        [InlineData("internal partial", false)]
-        [InlineData("protected partial", false)]
-        [InlineData("private protected partial", false)]
-        [InlineData("protected internal partial", false)]
-        [InlineData("protected private partial", false)]
-        [InlineData("internal protected partial", false)]
-        [InlineData("public partial", false)]
-        public async Task IsSealedReturnsWhetherClassDeclaresSealedModifier(string modifiers, bool expected)
-        {
-            var code = EmptyClass.Replace("public class MyClass", modifiers + " class MyClass");
-
-            var node = await TestNode.FindNode<ClassDeclarationSyntax>(code)
-                .ConfigureAwait(false);
-
-            var sut = new ClassDefinition(node);
-
-            sut.IsSealed.Should().Be(expected);
-        }
-
-        [Theory]
-        [InlineData("", false)]
-        [InlineData("private", false)]
-        [InlineData("internal", false)]
-        [InlineData("protected", false)]
-        [InlineData("private protected", false)]
-        [InlineData("protected internal", false)]
-        [InlineData("protected private", false)]
-        [InlineData("internal protected", false)]
-        [InlineData("public", false)]
-        [InlineData("private abstract", false)]
-        [InlineData("internal abstract", false)]
-        [InlineData("protected abstract", false)]
-        [InlineData("private protected abstract", false)]
-        [InlineData("protected internal abstract", false)]
-        [InlineData("protected private abstract", false)]
-        [InlineData("internal protected abstract", false)]
-        [InlineData("public abstract", false)]
-        [InlineData("private sealed", false)]
-        [InlineData("internal sealed", false)]
-        [InlineData("protected sealed", false)]
-        [InlineData("private protected sealed", false)]
-        [InlineData("protected internal sealed", false)]
-        [InlineData("protected private sealed", false)]
-        [InlineData("internal protected sealed", false)]
-        [InlineData("public sealed", false)]
-        [InlineData("private static", true)]
-        [InlineData("internal static", true)]
-        [InlineData("protected static", true)]
-        [InlineData("private protected static", true)]
-        [InlineData("protected internal static", true)]
-        [InlineData("protected private static", true)]
-        [InlineData("internal protected static", true)]
-        [InlineData("public static", true)]
-        [InlineData("private partial", false)]
-        [InlineData("internal partial", false)]
-        [InlineData("protected partial", false)]
-        [InlineData("private protected partial", false)]
-        [InlineData("protected internal partial", false)]
-        [InlineData("protected private partial", false)]
-        [InlineData("internal protected partial", false)]
-        [InlineData("public partial", false)]
-        public async Task IsStaticReturnsWhetherClassDeclaresSealedModifier(string modifiers, bool expected)
-        {
-            var code = EmptyClass.Replace("public class MyClass", modifiers + " class MyClass");
-
-            var node = await TestNode.FindNode<ClassDeclarationSyntax>(code)
-                .ConfigureAwait(false);
-
-            var sut = new ClassDefinition(node);
-
-            sut.IsStatic.Should().Be(expected);
+            sut.Modifiers.Should().Be(expected);
         }
     }
 }

@@ -11,7 +11,7 @@
         Sealed = 4,
         Static = 8,
         AbstractPartial = Abstract | Partial,
-        StaticPartial = Static | Partial,
-        SealedPartial = Sealed | Partial
+        SealedPartial = Sealed | Partial,
+        StaticPartial = Static | Partial
     }
 }
