@@ -26,9 +26,53 @@
             ComparerOptions options,
             ChangeResultAggregator aggregator)
         {
+            RunComparisonStep(EvaluateAccessModifierChanges, match, options, aggregator);
             RunComparisonStep(CompareReturnType, match, options, aggregator);
         }
 
+        private static void EvaluateAccessModifierChanges(
+            ItemMatch<T> match,
+            ComparerOptions options,
+            ChangeResultAggregator aggregator)
+        {
+            var change = AccessModifierChangeTable.CalculateChange(match);
+
+            if (change == SemVerChangeType.None)
+            {
+                return;
+            }
+
+            if (match.OldItem.AccessModifier == AccessModifier.None)
+            {
+                // Modifiers have been added where there were previously none defined
+                var result = ComparisonResult.ItemChanged(
+                    change,
+                    match,
+                    $"{match.NewItem.Description} has added the access modifiers {match.NewItem.AccessModifier}");
+
+                aggregator.AddResult(result);
+            }
+            else if (match.NewItem.AccessModifier == AccessModifier.None)
+            {
+                // All previous modifiers have been removed
+                var result = ComparisonResult.ItemChanged(
+                    change,
+                    match,
+                    $"{match.NewItem.Description} has removed the access modifiers {match.OldItem.AccessModifier}");
+
+                aggregator.AddResult(result);
+            }
+            else
+            {
+                // Modifiers have been changed
+                var result = ComparisonResult.ItemChanged(
+                    change,
+                    match,
+                    $"{match.NewItem.Description} has changed access modifiers from {match.OldItem.AccessModifier} to {match.NewItem.AccessModifier}");
+
+                aggregator.AddResult(result);
+            }
+        }
         private static string ResolveRenamedGenericTypeParameter(
             string originalTypeName,
             ITypeDefinition oldDeclaringType,

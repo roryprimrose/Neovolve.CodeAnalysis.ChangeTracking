@@ -24,7 +24,7 @@
         }
 
         [Theory]
-        [ClassData(typeof(PropertyModifierDataSet))]
+        [ClassData(typeof(MemberModifiersDataSet))]
         public async Task EvaluatesChangeOfPropertyModifiers(string oldModifiers, string newModifiers,
             SemVerChangeType expected)
         {
@@ -152,7 +152,7 @@
 
             foreach (var comparisonResult in result.ComparisonResults)
             {
-                _output.WriteLine(comparisonResult.Message);
+                _output.WriteLine(comparisonResult.ChangeType + ": " + comparisonResult.Message);
             }
         }
 

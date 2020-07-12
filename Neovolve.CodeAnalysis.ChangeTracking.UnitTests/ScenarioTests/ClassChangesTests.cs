@@ -339,7 +339,7 @@
 
             foreach (var comparisonResult in result.ComparisonResults)
             {
-                _output.WriteLine(comparisonResult.Message);
+                _output.WriteLine(comparisonResult.ChangeType + ": " + comparisonResult.Message);
             }
         }
 

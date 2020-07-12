@@ -14,15 +14,9 @@
         public string Description { get; set; } = Guid.NewGuid().ToString();
         public string FullName { get; set; } = Guid.NewGuid().ToString();
         public string FullRawName { get; set; } = Guid.NewGuid().ToString();
-        public bool IsAbstract { get; set; } = false;
-        public bool IsNew { get; set; } = false;
-        public bool IsOverride { get; set; } = false;
-        public bool IsSealed { get; set; } = false;
-        public bool IsStatic { get; set; } = false;
-        public bool IsVirtual { get; set; } = false;
         public bool IsVisible { get; set; } = true;
         public DefinitionLocation Location { get; set; } = new DefinitionLocation(string.Empty, 0, 0);
-        public string Modifiers { get; set; } = Guid.NewGuid().ToString();
+        public MemberModifiers Modifiers { get; set; } = MemberModifiers.None;
         public string Name { get; set; } = Guid.NewGuid().ToString();
         public string RawName { get; set; } = Guid.NewGuid().ToString();
         public string ReturnType { get; set; } = Guid.NewGuid().ToString();

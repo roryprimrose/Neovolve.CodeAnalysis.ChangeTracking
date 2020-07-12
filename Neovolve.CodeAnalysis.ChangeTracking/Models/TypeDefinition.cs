@@ -25,6 +25,9 @@
 
             DeclaringType = null;
             Namespace = DetermineNamespace(node);
+
+            IsVisible = node.IsVisible(DeclaringType);
+
             AccessModifier = node.DetermineAccessModifier(DeclaringType);
             Name = name;
             RawName = rawName;
@@ -38,8 +41,6 @@
             ChildTypes = DetermineChildTypes(ChildClasses, ChildInterfaces);
             GenericTypeParameters = DetermineGenericTypeParameters(node);
             GenericConstraints = DetermineGenericConstraints(node);
-
-            IsVisible = node.IsVisible(DeclaringType);
         }
 
         /// <summary>

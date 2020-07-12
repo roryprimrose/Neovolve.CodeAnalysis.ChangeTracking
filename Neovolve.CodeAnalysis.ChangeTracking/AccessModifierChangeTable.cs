@@ -8,7 +8,7 @@
         private static readonly Dictionary<AccessModifier, Dictionary<AccessModifier, SemVerChangeType>>
             _modifierChanges = BuildModifierChanges();
 
-        public static SemVerChangeType CalculateChange(ItemMatch<IMemberDefinition> match)
+        public static SemVerChangeType CalculateChange<T>(ItemMatch<T> match) where T : IMemberDefinition
         {
             var oldModifier = match.OldItem.AccessModifier;
             var newModifier = match.NewItem.AccessModifier;
@@ -72,7 +72,7 @@
             AddModifierChange(changes, AccessModifier.Protected, AccessModifier.Protected, SemVerChangeType.None );
             AddModifierChange(changes, AccessModifier.Protected, AccessModifier.Public, SemVerChangeType.Feature );
             AddModifierChange(changes, AccessModifier.Protected, AccessModifier.ProtectedInternal, SemVerChangeType.None );
-            AddModifierChange(changes, AccessModifier.Protected, AccessModifier.ProtectedPrivate, SemVerChangeType.Breaking );
+            AddModifierChange(changes, AccessModifier.Protected, AccessModifier.ProtectedPrivate, SemVerChangeType.None );
             AddModifierChange(changes, AccessModifier.Public, AccessModifier.None, SemVerChangeType.Breaking );
             AddModifierChange(changes, AccessModifier.Public, AccessModifier.Internal, SemVerChangeType.Breaking );
             AddModifierChange(changes, AccessModifier.Public, AccessModifier.Private, SemVerChangeType.Breaking );
@@ -90,7 +90,7 @@
             AddModifierChange(changes, AccessModifier.ProtectedPrivate, AccessModifier.None, SemVerChangeType.None );
             AddModifierChange(changes, AccessModifier.ProtectedPrivate, AccessModifier.Internal, SemVerChangeType.None );
             AddModifierChange(changes, AccessModifier.ProtectedPrivate, AccessModifier.Private, SemVerChangeType.None );
-            AddModifierChange(changes, AccessModifier.ProtectedPrivate, AccessModifier.Protected, SemVerChangeType.Feature );
+            AddModifierChange(changes, AccessModifier.ProtectedPrivate, AccessModifier.Protected, SemVerChangeType.None );
             AddModifierChange(changes, AccessModifier.ProtectedPrivate, AccessModifier.Public, SemVerChangeType.Feature );
             AddModifierChange(changes, AccessModifier.ProtectedPrivate, AccessModifier.ProtectedInternal, SemVerChangeType.None );
             AddModifierChange(changes, AccessModifier.ProtectedPrivate, AccessModifier.ProtectedPrivate, SemVerChangeType.None );
