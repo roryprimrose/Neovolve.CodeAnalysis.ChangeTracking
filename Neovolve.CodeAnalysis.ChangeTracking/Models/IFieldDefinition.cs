@@ -6,5 +6,9 @@
     /// </summary>
     public interface IFieldDefinition : IMemberDefinition
     {
+        /// <summary>
+        ///     Gets the property modifiers.
+        /// </summary>
+        MemberModifiers Modifiers { get; }
     }
 }
