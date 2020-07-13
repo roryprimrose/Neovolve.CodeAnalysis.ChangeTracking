@@ -41,34 +41,5 @@
                     throw new ArgumentOutOfRangeException(nameof(modifier), modifier, null);
             }
         }
-
-        public static bool IsVisible(this AccessorDeclarationSyntax declaration, IPropertyDefinition declaringProperty)
-        {
-            declaration = declaration ?? throw new ArgumentNullException(nameof(declaration));
-
-            if (declaringProperty.IsVisible == false)
-            {
-                return false;
-            }
-
-            var modifier = declaration.DetermineAccessModifier(declaringProperty);
-
-            return modifier.IsVisible();
-        }
-
-        public static bool IsVisible(this MemberDeclarationSyntax node, ITypeDefinition declaringType)
-        {
-            node = node ?? throw new ArgumentNullException(nameof(node));
-
-            if (declaringType.IsVisible == false)
-            {
-                // The parent type is not visible so this one can't be either
-                return false;
-            }
-
-            var accessModifier = node.DetermineAccessModifier(declaringType);
-
-            return accessModifier.IsVisible();
-        }
     }
 }

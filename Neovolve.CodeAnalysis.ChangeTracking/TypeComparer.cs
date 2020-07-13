@@ -193,8 +193,8 @@
             ComparerOptions options,
             ChangeResultAggregator aggregator)
         {
-            var oldTypeParameters = match.OldItem.GenericTypeParameters.ToList();
-            var newTypeParameters = match.NewItem.GenericTypeParameters.ToList();
+            var oldTypeParameters = match.OldItem.GenericTypeParameters.FastToList();
+            var newTypeParameters = match.NewItem.GenericTypeParameters.FastToList();
 
             var typeParameterShift = oldTypeParameters.Count - newTypeParameters.Count;
 

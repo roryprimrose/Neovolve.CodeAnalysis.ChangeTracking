@@ -19,8 +19,6 @@
                 // Determine visibility based on the access modifier
                 IsVisible = AccessModifier.IsVisible();
             }
-
-            node.IsVisible(declaringType);
         }
 
         /// <inheritdoc />

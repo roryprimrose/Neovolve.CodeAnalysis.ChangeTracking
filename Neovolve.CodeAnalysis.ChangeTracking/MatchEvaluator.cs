@@ -14,8 +14,8 @@
 
             var matches = new List<ItemMatch<T>>();
 
-            var oldDefinitions = oldItems.ToList();
-            var newDefinitions = newItems.ToList();
+            var oldDefinitions = oldItems.FastToList();
+            var newDefinitions = newItems.FastToList();
 
             // Loop in reverse so that we can remove matched members as we go
             // Removing matched members as we find them means that we have less iterations of the inner loop for each subsequent old member

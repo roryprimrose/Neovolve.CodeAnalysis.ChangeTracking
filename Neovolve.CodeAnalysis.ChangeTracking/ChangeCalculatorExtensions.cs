@@ -76,7 +76,7 @@
             CancellationToken cancellationToken)
         {
             var syntaxTrees = sources.Select(x => CSharpSyntaxTree.ParseText(x.Contents, null, x.FilePath));
-            var tasks = syntaxTrees.Select(x => x.GetRootAsync(cancellationToken)).ToList();
+            var tasks = syntaxTrees.Select(x => x.GetRootAsync(cancellationToken)).FastToList();
 
             await Task.WhenAll(tasks).ConfigureAwait(false);
 

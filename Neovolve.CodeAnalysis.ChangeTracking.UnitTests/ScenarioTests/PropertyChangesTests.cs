@@ -77,6 +77,84 @@
             result.ChangeType.Should().Be(expected);
         }
 
+        [Fact]
+        public async Task EvaluatesBreakingChangeWhenReturnTypeIsChangedGenericTypeParameter()
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new CodeSource(PropertyOnTypeWithMultipleGenericTypeParameters)
+            };
+            var newCode = new List<CodeSource>
+            {
+                new CodeSource(
+                    PropertyOnTypeWithMultipleGenericTypeParameters.Replace("TKey MyProperty", "TValue MyProperty"))
+            };
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            OutputResult(result);
+
+            result.ChangeType.Should().Be(SemVerChangeType.Breaking);
+        }
+
+        [Fact]
+        public async Task EvaluatesBreakingWhenPropertyChangesName()
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new CodeSource(SingleProperty)
+            };
+            var newCode = new List<CodeSource>
+            {
+                new CodeSource(SingleProperty.Replace("MyProperty", "MyNewProperty"))
+            };
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            OutputResult(result);
+
+            result.ChangeType.Should().Be(SemVerChangeType.Breaking);
+        }
+
+        [Fact]
+        public async Task EvaluatesBreakingWhenPropertyRemoved()
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new CodeSource(SingleProperty)
+            };
+            var newCode = Array.Empty<CodeSource>();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            OutputResult(result);
+
+            result.ChangeType.Should().Be(SemVerChangeType.Breaking);
+        }
+
+        [Fact]
+        public async Task EvaluatesBreakingWhenReturnTypeChanged()
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new CodeSource(SingleProperty)
+            };
+            var newCode = new List<CodeSource>
+            {
+                new CodeSource(SingleProperty.Replace("string MyProperty", "bool MyProperty"))
+            };
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            OutputResult(result);
+
+            result.ChangeType.Should().Be(SemVerChangeType.Breaking);
+        }
+
         [Theory]
         [ClassData(typeof(AccessModifierDataSet))]
         public async Task EvaluatesChangeOfAccessModifiers(
@@ -171,6 +249,63 @@
             result.ChangeType.Should().Be(expected);
         }
 
+        [Fact]
+        public async Task EvaluatesFeatureWhenPropertyAdded()
+        {
+            var oldCode = Array.Empty<CodeSource>();
+            var newCode = new List<CodeSource>
+            {
+                new CodeSource(SingleProperty)
+            };
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            OutputResult(result);
+
+            result.ChangeType.Should().Be(SemVerChangeType.Feature);
+        }
+
+        [Fact]
+        public async Task EvaluatesNoChangeWhenMatchingSameProperty()
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new CodeSource(SingleProperty)
+            };
+            var newCode = new List<CodeSource>
+            {
+                new CodeSource(SingleProperty)
+            };
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            OutputResult(result);
+
+            result.ChangeType.Should().Be(SemVerChangeType.None);
+        }
+
+        [Fact]
+        public async Task EvaluatesNoChangeWhenReturnTypeIsRenamedGenericTypeParameter()
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new CodeSource(PropertyOnTypeWithMultipleGenericTypeParameters)
+            };
+            var newCode = new List<CodeSource>
+            {
+                new CodeSource(PropertyOnTypeWithMultipleGenericTypeParameters.Replace("TKey", "TMyKey"))
+            };
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            OutputResult(result);
+
+            result.ChangeType.Should().Be(SemVerChangeType.None);
+        }
+
         [Theory]
         [InlineData("", SemVerChangeType.Breaking)]
         [InlineData("internal", SemVerChangeType.None)]
@@ -225,100 +360,6 @@
             result.ChangeType.Should().Be(expected);
         }
 
-        [Fact]
-        public async Task ReturnsBreakingWhenPropertyChangesName()
-        {
-            var oldCode = new List<CodeSource>
-            {
-                new CodeSource(SingleProperty)
-            };
-            var newCode = new List<CodeSource>
-            {
-                new CodeSource(SingleProperty.Replace("MyProperty", "MyNewProperty"))
-            };
-
-            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
-                .ConfigureAwait(false);
-
-            OutputResult(result);
-
-            result.ChangeType.Should().Be(SemVerChangeType.Breaking);
-        }
-
-        [Fact]
-        public async Task ReturnsBreakingWhenPropertyRemoved()
-        {
-            var oldCode = new List<CodeSource>
-            {
-                new CodeSource(SingleProperty)
-            };
-            var newCode = Array.Empty<CodeSource>();
-
-            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
-                .ConfigureAwait(false);
-
-            OutputResult(result);
-
-            result.ChangeType.Should().Be(SemVerChangeType.Breaking);
-        }
-
-        [Fact]
-        public async Task ReturnsBreakingWhenReturnTypeChanged()
-        {
-            var oldCode = new List<CodeSource>
-            {
-                new CodeSource(SingleProperty)
-            };
-            var newCode = new List<CodeSource>
-            {
-                new CodeSource(SingleProperty.Replace("string MyProperty", "bool MyProperty"))
-            };
-
-            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
-                .ConfigureAwait(false);
-
-            OutputResult(result);
-
-            result.ChangeType.Should().Be(SemVerChangeType.Breaking);
-        }
-
-        [Fact]
-        public async Task ReturnsFeatureWhenPropertyAdded()
-        {
-            var oldCode = Array.Empty<CodeSource>();
-            var newCode = new List<CodeSource>
-            {
-                new CodeSource(SingleProperty)
-            };
-
-            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
-                .ConfigureAwait(false);
-
-            OutputResult(result);
-
-            result.ChangeType.Should().Be(SemVerChangeType.Feature);
-        }
-
-        [Fact]
-        public async Task ReturnsNoneWhenMatchingSameProperty()
-        {
-            var oldCode = new List<CodeSource>
-            {
-                new CodeSource(SingleProperty)
-            };
-            var newCode = new List<CodeSource>
-            {
-                new CodeSource(SingleProperty)
-            };
-
-            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
-                .ConfigureAwait(false);
-
-            OutputResult(result);
-
-            result.ChangeType.Should().Be(SemVerChangeType.None);
-        }
-
         [Fact(Skip = "Not implemented yet")]
         public void TestPropertyAttributes()
         {
@@ -334,6 +375,21 @@
                 _output.WriteLine(comparisonResult.ChangeType + ": " + comparisonResult.Message);
             }
         }
+
+        public string PropertyOnTypeWithMultipleGenericTypeParameters => @"
+namespace MyNamespace 
+{
+    [ClassAttribute(123, false, myName: ""on the class"")]
+    public class MyClass<TKey, TValue>
+    {
+        [PropertyAttribute(344, true, myName: ""on the property"")]
+        public TKey MyProperty { get; set; }
+
+        [FieldAttribute(885, myName: ""on the field"")]
+        public string MyField;
+    }  
+}
+";
 
         public string SingleProperty => @"
 namespace MyNamespace 

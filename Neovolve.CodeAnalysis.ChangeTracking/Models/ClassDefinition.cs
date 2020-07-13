@@ -78,7 +78,7 @@
         private IReadOnlyCollection<FieldDefinition> DetermineFields(SyntaxNode node)
         {
             var childNodes = node.ChildNodes().OfType<FieldDeclarationSyntax>();
-            var childTypes = childNodes.Select(childNode => new FieldDefinition(this, childNode)).ToList();
+            var childTypes = childNodes.Select(childNode => new FieldDefinition(this, childNode)).FastToList();
 
             return childTypes.AsReadOnly();
         }

@@ -18,12 +18,7 @@
         protected override IEnumerable<ComparisonResult> EvaluateMatch(ItemMatch<IFieldDefinition> match,
             ComparerOptions options)
         {
-            var results = _comparer.CompareItems(match, options);
-
-            foreach (var result in results)
-            {
-                yield return result;
-            }
+            return _comparer.CompareItems(match, options);
         }
 
         protected override bool IsItemMatch(IFieldDefinition oldItem, IFieldDefinition newItem)

@@ -152,7 +152,7 @@
                 return Array.Empty<string>();
             }
 
-            var childTypes = baseList.Types.Select(x => x.ToString()).ToList();
+            var childTypes = baseList.Types.Select(x => x.ToString()).FastToList();
 
             return childTypes.AsReadOnly();
         }
@@ -178,7 +178,7 @@
         private IReadOnlyCollection<IClassDefinition> DetermineChildClasses(SyntaxNode node)
         {
             var childNodes = node.ChildNodes().OfType<ClassDeclarationSyntax>();
-            var childTypes = childNodes.Select(childNode => new ClassDefinition(this, childNode)).ToList();
+            var childTypes = childNodes.Select(childNode => new ClassDefinition(this, childNode)).FastToList();
 
             return childTypes.AsReadOnly();
         }
@@ -186,7 +186,7 @@
         private IReadOnlyCollection<IInterfaceDefinition> DetermineChildInterfaces(SyntaxNode node)
         {
             var childNodes = node.ChildNodes().OfType<InterfaceDeclarationSyntax>();
-            var childTypes = childNodes.Select(childNode => new InterfaceDefinition(this, childNode)).ToList();
+            var childTypes = childNodes.Select(childNode => new InterfaceDefinition(this, childNode)).FastToList();
 
             return childTypes.AsReadOnly();
         }
@@ -194,7 +194,7 @@
         private IReadOnlyCollection<IPropertyDefinition> DetermineProperties(SyntaxNode node)
         {
             var childNodes = node.ChildNodes().OfType<PropertyDeclarationSyntax>();
-            var childTypes = childNodes.Select(childNode => new PropertyDefinition(this, childNode)).ToList();
+            var childTypes = childNodes.Select(childNode => new PropertyDefinition(this, childNode)).FastToList();
 
             return childTypes.AsReadOnly();
         }

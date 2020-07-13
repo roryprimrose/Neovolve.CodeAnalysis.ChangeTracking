@@ -9,32 +9,20 @@
             _modifierChanges =
                 BuildModifierChanges();
 
+        public static SemVerChangeType CalculateChange(ItemMatch<IFieldDefinition> match)
+        {
+            var oldModifiers = match.OldItem.Modifiers;
+            var newModifiers = match.NewItem.Modifiers;
+
+            return CalculateChange(oldModifiers, newModifiers);
+        }
+
         public static SemVerChangeType CalculateChange(ItemMatch<IPropertyDefinition> match)
         {
             var oldModifiers = match.OldItem.Modifiers;
             var newModifiers = match.NewItem.Modifiers;
 
-            if (oldModifiers == newModifiers)
-            {
-                // There is no change in the modifiers
-                return SemVerChangeType.None;
-            }
-
-            if (_modifierChanges.ContainsKey(oldModifiers) == false)
-            {
-                // There are no changes for this combination
-                return SemVerChangeType.None;
-            }
-
-            var possibleChanges = _modifierChanges[oldModifiers];
-
-            if (possibleChanges.ContainsKey(newModifiers) == false)
-            {
-                // There is no change between the modifiers
-                return SemVerChangeType.None;
-            }
-
-            return possibleChanges[newModifiers];
+            return CalculateChange(oldModifiers, newModifiers);
         }
 
         private static void AddModifierChange(
@@ -227,6 +215,31 @@
             // @formatter:on — enable formatter after this line
 
             return changes;
+        }
+
+        private static SemVerChangeType CalculateChange(MemberModifiers oldModifiers, MemberModifiers newModifiers)
+        {
+            if (oldModifiers == newModifiers)
+            {
+                // There is no change in the modifiers
+                return SemVerChangeType.None;
+            }
+
+            if (_modifierChanges.ContainsKey(oldModifiers) == false)
+            {
+                // There are no changes for this combination
+                return SemVerChangeType.None;
+            }
+
+            var possibleChanges = _modifierChanges[oldModifiers];
+
+            if (possibleChanges.ContainsKey(newModifiers) == false)
+            {
+                // There is no change between the modifiers
+                return SemVerChangeType.None;
+            }
+
+            return possibleChanges[newModifiers];
         }
     }
 }

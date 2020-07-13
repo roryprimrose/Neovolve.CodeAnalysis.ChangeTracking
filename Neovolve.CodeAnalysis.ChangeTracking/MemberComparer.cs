@@ -95,14 +95,14 @@
                 }
             }
 
-            var oldGenericTypes = oldDeclaringType.GenericTypeParameters.ToList();
+            var oldGenericTypes = oldDeclaringType.GenericTypeParameters.FastToList();
 
             if (oldGenericTypes.Count == 0)
             {
                 return originalTypeName;
             }
 
-            var newGenericTypes = newDeclaringType.GenericTypeParameters.ToList();
+            var newGenericTypes = newDeclaringType.GenericTypeParameters.FastToList();
             var typeIndex = oldGenericTypes.IndexOf(originalTypeName);
 
             if (typeIndex == -1)
@@ -113,7 +113,7 @@
             return newGenericTypes[typeIndex];
         }
 
-        private void EvaluateReturnTypeChanges(ItemMatch<T> match, ComparerOptions options, ChangeResultAggregator aggregator)
+        private static void EvaluateReturnTypeChanges(ItemMatch<T> match, ComparerOptions options, ChangeResultAggregator aggregator)
         {
             if (match.OldItem.ReturnType != match.NewItem.ReturnType)
             {
@@ -124,7 +124,7 @@
                     var result = ComparisonResult.ItemChanged(
                         SemVerChangeType.Breaking,
                         match,
-                        $"{match.NewItem.Description} return type has changed from {match.OldItem.ReturnType} {match.NewItem.ReturnType}");
+                        $"{match.NewItem.Description} return type has changed from {match.OldItem.ReturnType} to {match.NewItem.ReturnType}");
 
                     aggregator.AddResult(result);
                 }
