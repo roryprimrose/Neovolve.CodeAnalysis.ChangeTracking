@@ -44,7 +44,6 @@
             var changes = new Dictionary<AccessModifier, Dictionary<AccessModifier, SemVerChangeType>>();
 
             // @formatter:off — disable formatter after this line
-
             AddModifierChange(changes, AccessModifier.None, AccessModifier.None, SemVerChangeType.None );
             AddModifierChange(changes, AccessModifier.None, AccessModifier.Internal, SemVerChangeType.None );
             AddModifierChange(changes, AccessModifier.None, AccessModifier.Private, SemVerChangeType.None );
@@ -87,9 +86,9 @@
             AddModifierChange(changes, AccessModifier.ProtectedInternal, AccessModifier.Public, SemVerChangeType.Feature );
             AddModifierChange(changes, AccessModifier.ProtectedInternal, AccessModifier.ProtectedInternal, SemVerChangeType.None );
             AddModifierChange(changes, AccessModifier.ProtectedInternal, AccessModifier.ProtectedPrivate, SemVerChangeType.None );
-            AddModifierChange(changes, AccessModifier.ProtectedPrivate, AccessModifier.None, SemVerChangeType.None );
-            AddModifierChange(changes, AccessModifier.ProtectedPrivate, AccessModifier.Internal, SemVerChangeType.None );
-            AddModifierChange(changes, AccessModifier.ProtectedPrivate, AccessModifier.Private, SemVerChangeType.None );
+            AddModifierChange(changes, AccessModifier.ProtectedPrivate, AccessModifier.None, SemVerChangeType.Breaking);
+            AddModifierChange(changes, AccessModifier.ProtectedPrivate, AccessModifier.Internal, SemVerChangeType.Breaking);
+            AddModifierChange(changes, AccessModifier.ProtectedPrivate, AccessModifier.Private, SemVerChangeType.Breaking );
             AddModifierChange(changes, AccessModifier.ProtectedPrivate, AccessModifier.Protected, SemVerChangeType.None );
             AddModifierChange(changes, AccessModifier.ProtectedPrivate, AccessModifier.Public, SemVerChangeType.Feature );
             AddModifierChange(changes, AccessModifier.ProtectedPrivate, AccessModifier.ProtectedInternal, SemVerChangeType.None );

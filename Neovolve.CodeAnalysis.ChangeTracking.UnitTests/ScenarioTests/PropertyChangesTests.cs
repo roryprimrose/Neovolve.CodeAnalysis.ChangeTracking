@@ -24,8 +24,110 @@
         }
 
         [Theory]
+        [InlineData("", SemVerChangeType.Feature)]
+        [InlineData("internal", SemVerChangeType.None)]
+        [InlineData("private", SemVerChangeType.None)]
+        [InlineData("protected", SemVerChangeType.Feature)]
+        [InlineData("protected internal", SemVerChangeType.Feature)]
+        public async Task EvaluatesAddingGetAccessorWithAccessModifiers(
+            string modifiers,
+            SemVerChangeType expected)
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new CodeSource(SingleProperty.Replace("get;", string.Empty))
+            };
+            var newCode = new List<CodeSource>
+            {
+                new CodeSource(SingleProperty.Replace("get;", modifiers + " get;"))
+            };
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            OutputResult(result);
+
+            result.ChangeType.Should().Be(expected);
+        }
+
+        [Theory]
+        [InlineData("", SemVerChangeType.Feature)]
+        [InlineData("internal", SemVerChangeType.None)]
+        [InlineData("private", SemVerChangeType.None)]
+        [InlineData("protected", SemVerChangeType.Feature)]
+        [InlineData("protected internal", SemVerChangeType.Feature)]
+        public async Task EvaluatesAddingSetAccessorWithAccessModifiers(
+            string modifiers,
+            SemVerChangeType expected)
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new CodeSource(SingleProperty.Replace("set;", string.Empty))
+            };
+            var newCode = new List<CodeSource>
+            {
+                new CodeSource(SingleProperty.Replace("set;", modifiers + " set;"))
+            };
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            OutputResult(result);
+
+            result.ChangeType.Should().Be(expected);
+        }
+
+        [Theory]
+        [ClassData(typeof(AccessModifierDataSet))]
+        public async Task EvaluatesChangeOfAccessModifiers(
+            string oldModifiers,
+            string newModifiers,
+            SemVerChangeType expected)
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new CodeSource(SingleProperty.Replace("public string MyProperty", oldModifiers + " string MyProperty"))
+            };
+            var newCode = new List<CodeSource>
+            {
+                new CodeSource(SingleProperty.Replace("public string MyProperty", newModifiers + " string MyProperty"))
+            };
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            OutputResult(result);
+
+            result.ChangeType.Should().Be(expected);
+        }
+
+        [Theory]
+        [ClassData(typeof(PropertyAccessorAccessModifierDataSet))]
+        public async Task EvaluatesChangeOfGetAccessorAccessModifiers(
+            string oldModifiers,
+            string newModifiers,
+            SemVerChangeType expected)
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new CodeSource(SingleProperty.Replace("get;", oldModifiers + " get;"))
+            };
+            var newCode = new List<CodeSource>
+            {
+                new CodeSource(SingleProperty.Replace("get;", newModifiers + " get;"))
+            };
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            OutputResult(result);
+
+            result.ChangeType.Should().Be(expected);
+        }
+
+        [Theory]
         [ClassData(typeof(MemberModifiersDataSet))]
-        public async Task EvaluatesChangeOfPropertyModifiers(string oldModifiers, string newModifiers,
+        public async Task EvaluatesChangeOfModifiers(string oldModifiers, string newModifiers,
             SemVerChangeType expected)
         {
             var oldCode = new List<CodeSource>
@@ -46,16 +148,73 @@
         }
 
         [Theory]
-        [ClassData(typeof(ScopeChangeDataSet))]
-        public async Task EvaluatesChangeOfPropertyScope(string oldScope, string newScope, SemVerChangeType expected)
+        [ClassData(typeof(PropertyAccessorAccessModifierDataSet))]
+        public async Task EvaluatesChangeOfSetAccessorAccessModifiers(
+            string oldModifiers,
+            string newModifiers,
+            SemVerChangeType expected)
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty.Replace("public string MyProperty", oldScope + " string MyProperty"))
+                new CodeSource(SingleProperty.Replace("set;", oldModifiers + " set;"))
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty.Replace("public string MyProperty", newScope + " string MyProperty"))
+                new CodeSource(SingleProperty.Replace("set;", newModifiers + " set;"))
+            };
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            OutputResult(result);
+
+            result.ChangeType.Should().Be(expected);
+        }
+
+        [Theory]
+        [InlineData("", SemVerChangeType.Breaking)]
+        [InlineData("internal", SemVerChangeType.None)]
+        [InlineData("private", SemVerChangeType.None)]
+        [InlineData("protected", SemVerChangeType.Breaking)]
+        [InlineData("protected internal", SemVerChangeType.Breaking)]
+        public async Task EvaluatesRemovingGetAccessorWithAccessModifiers(
+            string modifiers,
+            SemVerChangeType expected)
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new CodeSource(SingleProperty.Replace("get;", modifiers + " get;"))
+            };
+            var newCode = new List<CodeSource>
+            {
+                new CodeSource(SingleProperty.Replace("get;", string.Empty))
+            };
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            OutputResult(result);
+
+            result.ChangeType.Should().Be(expected);
+        }
+
+        [Theory]
+        [InlineData("", SemVerChangeType.Breaking)]
+        [InlineData("internal", SemVerChangeType.None)]
+        [InlineData("private", SemVerChangeType.None)]
+        [InlineData("protected", SemVerChangeType.Breaking)]
+        [InlineData("protected internal", SemVerChangeType.Breaking)]
+        public async Task EvaluatesRemovingSetAccessorWithAccessModifiers(
+            string modifiers,
+            SemVerChangeType expected)
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new CodeSource(SingleProperty.Replace("set;", modifiers + " set;"))
+            };
+            var newCode = new List<CodeSource>
+            {
+                new CodeSource(SingleProperty.Replace("set;", string.Empty))
             };
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
@@ -94,6 +253,26 @@
                 new CodeSource(SingleProperty)
             };
             var newCode = Array.Empty<CodeSource>();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            OutputResult(result);
+
+            result.ChangeType.Should().Be(SemVerChangeType.Breaking);
+        }
+
+        [Fact]
+        public async Task ReturnsBreakingWhenReturnTypeChanged()
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new CodeSource(SingleProperty)
+            };
+            var newCode = new List<CodeSource>
+            {
+                new CodeSource(SingleProperty.Replace("string MyProperty", "bool MyProperty"))
+            };
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
                 .ConfigureAwait(false);

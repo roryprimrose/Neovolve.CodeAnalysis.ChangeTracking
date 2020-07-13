@@ -3,7 +3,7 @@
     using System.Collections;
     using System.Collections.Generic;
 
-    public class TypeAccessModifierDataSet : IEnumerable<object[]>
+    public class AccessModifierDataSet : IEnumerable<object[]>
     {
         public IEnumerator<object[]> GetEnumerator()
         {

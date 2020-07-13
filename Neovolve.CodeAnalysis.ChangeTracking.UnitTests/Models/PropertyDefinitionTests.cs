@@ -12,240 +12,56 @@
 
     public class PropertyDefinitionTests
     {
-        public static IEnumerable<object[]> AccessorScopeDataSet()
+        [Fact]
+        public async Task GetAccessorReturnsDefinitionForReadProperty()
         {
-            yield return new object[]
-            {
-                "", "", false
-            };
-            yield return new object[]
-            {
-                "", "private", false
-            };
-            yield return new object[]
-            {
-                "", "internal", false
-            };
-            yield return new object[]
-            {
-                "", "protected", false
-            };
-            yield return new object[]
-            {
-                "", "private protected", false
-            };
-            yield return new object[]
-            {
-                "", "protected internal", false
-            };
-            yield return new object[]
-            {
-                "", "public", false
-            };
-            yield return new object[]
-            {
-                "private", "", false
-            };
-            yield return new object[]
-            {
-                "private", "private", false
-            };
-            yield return new object[]
-            {
-                "private", "internal", false
-            };
-            yield return new object[]
-            {
-                "private", "protected", false
-            };
-            yield return new object[]
-            {
-                "private", "private protected", false
-            };
-            yield return new object[]
-            {
-                "private", "protected internal", false
-            };
-            yield return new object[]
-            {
-                "private", "public", false
-            };
-            yield return new object[]
-            {
-                "internal", "", false
-            };
-            yield return new object[]
-            {
-                "internal", "private", false
-            };
-            yield return new object[]
-            {
-                "internal", "internal", false
-            };
-            yield return new object[]
-            {
-                "internal", "protected", false
-            };
-            yield return new object[]
-            {
-                "internal", "private protected", false
-            };
-            yield return new object[]
-            {
-                "internal", "protected internal", false
-            };
-            yield return new object[]
-            {
-                "internal", "public", false
-            };
-            yield return new object[]
-            {
-                "protected", "", true
-            };
-            yield return new object[]
-            {
-                "protected", "private", false
-            };
-            yield return new object[]
-            {
-                "protected", "internal", false
-            };
-            yield return new object[]
-            {
-                "protected", "protected", true
-            };
-            yield return new object[]
-            {
-                "protected", "private protected", true
-            };
-            yield return new object[]
-            {
-                "protected", "protected internal", true
-            };
-            yield return new object[]
-            {
-                "protected", "public", true
-            };
-            yield return new object[]
-            {
-                "private protected", "", true
-            };
-            yield return new object[]
-            {
-                "private protected", "private", false
-            };
-            yield return new object[]
-            {
-                "private protected", "internal", false
-            };
-            yield return new object[]
-            {
-                "private protected", "protected", true
-            };
-            yield return new object[]
-            {
-                "private protected", "private protected", true
-            };
-            yield return new object[]
-            {
-                "private protected", "protected internal", true
-            };
-            yield return new object[]
-            {
-                "private protected", "public", true
-            };
-            yield return new object[]
-            {
-                "protected internal", "", true
-            };
-            yield return new object[]
-            {
-                "protected internal", "private", false
-            };
-            yield return new object[]
-            {
-                "protected internal", "internal", false
-            };
-            yield return new object[]
-            {
-                "protected internal", "protected", true
-            };
-            yield return new object[]
-            {
-                "protected internal", "private protected", true
-            };
-            yield return new object[]
-            {
-                "protected internal", "protected internal", true
-            };
-            yield return new object[]
-            {
-                "protected internal", "public", true
-            };
-            yield return new object[]
-            {
-                "public", "", true
-            };
-            yield return new object[]
-            {
-                "public", "private", false
-            };
-            yield return new object[]
-            {
-                "public", "internal", false
-            };
-            yield return new object[]
-            {
-                "public", "protected", true
-            };
-            yield return new object[]
-            {
-                "public", "private protected", true
-            };
-            yield return new object[]
-            {
-                "public", "protected internal", true
-            };
-            yield return new object[]
-            {
-                "public", "public", true
-            };
-        }
-
-        [Theory]
-        [MemberData(nameof(AccessorScopeDataSet))]
-        public async Task CanReadReturnsWhetherGetAccessorScopeAndPropertyScopeAreVisible(
-            string propertyScope,
-            string accessorScope,
-            bool expected)
-        {
-            var code = PropertyDefinitionCode.BuildPropertyAndGetAccessorWithScope(propertyScope, accessorScope);
-
             var declaringType = Substitute.For<IClassDefinition>();
 
-            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code).ConfigureAwait(false);
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(PropertyDefinitionCode.GetSetProperty)
+                .ConfigureAwait(false);
 
             var sut = new PropertyDefinition(declaringType, node);
 
-            sut.CanRead.Should().Be(expected);
+            sut.GetAccessor.Should().NotBeNull();
         }
 
-        [Theory]
-        [MemberData(nameof(AccessorScopeDataSet))]
-        public async Task CanReadReturnsWhetherSetAccessorScopeAndPropertyScopeAreVisible(
-            string propertyScope,
-            string accessorScope,
-            bool expected)
+        [Fact]
+        public async Task GetAccessorReturnsNullForReadOnlyProperty()
         {
-            var code = PropertyDefinitionCode.BuildPropertyAndSetAccessorWithScope(propertyScope, accessorScope);
-
             var declaringType = Substitute.For<IClassDefinition>();
 
-            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code).ConfigureAwait(false);
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(PropertyDefinitionCode.WriteOnlyProperty)
+                .ConfigureAwait(false);
 
             var sut = new PropertyDefinition(declaringType, node);
 
-            sut.CanWrite.Should().Be(expected);
+            sut.GetAccessor.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task SetAccessorReturnsNullForReadOnlyProperty()
+        {
+            var declaringType = Substitute.For<IClassDefinition>();
+
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(PropertyDefinitionCode.ReadOnlyProperty)
+                .ConfigureAwait(false);
+
+            var sut = new PropertyDefinition(declaringType, node);
+
+            sut.SetAccessor.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task SetAccessorReturnsDefinitionForWriteProperty()
+        {
+            var declaringType = Substitute.For<IClassDefinition>();
+
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(PropertyDefinitionCode.GetSetProperty)
+                .ConfigureAwait(false);
+
+            var sut = new PropertyDefinition(declaringType, node);
+
+            sut.SetAccessor.Should().NotBeNull();
         }
 
         [Fact]

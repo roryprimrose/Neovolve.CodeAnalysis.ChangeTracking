@@ -32,10 +32,21 @@
             FullName = DeclaringType.FullName + "." + name;
             FullRawName = DeclaringType.FullRawName + "." + name;
 
-            var propertyIsVisible = node.IsVisible(declaringType);
+            GetAccessor = DetermineAccessor(this, node, SyntaxKind.GetAccessorDeclaration);
+            SetAccessor = DetermineAccessor(this, node, SyntaxKind.SetAccessorDeclaration);
+        }
 
-            CanRead = HasVisibleAccessor(node, propertyIsVisible, SyntaxKind.GetAccessorDeclaration);
-            CanWrite = HasVisibleAccessor(node, propertyIsVisible, SyntaxKind.SetAccessorDeclaration);
+        private static IPropertyAccessorDefinition? DetermineAccessor(PropertyDefinition propertyDefinition,
+            PropertyDeclarationSyntax node, SyntaxKind accessorType)
+        {
+            var accessorNode = FindAccessor(node, accessorType);
+
+            if (accessorNode == null)
+            {
+                return null;
+            }
+
+            return new PropertyAccessorDefinition(propertyDefinition, accessorNode);
         }
 
         private static MemberModifiers DetermineModifiers(PropertyDeclarationSyntax node)
@@ -110,43 +121,10 @@
             return MemberModifiers.None;
         }
 
-        private bool HasVisibleAccessor(
-            PropertyDeclarationSyntax node,
-            bool propertyIsVisible,
-            SyntaxKind accessorType)
+        private static AccessorDeclarationSyntax? FindAccessor(PropertyDeclarationSyntax node, SyntaxKind accessorType)
         {
-            if (propertyIsVisible == false)
-            {
-                // The property itself is not visible so as far as public consumption is concerned, we can't read or write the property
-                return false;
-            }
-
-            var accessor = node.AccessorList?.Accessors.FirstOrDefault(x => x.Kind() == accessorType);
-
-            if (accessor == null)
-            {
-                return false;
-            }
-
-            if (accessor.Modifiers.Count == 0)
-            {
-                return propertyIsVisible;
-            }
-
-            // Need to evaluate the actual access modifiers on the property accessor to determine the difference between Feature and Breaking
-            if (accessor.IsVisible(this))
-            {
-                return true;
-            }
-
-            return false;
+            return node.AccessorList?.Accessors.FirstOrDefault(x => x.Kind() == accessorType);
         }
-
-        /// <inheritdoc />
-        public bool CanRead { get; }
-
-        /// <inheritdoc />
-        public bool CanWrite { get; }
 
         /// <inheritdoc />
         public override string Description => $"Property {FullName}";
@@ -156,6 +134,9 @@
 
         /// <inheritdoc />
         public override string FullRawName { get; }
+
+        /// <inheritdoc />
+        public IPropertyAccessorDefinition? GetAccessor { get; }
 
         /// <inheritdoc />
         public MemberModifiers Modifiers { get; }
@@ -168,5 +149,8 @@
 
         /// <inheritdoc />
         public override string ReturnType { get; }
+
+        /// <inheritdoc />
+        public IPropertyAccessorDefinition? SetAccessor { get; }
     }
 }

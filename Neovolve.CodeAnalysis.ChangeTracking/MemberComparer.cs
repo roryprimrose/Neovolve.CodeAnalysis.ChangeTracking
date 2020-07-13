@@ -9,25 +9,13 @@
         {
         }
 
-        public string MapGenericTypeName(ItemMatch<T> match)
-        {
-            var typeName = match.OldItem.ReturnType;
-
-            // We need to determine all the generic type parameters from the complete parent hierarchy not just the parent type
-
-            var oldDeclaringType = match.OldItem.DeclaringType;
-            var newDeclaringType = match.NewItem.DeclaringType;
-
-            return ResolveRenamedGenericTypeParameter(typeName, oldDeclaringType, newDeclaringType);
-        }
-
         protected override void EvaluateMatch(
             ItemMatch<T> match,
             ComparerOptions options,
             ChangeResultAggregator aggregator)
         {
             RunComparisonStep(EvaluateAccessModifierChanges, match, options, aggregator);
-            RunComparisonStep(CompareReturnType, match, options, aggregator);
+            RunComparisonStep(EvaluateReturnTypeChanges, match, options, aggregator);
         }
 
         private static void EvaluateAccessModifierChanges(
@@ -73,6 +61,19 @@
                 aggregator.AddResult(result);
             }
         }
+
+        private static string MapGenericTypeName(ItemMatch<T> match)
+        {
+            var typeName = match.OldItem.ReturnType;
+
+            // We need to determine all the generic type parameters from the complete parent hierarchy not just the parent type
+
+            var oldDeclaringType = match.OldItem.DeclaringType;
+            var newDeclaringType = match.NewItem.DeclaringType;
+
+            return ResolveRenamedGenericTypeParameter(typeName, oldDeclaringType, newDeclaringType);
+        }
+
         private static string ResolveRenamedGenericTypeParameter(
             string originalTypeName,
             ITypeDefinition oldDeclaringType,
@@ -112,7 +113,7 @@
             return newGenericTypes[typeIndex];
         }
 
-        private void CompareReturnType(ItemMatch<T> match, ComparerOptions options, ChangeResultAggregator aggregator)
+        private void EvaluateReturnTypeChanges(ItemMatch<T> match, ComparerOptions options, ChangeResultAggregator aggregator)
         {
             if (match.OldItem.ReturnType != match.NewItem.ReturnType)
             {

@@ -7,6 +7,7 @@
     using FluentAssertions;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
+    using NSubstitute;
     using Xunit;
 
     public class ElementDefinitionTests
@@ -79,6 +80,41 @@
             sut.Attributes.Should().HaveCount(1);
 
             sut.Attributes.First().Name.Should().Be("MyAttribute");
+        }
+
+        [Fact]
+        public async Task AttributesReturnsMultipleAttributesOnMultipleListsDeclaredOnProperty()
+        {
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(PropertyDefinitionCode.PropertyWithMultipleAttributesInMultipleLists)
+                .ConfigureAwait(false);
+
+            var sut = new Wrapper(node);
+
+            sut.Attributes.Should().HaveCount(4);
+
+            sut.Attributes.First().Name.Should().Be("First");
+            sut.Attributes.Skip(1).First().Name.Should().Be("Second");
+            sut.Attributes.Skip(2).First().Name.Should().Be("Third");
+            sut.Attributes.Skip(3).First().Name.Should().Be("Fourth");
+        }
+
+        [Fact]
+        public async Task AttributesReturnsMultipleAttributesOnMultipleListsDeclaredOnPropertyAccessor()
+        {
+            var declaringType = Substitute.For<IClassDefinition>();
+
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(PropertyDefinitionCode.PropertyAccessorWithMultipleAttributesInMultipleLists)
+                .ConfigureAwait(false);
+
+            var sut = new PropertyDefinition(declaringType, node);
+
+            var attributes = sut.GetAccessor!.Attributes;
+            attributes.Should().HaveCount(4);
+
+            attributes.First().Name.Should().Be("First");
+            attributes.Skip(1).First().Name.Should().Be("Second");
+            attributes.Skip(2).First().Name.Should().Be("Third");
+            attributes.Skip(3).First().Name.Should().Be("Fourth");
         }
 
         [Fact]

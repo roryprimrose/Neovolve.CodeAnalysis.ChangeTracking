@@ -25,7 +25,7 @@
         }
 
         [Theory]
-        [ClassData(typeof(TypeAccessModifierDataSet))]
+        [ClassData(typeof(AccessModifierDataSet))]
         public async Task EvaluatesChangeOfClassAccessModifiers(
             string oldModifiers,
             string newModifiers,

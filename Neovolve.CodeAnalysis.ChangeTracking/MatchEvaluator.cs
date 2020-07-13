@@ -37,8 +37,8 @@
                         matches.Add(match);
 
                         // Remove the indices
-                        newDefinitions.RemoveAt(oldIndex);
-                        oldDefinitions.RemoveAt(newIndex);
+                        newDefinitions.RemoveAt(newIndex);
+                        oldDefinitions.RemoveAt(oldIndex);
 
                         break;
                     }

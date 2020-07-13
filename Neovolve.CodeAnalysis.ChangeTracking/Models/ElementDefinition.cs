@@ -17,6 +17,38 @@
             Attributes = node.DetermineAttributes(this);
         }
 
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ElementDefinition" /> class.
+        /// </summary>
+        /// <param name="node">The syntax node that defines the type.</param>
+        protected ElementDefinition(AccessorDeclarationSyntax node) : base(node)
+        {
+            node = node ?? throw new ArgumentNullException(nameof(node));
+
+            Attributes = DetermineAttributes(node, this);
+        }
+
+        public static IReadOnlyCollection<IAttributeDefinition> DetermineAttributes(AccessorDeclarationSyntax node,
+            IElementDefinition declaringItem)
+        {
+            node = node ?? throw new ArgumentNullException(nameof(node));
+            declaringItem = declaringItem ?? throw new ArgumentNullException(nameof(declaringItem));
+
+            var definitions = new List<IAttributeDefinition>();
+
+            foreach (var list in node.AttributeLists)
+            {
+                foreach (var attribute in list.Attributes)
+                {
+                    var definition = new AttributeDefinition(declaringItem, attribute);
+
+                    definitions.Add(definition);
+                }
+            }
+
+            return definitions.AsReadOnly();
+        }
+
         /// <inheritdoc />
         public IReadOnlyCollection<IAttributeDefinition> Attributes { get; }
 

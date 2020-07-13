@@ -13,13 +13,16 @@
             _attributeProcessor = attributeProcessor ?? throw new ArgumentNullException(nameof(attributeProcessor));
         }
 
-        public virtual IEnumerable<ComparisonResult> CompareItems(ItemMatch<T> match, ComparerOptions options)
+        public IEnumerable<ComparisonResult> CompareItems(ItemMatch<T> match, ComparerOptions options)
         {
             match = match ?? throw new ArgumentNullException(nameof(match));
             options = options ?? throw new ArgumentNullException(nameof(options));
 
             var aggregator = new ChangeResultAggregator();
 
+            // We don't want this member to be virtual because we need to ensure that the evaluation of IsVisible occurs before any other evaluation in derived classes
+            // If this method was virtual, a derived class could run evaluations that push results onto the aggregator before the logic here has a chance to ignore changes
+            // on elements that are not visible
             if (match.OldItem.IsVisible == false
                 && match.NewItem.IsVisible == false)
             {

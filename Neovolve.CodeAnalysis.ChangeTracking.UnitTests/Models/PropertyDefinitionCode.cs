@@ -34,6 +34,42 @@ namespace MyNamespace
 }
 ";
 
+        public const string PropertyAccessorWithMultipleAttributesInMultipleLists = @"
+namespace MyNamespace 
+{
+    public class MyClass
+    {
+        public string Value 
+        {
+            [First, Second(123)]
+            [Third, Fourth(true, named: ""stuff""]
+            get; 
+            set; 
+        }
+    }   
+}
+";
+
+        public const string ReadOnlyProperty = @"
+namespace MyNamespace 
+{
+    public class MyClass
+    {
+        public string Value { get; }
+    }   
+}
+";
+
+        public const string WriteOnlyProperty = @"
+namespace MyNamespace 
+{
+    public class MyClass
+    {
+        public string Value { set; }
+    }   
+}
+";
+
         public static string BuildPropertyAndGetAccessorWithScope(string propertyScope, string accessorScope)
         {
             return @$"

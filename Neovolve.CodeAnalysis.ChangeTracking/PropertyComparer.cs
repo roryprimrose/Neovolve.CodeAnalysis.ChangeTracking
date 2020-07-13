@@ -1,11 +1,17 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking
 {
+    using System;
+    using System.Collections.Generic;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
     public class PropertyComparer : MemberComparer<IPropertyDefinition>, IPropertyComparer
     {
-        public PropertyComparer(IAttributeMatchProcessor attributeProcessor) : base(attributeProcessor)
+        private readonly IPropertyAccessorMatchProcessor _accessorProcessor;
+
+        public PropertyComparer(IPropertyAccessorMatchProcessor accessorProcessor,
+            IAttributeMatchProcessor attributeProcessor) : base(attributeProcessor)
         {
+            _accessorProcessor = accessorProcessor ?? throw new ArgumentNullException(nameof(accessorProcessor));
         }
 
         protected override void EvaluateMatch(
@@ -16,51 +22,6 @@
             RunComparisonStep(EvaluatePropertyAccessors, match, options, aggregator);
 
             base.EvaluateMatch(match, options, aggregator);
-        }
-
-        private static void EvaluatePropertyAccessors(
-            ItemMatch<IPropertyDefinition> match,
-            ComparerOptions options,
-            ChangeResultAggregator aggregator)
-        {
-            // Calculate breaking changes
-            if (match.OldItem.CanRead
-                && match.NewItem.CanRead == false)
-            {
-                var message = match.NewItem.Description + " removed the get accessor";
-
-                var result = ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match, message);
-
-                aggregator.AddResult(result);
-            }
-            else if (match.OldItem.CanRead == false
-                     && match.NewItem.CanRead)
-            {
-                var message = match.NewItem.Description + " added a get accessor";
-
-                var result = ComparisonResult.ItemChanged(SemVerChangeType.Feature, match, message);
-
-                aggregator.AddResult(result);
-            }
-
-            if (match.OldItem.CanWrite
-                && match.NewItem.CanWrite == false)
-            {
-                var message = match.NewItem.Description + " removed the set accessor";
-
-                var result = ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match, message);
-
-                aggregator.AddResult(result);
-            }
-            else if (match.OldItem.CanWrite == false
-                     && match.NewItem.CanWrite)
-            {
-                var message = match.NewItem.Description + " added a set accessor";
-
-                var result = ComparisonResult.ItemChanged(SemVerChangeType.Feature, match, message);
-
-                aggregator.AddResult(result);
-            }
         }
 
         private static void EvaluateModifierChanges(
@@ -105,6 +66,36 @@
 
                 aggregator.AddResult(result);
             }
+        }
+
+        private static IEnumerable<IPropertyAccessorDefinition> GetAccessorList(IPropertyDefinition definition)
+        {
+            var accessors = new List<IPropertyAccessorDefinition>();
+
+            if (definition.GetAccessor != null)
+            {
+                accessors.Add(definition.GetAccessor);
+            }
+
+            if (definition.SetAccessor != null)
+            {
+                accessors.Add(definition.SetAccessor);
+            }
+
+            return accessors;
+        }
+
+        private void EvaluatePropertyAccessors(
+            ItemMatch<IPropertyDefinition> match,
+            ComparerOptions options,
+            ChangeResultAggregator aggregator)
+        {
+            var oldAccessors = GetAccessorList(match.OldItem);
+            var newAccessors = GetAccessorList(match.NewItem);
+
+            var changes = _accessorProcessor.CalculateChanges(oldAccessors, newAccessors, options);
+
+            aggregator.AddResults(changes);
         }
     }
 }

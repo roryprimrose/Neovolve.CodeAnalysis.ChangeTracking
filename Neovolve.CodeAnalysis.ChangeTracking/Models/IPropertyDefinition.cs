@@ -7,18 +7,18 @@
     public interface IPropertyDefinition : IMemberDefinition
     {
         /// <summary>
-        ///     Gets whether the property declares a getter.
+        ///     Gets the property get accessor.
         /// </summary>
-        bool CanRead { get; }
-
-        /// <summary>
-        ///     Gets whether the property declares a setter.
-        /// </summary>
-        bool CanWrite { get; }
+        IPropertyAccessorDefinition? GetAccessor { get; }
 
         /// <summary>
         ///     Gets the property modifiers.
         /// </summary>
         MemberModifiers Modifiers { get; }
+
+        /// <summary>
+        ///     Gets the property set accessor.
+        /// </summary>
+        IPropertyAccessorDefinition? SetAccessor { get; }
     }
 }
