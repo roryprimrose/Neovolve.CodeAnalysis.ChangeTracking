@@ -1,4 +1,4 @@
-﻿namespace Neovolve.CodeAnalysis.ChangeTracking
+﻿namespace Neovolve.CodeAnalysis.ChangeTracking.Models
 {
     public enum AccessModifier
     {

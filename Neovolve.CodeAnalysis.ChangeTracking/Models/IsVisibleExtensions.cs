@@ -1,8 +1,7 @@
-﻿namespace Neovolve.CodeAnalysis.ChangeTracking
+﻿namespace Neovolve.CodeAnalysis.ChangeTracking.Models
 {
     using System;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
     public static class IsVisibleExtensions
     {

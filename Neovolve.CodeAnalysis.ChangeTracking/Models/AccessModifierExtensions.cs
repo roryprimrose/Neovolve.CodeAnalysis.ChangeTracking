@@ -1,10 +1,9 @@
-﻿namespace Neovolve.CodeAnalysis.ChangeTracking
+﻿namespace Neovolve.CodeAnalysis.ChangeTracking.Models
 {
     using System;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
     public static class AccessModifierExtensions
     {
@@ -44,7 +43,7 @@
             // TODO: Fill these out when the types are supported
             throw new NotSupportedException();
 
-            // Struct default accessmodifier is private
+            // Struct default access modifier is private
             // Struct default enum is public
         }
 

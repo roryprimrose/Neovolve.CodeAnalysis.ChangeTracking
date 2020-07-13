@@ -1,4 +1,4 @@
-﻿namespace Neovolve.CodeAnalysis.ChangeTracking
+﻿namespace Neovolve.CodeAnalysis.ChangeTracking.Models
 {
     using System;
     using System.Collections.Generic;
@@ -6,7 +6,6 @@
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
     /// <summary>
     ///     The <see cref="NodeExtensions" />
