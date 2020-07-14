@@ -1,25 +1,44 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using EnsureThat;
-
-namespace Neovolve.CodeAnalysis.ChangeTracking
+﻿namespace Neovolve.CodeAnalysis.ChangeTracking
 {
-    public class MatchResults
-    {
-        public MatchResults(IEnumerable<MemberMatch> matches, IEnumerable<MemberDefinition> oldMembersNotMatched,
-            IEnumerable<MemberDefinition> newMembersNotMatched)
-        {
-            Ensure.Any.IsNotNull(matches, nameof(matches));
-            Ensure.Any.IsNotNull(oldMembersNotMatched, nameof(oldMembersNotMatched));
-            Ensure.Any.IsNotNull(newMembersNotMatched, nameof(newMembersNotMatched));
+    using System;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
-            Matches = new ReadOnlyCollection<MemberMatch>(matches.FastToList());
-            OldMembersNotMatched = new ReadOnlyCollection<MemberDefinition>(oldMembersNotMatched.FastToList());
-            NewMembersNotMatched = new ReadOnlyCollection<MemberDefinition>(newMembersNotMatched.FastToList());
+    /// <summary>
+    ///     The <see cref="MatchResults{T}" />
+    ///     class defines items that have been added or removed as well as items that can be matched.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public class MatchResults<T> : IMatchResults<T> where T : IItemDefinition
+    {
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="MatchResults{T}" /> class.
+        /// </summary>
+        /// <param name="matchingItems">The set of old items that match to new items.</param>
+        /// <param name="itemsRemoved">The items that have been removed.</param>
+        /// <param name="itemsAdded">The items that have been added.</param>
+        public MatchResults(
+            IEnumerable<ItemMatch<T>> matchingItems,
+            IEnumerable<T> itemsRemoved,
+            IEnumerable<T> itemsAdded)
+        {
+            matchingItems = matchingItems ?? throw new ArgumentNullException(nameof(matchingItems));
+            itemsRemoved = itemsRemoved ?? throw new ArgumentNullException(nameof(itemsRemoved));
+            itemsAdded = itemsAdded ?? throw new ArgumentNullException(nameof(itemsAdded));
+
+            MatchingItems = new ReadOnlyCollection<ItemMatch<T>>(matchingItems.FastToList());
+            ItemsRemoved = new ReadOnlyCollection<T>(itemsRemoved.FastToList());
+            ItemsAdded = new ReadOnlyCollection<T>(itemsAdded.FastToList());
         }
 
-        public IReadOnlyCollection<MemberDefinition> OldMembersNotMatched { get; }
-        public IReadOnlyCollection<MemberDefinition> NewMembersNotMatched { get; }
-        public IReadOnlyCollection<MemberMatch> Matches { get; }
+        /// <inheritdoc />
+        public IReadOnlyCollection<T> ItemsAdded { get; }
+
+        /// <inheritdoc />
+        public IReadOnlyCollection<T> ItemsRemoved { get; }
+
+        /// <inheritdoc />
+        public IReadOnlyCollection<ItemMatch<T>> MatchingItems { get; }
     }
 }

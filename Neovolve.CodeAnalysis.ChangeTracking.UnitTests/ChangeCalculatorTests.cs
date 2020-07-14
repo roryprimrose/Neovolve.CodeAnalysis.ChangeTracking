@@ -1,18 +1,6 @@
-﻿// ReSharper disable CollectionNeverUpdated.Local
-// ReSharper disable ObjectCreationAsStatement
-
-namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
+﻿namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
-    using System.Threading.Tasks;
-    using FluentAssertions;
-    using Microsoft.CodeAnalysis;
     using Microsoft.Extensions.Logging;
-    using ModelBuilder;
-    using NSubstitute;
-    using Xunit;
     using Xunit.Abstractions;
 
     public class ChangeCalculatorTests
@@ -24,414 +12,467 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             _logger = output.BuildLogger();
         }
 
-        [Fact]
-        public async Task CompareChangesReturnsBreakingWhenOldPublicMemberHasNoNewMemberMatch()
-        {
-            var evaluator = Substitute.For<IMatchEvaluator>();
-            var comparer = Substitute.For<IMemberComparer>();
-            var comparers = new List<IMemberComparer> {comparer};
-            var oldMemberNotMatched = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
-            var oldMembersNotMatched = new List<MemberDefinition> {oldMemberNotMatched};
-            var newMembersNotMatched = new List<MemberDefinition>();
-            var matches = new List<MemberMatch>();
-            var results = new MatchResults(matches, oldMembersNotMatched, newMembersNotMatched);
-            var oldNodes = new List<SyntaxNode>
-            {
-                await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
-            };
-            var newNodes = new List<SyntaxNode>();
-
-            evaluator.CompareNodes(oldNodes, newNodes).Returns(results);
-
-            var sut = new ChangeCalculator(evaluator, comparers, _logger);
-
-            var actual = sut.CalculateChanges(oldNodes, newNodes);
-
-            actual.ChangeType.Should().Be(SemVerChangeType.Breaking);
-        }
-
-        [Fact]
-        public async Task CompareChangesReturnsBreakingWhenOldPublicMemberHasNoNewMemberMatchWithNullLogger()
-        {
-            var evaluator = Substitute.For<IMatchEvaluator>();
-            var comparer = Substitute.For<IMemberComparer>();
-            var comparers = new List<IMemberComparer> {comparer};
-            var oldMemberNotMatched = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
-            var oldMembersNotMatched = new List<MemberDefinition> {oldMemberNotMatched};
-            var newMembersNotMatched = new List<MemberDefinition>();
-            var matches = new List<MemberMatch>();
-            var results = new MatchResults(matches, oldMembersNotMatched, newMembersNotMatched);
-            var oldNodes = new List<SyntaxNode>
-            {
-                await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
-            };
-            var newNodes = new List<SyntaxNode>();
-
-            evaluator.CompareNodes(oldNodes, newNodes).Returns(results);
-
-            var sut = new ChangeCalculator(evaluator, comparers, null);
-
-            var actual = sut.CalculateChanges(oldNodes, newNodes);
-
-            actual.ChangeType.Should().Be(SemVerChangeType.Breaking);
-        }
-
-        [Fact]
-        public void CompareChangesReturnsBreakingWhenSubsequentMatchesFindWorseChangeTypes()
-        {
-            var evaluator = Substitute.For<IMatchEvaluator>();
-            var comparer = Substitute.For<IMemberComparer>();
-            var comparers = new List<IMemberComparer> {comparer};
-            var oldMember = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
-            var newMember = oldMember.JsonClone();
-            var oldMembersNotMatched = new List<MemberDefinition>();
-            var newMembersNotMatched = new List<MemberDefinition>();
-            var matches = new List<MemberMatch>
-            {
-                new MemberMatch(oldMember, newMember),
-                new MemberMatch(oldMember, newMember),
-                new MemberMatch(oldMember, newMember)
-            };
-            var match = new MemberMatch(oldMember, newMember);
-            var firstResult = ComparisonResult.NoChange(match);
-            var secondResult = ComparisonResult.MemberChanged(SemVerChangeType.Feature, match, "feature change");
-            var thirdResult = ComparisonResult.MemberChanged(SemVerChangeType.Breaking, match, "breaking change");
-
-            var results = new MatchResults(matches, oldMembersNotMatched, newMembersNotMatched);
-            var oldNodes = new List<SyntaxNode>();
-
-            var newNodes = new List<SyntaxNode>();
-
-            evaluator.CompareNodes(oldNodes, newNodes).Returns(results);
-            comparer.IsSupported(Arg.Any<MemberDefinition>()).Returns(true);
-            comparer.Compare(Arg.Any<MemberMatch>()).Returns(firstResult, secondResult, thirdResult);
-
-            var sut = new ChangeCalculator(evaluator, comparers, _logger);
-
-            var actual = sut.CalculateChanges(oldNodes, newNodes);
-
-            actual.ChangeType.Should().Be(SemVerChangeType.Breaking);
-        }
-
-        [Theory]
-        [InlineData(SemVerChangeType.None)]
-        [InlineData(SemVerChangeType.Feature)]
-        [InlineData(SemVerChangeType.Breaking)]
-        public void CompareChangesReturnsComparerValueForMemberMatch(SemVerChangeType changeType)
-        {
-            var evaluator = Substitute.For<IMatchEvaluator>();
-            var comparer = Substitute.For<IMemberComparer>();
-            var comparers = new List<IMemberComparer> {comparer};
-            var oldMember = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
-            var newMember = oldMember.JsonClone();
-            var match = new MemberMatch(oldMember, newMember);
-            var oldMembersNotMatched = new List<MemberDefinition>();
-            var newMembersNotMatched = new List<MemberDefinition>();
-            var matches = new List<MemberMatch>
-            {
-                new MemberMatch(oldMember, newMember)
-            };
-            ComparisonResult result;
-
-            if (changeType == SemVerChangeType.None)
-            {
-                result = ComparisonResult.NoChange(match);
-            }
-            else
-            {
-                result = ComparisonResult.MemberChanged(changeType, match, changeType + " change");
-            }
-
-            var results = new MatchResults(matches, oldMembersNotMatched, newMembersNotMatched);
-            var oldNodes = new List<SyntaxNode>();
-
-            var newNodes = new List<SyntaxNode>();
-
-            evaluator.CompareNodes(oldNodes, newNodes).Returns(results);
-            comparer.IsSupported(oldMember).Returns(true);
-            comparer.IsSupported(newMember).Returns(true);
-            comparer.Compare(matches[0]).Returns(result);
-
-            var sut = new ChangeCalculator(evaluator, comparers, _logger);
-
-            var actual = sut.CalculateChanges(oldNodes, newNodes);
-
-            actual.ChangeType.Should().Be(changeType);
-        }
-
-        [Theory]
-        [InlineData(SemVerChangeType.None)]
-        [InlineData(SemVerChangeType.Feature)]
-        [InlineData(SemVerChangeType.Breaking)]
-        public void CompareChangesReturnsComparerValueForMemberMatchWithNullLogger(SemVerChangeType changeType)
-        {
-            var evaluator = Substitute.For<IMatchEvaluator>();
-            var comparer = Substitute.For<IMemberComparer>();
-            var comparers = new List<IMemberComparer> {comparer};
-            var oldMember = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
-            var newMember = oldMember.JsonClone();
-            var match = new MemberMatch(oldMember, newMember);
-            var oldMembersNotMatched = new List<MemberDefinition>();
-            var newMembersNotMatched = new List<MemberDefinition>();
-            var matches = new List<MemberMatch>
-            {
-                new MemberMatch(oldMember, newMember)
-            };
-            ComparisonResult result;
-
-            if (changeType == SemVerChangeType.None)
-            {
-                result = ComparisonResult.NoChange(match);
-            }
-            else
-            {
-                result = ComparisonResult.MemberChanged(changeType, match, changeType + " change");
-            }
-
-            var results = new MatchResults(matches, oldMembersNotMatched, newMembersNotMatched);
-            var oldNodes = new List<SyntaxNode>();
-
-            var newNodes = new List<SyntaxNode>();
-
-            evaluator.CompareNodes(oldNodes, newNodes).Returns(results);
-            comparer.IsSupported(oldMember).Returns(true);
-            comparer.IsSupported(newMember).Returns(true);
-            comparer.Compare(matches[0]).Returns(result);
-
-            var sut = new ChangeCalculator(evaluator, comparers, null);
-
-            var actual = sut.CalculateChanges(oldNodes, newNodes);
-
-            actual.ChangeType.Should().Be(changeType);
-        }
-
-        [Fact]
-        public async Task CompareChangesReturnsFeatureWhenNewPublicMemberHasNoOldMemberMatchAndNoMatchesFound()
-        {
-            var evaluator = Substitute.For<IMatchEvaluator>();
-            var comparer = Substitute.For<IMemberComparer>();
-            var comparers = new List<IMemberComparer> {comparer};
-            var oldMembersNotMatched = new List<MemberDefinition>();
-            var newMemberNotMatched = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
-            var newMembersNotMatched = new List<MemberDefinition> {newMemberNotMatched};
-            var matches = new List<MemberMatch>();
-            var results = new MatchResults(matches, oldMembersNotMatched, newMembersNotMatched);
-            var oldNodes = new List<SyntaxNode>
-            {
-                await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
-            };
-            var newNodes = new List<SyntaxNode>();
-
-            evaluator.CompareNodes(oldNodes, newNodes).Returns(results);
-
-            var sut = new ChangeCalculator(evaluator, comparers, _logger);
-
-            var actual = sut.CalculateChanges(oldNodes, newNodes);
-
-            actual.ChangeType.Should().Be(SemVerChangeType.Feature);
-        }
-
-        [Fact]
-        public async Task
-            CompareChangesReturnsFeatureWhenNewPublicMemberHasNoOldMemberMatchAndNoMatchesFoundWithNullLogger()
-        {
-            var evaluator = Substitute.For<IMatchEvaluator>();
-            var comparer = Substitute.For<IMemberComparer>();
-            var comparers = new List<IMemberComparer> {comparer};
-            var oldMembersNotMatched = new List<MemberDefinition>();
-            var newMemberNotMatched = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
-            var newMembersNotMatched = new List<MemberDefinition> {newMemberNotMatched};
-            var matches = new List<MemberMatch>();
-            var results = new MatchResults(matches, oldMembersNotMatched, newMembersNotMatched);
-            var oldNodes = new List<SyntaxNode>
-            {
-                await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
-            };
-            var newNodes = new List<SyntaxNode>();
-
-            evaluator.CompareNodes(oldNodes, newNodes).Returns(results);
-
-            var sut = new ChangeCalculator(evaluator, comparers, null);
-
-            var actual = sut.CalculateChanges(oldNodes, newNodes);
-
-            actual.ChangeType.Should().Be(SemVerChangeType.Feature);
-        }
-
-        [Fact]
-        public void CompareChangesReturnsNoneWhenEmptyComparisonReturned()
-        {
-            var matches = Array.Empty<MemberMatch>();
-            var emptyMissingMembers = Array.Empty<MemberDefinition>();
-            var matchResults = new MatchResults(matches, emptyMissingMembers, emptyMissingMembers);
-            var oldNodes = new List<SyntaxNode>();
-            var newNodes = new List<SyntaxNode>();
-
-            var evaluator = Substitute.For<IMatchEvaluator>();
-            var comparer = Substitute.For<IMemberComparer>();
-            var comparers = new List<IMemberComparer> {comparer};
-
-            evaluator.CompareNodes(oldNodes, newNodes).Returns(matchResults);
-
-            var sut = new ChangeCalculator(evaluator, comparers, _logger);
-
-            var actual = sut.CalculateChanges(oldNodes, newNodes);
-
-            actual.ChangeType.Should().Be(SemVerChangeType.None);
-        }
-
-        [Fact]
-        public void CompareChangesReturnsNoneWhenNoChangesIdentified()
-        {
-            var evaluator = Substitute.For<IMatchEvaluator>();
-            var comparer = Substitute.For<IMemberComparer>();
-            var comparers = new List<IMemberComparer> {comparer};
-            var oldMember = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
-            var newMember = oldMember.JsonClone();
-            var match = new MemberMatch(oldMember, newMember);
-            var oldMembersNotMatched = new List<MemberDefinition>();
-            var newMembersNotMatched = new List<MemberDefinition>();
-            var matches = new List<MemberMatch>
-            {
-                new MemberMatch(oldMember, newMember)
-            };
-            ComparisonResult result = ComparisonResult.NoChange(match);
-
-            var results = new MatchResults(matches, oldMembersNotMatched, newMembersNotMatched);
-            var oldNodes = new List<SyntaxNode>();
-
-            var newNodes = new List<SyntaxNode>();
-
-            evaluator.CompareNodes(oldNodes, newNodes).Returns(results);
-            comparer.IsSupported(oldMember).Returns(true);
-            comparer.IsSupported(newMember).Returns(true);
-            comparer.Compare(matches[0]).Returns(result);
-
-            var sut = new ChangeCalculator(evaluator, comparers, null);
-
-            var actual = sut.CalculateChanges(oldNodes, newNodes);
-
-            actual.ChangeType.Should().Be(SemVerChangeType.None);
-            actual.ComparisonResults.Should().BeEmpty();
-        }
-
-        [Fact]
-        public void CompareChangesReturnsNoneWhenResultsAreEmpty()
-        {
-            var evaluator = Substitute.For<IMatchEvaluator>();
-            var comparer = Substitute.For<IMemberComparer>();
-            var comparers = new List<IMemberComparer> {comparer};
-            var oldMembersNotMatched = new List<MemberDefinition>();
-            var newMembersNotMatched = new List<MemberDefinition>();
-            var matches = new List<MemberMatch>();
-            var results = new MatchResults(matches, oldMembersNotMatched, newMembersNotMatched);
-            var oldNodes = new List<SyntaxNode>();
-            var newNodes = new List<SyntaxNode>();
-
-            evaluator.CompareNodes(oldNodes, newNodes).Returns(results);
-
-            var sut = new ChangeCalculator(evaluator, comparers, _logger);
-
-            var actual = sut.CalculateChanges(oldNodes, newNodes);
-
-            actual.ChangeType.Should().Be(SemVerChangeType.None);
-        }
-
-        [Fact]
-        public void CompareChangesThrowsExceptionWhenCreatedWithNullNewNodes()
-        {
-            var evaluator = Substitute.For<IMatchEvaluator>();
-            var comparer = Substitute.For<IMemberComparer>();
-            var comparers = new List<IMemberComparer> {comparer};
-            var oldNodes = new List<SyntaxNode>();
-
-            var sut = new ChangeCalculator(evaluator, comparers, _logger);
-
-            Action action = () => sut.CalculateChanges(oldNodes, null!);
-
-            action.Should().Throw<ArgumentNullException>();
-        }
-
-        [Fact]
-        public void CompareChangesThrowsExceptionWhenCreatedWithNullOldNodes()
-        {
-            var evaluator = Substitute.For<IMatchEvaluator>();
-            var comparer = Substitute.For<IMemberComparer>();
-            var comparers = new List<IMemberComparer> {comparer};
-            var newNodes = new List<SyntaxNode>();
-
-            var sut = new ChangeCalculator(evaluator, comparers, _logger);
-
-            Action action = () => sut.CalculateChanges(null!, newNodes);
-
-            action.Should().Throw<ArgumentNullException>();
-        }
-
-        [Fact]
-        public void CompareChangesThrowsExceptionWhenNoComparerFoundForMember()
-        {
-            var evaluator = Substitute.For<IMatchEvaluator>();
-            var comparer = Substitute.For<IMemberComparer>();
-            var comparers = new List<IMemberComparer> {comparer};
-            var oldMember = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
-            var newMember = oldMember.JsonClone();
-            var oldMembersNotMatched = new List<MemberDefinition>();
-            var newMembersNotMatched = new List<MemberDefinition>();
-            var matches = new List<MemberMatch>
-            {
-                new MemberMatch(oldMember, newMember)
-            };
-
-            var results = new MatchResults(matches, oldMembersNotMatched, newMembersNotMatched);
-            var oldNodes = new List<SyntaxNode>();
-
-            var newNodes = new List<SyntaxNode>();
-
-            evaluator.CompareNodes(oldNodes, newNodes).Returns(results);
-
-            var sut = new ChangeCalculator(evaluator, comparers, _logger);
-
-            Action action = () => sut.CalculateChanges(oldNodes, newNodes);
-
-            action.Should().Throw<InvalidOperationException>();
-        }
-
-        [Fact]
-        [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification =
-            "Testing constructor guard clause")]
-        public void ThrowsExceptionWhenCreatedWithEmptyComparers()
-        {
-            var evaluator = Substitute.For<IMatchEvaluator>();
-            var comparers = new List<IMemberComparer>();
-
-            Action action = () => new ChangeCalculator(evaluator, comparers, _logger);
-
-            action.Should().Throw<ArgumentException>();
-        }
-
-        [Fact]
-        [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification =
-            "Testing constructor guard clause")]
-        public void ThrowsExceptionWhenCreatedWithNullComparers()
-        {
-            var evaluator = Substitute.For<IMatchEvaluator>();
-
-            Action action = () => new ChangeCalculator(evaluator, null!, _logger);
-
-            action.Should().Throw<ArgumentNullException>();
-        }
-
-        [Fact]
-        [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification =
-            "Testing constructor guard clause")]
-        public void ThrowsExceptionWhenCreatedWithNullEvaluator()
-        {
-            var comparer = Substitute.For<IMemberComparer>();
-            var comparers = new List<IMemberComparer> {comparer};
-
-            Action action = () => new ChangeCalculator(null!, comparers, _logger);
-
-            action.Should().Throw<ArgumentNullException>();
-        }
+        //[Fact]
+        //public void CalculateChangesReturnsBreakingWhenClassRemoved()
+        //{
+        //    var options = Model.UsingModule<ConfigurationModule>().Create<ComparerOptions>();
+        //    var oldTypes = Array.Empty<TestClassDefinition>();
+        //    var newTypes = Array.Empty<TestClassDefinition>();
+        //    var removedClass = new TestClassDefinition();
+        //    var removedClasses = new List<IClassDefinition> {removedClass};
+
+        //    var classMatches = Substitute.For<IMatchResults<ITypeDefinition>>();
+        //    var interfaceMatches = Substitute.For<IMatchResults<ITypeDefinition>>();
+        //    var evaluator = Substitute.For<IMatchEvaluator>();
+        //    var comparer = Substitute.For<ITypeComparer>();
+
+        //    classMatches.ItemsRemoved.Returns(removedClasses);
+        //    evaluator.MatchItems(
+        //        Arg.Any<IEnumerable<ITypeDefinition>>(),
+        //        Arg.Any<IEnumerable<ITypeDefinition>>(),
+        //        Arg.Any<Func<ITypeDefinition, ITypeDefinition, bool>>()).Returns(classMatches, interfaceMatches);
+
+        //    var sut = new ChangeCalculator(evaluator, comparer, _logger);
+
+        //    var actual = sut.CalculateChanges(oldTypes, newTypes, options);
+
+        //    actual.ChangeType.Should().Be(SemVerChangeType.Breaking);
+        //    actual.ComparisonResults.Should().HaveCount(1);
+        //}
+
+        //[Fact]
+        //public void CalculateChangesReturnsBreakingWhenInterfaceRemoved()
+        //{
+        //    var options = Model.UsingModule<ConfigurationModule>().Create<ComparerOptions>();
+        //    var oldTypes = Array.Empty<TestClassDefinition>();
+        //    var newTypes = Array.Empty<TestClassDefinition>();
+        //    var removedInterface = new TestInterfaceDefinition();
+        //    var removedInterfaces = new List<IInterfaceDefinition> {removedInterface};
+
+        //    var classMatches = Substitute.For<IMatchResults<ITypeDefinition>>();
+        //    var interfaceMatches = Substitute.For<IMatchResults<ITypeDefinition>>();
+        //    var evaluator = Substitute.For<IMatchEvaluator>();
+        //    var comparer = Substitute.For<ITypeComparer>();
+
+        //    interfaceMatches.ItemsRemoved.Returns(removedInterfaces);
+        //    evaluator.MatchItems(
+        //        Arg.Any<IEnumerable<ITypeDefinition>>(),
+        //        Arg.Any<IEnumerable<ITypeDefinition>>(),
+        //        Arg.Any<Func<ITypeDefinition, ITypeDefinition, bool>>()).Returns(classMatches, interfaceMatches);
+
+        //    var sut = new ChangeCalculator(evaluator, comparer, _logger);
+
+        //    var actual = sut.CalculateChanges(oldTypes, newTypes, options);
+
+        //    actual.ChangeType.Should().Be(SemVerChangeType.Breaking);
+        //    actual.ComparisonResults.Should().HaveCount(1);
+        //}
+
+        //[Fact]
+        //public void CalculateChangesReturnsBreakingWhenMatchingClassRemovesOldItem()
+        //{
+        //    var options = Model.UsingModule<ConfigurationModule>().Create<ComparerOptions>();
+        //    var oldTypes = Array.Empty<TestClassDefinition>();
+        //    var newTypes = Array.Empty<TestClassDefinition>();
+        //    var matchingClass = new TestClassDefinition();
+        //    var itemChanged = new TestPropertyDefinition();
+        //    var match = new ItemMatch<ITypeDefinition>(matchingClass, matchingClass);
+        //    var matches = new List<ItemMatch<ITypeDefinition>> {match};
+        //    var result = ComparisonResult.ItemRemoved(itemChanged);
+        //    var results = new List<ComparisonResult> {result};
+
+        //    var classMatches = Substitute.For<IMatchResults<ITypeDefinition>>();
+        //    var interfaceMatches = Substitute.For<IMatchResults<ITypeDefinition>>();
+        //    var evaluator = Substitute.For<IMatchEvaluator>();
+        //    var comparer = Substitute.For<ITypeComparer>();
+
+        //    classMatches.MatchingItems.Returns(matches);
+        //    evaluator.MatchItems(
+        //        Arg.Any<IEnumerable<ITypeDefinition>>(),
+        //        Arg.Any<IEnumerable<ITypeDefinition>>(),
+        //        Arg.Any<Func<ITypeDefinition, ITypeDefinition, bool>>()).Returns(classMatches, interfaceMatches);
+        //    comparer.CompareItems(match, options).Returns(results);
+
+        //    var sut = new ChangeCalculator(evaluator, comparer, _logger);
+
+        //    var actual = sut.CalculateChanges(oldTypes, newTypes, options);
+
+        //    actual.ChangeType.Should().Be(SemVerChangeType.Breaking);
+        //    actual.ComparisonResults.Should().HaveCount(1);
+        //    actual.ComparisonResults.Should().Contain(result);
+        //}
+
+        //[Fact]
+        //public void CalculateChangesReturnsBreakingWhenMatchingInterfaceRemovesOldItem()
+        //{
+        //    var options = Model.UsingModule<ConfigurationModule>().Create<ComparerOptions>();
+        //    var oldTypes = Array.Empty<TestClassDefinition>();
+        //    var newTypes = Array.Empty<TestClassDefinition>();
+        //    var matchingInterface = new TestInterfaceDefinition();
+        //    var itemChanged = new TestPropertyDefinition();
+        //    var match = new ItemMatch<ITypeDefinition>(matchingInterface, matchingInterface);
+        //    var matches = new List<ItemMatch<ITypeDefinition>> {match};
+        //    var result = ComparisonResult.ItemRemoved(itemChanged);
+        //    var results = new List<ComparisonResult> {result};
+
+        //    var classMatches = Substitute.For<IMatchResults<ITypeDefinition>>();
+        //    var interfaceMatches = Substitute.For<IMatchResults<ITypeDefinition>>();
+        //    var evaluator = Substitute.For<IMatchEvaluator>();
+        //    var comparer = Substitute.For<ITypeComparer>();
+
+        //    interfaceMatches.MatchingItems.Returns(matches);
+        //    evaluator.MatchItems(
+        //        Arg.Any<IEnumerable<ITypeDefinition>>(),
+        //        Arg.Any<IEnumerable<ITypeDefinition>>(),
+        //        Arg.Any<Func<ITypeDefinition, ITypeDefinition, bool>>()).Returns(interfaceMatches, classMatches);
+        //    comparer.CompareItems(match, options).Returns(results);
+
+        //    var sut = new ChangeCalculator(evaluator, comparer, _logger);
+
+        //    var actual = sut.CalculateChanges(oldTypes, newTypes, options);
+
+        //    actual.ChangeType.Should().Be(SemVerChangeType.Breaking);
+        //    actual.ComparisonResults.Should().HaveCount(1);
+        //    actual.ComparisonResults.Should().Contain(result);
+        //}
+
+        //[Fact]
+        //public void CalculateChangesReturnsFeatureWhenClassAdded()
+        //{
+        //    var options = Model.UsingModule<ConfigurationModule>().Create<ComparerOptions>();
+        //    var oldTypes = Array.Empty<TestClassDefinition>();
+        //    var newTypes = Array.Empty<TestClassDefinition>();
+        //    var addedClass = new TestClassDefinition();
+        //    var addedClasses = new List<IClassDefinition> {addedClass};
+
+        //    var classMatches = Substitute.For<IMatchResults<ITypeDefinition>>();
+        //    var interfaceMatches = Substitute.For<IMatchResults<ITypeDefinition>>();
+        //    var evaluator = Substitute.For<IMatchEvaluator>();
+        //    var comparer = Substitute.For<ITypeComparer>();
+
+        //    classMatches.ItemsAdded.Returns(addedClasses);
+        //    evaluator.MatchItems(
+        //        Arg.Any<IEnumerable<ITypeDefinition>>(),
+        //        Arg.Any<IEnumerable<ITypeDefinition>>(),
+        //        Arg.Any<Func<ITypeDefinition, ITypeDefinition, bool>>()).Returns(classMatches, interfaceMatches);
+
+        //    var sut = new ChangeCalculator(evaluator, comparer, _logger);
+
+        //    var actual = sut.CalculateChanges(oldTypes, newTypes, options);
+
+        //    actual.ChangeType.Should().Be(SemVerChangeType.Feature);
+        //    actual.ComparisonResults.Should().HaveCount(1);
+        //}
+
+        //[Fact]
+        //public void CalculateChangesReturnsFeatureWhenInterfaceAdded()
+        //{
+        //    var options = Model.UsingModule<ConfigurationModule>().Create<ComparerOptions>();
+        //    var oldTypes = Array.Empty<TestClassDefinition>();
+        //    var newTypes = Array.Empty<TestClassDefinition>();
+        //    var addedInterface = new TestInterfaceDefinition();
+        //    var addedInterfaces = new List<IInterfaceDefinition> {addedInterface};
+
+        //    var classMatches = Substitute.For<IMatchResults<ITypeDefinition>>();
+        //    var interfaceMatches = Substitute.For<IMatchResults<ITypeDefinition>>();
+        //    var evaluator = Substitute.For<IMatchEvaluator>();
+        //    var comparer = Substitute.For<ITypeComparer>();
+
+        //    interfaceMatches.ItemsAdded.Returns(addedInterfaces);
+        //    evaluator.MatchItems(
+        //        Arg.Any<IEnumerable<ITypeDefinition>>(),
+        //        Arg.Any<IEnumerable<ITypeDefinition>>(),
+        //        Arg.Any<Func<ITypeDefinition, ITypeDefinition, bool>>()).Returns(classMatches, interfaceMatches);
+
+        //    var sut = new ChangeCalculator(evaluator, comparer, _logger);
+
+        //    var actual = sut.CalculateChanges(oldTypes, newTypes, options);
+
+        //    actual.ChangeType.Should().Be(SemVerChangeType.Feature);
+        //    actual.ComparisonResults.Should().HaveCount(1);
+        //}
+
+        //[Fact]
+        //public void CalculateChangesReturnsFeatureWhenMatchingClassHasNewItem()
+        //{
+        //    var options = Model.UsingModule<ConfigurationModule>().Create<ComparerOptions>();
+        //    var oldTypes = Array.Empty<TestClassDefinition>();
+        //    var newTypes = Array.Empty<TestClassDefinition>();
+        //    var matchingClass = new TestClassDefinition();
+        //    var itemChanged = new TestPropertyDefinition();
+        //    var match = new ItemMatch<ITypeDefinition>(matchingClass, matchingClass);
+        //    var matches = new List<ItemMatch<ITypeDefinition>> {match};
+        //    var result = ComparisonResult.ItemAdded(itemChanged);
+        //    var results = new List<ComparisonResult> {result};
+
+        //    var classMatches = Substitute.For<IMatchResults<ITypeDefinition>>();
+        //    var interfaceMatches = Substitute.For<IMatchResults<ITypeDefinition>>();
+        //    var evaluator = Substitute.For<IMatchEvaluator>();
+        //    var comparer = Substitute.For<ITypeComparer>();
+
+        //    classMatches.MatchingItems.Returns(matches);
+        //    evaluator.MatchItems(
+        //        Arg.Any<IEnumerable<ITypeDefinition>>(),
+        //        Arg.Any<IEnumerable<ITypeDefinition>>(),
+        //        Arg.Any<Func<ITypeDefinition, ITypeDefinition, bool>>()).Returns(classMatches, interfaceMatches);
+        //    comparer.CompareItems(match, options).Returns(results);
+
+        //    var sut = new ChangeCalculator(evaluator, comparer, _logger);
+
+        //    var actual = sut.CalculateChanges(oldTypes, newTypes, options);
+
+        //    actual.ChangeType.Should().Be(SemVerChangeType.Feature);
+        //    actual.ComparisonResults.Should().HaveCount(1);
+        //    actual.ComparisonResults.Should().Contain(result);
+        //}
+
+        //[Fact]
+        //public void CalculateChangesReturnsFeatureWhenMatchingInterfaceAddsNewItem()
+        //{
+        //    var options = Model.UsingModule<ConfigurationModule>().Create<ComparerOptions>();
+        //    var oldTypes = Array.Empty<TestClassDefinition>();
+        //    var newTypes = Array.Empty<TestClassDefinition>();
+        //    var matchingInterface = new TestInterfaceDefinition();
+        //    var itemChanged = new TestPropertyDefinition();
+        //    var match = new ItemMatch<ITypeDefinition>(matchingInterface, matchingInterface);
+        //    var matches = new List<ItemMatch<ITypeDefinition>> {match};
+        //    var result = ComparisonResult.ItemAdded(itemChanged);
+        //    var results = new List<ComparisonResult> {result};
+
+        //    var classMatches = Substitute.For<IMatchResults<ITypeDefinition>>();
+        //    var interfaceMatches = Substitute.For<IMatchResults<ITypeDefinition>>();
+        //    var evaluator = Substitute.For<IMatchEvaluator>();
+        //    var comparer = Substitute.For<ITypeComparer>();
+
+        //    interfaceMatches.MatchingItems.Returns(matches);
+        //    evaluator.MatchItems(
+        //        Arg.Any<IEnumerable<ITypeDefinition>>(),
+        //        Arg.Any<IEnumerable<ITypeDefinition>>(),
+        //        Arg.Any<Func<ITypeDefinition, ITypeDefinition, bool>>()).Returns(interfaceMatches, classMatches);
+        //    comparer.CompareItems(match, options).Returns(results);
+
+        //    var sut = new ChangeCalculator(evaluator, comparer, _logger);
+
+        //    var actual = sut.CalculateChanges(oldTypes, newTypes, options);
+
+        //    actual.ChangeType.Should().Be(SemVerChangeType.Feature);
+        //    actual.ComparisonResults.Should().HaveCount(1);
+        //    actual.ComparisonResults.Should().Contain(result);
+        //}
+
+        //[Theory]
+        //[InlineData("MyNamespace.MyClass", "MyNamespace.SomeOtherClass", false)]
+        //[InlineData("MyNamespace.MyClass", "MyNamespace.MyClass", true)]
+        //public void CalculateChangesMatchesTypesUsingFullName(string firstName, string secondName, bool expected)
+        //{
+        //    var options = Model.UsingModule<ConfigurationModule>().Create<ComparerOptions>();
+        //    var oldTypes = Array.Empty<TestClassDefinition>();
+        //    var newTypes = Array.Empty<TestClassDefinition>();
+        //    var firstClass = new TestClassDefinition().Set(x => x.FullName = firstName);
+        //    var secondClass = new TestClassDefinition().Set(x => x.FullName = secondName);
+        //    var match = new ItemMatch<ITypeDefinition>(firstClass, secondClass);
+        //    var matches = new List<ItemMatch<ITypeDefinition>> { match };
+        //    var result = ComparisonResult.NoChange(match);
+        //    var results = new List<ComparisonResult> { result };
+
+        //    var classMatches = Substitute.For<IMatchResults<ITypeDefinition>>();
+        //    var interfaceMatches = Substitute.For<IMatchResults<ITypeDefinition>>();
+        //    var evaluator = Substitute.For<IMatchEvaluator>();
+        //    var comparer = Substitute.For<ITypeComparer>();
+
+        //    classMatches.MatchingItems.Returns(matches);
+        //    evaluator.MatchItems(
+        //        Arg.Any<IEnumerable<ITypeDefinition>>(),
+        //        Arg.Any<IEnumerable<ITypeDefinition>>(),
+        //        Arg.Any<Func<ITypeDefinition, ITypeDefinition, bool>>()).Returns(classMatches, interfaceMatches);
+        //    evaluator.When(x => x.MatchItems(
+        //        Arg.Any<IEnumerable<ITypeDefinition>>(),
+        //        Arg.Any<IEnumerable<ITypeDefinition>>(),
+        //        Arg.Any<Func<ITypeDefinition, ITypeDefinition, bool>>())).Do(x =>
+        //    {
+        //        var actual = x.Arg<Func<ITypeDefinition, ITypeDefinition, bool>>()(firstClass, secondClass);
+
+        //        actual.Should().Be(expected);
+        //    });
+        //    comparer.CompareItems(match, options).Returns(results);
+
+        //    var sut = new ChangeCalculator(evaluator, comparer, _logger);
+
+        //    var actual = sut.CalculateChanges(oldTypes, newTypes, options);
+
+        //    actual.ChangeType.Should().Be(SemVerChangeType.None);
+        //    actual.ComparisonResults.Should().BeEmpty();
+        //}
+
+        //[Fact]
+        //public void CalculateChangesReturnsNoChangeWhenMatchingClassFound()
+        //{
+        //    var options = Model.UsingModule<ConfigurationModule>().Create<ComparerOptions>();
+        //    var oldTypes = Array.Empty<TestClassDefinition>();
+        //    var newTypes = Array.Empty<TestClassDefinition>();
+        //    var matchingClass = new TestClassDefinition();
+        //    var match = new ItemMatch<ITypeDefinition>(matchingClass, matchingClass);
+        //    var matches = new List<ItemMatch<ITypeDefinition>> {match};
+        //    var result = ComparisonResult.NoChange(match);
+        //    var results = new List<ComparisonResult> {result};
+
+        //    var classMatches = Substitute.For<IMatchResults<ITypeDefinition>>();
+        //    var interfaceMatches = Substitute.For<IMatchResults<ITypeDefinition>>();
+        //    var evaluator = Substitute.For<IMatchEvaluator>();
+        //    var comparer = Substitute.For<ITypeComparer>();
+
+        //    classMatches.MatchingItems.Returns(matches);
+        //    evaluator.MatchItems(
+        //        Arg.Any<IEnumerable<ITypeDefinition>>(),
+        //        Arg.Any<IEnumerable<ITypeDefinition>>(),
+        //        Arg.Any<Func<ITypeDefinition, ITypeDefinition, bool>>()).Returns(classMatches, interfaceMatches);
+        //    comparer.CompareItems(match, options).Returns(results);
+
+        //    var sut = new ChangeCalculator(evaluator, comparer, _logger);
+
+        //    var actual = sut.CalculateChanges(oldTypes, newTypes, options);
+
+        //    actual.ChangeType.Should().Be(SemVerChangeType.None);
+        //    actual.ComparisonResults.Should().BeEmpty();
+        //}
+
+        //[Fact]
+        //public void CalculateChangesReturnsNoChangeWhenMatchingInterfaceFound()
+        //{
+        //    var options = Model.UsingModule<ConfigurationModule>().Create<ComparerOptions>();
+        //    var oldTypes = Array.Empty<TestClassDefinition>();
+        //    var newTypes = Array.Empty<TestClassDefinition>();
+        //    var matchingInterface = new TestInterfaceDefinition();
+        //    var match = new ItemMatch<ITypeDefinition>(matchingInterface, matchingInterface);
+        //    var matches = new List<ItemMatch<ITypeDefinition>> {match};
+        //    var result = ComparisonResult.NoChange(match);
+        //    var results = new List<ComparisonResult> {result};
+
+        //    var classMatches = Substitute.For<IMatchResults<ITypeDefinition>>();
+        //    var interfaceMatches = Substitute.For<IMatchResults<ITypeDefinition>>();
+        //    var evaluator = Substitute.For<IMatchEvaluator>();
+        //    var comparer = Substitute.For<ITypeComparer>();
+
+        //    interfaceMatches.MatchingItems.Returns(matches);
+        //    evaluator.MatchItems(
+        //        Arg.Any<IEnumerable<ITypeDefinition>>(),
+        //        Arg.Any<IEnumerable<ITypeDefinition>>(),
+        //        Arg.Any<Func<ITypeDefinition, ITypeDefinition, bool>>()).Returns(interfaceMatches, classMatches);
+        //    comparer.CompareItems(match, options).Returns(results);
+
+        //    var sut = new ChangeCalculator(evaluator, comparer, _logger);
+
+        //    var actual = sut.CalculateChanges(oldTypes, newTypes, options);
+
+        //    actual.ChangeType.Should().Be(SemVerChangeType.None);
+        //    actual.ComparisonResults.Should().BeEmpty();
+        //}
+
+        //[Fact]
+        //public void CalculateChangesReturnsNoChangeWithEmptyTypes()
+        //{
+        //    var options = Model.UsingModule<ConfigurationModule>().Create<ComparerOptions>();
+        //    var oldTypes = Array.Empty<TestClassDefinition>();
+        //    var newTypes = Array.Empty<TestClassDefinition>();
+        //    var classMatches = Substitute.For<IMatchResults<IClassDefinition>>();
+        //    var interfaceMatches = Substitute.For<IMatchResults<IInterfaceDefinition>>();
+
+        //    var evaluator = Substitute.For<IMatchEvaluator>();
+        //    var comparer = Substitute.For<ITypeComparer>();
+
+        //    evaluator.MatchItems(
+        //        Arg.Any<IEnumerable<IClassDefinition>>(),
+        //        Arg.Any<IEnumerable<IClassDefinition>>(),
+        //        Arg.Any<Func<IClassDefinition, IClassDefinition, bool>>()).Returns(classMatches);
+        //    evaluator.MatchItems(
+        //        Arg.Any<IEnumerable<IInterfaceDefinition>>(),
+        //        Arg.Any<IEnumerable<IInterfaceDefinition>>(),
+        //        Arg.Any<Func<IInterfaceDefinition, IInterfaceDefinition, bool>>()).Returns(interfaceMatches);
+
+        //    var sut = new ChangeCalculator(evaluator, comparer, _logger);
+
+        //    var actual = sut.CalculateChanges(oldTypes, newTypes, options);
+
+        //    actual.ChangeType.Should().Be(SemVerChangeType.None);
+        //    actual.ComparisonResults.Should().BeEmpty();
+        //}
+
+        //[Fact]
+        //public void CalculateChangesThrowsExceptionWithNullNewTypes()
+        //{
+        //    var options = Model.UsingModule<ConfigurationModule>().Create<ComparerOptions>();
+        //    var oldTypes = Array.Empty<TestClassDefinition>();
+
+        //    var evaluator = Substitute.For<IMatchEvaluator>();
+        //    var comparer = Substitute.For<ITypeComparer>();
+
+        //    var sut = new ChangeCalculator(evaluator, comparer, _logger);
+
+        //    Action action = () => sut.CalculateChanges(oldTypes, null!, options);
+
+        //    action.Should().Throw<ArgumentNullException>();
+        //}
+
+        //[Fact]
+        //public void CalculateChangesThrowsExceptionWithNullOldTypes()
+        //{
+        //    var options = Model.UsingModule<ConfigurationModule>().Create<ComparerOptions>();
+        //    var newTypes = Array.Empty<TestClassDefinition>();
+
+        //    var evaluator = Substitute.For<IMatchEvaluator>();
+        //    var comparer = Substitute.For<ITypeComparer>();
+
+        //    var sut = new ChangeCalculator(evaluator, comparer, _logger);
+
+        //    Action action = () => sut.CalculateChanges(null!, newTypes, options);
+
+        //    action.Should().Throw<ArgumentNullException>();
+        //}
+
+        //[Fact]
+        //[SuppressMessage(
+        //    "Usage",
+        //    "CA1806:Do not ignore method results",
+        //    Justification = "Testing constructor guard clause")]
+        //public void DoesNotThrowExceptionWhenCreatedWithNullLogger()
+        //{
+        //    var evaluator = Substitute.For<IMatchEvaluator>();
+        //    var comparer = Substitute.For<ITypeComparer>();
+
+        //    // ReSharper disable once ObjectCreationAsStatement
+        //    Action action = () => new ChangeCalculator(evaluator, comparer, null);
+
+        //    action.Should().NotThrow();
+        //}
+
+        //[Fact]
+        //[SuppressMessage(
+        //    "Usage",
+        //    "CA1806:Do not ignore method results",
+        //    Justification = "Testing constructor guard clause")]
+        //public void ThrowsExceptionWhenCreatedWithNullComparer()
+        //{
+        //    var evaluator = Substitute.For<IMatchEvaluator>();
+
+        //    // ReSharper disable once ObjectCreationAsStatement
+        //    Action action = () => new ChangeCalculator(evaluator, null!, _logger);
+
+        //    action.Should().Throw<ArgumentNullException>();
+        //}
+
+        //[Fact]
+        //[SuppressMessage(
+        //    "Usage",
+        //    "CA1806:Do not ignore method results",
+        //    Justification = "Testing constructor guard clause")]
+        //public void ThrowsExceptionWhenCreatedWithNullEvaluator()
+        //{
+        //    var comparer = Substitute.For<ITypeComparer>();
+
+        //    // ReSharper disable once ObjectCreationAsStatement
+        //    Action action = () => new ChangeCalculator(null!, comparer, _logger);
+
+        //    action.Should().Throw<ArgumentNullException>();
+        //}
     }
 }

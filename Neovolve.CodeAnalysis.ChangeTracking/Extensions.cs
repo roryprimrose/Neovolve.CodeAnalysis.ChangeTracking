@@ -5,9 +5,9 @@
 
     internal static class Extensions
     {
-        public static IList<T> FastToList<T>(this IEnumerable<T> values)
+        public static List<T> FastToList<T>(this IEnumerable<T> values)
         {
-            if (values is IList<T> list)
+            if (values is List<T> list)
             {
                 return list;
             }

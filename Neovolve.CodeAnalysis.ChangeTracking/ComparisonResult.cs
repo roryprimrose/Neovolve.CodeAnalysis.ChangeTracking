@@ -1,36 +1,44 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking
 {
     using System;
+    using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
     public class ComparisonResult
     {
-        private ComparisonResult(SemVerChangeType changeType, MemberDefinition? oldMember, MemberDefinition? newMember,
+        private ComparisonResult(SemVerChangeType changeType, IItemDefinition? oldItem, IItemDefinition? newItem,
             string message)
         {
             ChangeType = changeType;
-            OldMember = oldMember;
-            NewMember = newMember;
+            OldItem = oldItem;
+            NewItem = newItem;
             Message = message;
         }
 
-        public static ComparisonResult MemberAdded(MemberDefinition newMember)
+        public static ComparisonResult ItemAdded(IItemDefinition newItem)
         {
-            newMember = newMember ?? throw new ArgumentNullException(nameof(newMember));
+            newItem = newItem ?? throw new ArgumentNullException(nameof(newItem));
 
-            var message = newMember + " has been added";
+            var isVisible = true;
+
+            if (newItem is IElementDefinition element)
+            {
+                isVisible = element.IsVisible;
+            }
+
+            var message = newItem.Description + " has been added";
 
             var changeType = SemVerChangeType.None;
 
-            if (newMember.IsVisible)
+            if (isVisible)
             {
                 changeType = SemVerChangeType.Feature;
             }
 
-            return new ComparisonResult(changeType, null, newMember, message);
+            return new ComparisonResult(changeType, null, newItem, message);
         }
 
-        public static ComparisonResult MemberChanged(SemVerChangeType changeType, MemberMatch match,
-            string message)
+        public static ComparisonResult ItemChanged<T>(SemVerChangeType changeType, ItemMatch<T> match,
+            string message) where T : IItemDefinition
         {
             changeType = changeType == SemVerChangeType.None
                 ? throw new ArgumentException("The changeType cannot be None to indicate a change on the member.",
@@ -39,40 +47,47 @@
             match = match ?? throw new ArgumentNullException(nameof(match));
             message = string.IsNullOrWhiteSpace(message) ? throw new ArgumentException(nameof(message)) : message;
 
-            return new ComparisonResult(changeType, match.OldMember, match.NewMember, message);
+            return new ComparisonResult(changeType, match.OldItem, match.NewItem, message);
         }
 
-        public static ComparisonResult MemberRemoved(MemberDefinition oldMember)
+        public static ComparisonResult ItemRemoved(IItemDefinition oldItem)
         {
-            oldMember = oldMember ?? throw new ArgumentNullException(nameof(oldMember));
+            oldItem = oldItem ?? throw new ArgumentNullException(nameof(oldItem));
 
-            var message = oldMember + " has been removed";
+            var isVisible = true;
+
+            if (oldItem is IElementDefinition element)
+            {
+                isVisible = element.IsVisible;
+            }
+
+            var message = oldItem.Description + " has been removed";
 
             var changeType = SemVerChangeType.None;
 
-            if (oldMember.IsVisible)
+            if (isVisible)
             {
                 changeType = SemVerChangeType.Breaking;
             }
 
-            return new ComparisonResult(changeType, oldMember, null, message);
+            return new ComparisonResult(changeType, oldItem, null, message);
         }
 
-        public static ComparisonResult NoChange(MemberMatch match)
+        public static ComparisonResult NoChange<T>(ItemMatch<T> match) where T : IItemDefinition
         {
             match = match ?? throw new ArgumentNullException(nameof(match));
 
-            var message = "No change on " + match.OldMember;
+            var message = "No change on " + match.NewItem.Description;
 
-            return new ComparisonResult(SemVerChangeType.None, match.OldMember, match.NewMember, message);
+            return new ComparisonResult(SemVerChangeType.None, match.OldItem, match.NewItem, message);
         }
 
         public SemVerChangeType ChangeType { get; }
 
         public string Message { get; }
 
-        public MemberDefinition? NewMember { get; }
+        public IItemDefinition? NewItem { get; }
 
-        public MemberDefinition? OldMember { get; }
+        public IItemDefinition? OldItem { get; }
     }
 }

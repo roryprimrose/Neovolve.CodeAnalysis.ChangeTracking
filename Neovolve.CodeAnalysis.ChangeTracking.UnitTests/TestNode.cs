@@ -7,16 +7,6 @@
 
     public static class TestNode
     {
-        public const string Field = @"
-namespace MyNamespace 
-{
-    public class MyClass
-    {
-        public string MyField;
-    }   
-}
-";
-
         public const string ClassProperty = @"
 namespace MyNamespace 
 {
@@ -27,6 +17,42 @@ namespace MyNamespace
             get;
             set;
         }
+    }   
+}
+";
+
+        public const string MultipleClasses = @"
+namespace MyNamespace 
+{
+    public class FirstClass
+    {
+    }   
+
+    public class SecondClass
+    {
+    }   
+}
+";
+
+        public const string MultipleInterfaces = @"
+namespace MyNamespace 
+{
+    public interface FirstInterface
+    {
+    }   
+
+    public interface SecondInterface
+    {
+    }   
+}
+";
+
+        public const string Field = @"
+namespace MyNamespace 
+{
+    public class MyClass
+    {
+        public string MyField;
     }   
 }
 ";

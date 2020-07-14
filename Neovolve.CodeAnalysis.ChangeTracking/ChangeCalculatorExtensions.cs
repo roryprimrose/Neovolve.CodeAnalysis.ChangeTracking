@@ -1,22 +1,36 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using EnsureThat;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
+    using Microsoft.CodeAnalysis.CSharp.Syntax;
+    using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
     public static class ChangeCalculatorExtensions
     {
-        public static async Task<ChangeCalculatorResult> CalculateChanges(this IChangeCalculator calculator,
+        public static Task<ChangeCalculatorResult> CalculateChanges(
+            this IChangeCalculator calculator,
             IEnumerable<CodeSource> oldCode,
-            IEnumerable<CodeSource> newCode, CancellationToken cancellationToken)
+            IEnumerable<CodeSource> newCode,
+            CancellationToken cancellationToken)
         {
-            Ensure.Any.IsNotNull(calculator, nameof(calculator));
-            Ensure.Any.IsNotNull(oldCode, nameof(oldCode));
-            Ensure.Any.IsNotNull(newCode, nameof(newCode));
+            return CalculateChanges(calculator, oldCode, newCode, ComparerOptions.Default, cancellationToken);
+        }
+
+        public static async Task<ChangeCalculatorResult> CalculateChanges(
+            this IChangeCalculator calculator,
+            IEnumerable<CodeSource> oldCode,
+            IEnumerable<CodeSource> newCode,
+            ComparerOptions options,
+            CancellationToken cancellationToken)
+        {
+            calculator = calculator ?? throw new ArgumentNullException(nameof(calculator));
+            oldCode = oldCode ?? throw new ArgumentNullException(nameof(oldCode));
+            newCode = newCode ?? throw new ArgumentNullException(nameof(newCode));
 
             // Convert all the old and new code into SyntaxNode objects
             var oldTask = ParseCode(oldCode, cancellationToken);
@@ -27,18 +41,98 @@
             var oldNodes = oldTask.Result;
             var newNodes = newTask.Result;
 
-            return calculator.CalculateChanges(oldNodes, newNodes);
+            return CalculateChanges(calculator, oldNodes, newNodes, options);
         }
 
-        private static async Task<IEnumerable<SyntaxNode>> ParseCode(IEnumerable<CodeSource> sources,
+        public static ChangeCalculatorResult CalculateChanges(
+            this IChangeCalculator calculator,
+            IEnumerable<SyntaxNode> oldNodes,
+            IEnumerable<SyntaxNode> newNodes)
+        {
+            var options = ComparerOptions.Default;
+
+            return CalculateChanges(calculator, oldNodes, newNodes, options);
+        }
+
+        public static ChangeCalculatorResult CalculateChanges(
+            this IChangeCalculator calculator,
+            IEnumerable<SyntaxNode> oldNodes,
+            IEnumerable<SyntaxNode> newNodes,
+            ComparerOptions options)
+        {
+            calculator = calculator ?? throw new ArgumentNullException(nameof(calculator));
+            oldNodes = oldNodes ?? throw new ArgumentNullException(nameof(oldNodes));
+            newNodes = newNodes ?? throw new ArgumentNullException(nameof(newNodes));
+            options = options ?? throw new ArgumentNullException(nameof(options));
+
+            var oldTypes = ResolveDeclaredTypes(oldNodes);
+            var newTypes = ResolveDeclaredTypes(newNodes);
+
+            return calculator.CalculateChanges(oldTypes, newTypes, options);
+        }
+
+        private static async Task<IEnumerable<SyntaxNode>> ParseCode(
+            IEnumerable<CodeSource> sources,
             CancellationToken cancellationToken)
         {
             var syntaxTrees = sources.Select(x => CSharpSyntaxTree.ParseText(x.Contents, null, x.FilePath));
-            var tasks = syntaxTrees.Select(x => x.GetRootAsync(cancellationToken)).ToList();
+            var tasks = syntaxTrees.Select(x => x.GetRootAsync(cancellationToken)).FastToList();
 
             await Task.WhenAll(tasks).ConfigureAwait(false);
 
             return tasks.Select(x => x.Result);
+        }
+
+        private static IEnumerable<ITypeDefinition> ResolveDeclaredTypes(IEnumerable<SyntaxNode> nodes)
+        {
+            var resolvedTypes = new List<ITypeDefinition>();
+
+            foreach (var node in nodes)
+            {
+                var matches = ResolveDeclaredTypes(node);
+
+                if (matches.Count > 0)
+                {
+                    resolvedTypes.AddRange(matches);
+                }
+            }
+
+            return resolvedTypes;
+        }
+
+        private static IList<ITypeDefinition> ResolveDeclaredTypes(SyntaxNode node)
+        {
+            List<ITypeDefinition> resolvedTypes = new List<ITypeDefinition>();
+
+            if (node is ClassDeclarationSyntax classNode)
+            {
+                var typeDefinition = new ClassDefinition(classNode);
+
+                resolvedTypes.Add(typeDefinition);
+            }
+            else if (node is InterfaceDeclarationSyntax interfaceNode)
+            {
+                var typeDefinition = new InterfaceDefinition(interfaceNode);
+
+                resolvedTypes.Add(typeDefinition);
+            }
+            else
+            {
+                // Recursively search all the child nodes
+                var childNodes = node.ChildNodes();
+
+                foreach (var childNode in childNodes)
+                {
+                    var matches = ResolveDeclaredTypes(childNode);
+
+                    if (matches.Count > 0)
+                    {
+                        resolvedTypes.AddRange(matches);
+                    }
+                }
+            }
+
+            return resolvedTypes;
         }
     }
 }

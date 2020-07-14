@@ -1,0 +1,79 @@
+﻿namespace Neovolve.CodeAnalysis.ChangeTracking
+{
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Microsoft.Extensions.Logging;
+    using Neovolve.CodeAnalysis.ChangeTracking.Models;
+
+    public abstract class MatchProcessor<T> : IMatchProcessor<T> where T : IItemDefinition
+    {
+        private readonly IMatchEvaluator _evaluator;
+        private readonly ILogger? _logger;
+
+        protected MatchProcessor(IMatchEvaluator evaluator, ILogger? logger)
+        {
+            _evaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
+            _logger = logger;
+        }
+
+        public virtual IEnumerable<ComparisonResult> CalculateChanges(IEnumerable<T> oldItems,
+            IEnumerable<T> newItems, ComparerOptions options)
+        {
+            var matchingNodes = _evaluator.MatchItems(oldItems, newItems, IsItemMatch);
+
+            // Record any visible types that have been added
+            // Types added which are not publicly visible are ignored
+            foreach (var memberAdded in matchingNodes.ItemsAdded.Where(IsVisible))
+            {
+                var result = ComparisonResult.ItemAdded(memberAdded);
+
+                yield return result;
+            }
+
+            // Record any visible types that have been removed
+            // Types removed which are not publicly visible are ignored
+            foreach (var memberRemoved in matchingNodes.ItemsRemoved.Where(IsVisible))
+            {
+                var result = ComparisonResult.ItemRemoved(memberRemoved);
+
+                yield return result;
+            }
+
+            // Check all the matches for a breaking change or feature added
+            foreach (var match in matchingNodes.MatchingItems)
+            {
+                var comparisonResults = CompareMatchingItems(match, options);
+
+                foreach (var result in comparisonResults)
+                {
+                    yield return result;
+                }
+            }
+        }
+
+        protected abstract IEnumerable<ComparisonResult> EvaluateMatch(ItemMatch<T> match, ComparerOptions options);
+
+        protected abstract bool IsItemMatch(T oldItem, T newItem);
+        protected abstract bool IsVisible(T item);
+
+        private IEnumerable<ComparisonResult> CompareMatchingItems(ItemMatch<T> match,
+            ComparerOptions options)
+        {
+            var results = EvaluateMatch(match, options);
+
+            foreach (var result in results)
+            {
+                if (result.ChangeType == SemVerChangeType.None)
+                {
+                    _logger?.LogDebug(result.Message);
+
+                    // Don't add comparison results to the outcome where it looks like there is no change
+                    continue;
+                }
+
+                yield return result;
+            }
+        }
+    }
+}

@@ -3,16 +3,7 @@
 
 namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
-    using System.Threading.Tasks;
-    using FluentAssertions;
-    using Microsoft.CodeAnalysis;
     using Microsoft.Extensions.Logging;
-    using ModelBuilder;
-    using NSubstitute;
-    using Xunit;
     using Xunit.Abstractions;
 
     public class MatchEvaluatorTests
@@ -24,303 +15,303 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             _logger = output.BuildLogger();
         }
 
-        [Fact]
-        public void CompareNodesReturnsEmptyResultsWhenNoNodesToEvaluate()
-        {
-            var scanner = Substitute.For<INodeScanner>();
-            var matcher = Substitute.For<IMemberMatcher>();
-            var matches = new List<IMemberMatcher> {matcher};
-            var oldNodes = new List<SyntaxNode>();
-            var newNodes = new List<SyntaxNode>();
+        //[Fact]
+        //public void CompareNodesReturnsEmptyResultsWhenNoNodesToEvaluate()
+        //{
+        //    var scanner = Substitute.For<INodeScanner>();
+        //    var matcher = Substitute.For<IMemberMatcher>();
+        //    var matches = new List<IMemberMatcher> {matcher};
+        //    var oldNodes = new List<SyntaxNode>();
+        //    var newNodes = new List<SyntaxNode>();
 
-            var sut = new MatchEvaluator(scanner, matches, _logger);
+        //    var sut = new MatchEvaluator(scanner, matches, _logger);
 
-            var actual = sut.CompareNodes(oldNodes, newNodes);
+        //    var actual = sut.MatchItems(oldNodes, newNodes);
 
-            actual.Matches.Should().BeEmpty();
-            actual.NewMembersNotMatched.Should().BeEmpty();
-            actual.OldMembersNotMatched.Should().BeEmpty();
-        }
+        //    actual.MatchingItems.Should().BeEmpty();
+        //    actual.NewMembersNotMatched.Should().BeEmpty();
+        //    actual.OldMembersNotMatched.Should().BeEmpty();
+        //}
 
-        [Fact]
-        public async Task CompareNodesReturnsMatch()
-        {
-            var scanner = Substitute.For<INodeScanner>();
-            var matcher = Substitute.For<IMemberMatcher>();
+        //[Fact]
+        //public async Task CompareNodesReturnsMatch()
+        //{
+        //    var scanner = Substitute.For<INodeScanner>();
+        //    var matcher = Substitute.For<IMemberMatcher>();
 
-            var member = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
-            var oldMembers = new List<MemberDefinition> {member};
-            var newMembers = new List<MemberDefinition> {member};
-            var matches = new List<IMemberMatcher> {matcher};
-            var match = new MemberMatch(member, member);
-            var oldNodes = new List<SyntaxNode>
-            {
-                await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
-            };
-            var newNodes = new List<SyntaxNode>
-            {
-                await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
-            };
+        //    var member = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
+        //    var oldMembers = new List<OldMemberDefinition> {member};
+        //    var newMembers = new List<OldMemberDefinition> {member};
+        //    var matches = new List<IMemberMatcher> {matcher};
+        //    var match = new ItemMatch<>(member, member);
+        //    var oldNodes = new List<SyntaxNode>
+        //    {
+        //        await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
+        //    };
+        //    var newNodes = new List<SyntaxNode>
+        //    {
+        //        await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
+        //    };
 
-            scanner.FindDefinitions(oldNodes).Returns(oldMembers);
-            scanner.FindDefinitions(newNodes).Returns(newMembers);
-            matcher.IsSupported(member).Returns(true);
-            matcher.GetMatch(member, member).Returns(match);
+        //    scanner.FindDefinitions(oldNodes).Returns(oldMembers);
+        //    scanner.FindDefinitions(newNodes).Returns(newMembers);
+        //    matcher.IsSupported(member).Returns(true);
+        //    matcher.GetMatch(member, member).Returns(match);
 
-            var sut = new MatchEvaluator(scanner, matches, _logger);
+        //    var sut = new MatchEvaluator(scanner, matches, _logger);
 
-            var actual = sut.CompareNodes(oldNodes, newNodes);
+        //    var actual = sut.MatchItems(oldNodes, newNodes);
 
-            actual.Matches.Should().HaveCount(1);
-            actual.NewMembersNotMatched.Should().BeEmpty();
-            actual.OldMembersNotMatched.Should().BeEmpty();
-        }
+        //    actual.MatchingItems.Should().HaveCount(1);
+        //    actual.NewMembersNotMatched.Should().BeEmpty();
+        //    actual.OldMembersNotMatched.Should().BeEmpty();
+        //}
 
-        [Fact]
-        public async Task CompareNodesReturnsMatchWithNewMemberNotMatched()
-        {
-            var scanner = Substitute.For<INodeScanner>();
-            var matcher = Substitute.For<IMemberMatcher>();
+        //[Fact]
+        //public async Task CompareNodesReturnsMatchWithNewMemberNotMatched()
+        //{
+        //    var scanner = Substitute.For<INodeScanner>();
+        //    var matcher = Substitute.For<IMemberMatcher>();
 
-            var member = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
-            var memberNotMatched = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
-            var oldMembers = new List<MemberDefinition> {member};
-            var newMembers = new List<MemberDefinition> {member, memberNotMatched};
-            var matches = new List<IMemberMatcher> {matcher};
-            var match = new MemberMatch(member, member);
-            var oldNodes = new List<SyntaxNode>
-            {
-                await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
-            };
-            var newNodes = new List<SyntaxNode>
-            {
-                await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
-            };
+        //    var member = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
+        //    var memberNotMatched = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>();
+        //    var oldMembers = new List<OldMemberDefinition> {member};
+        //    var newMembers = new List<OldMemberDefinition> {member, memberNotMatched};
+        //    var matches = new List<IMemberMatcher> {matcher};
+        //    var match = new ItemMatch<>(member, member);
+        //    var oldNodes = new List<SyntaxNode>
+        //    {
+        //        await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
+        //    };
+        //    var newNodes = new List<SyntaxNode>
+        //    {
+        //        await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
+        //    };
 
-            scanner.FindDefinitions(oldNodes).Returns(oldMembers);
-            scanner.FindDefinitions(newNodes).Returns(newMembers);
-            matcher.IsSupported(Arg.Any<MemberDefinition>()).Returns(true);
-            matcher.GetMatch(member, member).Returns(match);
+        //    scanner.FindDefinitions(oldNodes).Returns(oldMembers);
+        //    scanner.FindDefinitions(newNodes).Returns(newMembers);
+        //    matcher.IsSupported(Arg.Any<OldMemberDefinition>()).Returns(true);
+        //    matcher.GetMatch(member, member).Returns(match);
 
-            var sut = new MatchEvaluator(scanner, matches, _logger);
+        //    var sut = new MatchEvaluator(scanner, matches, _logger);
 
-            var actual = sut.CompareNodes(oldNodes, newNodes);
+        //    var actual = sut.MatchItems(oldNodes, newNodes);
 
-            actual.Matches.Should().HaveCount(1);
-            actual.NewMembersNotMatched.Should().HaveCount(1);
-            actual.NewMembersNotMatched.Should().Contain(memberNotMatched);
-            actual.OldMembersNotMatched.Should().BeEmpty();
-        }
+        //    actual.MatchingItems.Should().HaveCount(1);
+        //    actual.NewMembersNotMatched.Should().HaveCount(1);
+        //    actual.NewMembersNotMatched.Should().Contain(memberNotMatched);
+        //    actual.OldMembersNotMatched.Should().BeEmpty();
+        //}
 
-        [Fact]
-        public async Task CompareNodesReturnsMatchWithOldMemberNotMatched()
-        {
-            var scanner = Substitute.For<INodeScanner>();
-            var matcher = Substitute.For<IMemberMatcher>();
+        //[Fact]
+        //public async Task CompareNodesReturnsMatchWithOldMemberNotMatched()
+        //{
+        //    var scanner = Substitute.For<INodeScanner>();
+        //    var matcher = Substitute.For<IMemberMatcher>();
 
-            var member = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
-            var memberNotMatched = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
-            var oldMembers = new List<MemberDefinition> {member, memberNotMatched};
-            var newMembers = new List<MemberDefinition> {member};
-            var matches = new List<IMemberMatcher> {matcher};
-            var match = new MemberMatch(member, member);
-            var oldNodes = new List<SyntaxNode>
-            {
-                await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
-            };
-            var newNodes = new List<SyntaxNode>
-            {
-                await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
-            };
+        //    var member = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
+        //    var memberNotMatched = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>();
+        //    var oldMembers = new List<OldMemberDefinition> {member, memberNotMatched};
+        //    var newMembers = new List<OldMemberDefinition> {member};
+        //    var matches = new List<IMemberMatcher> {matcher};
+        //    var match = new ItemMatch<>(member, member);
+        //    var oldNodes = new List<SyntaxNode>
+        //    {
+        //        await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
+        //    };
+        //    var newNodes = new List<SyntaxNode>
+        //    {
+        //        await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
+        //    };
 
-            scanner.FindDefinitions(oldNodes).Returns(oldMembers);
-            scanner.FindDefinitions(newNodes).Returns(newMembers);
-            matcher.IsSupported(Arg.Any<MemberDefinition>()).Returns(true);
-            matcher.GetMatch(member, member).Returns(match);
+        //    scanner.FindDefinitions(oldNodes).Returns(oldMembers);
+        //    scanner.FindDefinitions(newNodes).Returns(newMembers);
+        //    matcher.IsSupported(Arg.Any<OldMemberDefinition>()).Returns(true);
+        //    matcher.GetMatch(member, member).Returns(match);
 
-            var sut = new MatchEvaluator(scanner, matches, _logger);
+        //    var sut = new MatchEvaluator(scanner, matches, _logger);
 
-            var actual = sut.CompareNodes(oldNodes, newNodes);
+        //    var actual = sut.MatchItems(oldNodes, newNodes);
 
-            actual.Matches.Should().HaveCount(1);
-            actual.NewMembersNotMatched.Should().BeEmpty();
-            actual.OldMembersNotMatched.Should().HaveCount(1);
-            actual.OldMembersNotMatched.Should().Contain(memberNotMatched);
-        }
+        //    actual.MatchingItems.Should().HaveCount(1);
+        //    actual.NewMembersNotMatched.Should().BeEmpty();
+        //    actual.OldMembersNotMatched.Should().HaveCount(1);
+        //    actual.OldMembersNotMatched.Should().Contain(memberNotMatched);
+        //}
 
-        [Fact]
-        public async Task CompareNodesReturnsSkipsProcessingNewMemberWhenNoMatcherNotSupported()
-        {
-            var scanner = Substitute.For<INodeScanner>();
-            var matcher = Substitute.For<IMemberMatcher>();
+        //[Fact]
+        //public async Task CompareNodesReturnsSkipsProcessingNewMemberWhenNoMatcherNotSupported()
+        //{
+        //    var scanner = Substitute.For<INodeScanner>();
+        //    var matcher = Substitute.For<IMemberMatcher>();
 
-            var member = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
-            var memberNotMatched = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
-            var oldMembers = new List<MemberDefinition> {member};
-            var newMembers = new List<MemberDefinition> {member, memberNotMatched};
-            var matches = new List<IMemberMatcher> {matcher};
-            var match = new MemberMatch(member, member);
-            var oldNodes = new List<SyntaxNode>
-            {
-                await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
-            };
-            var newNodes = new List<SyntaxNode>
-            {
-                await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
-            };
+        //    var member = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
+        //    var memberNotMatched = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>();
+        //    var oldMembers = new List<OldMemberDefinition> {member};
+        //    var newMembers = new List<OldMemberDefinition> {member, memberNotMatched};
+        //    var matches = new List<IMemberMatcher> {matcher};
+        //    var match = new ItemMatch<>(member, member);
+        //    var oldNodes = new List<SyntaxNode>
+        //    {
+        //        await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
+        //    };
+        //    var newNodes = new List<SyntaxNode>
+        //    {
+        //        await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
+        //    };
 
-            scanner.FindDefinitions(oldNodes).Returns(oldMembers);
-            scanner.FindDefinitions(newNodes).Returns(newMembers);
-            matcher.IsSupported(member).Returns(true);
-            matcher.GetMatch(member, member).Returns(match);
+        //    scanner.FindDefinitions(oldNodes).Returns(oldMembers);
+        //    scanner.FindDefinitions(newNodes).Returns(newMembers);
+        //    matcher.IsSupported(member).Returns(true);
+        //    matcher.GetMatch(member, member).Returns(match);
 
-            var sut = new MatchEvaluator(scanner, matches, _logger);
+        //    var sut = new MatchEvaluator(scanner, matches, _logger);
 
-            var actual = sut.CompareNodes(oldNodes, newNodes);
+        //    var actual = sut.MatchItems(oldNodes, newNodes);
 
-            actual.Matches.Should().HaveCount(1);
-            actual.NewMembersNotMatched.Should().HaveCount(1);
-            actual.NewMembersNotMatched.Should().Contain(memberNotMatched);
-            actual.OldMembersNotMatched.Should().BeEmpty();
-        }
+        //    actual.MatchingItems.Should().HaveCount(1);
+        //    actual.NewMembersNotMatched.Should().HaveCount(1);
+        //    actual.NewMembersNotMatched.Should().Contain(memberNotMatched);
+        //    actual.OldMembersNotMatched.Should().BeEmpty();
+        //}
 
-        [Fact]
-        public async Task CompareNodesSupportsNullLogger()
-        {
-            var scanner = Substitute.For<INodeScanner>();
-            var matcher = Substitute.For<IMemberMatcher>();
+        //[Fact]
+        //public async Task CompareNodesSupportsNullLogger()
+        //{
+        //    var scanner = Substitute.For<INodeScanner>();
+        //    var matcher = Substitute.For<IMemberMatcher>();
 
-            var member = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
-            var oldMembers = new List<MemberDefinition> {member};
-            var newMembers = new List<MemberDefinition> {member};
-            var matches = new List<IMemberMatcher> {matcher};
-            var match = new MemberMatch(member, member);
-            var oldNodes = new List<SyntaxNode>
-            {
-                await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
-            };
-            var newNodes = new List<SyntaxNode>
-            {
-                await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
-            };
+        //    var member = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
+        //    var oldMembers = new List<OldMemberDefinition> {member};
+        //    var newMembers = new List<OldMemberDefinition> {member};
+        //    var matches = new List<IMemberMatcher> {matcher};
+        //    var match = new ItemMatch<>(member, member);
+        //    var oldNodes = new List<SyntaxNode>
+        //    {
+        //        await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
+        //    };
+        //    var newNodes = new List<SyntaxNode>
+        //    {
+        //        await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
+        //    };
 
-            scanner.FindDefinitions(oldNodes).Returns(oldMembers);
-            scanner.FindDefinitions(newNodes).Returns(newMembers);
-            matcher.IsSupported(member).Returns(true);
-            matcher.GetMatch(member, member).Returns(match);
+        //    scanner.FindDefinitions(oldNodes).Returns(oldMembers);
+        //    scanner.FindDefinitions(newNodes).Returns(newMembers);
+        //    matcher.IsSupported(member).Returns(true);
+        //    matcher.GetMatch(member, member).Returns(match);
 
-            var sut = new MatchEvaluator(scanner, matches, null);
+        //    var sut = new MatchEvaluator(scanner, matches, null);
 
-            var actual = sut.CompareNodes(oldNodes, newNodes);
+        //    var actual = sut.MatchItems(oldNodes, newNodes);
 
-            actual.Matches.Should().HaveCount(1);
-            actual.NewMembersNotMatched.Should().BeEmpty();
-            actual.OldMembersNotMatched.Should().BeEmpty();
-        }
+        //    actual.MatchingItems.Should().HaveCount(1);
+        //    actual.NewMembersNotMatched.Should().BeEmpty();
+        //    actual.OldMembersNotMatched.Should().BeEmpty();
+        //}
 
-        [Fact]
-        public async Task CompareNodesThrowsExceptionWhenNoSupportingMatcherFound()
-        {
-            var scanner = Substitute.For<INodeScanner>();
-            var matcher = Substitute.For<IMemberMatcher>();
+        //[Fact]
+        //public async Task CompareNodesThrowsExceptionWhenNoSupportingMatcherFound()
+        //{
+        //    var scanner = Substitute.For<INodeScanner>();
+        //    var matcher = Substitute.For<IMemberMatcher>();
 
-            var member = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
-            var memberNotMatched = Model.UsingModule<ConfigurationModule>().Create<MemberDefinition>();
-            var oldMembers = new List<MemberDefinition> {member, memberNotMatched};
-            var newMembers = new List<MemberDefinition> {member};
-            var matches = new List<IMemberMatcher> {matcher};
-            var oldNodes = new List<SyntaxNode>
-            {
-                await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
-            };
-            var newNodes = new List<SyntaxNode>
-            {
-                await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
-            };
+        //    var member = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
+        //    var memberNotMatched = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>();
+        //    var oldMembers = new List<OldMemberDefinition> {member, memberNotMatched};
+        //    var newMembers = new List<OldMemberDefinition> {member};
+        //    var matches = new List<IMemberMatcher> {matcher};
+        //    var oldNodes = new List<SyntaxNode>
+        //    {
+        //        await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
+        //    };
+        //    var newNodes = new List<SyntaxNode>
+        //    {
+        //        await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
+        //    };
 
-            scanner.FindDefinitions(oldNodes).Returns(oldMembers);
-            scanner.FindDefinitions(newNodes).Returns(newMembers);
+        //    scanner.FindDefinitions(oldNodes).Returns(oldMembers);
+        //    scanner.FindDefinitions(newNodes).Returns(newMembers);
 
-            var sut = new MatchEvaluator(scanner, matches, _logger);
+        //    var sut = new MatchEvaluator(scanner, matches, _logger);
 
-            Action action = () => sut.CompareNodes(oldNodes, newNodes);
+        //    Action action = () => sut.MatchItems(oldNodes, newNodes);
 
-            action.Should().Throw<InvalidOperationException>();
-        }
+        //    action.Should().Throw<InvalidOperationException>();
+        //}
 
-        [Fact]
-        public async Task CompareNodesThrowsExceptionWithNullNewNodes()
-        {
-            var scanner = Substitute.For<INodeScanner>();
-            var matcher = Substitute.For<IMemberMatcher>();
-            var matches = new List<IMemberMatcher> {matcher};
-            var oldNodes = new List<SyntaxNode>
-            {
-                await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
-            };
+        //[Fact]
+        //public async Task CompareNodesThrowsExceptionWithNullNewNodes()
+        //{
+        //    var scanner = Substitute.For<INodeScanner>();
+        //    var matcher = Substitute.For<IMemberMatcher>();
+        //    var matches = new List<IMemberMatcher> {matcher};
+        //    var oldNodes = new List<SyntaxNode>
+        //    {
+        //        await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
+        //    };
 
-            var sut = new MatchEvaluator(scanner, matches, _logger);
+        //    var sut = new MatchEvaluator(scanner, matches, _logger);
 
-            Action action = () => sut.CompareNodes(oldNodes, null!);
+        //    Action action = () => sut.MatchItems(oldNodes, null!);
 
-            action.Should().Throw<ArgumentNullException>();
-        }
+        //    action.Should().Throw<ArgumentNullException>();
+        //}
 
-        [Fact]
-        public async Task CompareNodesThrowsExceptionWithNullOldNodes()
-        {
-            var scanner = Substitute.For<INodeScanner>();
-            var matcher = Substitute.For<IMemberMatcher>();
-            var matches = new List<IMemberMatcher> {matcher};
-            var newNodes = new List<SyntaxNode>
-            {
-                await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
-            };
+        //[Fact]
+        //public async Task CompareNodesThrowsExceptionWithNullOldNodes()
+        //{
+        //    var scanner = Substitute.For<INodeScanner>();
+        //    var matcher = Substitute.For<IMemberMatcher>();
+        //    var matches = new List<IMemberMatcher> {matcher};
+        //    var newNodes = new List<SyntaxNode>
+        //    {
+        //        await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
+        //    };
 
-            var sut = new MatchEvaluator(scanner, matches, _logger);
+        //    var sut = new MatchEvaluator(scanner, matches, _logger);
 
-            Action action = () => sut.CompareNodes(null!, newNodes);
+        //    Action action = () => sut.MatchItems(null!, newNodes);
 
-            action.Should().Throw<ArgumentNullException>();
-        }
+        //    action.Should().Throw<ArgumentNullException>();
+        //}
 
-        [Fact]
-        [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification =
-            "Testing constructor guard clause")]
-        public void ThrowsExceptionWhenCreatedWithEmptyMatches()
-        {
-            var scanner = Substitute.For<INodeScanner>();
+        //[Fact]
+        //[SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification =
+        //    "Testing constructor guard clause")]
+        //public void ThrowsExceptionWhenCreatedWithEmptyMatches()
+        //{
+        //    var scanner = Substitute.For<INodeScanner>();
 
-            var matches = new List<IMemberMatcher>();
+        //    var matches = new List<IMemberMatcher>();
 
-            Action action = () => new MatchEvaluator(scanner, matches, _logger);
+        //    Action action = () => new MatchEvaluator(scanner, matches, _logger);
 
-            action.Should().Throw<ArgumentException>();
-        }
+        //    action.Should().Throw<ArgumentException>();
+        //}
 
-        [Fact]
-        [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification =
-            "Testing constructor guard clause")]
-        public void ThrowsExceptionWhenCreatedWithNullMatches()
-        {
-            var scanner = Substitute.For<INodeScanner>();
+        //[Fact]
+        //[SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification =
+        //    "Testing constructor guard clause")]
+        //public void ThrowsExceptionWhenCreatedWithNullMatches()
+        //{
+        //    var scanner = Substitute.For<INodeScanner>();
 
-            Action action = () => new MatchEvaluator(scanner, null!, _logger);
+        //    Action action = () => new MatchEvaluator(scanner, null!, _logger);
 
-            action.Should().Throw<ArgumentNullException>();
-        }
+        //    action.Should().Throw<ArgumentNullException>();
+        //}
 
-        [Fact]
-        [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification =
-            "Testing constructor guard clause")]
-        public void ThrowsExceptionWhenCreatedWithNullScanner()
-        {
-            var matcher = Substitute.For<IMemberMatcher>();
-            var matches = new List<IMemberMatcher> {matcher};
+        //[Fact]
+        //[SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification =
+        //    "Testing constructor guard clause")]
+        //public void ThrowsExceptionWhenCreatedWithNullScanner()
+        //{
+        //    var matcher = Substitute.For<IMemberMatcher>();
+        //    var matches = new List<IMemberMatcher> {matcher};
 
-            Action action = () => new MatchEvaluator(null!, matches, _logger);
+        //    Action action = () => new MatchEvaluator(null!, matches, _logger);
 
-            action.Should().Throw<ArgumentNullException>();
-        }
+        //    action.Should().Throw<ArgumentNullException>();
+        //}
     }
 }

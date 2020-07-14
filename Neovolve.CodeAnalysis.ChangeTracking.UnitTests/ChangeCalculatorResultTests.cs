@@ -3,7 +3,7 @@
     using System;
     using System.Linq;
     using FluentAssertions;
-    using ModelBuilder;
+    using Neovolve.CodeAnalysis.ChangeTracking.UnitTests.TestModels;
     using Xunit;
 
     public class ChangeCalculatorResultTests
@@ -11,10 +11,10 @@
         [Fact]
         public void AddDoesNotDowngradeChangeTypeWhenNewResultAddedWithLesserChangeType()
         {
-            var firstMember = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
-            var secondMember = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
-            var firstResult = ComparisonResult.MemberRemoved(firstMember);
-            var secondResult = ComparisonResult.MemberAdded(secondMember);
+            var firstMember = new TestPropertyDefinition();
+            var secondMember = new TestPropertyDefinition();
+            var firstResult = ComparisonResult.ItemRemoved(firstMember);
+            var secondResult = ComparisonResult.ItemAdded(secondMember);
 
             var sut = new ChangeCalculatorResult();
 
@@ -30,8 +30,8 @@
         [Fact]
         public void AddSetsChangeTypeToInitialResult()
         {
-            var member = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
-            var result = ComparisonResult.MemberAdded(member);
+            var member = new TestPropertyDefinition();
+            var result = ComparisonResult.ItemAdded(member);
 
             var sut = new ChangeCalculatorResult();
 
@@ -55,10 +55,10 @@
         [Fact]
         public void AddUpgradesChangeTypeWhenNewResultAddedWithGreaterChangeType()
         {
-            var firstMember = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
-            var secondMember = Model.UsingModule<ConfigurationModule>().Create<PropertyDefinition>();
-            var firstResult = ComparisonResult.MemberAdded(firstMember);
-            var secondResult = ComparisonResult.MemberRemoved(secondMember);
+            var firstMember = new TestPropertyDefinition();
+            var secondMember = new TestPropertyDefinition();
+            var firstResult = ComparisonResult.ItemAdded(firstMember);
+            var secondResult = ComparisonResult.ItemRemoved(secondMember);
 
             var sut = new ChangeCalculatorResult();
 

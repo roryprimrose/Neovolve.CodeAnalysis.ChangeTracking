@@ -1,69 +1,128 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking
 {
-    using EnsureThat;
+    using System;
+    using System.Collections.Generic;
+    using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
-    public class PropertyComparer : MemberComparer
+    public class PropertyComparer : MemberComparer<IPropertyDefinition>, IPropertyComparer
     {
-        public override ComparisonResult Compare(MemberMatch match)
+        private readonly IPropertyAccessorMatchProcessor _accessorProcessor;
+
+        public PropertyComparer(IPropertyAccessorMatchProcessor accessorProcessor,
+            IAttributeMatchProcessor attributeProcessor) : base(attributeProcessor)
         {
-            Ensure.Any.IsNotNull(match, nameof(match));
-
-            var oldProperty = (PropertyDefinition) match.OldMember;
-            var newProperty = (PropertyDefinition) match.NewMember;
-
-            var result = base.Compare(match);
-
-            if (result.ChangeType == SemVerChangeType.Breaking)
-            {
-                // Doesn't matter if the property accessibility indicates feature or no change, breaking trumps everything
-                return result;
-            }
-
-            if (oldProperty.IsVisible == false)
-            {
-                // The property is either still not public or now becoming public
-                // It doesn't matter if the accessors have been changed to be less visible
-                return result;
-            }
-
-            if (oldProperty.CanRead == newProperty.CanRead
-                && oldProperty.CanWrite == newProperty.CanWrite)
-            {
-                // The accessibility of the property get/set members are equal so the changeType already calculated will be accurate
-                return result;
-            }
-
-            // Calculate breaking changes
-            if (oldProperty.CanRead
-                && newProperty.CanRead == false)
-            {
-                var message = oldProperty + " removed get accessor availability";
-
-                return ComparisonResult.MemberChanged(SemVerChangeType.Breaking, match,
-                    message);
-            }
-
-            if (oldProperty.CanWrite
-                && newProperty.CanWrite == false)
-            {
-                var message = oldProperty + " removed set accessor availability";
-
-                return ComparisonResult.MemberChanged(SemVerChangeType.Breaking, match,
-                    message);
-            }
-
-            // Only other possible scenario at this point is that the old property couldn't read/write but the new property can
-            var accessorMessage = oldProperty + " get and/or set is now available";
-
-            return ComparisonResult.MemberChanged(SemVerChangeType.Feature, match,
-                accessorMessage);
+            _accessorProcessor = accessorProcessor ?? throw new ArgumentNullException(nameof(accessorProcessor));
         }
 
-        public override bool IsSupported(MemberDefinition member)
+        protected override void EvaluateMatch(
+            ItemMatch<IPropertyDefinition> match,
+            ComparerOptions options, ChangeResultAggregator aggregator)
         {
-            Ensure.Any.IsNotNull(member, nameof(member));
+            RunComparisonStep(EvaluateModifierChanges, match, options, aggregator);
+            RunComparisonStep(EvaluatePropertyAccessors, match, options, aggregator);
 
-            return member.GetType() == typeof(PropertyDefinition);
+            base.EvaluateMatch(match, options, aggregator);
+        }
+
+        private static void EvaluateModifierChanges(
+            ItemMatch<IPropertyDefinition> match,
+            ComparerOptions options,
+            ChangeResultAggregator aggregator)
+        {
+            var change = MemberModifiersChangeTable.CalculateChange(match);
+
+            if (change == SemVerChangeType.None)
+            {
+                return;
+            }
+
+            var newModifiers = match.NewItem.GetDeclaredModifiers();
+            var oldModifiers = match.OldItem.GetDeclaredModifiers();
+
+            if (string.IsNullOrWhiteSpace(oldModifiers))
+            {
+                // Modifiers have been added where there were previously none defined
+                var suffix = string.Empty;
+
+                if (newModifiers.Contains(" "))
+                {
+                    // There is more than one modifier
+                    suffix = "s";
+                }
+
+                var result = ComparisonResult.ItemChanged(
+                    change,
+                    match,
+                    $"{match.NewItem.Description} has added the {newModifiers} modifier{suffix}");
+
+                aggregator.AddResult(result);
+            }
+            else if (string.IsNullOrWhiteSpace(newModifiers))
+            {
+                // All previous modifiers have been removed
+                var suffix = string.Empty;
+
+                if (oldModifiers.Contains(" "))
+                {
+                    // There is more than one modifier
+                    suffix = "s";
+                }
+
+                var result = ComparisonResult.ItemChanged(
+                    change,
+                    match,
+                    $"{match.NewItem.Description} has removed the {oldModifiers} modifier{suffix}");
+
+                aggregator.AddResult(result);
+            }
+            else
+            {
+                // Modifiers have been changed
+                var suffix = string.Empty;
+
+                if (oldModifiers.Contains(" "))
+                {
+                    // There is more than one modifier
+                    suffix = "s";
+                }
+
+                var result = ComparisonResult.ItemChanged(
+                    change,
+                    match,
+                    $"{match.NewItem.Description} has changed the modifier{suffix} from {oldModifiers} to {newModifiers}");
+
+                aggregator.AddResult(result);
+            }
+        }
+
+        private static IEnumerable<IPropertyAccessorDefinition> GetAccessorList(IPropertyDefinition definition)
+        {
+            var accessors = new List<IPropertyAccessorDefinition>();
+
+            if (definition.GetAccessor != null)
+            {
+                accessors.Add(definition.GetAccessor);
+            }
+
+            if (definition.SetAccessor != null)
+            {
+                accessors.Add(definition.SetAccessor);
+            }
+
+            return accessors;
+        }
+
+        private void EvaluatePropertyAccessors(
+            ItemMatch<IPropertyDefinition> match,
+            ComparerOptions options,
+            ChangeResultAggregator aggregator)
+        {
+            var oldAccessors = GetAccessorList(match.OldItem);
+            var newAccessors = GetAccessorList(match.NewItem);
+
+            var changes = _accessorProcessor.CalculateChanges(oldAccessors, newAccessors, options);
+
+            aggregator.AddResults(changes);
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking
 {
-    using System.Collections.Generic;
     using Microsoft.Extensions.Logging;
 
     public static class ChangeCalculatorFactory
@@ -12,25 +11,23 @@
 
         public static IChangeCalculator BuildCalculator(ILogger? logger)
         {
-            var resolvers = new List<INodeResolver>
-            {
-                new FieldResolver(),
-                new MethodResolver(),
-                new PropertyResolver()
-            };
-            var scanner = new NodeScanner(resolvers, logger);
-            var matchers = new List<IMemberMatcher>
-            {
-                new MemberMatcher()
-            };
-            var evaluator = new MatchEvaluator(scanner, matchers, logger);
-            var comparers = new List<MemberComparer>
-            {
-                new MemberComparer(),
-                new PropertyComparer()
-            };
+            var evaluator = new MatchEvaluator();
 
-            return new ChangeCalculator(evaluator, comparers, logger);
+            var attributeComparer = new AttributeComparer();
+            var attributeProcessor = new AttributeMatchProcessor(attributeComparer, evaluator, logger);
+            
+            var fieldComparer = new FieldComparer(attributeProcessor);
+            var fieldProcessor = new FieldMatchProcessor(fieldComparer, evaluator, logger);
+            
+            var propertyAccessorComparer = new PropertyAccessorComparer(attributeProcessor);
+            var propertyAccessorProcessor = new PropertyAccessorMatchProcessor(propertyAccessorComparer, evaluator, logger);
+            var propertyComparer = new PropertyComparer(propertyAccessorProcessor, attributeProcessor);
+            var propertyProcessor = new PropertyMatchProcessor(propertyComparer, evaluator, logger);
+            
+            var typeComparer = new TypeComparer(fieldProcessor, propertyProcessor, attributeProcessor);
+            var typeProcessor = new TypeMatchProcessor(typeComparer, evaluator, logger);
+
+            return new ChangeCalculator(typeProcessor, logger);
         }
     }
 }

@@ -1,80 +1,161 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking
 {
-    using System;
-    using EnsureThat;
+    using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
-    public class MemberComparer : IMemberComparer
+    public abstract class MemberComparer<T> : ElementComparer<T>, IMemberComparer<T> where T : IMemberDefinition
     {
-        public virtual ComparisonResult Compare(MemberMatch match)
+        protected MemberComparer(IAttributeMatchProcessor attributeProcessor) : base(attributeProcessor)
         {
-            Ensure.Any.IsNotNull(match, nameof(match));
-
-            if (string.Equals(match.OldMember.Namespace, match.NewMember.Namespace, StringComparison.Ordinal) == false)
-            {
-                throw new InvalidOperationException(
-                    "The two members cannot be compared because they have different Namespace values.");
-            }
-
-            if (string.Equals(match.OldMember.OwningType, match.NewMember.OwningType, StringComparison.Ordinal) ==
-                false)
-            {
-                throw new InvalidOperationException(
-                    "The two members cannot be compared because they have different OwningType values.");
-            }
-
-            if (string.Equals(match.OldMember.Name, match.NewMember.Name, StringComparison.Ordinal) == false)
-            {
-                throw new InvalidOperationException(
-                    "The two members cannot be compared because they have different Name values.");
-            }
-
-            if (match.OldMember.IsVisible == false
-                && match.NewMember.IsVisible == false)
-            {
-                // It doesn't matter if there is a change to the return type, the member isn't visible anyway
-                return ComparisonResult.NoChange(match);
-            }
-
-            if (match.OldMember.IsVisible
-                && match.NewMember.IsVisible == false)
-            {
-                // The member was public but isn't now, breaking change
-                var message = match.OldMember + " changed scope from public";
-
-                return ComparisonResult.MemberChanged(SemVerChangeType.Breaking, match,
-                    message);
-            }
-
-            if (match.OldMember.IsVisible == false
-                && match.NewMember.IsVisible)
-            {
-                // The member return type may have changed, but the member is only now becoming public
-                // This is a feature because the public API didn't break even if the return type has changed
-                var message = match.OldMember + " changed scope to public";
-
-                return ComparisonResult.MemberChanged(SemVerChangeType.Feature, match,
-                    message);
-            }
-
-            // At this point both the old member and the new member are public
-            if (match.OldMember.ReturnType.Equals(match.NewMember.ReturnType, StringComparison.Ordinal) == false)
-            {
-                var message = match.OldMember +
-                              $" changed return type from {match.OldMember.ReturnType} to {match.NewMember.ReturnType}";
-
-                return ComparisonResult.MemberChanged(SemVerChangeType.Breaking, match,
-                    message);
-            }
-
-            return ComparisonResult.NoChange(match);
         }
 
-        public virtual bool IsSupported(MemberDefinition member)
+        protected override void EvaluateMatch(
+            ItemMatch<T> match,
+            ComparerOptions options,
+            ChangeResultAggregator aggregator)
         {
-            Ensure.Any.IsNotNull(member, nameof(member));
+            RunComparisonStep(EvaluateAccessModifierChanges, match, options, aggregator);
+            RunComparisonStep(EvaluateReturnTypeChanges, match, options, aggregator);
+        }
 
-            // We don't want to support derived types here
-            return member.GetType() == typeof(MemberDefinition);
+        private static void EvaluateAccessModifierChanges(
+            ItemMatch<T> match,
+            ComparerOptions options,
+            ChangeResultAggregator aggregator)
+        {
+            var change = AccessModifierChangeTable.CalculateChange(match);
+
+            if (change == SemVerChangeType.None)
+            {
+                return;
+            }
+
+            var newModifiers = match.NewItem.GetDeclaredAccessModifiers();
+            var oldModifiers = match.OldItem.GetDeclaredAccessModifiers();
+
+            if (string.IsNullOrWhiteSpace(oldModifiers))
+            {
+                // Modifiers have been added where there were previously none defined
+                var suffix = string.Empty;
+
+                if (newModifiers.Contains(" "))
+                {
+                    // There is more than one modifier
+                    suffix = "s";
+                }
+
+                var result = ComparisonResult.ItemChanged(
+                    change,
+                    match,
+                    $"{match.NewItem.Description} has added the {newModifiers} access modifier{suffix}");
+
+                aggregator.AddResult(result);
+            }
+            else if (string.IsNullOrWhiteSpace(newModifiers))
+            {
+                // All previous modifiers have been removed
+                var suffix = string.Empty;
+
+                if (oldModifiers.Contains(" "))
+                {
+                    // There is more than one modifier
+                    suffix = "s";
+                }
+
+                var result = ComparisonResult.ItemChanged(
+                    change,
+                    match,
+                    $"{match.NewItem.Description} has removed the {oldModifiers} access modifier{suffix}");
+
+                aggregator.AddResult(result);
+            }
+            else
+            {
+                // Modifiers have been changed
+                var suffix = string.Empty;
+
+                if (oldModifiers.Contains(" "))
+                {
+                    // There is more than one modifier
+                    suffix = "s";
+                }
+
+                var result = ComparisonResult.ItemChanged(
+                    change,
+                    match,
+                    $"{match.NewItem.Description} has changed the access modifier{suffix} from {oldModifiers} to {newModifiers}");
+
+                aggregator.AddResult(result);
+            }
+        }
+
+        private static void EvaluateReturnTypeChanges(ItemMatch<T> match, ComparerOptions options,
+            ChangeResultAggregator aggregator)
+        {
+            if (match.OldItem.ReturnType != match.NewItem.ReturnType)
+            {
+                var genericTypeMatch = MapGenericTypeName(match);
+
+                if (genericTypeMatch != match.NewItem.ReturnType)
+                {
+                    var result = ComparisonResult.ItemChanged(
+                        SemVerChangeType.Breaking,
+                        match,
+                        $"{match.NewItem.Description} return type has changed from {match.OldItem.ReturnType} to {match.NewItem.ReturnType}");
+
+                    aggregator.AddResult(result);
+                }
+            }
+        }
+
+        private static string MapGenericTypeName(ItemMatch<T> match)
+        {
+            var typeName = match.OldItem.ReturnType;
+
+            // We need to determine all the generic type parameters from the complete parent hierarchy not just the parent type
+
+            var oldDeclaringType = match.OldItem.DeclaringType;
+            var newDeclaringType = match.NewItem.DeclaringType;
+
+            return ResolveRenamedGenericTypeParameter(typeName, oldDeclaringType, newDeclaringType);
+        }
+
+        private static string ResolveRenamedGenericTypeParameter(
+            string originalTypeName,
+            ITypeDefinition oldDeclaringType,
+            ITypeDefinition newDeclaringType)
+        {
+            if (oldDeclaringType.DeclaringType != null
+                && newDeclaringType.DeclaringType != null)
+            {
+                // Search the parents
+                var mappedTypeName = ResolveRenamedGenericTypeParameter(
+                    originalTypeName,
+                    oldDeclaringType.DeclaringType,
+                    newDeclaringType.DeclaringType);
+
+                if (mappedTypeName != originalTypeName)
+                {
+                    // We have found the generic type parameter that has been renamed somewhere in the parent type hierarchy
+                    return mappedTypeName;
+                }
+            }
+
+            var oldGenericTypes = oldDeclaringType.GenericTypeParameters.FastToList();
+
+            if (oldGenericTypes.Count == 0)
+            {
+                return originalTypeName;
+            }
+
+            var newGenericTypes = newDeclaringType.GenericTypeParameters.FastToList();
+            var typeIndex = oldGenericTypes.IndexOf(originalTypeName);
+
+            if (typeIndex == -1)
+            {
+                return originalTypeName;
+            }
+
+            return newGenericTypes[typeIndex];
         }
     }
 }

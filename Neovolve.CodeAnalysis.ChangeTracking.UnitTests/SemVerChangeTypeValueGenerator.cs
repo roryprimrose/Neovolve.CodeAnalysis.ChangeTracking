@@ -6,7 +6,7 @@
 
     public class SemVerChangeTypeValueGenerator : ValueGeneratorBase
     {
-        protected override object? Generate(IExecuteStrategy executeStrategy, Type type, string referenceName)
+        protected override object? Generate(IExecuteStrategy executeStrategy, Type type, string? referenceName)
         {
             var values = Enum.GetValues(typeof(SemVerChangeType));
 
@@ -16,7 +16,7 @@
             return values.GetValue(valueIndex);
         }
 
-        protected override bool IsMatch(IBuildChain buildChain, Type type, string referenceName)
+        protected override bool IsMatch(IBuildChain buildChain, Type type, string? referenceName)
         {
             return type == typeof(SemVerChangeType);
         }

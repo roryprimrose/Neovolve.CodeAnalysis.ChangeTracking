@@ -1,10 +1,12 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking
 {
+    using System;
     using System.Collections.Generic;
-    using Microsoft.CodeAnalysis;
+    using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
     public interface IMatchEvaluator
     {
-        MatchResults CompareNodes(IEnumerable<SyntaxNode> oldNodes, IEnumerable<SyntaxNode> newNodes);
+        IMatchResults<T> MatchItems<T>(IEnumerable<T> oldItems, IEnumerable<T> newItems, Func<T, T, bool> evaluator)
+            where T : IItemDefinition;
     }
 }

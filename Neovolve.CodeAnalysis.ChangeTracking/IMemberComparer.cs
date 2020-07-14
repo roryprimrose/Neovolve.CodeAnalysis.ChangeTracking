@@ -1,9 +1,8 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking
 {
-    public interface IMemberComparer
-    {
-        ComparisonResult Compare(MemberMatch match);
+    using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
-        bool IsSupported(MemberDefinition member);
+    public interface IMemberComparer<T> : IElementComparer<T> where T : IMemberDefinition
+    {
     }
 }
