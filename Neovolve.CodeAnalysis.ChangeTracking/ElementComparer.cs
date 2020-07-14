@@ -31,7 +31,7 @@
                 return aggregator.Results;
             }
 
-            RunComparisonStep(EvaluateMatch, match, options, aggregator);
+            RunComparisonStep(EvaluateMatch, match, options, aggregator, true);
             RunComparisonStep(EvaluateAttributeChanges, match, options, aggregator);
 
             return aggregator.Results;

@@ -27,9 +27,9 @@
             options = options ?? throw new ArgumentNullException(nameof(options));
 
             RunComparisonStep(CompareDefinitionType, match, options, aggregator, true);
-            RunComparisonStep(EvaluateAccessModifierChanges, match, options, aggregator, true);
-            RunComparisonStep(EvaluateClassModifierChanges, match, options, aggregator, true);
-            RunComparisonStep(EvaluateGenericTypeDefinitionChanges, match, options, aggregator, true);
+            RunComparisonStep(EvaluateAccessModifierChanges, match, options, aggregator);
+            RunComparisonStep(EvaluateClassModifierChanges, match, options, aggregator);
+            RunComparisonStep(EvaluateGenericTypeDefinitionChanges, match, options, aggregator);
             RunComparisonStep(EvaluateImplementedTypeChanges, match, options, aggregator, true);
             RunComparisonStep(EvaluateFieldChanges, match, options, aggregator);
             RunComparisonStep(EvaluatePropertyChanges, match, options, aggregator);
