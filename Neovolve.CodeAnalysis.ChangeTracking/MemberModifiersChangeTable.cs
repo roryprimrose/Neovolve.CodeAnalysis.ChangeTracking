@@ -9,14 +9,6 @@
             _modifierChanges =
                 BuildModifierChanges();
 
-        public static SemVerChangeType CalculateChange(ItemMatch<IFieldDefinition> match)
-        {
-            var oldModifiers = match.OldItem.Modifiers;
-            var newModifiers = match.NewItem.Modifiers;
-
-            return CalculateChange(oldModifiers, newModifiers);
-        }
-
         public static SemVerChangeType CalculateChange(ItemMatch<IPropertyDefinition> match)
         {
             var oldModifiers = match.OldItem.Modifiers;

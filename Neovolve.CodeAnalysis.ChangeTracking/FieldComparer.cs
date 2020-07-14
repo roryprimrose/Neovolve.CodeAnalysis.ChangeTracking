@@ -22,40 +22,67 @@
             ComparerOptions options,
             ChangeResultAggregator aggregator)
         {
-            var change = MemberModifiersChangeTable.CalculateChange(match);
+            var change = FieldModifiersChangeTable.CalculateChange(match);
 
             if (change == SemVerChangeType.None)
             {
                 return;
             }
 
-            if (match.OldItem.Modifiers == MemberModifiers.None)
+            var newModifiers = match.NewItem.GetDeclaredModifiers();
+            var oldModifiers = match.OldItem.GetDeclaredModifiers();
+
+            if (string.IsNullOrWhiteSpace(oldModifiers))
             {
                 // Modifiers have been added where there were previously none defined
+                var suffix = string.Empty;
+
+                if (newModifiers.Contains(" "))
+                {
+                    // There is more than one modifier
+                    suffix = "s";
+                }
+
                 var result = ComparisonResult.ItemChanged(
                     change,
                     match,
-                    $"{match.NewItem.Description} has added the modifiers {match.NewItem.Modifiers}");
+                    $"{match.NewItem.Description} has added the {newModifiers} modifier{suffix}");
 
                 aggregator.AddResult(result);
             }
-            else if (match.NewItem.Modifiers == MemberModifiers.None)
+            else if (string.IsNullOrWhiteSpace(newModifiers))
             {
                 // All previous modifiers have been removed
+                var suffix = string.Empty;
+
+                if (oldModifiers.Contains(" "))
+                {
+                    // There is more than one modifier
+                    suffix = "s";
+                }
+
                 var result = ComparisonResult.ItemChanged(
                     change,
                     match,
-                    $"{match.NewItem.Description} has removed the modifiers {match.OldItem.Modifiers}");
+                    $"{match.NewItem.Description} has removed the {oldModifiers} modifier{suffix}");
 
                 aggregator.AddResult(result);
             }
             else
             {
                 // Modifiers have been changed
+                var suffix = string.Empty;
+
+                if (oldModifiers.Contains(" "))
+                {
+                    // There is more than one modifier
+                    suffix = "s";
+                }
+
                 var result = ComparisonResult.ItemChanged(
                     change,
                     match,
-                    $"{match.NewItem.Description} has changed modifiers from {match.OldItem.Modifiers} to {match.NewItem.Modifiers}");
+                    $"{match.NewItem.Description} has changed the modifier{suffix} from {oldModifiers} to {newModifiers}");
 
                 aggregator.AddResult(result);
             }

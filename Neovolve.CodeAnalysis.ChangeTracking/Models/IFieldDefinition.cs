@@ -9,6 +9,6 @@
         /// <summary>
         ///     Gets the property modifiers.
         /// </summary>
-        MemberModifiers Modifiers { get; }
+        FieldModifiers Modifiers { get; }
     }
 }

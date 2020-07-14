@@ -69,7 +69,55 @@
         }
 
         [Theory]
-        [ClassData(typeof(MemberModifiersDataSet))]
+        [ClassData(typeof(AccessModifierDataSet))]
+        public async Task EvaluatesChangeOfClassAccessModifiers(
+            string oldModifiers,
+            string newModifiers,
+            SemVerChangeType expected)
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new CodeSource(SingleField.Replace("public string MyField", oldModifiers + " string MyField"))
+            };
+            var newCode = new List<CodeSource>
+            {
+                new CodeSource(SingleField.Replace("public string MyField", newModifiers + " string MyField"))
+            };
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            OutputResult(result);
+
+            result.ChangeType.Should().Be(expected);
+        }
+
+        [Theory]
+        [InlineData("", "", SemVerChangeType.None)]
+        [InlineData("", "readonly", SemVerChangeType.Breaking)]
+        [InlineData("", "static", SemVerChangeType.Breaking)]
+        [InlineData("", "static readonly", SemVerChangeType.Breaking)]
+        [InlineData("", "readonly static", SemVerChangeType.Breaking)]
+        [InlineData("readonly", "", SemVerChangeType.Breaking)]
+        [InlineData("readonly", "readonly", SemVerChangeType.None)]
+        [InlineData("readonly", "static", SemVerChangeType.Breaking)]
+        [InlineData("readonly", "static readonly", SemVerChangeType.Breaking)]
+        [InlineData("readonly", "readonly static", SemVerChangeType.Breaking)]
+        [InlineData("static", "", SemVerChangeType.Breaking)]
+        [InlineData("static", "readonly", SemVerChangeType.Breaking)]
+        [InlineData("static", "static", SemVerChangeType.None)]
+        [InlineData("static", "static readonly", SemVerChangeType.Breaking)]
+        [InlineData("static", "readonly static", SemVerChangeType.Breaking)]
+        [InlineData("static readonly", "", SemVerChangeType.Breaking)]
+        [InlineData("static readonly", "readonly", SemVerChangeType.Breaking)]
+        [InlineData("static readonly", "static", SemVerChangeType.Breaking)]
+        [InlineData("static readonly", "static readonly", SemVerChangeType.None)]
+        [InlineData("static readonly", "readonly static", SemVerChangeType.None)]
+        [InlineData("readonly static", "", SemVerChangeType.Breaking)]
+        [InlineData("readonly static", "readonly", SemVerChangeType.Breaking)]
+        [InlineData("readonly static", "static", SemVerChangeType.Breaking)]
+        [InlineData("readonly static", "static readonly", SemVerChangeType.None)]
+        [InlineData("readonly static", "readonly static", SemVerChangeType.None)]
         public async Task EvaluatesChangeOfModifiers(string oldModifiers, string newModifiers,
             SemVerChangeType expected)
         {

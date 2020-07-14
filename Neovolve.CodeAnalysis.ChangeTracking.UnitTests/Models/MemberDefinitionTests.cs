@@ -66,7 +66,7 @@
         {
             var declaringType = Substitute.For<IClassDefinition>();
 
-            var node = await TestNode.FindNode<FieldDeclarationSyntax>(FieldDefinitionCode.GetSetField)
+            var node = await TestNode.FindNode<FieldDeclarationSyntax>(FieldDefinitionCode.SingleField)
                 .ConfigureAwait(false);
 
             var sut = new Wrapper(declaringType, node);

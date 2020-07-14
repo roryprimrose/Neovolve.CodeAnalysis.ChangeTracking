@@ -31,77 +31,27 @@
             FullRawName = DeclaringType.FullRawName + "." + name;
         }
 
-        private static MemberModifiers DetermineModifiers(FieldDeclarationSyntax node)
+        private static FieldModifiers DetermineModifiers(FieldDeclarationSyntax node)
         {
-            // TODO: Make this an extension method that is shared with PropertyDefinition
-            var isVirtual = node.Modifiers.HasModifier(SyntaxKind.VirtualKeyword);
-            var isAbstract = node.Modifiers.HasModifier(SyntaxKind.AbstractKeyword);
-            var isNew = node.Modifiers.HasModifier(SyntaxKind.NewKeyword);
-            var isOverride = node.Modifiers.HasModifier(SyntaxKind.OverrideKeyword);
             var isStatic = node.Modifiers.HasModifier(SyntaxKind.StaticKeyword);
-            var isSealed = node.Modifiers.HasModifier(SyntaxKind.SealedKeyword);
-
-            if (isNew)
-            {
-                if (isAbstract)
-                {
-                    if (isVirtual)
-                    {
-                        return MemberModifiers.NewAbstractVirtual;
-                    }
-
-                    return MemberModifiers.NewAbstract;
-                }
-
-                if (isStatic)
-                {
-                    return MemberModifiers.NewStatic;
-                }
-
-                if (isVirtual)
-                {
-                    return MemberModifiers.NewVirtual;
-                }
-
-                return MemberModifiers.New;
-            }
-
-            if (isAbstract)
-            {
-                if (isOverride)
-                {
-                    return MemberModifiers.AbstractOverride;
-                }
-
-                return MemberModifiers.Abstract;
-            }
-
-            if (isOverride)
-            {
-                if (isSealed)
-                {
-                    return MemberModifiers.SealedOverride;
-                }
-
-                return MemberModifiers.Override;
-            }
-
-            if (isSealed)
-            {
-                return MemberModifiers.Sealed;
-            }
+            var isReadOnly = node.Modifiers.HasModifier(SyntaxKind.ReadOnlyKeyword);
 
             if (isStatic)
             {
-                return MemberModifiers.Static;
+                if (isReadOnly)
+                {
+                    return FieldModifiers.StaticReadOnly;
+                }
+
+                return FieldModifiers.Static;
             }
 
-            if (isVirtual)
+            if (isReadOnly)
             {
-                return MemberModifiers.Virtual;
+                return FieldModifiers.ReadOnly;
             }
 
-            return MemberModifiers.None;
+            return FieldModifiers.None;
         }
 
         /// <inheritdoc />
@@ -114,7 +64,7 @@
         public override string FullRawName { get; }
 
         /// <inheritdoc />
-        public MemberModifiers Modifiers { get; }
+        public FieldModifiers Modifiers { get; }
 
         /// <inheritdoc />
         public override string Name { get; }

@@ -27,8 +27,6 @@
         {
             switch (modifier)
             {
-                case AccessModifier.None:
-                    throw new InvalidOperationException("The modifier must be specified to determine the visibility");
                 case AccessModifier.Internal:
                 case AccessModifier.Private:
                     return false;

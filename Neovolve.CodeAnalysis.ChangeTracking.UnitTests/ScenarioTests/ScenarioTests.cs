@@ -42,6 +42,46 @@
             result.ChangeType.Should().Be(SemVerChangeType.Breaking);
         }
 
+        [Fact]
+        public async Task ReturnsBreakingWhenClassReplacedByInterface()
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new CodeSource(SingleClass)
+            };
+            var newCode = new List<CodeSource>
+            {
+                new CodeSource(SingleInterface)
+            };
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            OutputResult(result);
+
+            result.ChangeType.Should().Be(SemVerChangeType.Breaking);
+        }
+
+        [Fact]
+        public async Task ReturnsBreakingWhenInterfaceChangesToClass()
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new CodeSource(SingleInterface)
+            };
+            var newCode = new List<CodeSource>
+            {
+                new CodeSource(SingleInterface.Replace("interface", "class"))
+            };
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            OutputResult(result);
+
+            result.ChangeType.Should().Be(SemVerChangeType.Breaking);
+        }
+
         //        [Fact]
         //        public async Task BreakingChangeFoundWhenFieldReturnTypeChanged()
         //        {
@@ -428,6 +468,16 @@ namespace MyNamespace
 
         [FieldAttribute(885, myName: ""on the field"")]
         public string MyField;
+    }  
+}
+";
+
+        public string SingleInterface => @"
+namespace MyNamespace 
+{
+    public interface MyInterface
+    {
+        string MyProperty { get; set; }
     }  
 }
 ";

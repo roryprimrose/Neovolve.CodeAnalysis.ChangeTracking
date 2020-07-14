@@ -20,7 +20,7 @@
 
             declaringType.FullName.Returns(parentFullName);
 
-            var node = await TestNode.FindNode<FieldDeclarationSyntax>(FieldDefinitionCode.GetSetField)
+            var node = await TestNode.FindNode<FieldDeclarationSyntax>(FieldDefinitionCode.SingleField)
                 .ConfigureAwait(false);
 
             var sut = new FieldDefinition(declaringType, node);
@@ -37,7 +37,7 @@
 
             declaringType.FullRawName.Returns(parentFullRawName);
 
-            var node = await TestNode.FindNode<FieldDeclarationSyntax>(FieldDefinitionCode.GetSetField)
+            var node = await TestNode.FindNode<FieldDeclarationSyntax>(FieldDefinitionCode.SingleField)
                 .ConfigureAwait(false);
 
             var sut = new FieldDefinition(declaringType, node);
@@ -45,12 +45,37 @@
             sut.FullRawName.Should().Be(parentFullRawName + ".Value");
         }
 
+        [Theory]
+        [InlineData("", FieldModifiers.None)]
+        [InlineData("readonly", FieldModifiers.ReadOnly)]
+        [InlineData("static", FieldModifiers.Static)]
+        [InlineData("static readonly", FieldModifiers.StaticReadOnly)]
+        [InlineData("readonly static", FieldModifiers.StaticReadOnly)]
+        public async Task ModifiersReturnsExpectedValue(string modifiers, FieldModifiers expected)
+        {
+            var parentFullName = Guid.NewGuid().ToString();
+
+            var declaringType = Substitute.For<IClassDefinition>();
+
+            declaringType.FullName.Returns(parentFullName);
+
+            var code = FieldDefinitionCode.SingleField.Replace("public string Value",
+                "public " + modifiers + " string Value");
+
+            var node = await TestNode.FindNode<FieldDeclarationSyntax>(code)
+                .ConfigureAwait(false);
+
+            var sut = new FieldDefinition(declaringType, node);
+
+            sut.Modifiers.Should().Be(expected);
+        }
+
         [Fact]
         public async Task NameReturnsFieldName()
         {
             var declaringType = Substitute.For<IClassDefinition>();
 
-            var node = await TestNode.FindNode<FieldDeclarationSyntax>(FieldDefinitionCode.GetSetField)
+            var node = await TestNode.FindNode<FieldDeclarationSyntax>(FieldDefinitionCode.SingleField)
                 .ConfigureAwait(false);
 
             var sut = new FieldDefinition(declaringType, node);
@@ -63,7 +88,7 @@
         {
             var declaringType = Substitute.For<IClassDefinition>();
 
-            var node = await TestNode.FindNode<FieldDeclarationSyntax>(FieldDefinitionCode.GetSetField)
+            var node = await TestNode.FindNode<FieldDeclarationSyntax>(FieldDefinitionCode.SingleField)
                 .ConfigureAwait(false);
 
             var sut = new FieldDefinition(declaringType, node);
@@ -76,7 +101,7 @@
         {
             var declaringType = Substitute.For<IClassDefinition>();
 
-            var node = await TestNode.FindNode<FieldDeclarationSyntax>(FieldDefinitionCode.GetSetField)
+            var node = await TestNode.FindNode<FieldDeclarationSyntax>(FieldDefinitionCode.SingleField)
                 .ConfigureAwait(false);
 
             var sut = new FieldDefinition(declaringType, node);
@@ -104,7 +129,7 @@
             Justification = "The constructor is the target of the test")]
         public async Task ThrowsExceptionWhenCreatedWithNullDeclaringType()
         {
-            var node = await TestNode.FindNode<FieldDeclarationSyntax>(FieldDefinitionCode.GetSetField)
+            var node = await TestNode.FindNode<FieldDeclarationSyntax>(FieldDefinitionCode.SingleField)
                 .ConfigureAwait(false);
 
             // ReSharper disable once ObjectCreationAsStatement

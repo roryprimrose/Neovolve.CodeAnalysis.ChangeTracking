@@ -10,6 +10,11 @@
         IReadOnlyCollection<IAttributeDefinition> Attributes { get; }
 
         /// <summary>
+        ///     Gets the modifiers declared on the definition.
+        /// </summary>
+        string DeclaredModifiers { get; }
+
+        /// <summary>
         ///     Gets the full name of the element including any parent hierarchy.
         /// </summary>
         string FullName { get; }

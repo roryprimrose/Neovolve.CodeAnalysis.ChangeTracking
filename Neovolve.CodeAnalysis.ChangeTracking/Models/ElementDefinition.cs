@@ -14,6 +14,7 @@
         {
             node = node ?? throw new ArgumentNullException(nameof(node));
 
+            DeclaredModifiers = node.Modifiers.ToString();
             Attributes = node.DetermineAttributes(this);
         }
 
@@ -25,6 +26,7 @@
         {
             node = node ?? throw new ArgumentNullException(nameof(node));
 
+            DeclaredModifiers = node.Modifiers.ToFullString();
             Attributes = DetermineAttributes(node, this);
         }
 
@@ -51,6 +53,9 @@
 
         /// <inheritdoc />
         public IReadOnlyCollection<IAttributeDefinition> Attributes { get; }
+
+        /// <inheritdoc />
+        public string DeclaredModifiers { get; }
 
         /// <inheritdoc />
         public abstract string FullName { get; }

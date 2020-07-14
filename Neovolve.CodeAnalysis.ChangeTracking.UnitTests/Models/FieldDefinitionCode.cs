@@ -12,7 +12,7 @@ namespace MyNamespace
 }
 ";
 
-        public const string GetSetField = @"
+        public const string SingleField = @"
 namespace MyNamespace 
 {
     public class MyClass

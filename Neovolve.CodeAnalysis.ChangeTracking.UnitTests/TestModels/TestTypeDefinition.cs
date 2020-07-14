@@ -14,6 +14,7 @@
             new List<IInterfaceDefinition>();
 
         public IReadOnlyCollection<ITypeDefinition> ChildTypes { get; set; } = new List<ITypeDefinition>();
+        public string DeclaredModifiers { get; } = "public";
         public ITypeDefinition? DeclaringType { get; set; } = null;
         public string Description { get; set; } = Guid.NewGuid().ToString();
         public string FullName { get; set; } = Guid.NewGuid().ToString();

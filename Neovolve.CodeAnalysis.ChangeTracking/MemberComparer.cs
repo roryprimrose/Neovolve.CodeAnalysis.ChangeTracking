@@ -1,6 +1,5 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking
 {
-    using System.Linq;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
     public abstract class MemberComparer<T> : ElementComparer<T>, IMemberComparer<T> where T : IMemberDefinition
@@ -30,35 +29,81 @@
                 return;
             }
 
-            if (match.OldItem.AccessModifier == AccessModifier.None)
+            var newModifiers = match.NewItem.GetDeclaredAccessModifiers();
+            var oldModifiers = match.OldItem.GetDeclaredAccessModifiers();
+
+            if (string.IsNullOrWhiteSpace(oldModifiers))
             {
                 // Modifiers have been added where there were previously none defined
+                var suffix = string.Empty;
+
+                if (newModifiers.Contains(" "))
+                {
+                    // There is more than one modifier
+                    suffix = "s";
+                }
+
                 var result = ComparisonResult.ItemChanged(
                     change,
                     match,
-                    $"{match.NewItem.Description} has added the access modifiers {match.NewItem.AccessModifier}");
+                    $"{match.NewItem.Description} has added the {newModifiers} access modifier{suffix}");
 
                 aggregator.AddResult(result);
             }
-            else if (match.NewItem.AccessModifier == AccessModifier.None)
+            else if (string.IsNullOrWhiteSpace(newModifiers))
             {
                 // All previous modifiers have been removed
+                var suffix = string.Empty;
+
+                if (oldModifiers.Contains(" "))
+                {
+                    // There is more than one modifier
+                    suffix = "s";
+                }
+
                 var result = ComparisonResult.ItemChanged(
                     change,
                     match,
-                    $"{match.NewItem.Description} has removed the access modifiers {match.OldItem.AccessModifier}");
+                    $"{match.NewItem.Description} has removed the {oldModifiers} access modifier{suffix}");
 
                 aggregator.AddResult(result);
             }
             else
             {
                 // Modifiers have been changed
+                var suffix = string.Empty;
+
+                if (oldModifiers.Contains(" "))
+                {
+                    // There is more than one modifier
+                    suffix = "s";
+                }
+
                 var result = ComparisonResult.ItemChanged(
                     change,
                     match,
-                    $"{match.NewItem.Description} has changed access modifiers from {match.OldItem.AccessModifier} to {match.NewItem.AccessModifier}");
+                    $"{match.NewItem.Description} has changed the access modifier{suffix} from {oldModifiers} to {newModifiers}");
 
                 aggregator.AddResult(result);
+            }
+        }
+
+        private static void EvaluateReturnTypeChanges(ItemMatch<T> match, ComparerOptions options,
+            ChangeResultAggregator aggregator)
+        {
+            if (match.OldItem.ReturnType != match.NewItem.ReturnType)
+            {
+                var genericTypeMatch = MapGenericTypeName(match);
+
+                if (genericTypeMatch != match.NewItem.ReturnType)
+                {
+                    var result = ComparisonResult.ItemChanged(
+                        SemVerChangeType.Breaking,
+                        match,
+                        $"{match.NewItem.Description} return type has changed from {match.OldItem.ReturnType} to {match.NewItem.ReturnType}");
+
+                    aggregator.AddResult(result);
+                }
             }
         }
 
@@ -111,24 +156,6 @@
             }
 
             return newGenericTypes[typeIndex];
-        }
-
-        private static void EvaluateReturnTypeChanges(ItemMatch<T> match, ComparerOptions options, ChangeResultAggregator aggregator)
-        {
-            if (match.OldItem.ReturnType != match.NewItem.ReturnType)
-            {
-                var genericTypeMatch = MapGenericTypeName(match);
-
-                if (genericTypeMatch != match.NewItem.ReturnType)
-                {
-                    var result = ComparisonResult.ItemChanged(
-                        SemVerChangeType.Breaking,
-                        match,
-                        $"{match.NewItem.Description} return type has changed from {match.OldItem.ReturnType} to {match.NewItem.ReturnType}");
-
-                    aggregator.AddResult(result);
-                }
-            }
         }
     }
 }
