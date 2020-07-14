@@ -1,9 +1,5 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 {
-    using System;
-    using FluentAssertions;
-    using ModelBuilder;
-    using Xunit;
     using Xunit.Abstractions;
 
     public class MemberComparerTests

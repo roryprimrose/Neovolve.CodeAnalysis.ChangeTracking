@@ -1,11 +1,5 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 {
-    using System;
-    using System.Diagnostics.CodeAnalysis;
-    using FluentAssertions;
-    using ModelBuilder;
-    using Xunit;
-
     public class MemberMatchTests
     {
         //[Fact]

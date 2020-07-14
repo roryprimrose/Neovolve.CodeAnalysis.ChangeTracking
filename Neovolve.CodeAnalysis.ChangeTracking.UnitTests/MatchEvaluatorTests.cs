@@ -3,16 +3,7 @@
 
 namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
-    using System.Threading.Tasks;
-    using FluentAssertions;
-    using Microsoft.CodeAnalysis;
     using Microsoft.Extensions.Logging;
-    using ModelBuilder;
-    using NSubstitute;
-    using Xunit;
     using Xunit.Abstractions;
 
     public class MatchEvaluatorTests

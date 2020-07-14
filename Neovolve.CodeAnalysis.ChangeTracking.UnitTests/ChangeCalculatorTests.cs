@@ -1,16 +1,6 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
-    using System.Linq;
-    using FluentAssertions;
     using Microsoft.Extensions.Logging;
-    using ModelBuilder;
-    using Neovolve.CodeAnalysis.ChangeTracking.Models;
-    using Neovolve.CodeAnalysis.ChangeTracking.UnitTests.TestModels;
-    using NSubstitute;
-    using Xunit;
     using Xunit.Abstractions;
 
     public class ChangeCalculatorTests

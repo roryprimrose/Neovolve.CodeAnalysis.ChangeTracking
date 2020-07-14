@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
     public class MatchEvaluator : IMatchEvaluator

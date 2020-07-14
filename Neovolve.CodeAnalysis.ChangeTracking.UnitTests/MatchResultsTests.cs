@@ -1,14 +1,7 @@
 ﻿// ReSharper disable ObjectCreationAsStatement
-using System;
-using System.Collections.Generic;
-using FluentAssertions;
-using ModelBuilder;
-using Xunit;
 
 namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 {
-    using System.Diagnostics.CodeAnalysis;
-
     public class MatchResultsTests
     {
         //[Fact]

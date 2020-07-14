@@ -3,7 +3,6 @@
     using System;
     using ModelBuilder;
     using ModelBuilder.TypeCreators;
-    using Neovolve.CodeAnalysis.ChangeTracking.Models;
     using Neovolve.CodeAnalysis.ChangeTracking.UnitTests.TestModels;
 
     public class ComparisonResultTypeCreator : TypeCreatorBase
