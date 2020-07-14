@@ -30,33 +30,60 @@
                 return;
             }
 
-            if (match.OldItem.AccessModifier == PropertyAccessorAccessModifier.None)
+            var newModifiers = match.NewItem.GetDeclaredAccessModifiers();
+            var oldModifiers = match.OldItem.GetDeclaredAccessModifiers();
+
+            if (string.IsNullOrWhiteSpace(oldModifiers))
             {
                 // Modifiers have been added where there were previously none defined
+                var suffix = string.Empty;
+
+                if (newModifiers.Contains(" "))
+                {
+                    // There is more than one modifier
+                    suffix = "s";
+                }
+
                 var result = ComparisonResult.ItemChanged(
                     change,
                     match,
-                    $"{match.NewItem.Description} has added the access modifiers {match.NewItem.AccessModifier}");
+                    $"{match.NewItem.Description} has added the {newModifiers} access modifier{suffix}");
 
                 aggregator.AddResult(result);
             }
-            else if (match.NewItem.AccessModifier == PropertyAccessorAccessModifier.None)
+            else if (string.IsNullOrWhiteSpace(newModifiers))
             {
                 // All previous modifiers have been removed
+                var suffix = string.Empty;
+
+                if (oldModifiers.Contains(" "))
+                {
+                    // There is more than one modifier
+                    suffix = "s";
+                }
+
                 var result = ComparisonResult.ItemChanged(
                     change,
                     match,
-                    $"{match.NewItem.Description} has removed the access modifiers {match.OldItem.AccessModifier}");
+                    $"{match.NewItem.Description} has removed the {oldModifiers} access modifier{suffix}");
 
                 aggregator.AddResult(result);
             }
             else
             {
                 // Modifiers have been changed
+                var suffix = string.Empty;
+
+                if (oldModifiers.Contains(" "))
+                {
+                    // There is more than one modifier
+                    suffix = "s";
+                }
+
                 var result = ComparisonResult.ItemChanged(
                     change,
                     match,
-                    $"{match.NewItem.Description} has changed access modifiers from {match.OldItem.AccessModifier} to {match.NewItem.AccessModifier}");
+                    $"{match.NewItem.Description} has changed the access modifier{suffix} from {oldModifiers} to {newModifiers}");
 
                 aggregator.AddResult(result);
             }

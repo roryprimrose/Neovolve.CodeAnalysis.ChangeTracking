@@ -158,7 +158,7 @@
 
             if (oldConstraintCount == 0)
             {
-                var message = $"{match.NewItem.Description} has added {newConstraintCount} generic type constraint";
+                var message = $"{match.NewItem.Description} has added the {newConstraintCount} generic type constraint";
 
                 if (newConstraintCount != 1)
                 {
@@ -175,7 +175,7 @@
 
             if (newConstraintCount == 0)
             {
-                var message = $"{match.NewItem.Description} has removed {oldConstraintCount} generic type constraint";
+                var message = $"{match.NewItem.Description} has removed the {oldConstraintCount} generic type constraint";
 
                 if (oldConstraintCount != 1)
                 {
@@ -378,6 +378,7 @@
                 aggregator.AddResult(result);
             }
         }
+
         private void EvaluateFieldChanges(
             ItemMatch<ITypeDefinition> match,
             ComparerOptions options,
