@@ -21,7 +21,7 @@
         protected override void EvaluateMatch(
             ItemMatch<ITypeDefinition> match,
             ComparerOptions options,
-            ChangeResultAggregator aggregator)
+            IChangeResultAggregator aggregator)
         {
             match = match ?? throw new ArgumentNullException(nameof(match));
             options = options ?? throw new ArgumentNullException(nameof(options));
@@ -38,19 +38,17 @@
         private static void CompareDefinitionType(
             ItemMatch<ITypeDefinition> match,
             ComparerOptions options,
-            ChangeResultAggregator aggregator)
+            IChangeResultAggregator aggregator)
         {
             // Check for a change in type
             if (match.OldItem.GetType() != match.NewItem.GetType())
             {
                 var newType = DetermineTypeChangeDescription(match.NewItem);
 
-                var result = ComparisonResult.ItemChanged(
-                    SemVerChangeType.Breaking,
-                    match,
-                    $"{match.OldItem.Description} has changed to {newType}");
+                var args = new FormatArguments("{DefinitionType} {Identifier} has changed to {NewValue}",
+                    match.OldItem.FullName, null, newType);
 
-                aggregator.AddResult(result);
+                aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
             }
         }
 
@@ -72,7 +70,7 @@
         private static void EvaluateAccessModifierChanges(
             ItemMatch<ITypeDefinition> match,
             ComparerOptions options,
-            ChangeResultAggregator aggregator)
+            IChangeResultAggregator aggregator)
         {
             var change = AccessModifierChangeTable.CalculateChange(match);
 
@@ -95,12 +93,11 @@
                     suffix = "s";
                 }
 
-                var result = ComparisonResult.ItemChanged(
-                    change,
-                    match,
-                    $"{match.NewItem.Description} has added the {newModifiers} access modifier{suffix}");
+                var args = new FormatArguments(
+                    "{DefinitionType} {Identifier} has added the {NewValue} access modifier" + suffix,
+                    match.NewItem.FullName, null, newModifiers);
 
-                aggregator.AddResult(result);
+                aggregator.AddElementChangedResult(change, match, options.MessageFormatter, args);
             }
             else if (string.IsNullOrWhiteSpace(newModifiers))
             {
@@ -113,12 +110,11 @@
                     suffix = "s";
                 }
 
-                var result = ComparisonResult.ItemChanged(
-                    change,
-                    match,
-                    $"{match.NewItem.Description} has removed the {oldModifiers} access modifier{suffix}");
+                var args = new FormatArguments(
+                    "{DefinitionType} {Identifier} has removed the {OldValue} access modifier" + suffix,
+                    match.NewItem.FullName, oldModifiers, null);
 
-                aggregator.AddResult(result);
+                aggregator.AddElementChangedResult(change, match, options.MessageFormatter, args);
             }
             else
             {
@@ -131,176 +127,18 @@
                     suffix = "s";
                 }
 
-                var result = ComparisonResult.ItemChanged(
-                    change,
-                    match,
-                    $"{match.NewItem.Description} has changed the access modifier{suffix} from {oldModifiers} to {newModifiers}");
+                var args = new FormatArguments(
+                    $"{{DefinitionType}} {{Identifier}} has changed the access modifier{suffix} from {{OldValue}} to {{NewValue}}",
+                    match.NewItem.FullName, oldModifiers, newModifiers);
 
-                aggregator.AddResult(result);
-            }
-        }
-
-        private static void EvaluateGenericConstraints(
-            ItemMatch<ITypeDefinition> match,
-            IConstraintListDefinition oldConstraintList,
-            IConstraintListDefinition newConstraintList,
-            ChangeResultAggregator aggregator)
-        {
-            var oldConstraintCount = oldConstraintList?.Constraints.Count ?? 0;
-            var newConstraintCount = newConstraintList?.Constraints.Count ?? 0;
-
-            if (oldConstraintCount == 0
-                && newConstraintCount == 0)
-            {
-                // There are no generic constraints defined on either type
-                return;
-            }
-
-            if (oldConstraintCount == 0)
-            {
-                var message = $"{match.NewItem.Description} has added the {newConstraintCount} generic type constraint";
-
-                if (newConstraintCount != 1)
-                {
-                    message += "s";
-                }
-
-                var result = ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match, message);
-
-                aggregator.AddResult(result);
-
-                // No need to look into the constraints themselves
-                return;
-            }
-
-            if (newConstraintCount == 0)
-            {
-                var message = $"{match.NewItem.Description} has removed the {oldConstraintCount} generic type constraint";
-
-                if (oldConstraintCount != 1)
-                {
-                    message += "s";
-                }
-
-                var result = ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match, message);
-
-                aggregator.AddResult(result);
-
-                // No need to look into the constraints themselves
-                return;
-            }
-
-            // Find the old constraints that have been removed
-            var removedConstraints = oldConstraintList!.Constraints.Except(newConstraintList!.Constraints);
-
-            foreach (var constraint in removedConstraints)
-            {
-                var message = $"{match.NewItem.Description} has removed the generic type constraint {constraint}";
-
-                var result = ComparisonResult.ItemChanged(SemVerChangeType.Feature, match, message);
-
-                aggregator.AddResult(result);
-            }
-
-            // Find the new constraints that have been added
-            var addedConstraints = newConstraintList!.Constraints.Except(oldConstraintList!.Constraints);
-
-            foreach (var constraint in addedConstraints)
-            {
-                var message = $"{match.NewItem.Description} has added the generic type constraint {constraint}";
-
-                var result = ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match, message);
-
-                aggregator.AddResult(result);
-            }
-        }
-
-        private static void EvaluateGenericTypeDefinitionChanges(
-            ItemMatch<ITypeDefinition> match,
-            ComparerOptions options,
-            ChangeResultAggregator aggregator)
-        {
-            var oldTypeParameters = match.OldItem.GenericTypeParameters.FastToList();
-            var newTypeParameters = match.NewItem.GenericTypeParameters.FastToList();
-
-            var typeParameterShift = oldTypeParameters.Count - newTypeParameters.Count;
-
-            if (typeParameterShift > 0)
-            {
-                // One or more generic type parameters have been removed
-                var suffix = typeParameterShift == 1 ? "" : "s";
-                var message =
-                    $"{match.NewItem.Description} has removed {typeParameterShift} generic type parameter{suffix}";
-
-                var result = ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match, message);
-
-                aggregator.AddResult(result);
-
-                // No need to look into how the generic type has changed
-                return;
-            }
-
-            if (typeParameterShift < 0)
-            {
-                // One or more generic type parameters have been removed
-                var shift = Math.Abs(typeParameterShift);
-                var suffix = shift == 1 ? "" : "s";
-                var message = $"{match.NewItem.Description} has added {shift} generic type parameter{suffix}";
-                var result = ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match, message);
-
-                aggregator.AddResult(result);
-
-                // No need to look into how the generic type has changed
-                return;
-            }
-
-            // We have the same number of generic types, evaluate the constraints
-            for (var index = 0; index < oldTypeParameters.Count; index++)
-            {
-                var oldName = oldTypeParameters[index];
-                var newName = newTypeParameters[index];
-
-                var oldConstraints = match.OldItem.GenericConstraints.FirstOrDefault(x => x.Name == oldName);
-                var newConstraints = match.NewItem.GenericConstraints.FirstOrDefault(x => x.Name == newName);
-
-                EvaluateGenericConstraints(match, oldConstraints, newConstraints, aggregator);
-            }
-        }
-
-        private static void EvaluateImplementedTypeChanges(
-            ItemMatch<ITypeDefinition> match,
-            ComparerOptions options,
-            ChangeResultAggregator aggregator)
-        {
-            // Find the old types that have been removed
-            var removedTypes = match.OldItem.ImplementedTypes.Except(match.NewItem.ImplementedTypes);
-
-            foreach (var removedType in removedTypes)
-            {
-                var message = $"{match.NewItem.Description} has removed the implemented type {removedType}";
-
-                var result = ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match, message);
-
-                aggregator.AddResult(result);
-            }
-
-            // Find the new types that have been added
-            var addedTypes = match.NewItem.ImplementedTypes.Except(match.OldItem.ImplementedTypes);
-
-            foreach (var addedType in addedTypes)
-            {
-                var message = $"{match.NewItem.Description} has added the implemented type {addedType}";
-
-                var result = ComparisonResult.ItemChanged(SemVerChangeType.Breaking, match, message);
-
-                aggregator.AddResult(result);
+                aggregator.AddElementChangedResult(change, match, options.MessageFormatter, args);
             }
         }
 
         private static void EvaluateClassModifierChanges(
             ItemMatch<ITypeDefinition> match,
             ComparerOptions options,
-            ChangeResultAggregator aggregator)
+            IChangeResultAggregator aggregator)
         {
             var oldItem = match.OldItem as IClassDefinition;
 
@@ -334,12 +172,11 @@
                     suffix = "s";
                 }
 
-                var result = ComparisonResult.ItemChanged(
-                    change,
-                    match,
-                    $"{match.NewItem.Description} has added the {newModifiers} modifier{suffix}");
+                var args = new FormatArguments(
+                    "{DefinitionType} {Identifier} has added the {NewValue} modifier" + suffix,
+                    match.NewItem.FullName, null, newModifiers);
 
-                aggregator.AddResult(result);
+                aggregator.AddElementChangedResult(change, match, options.MessageFormatter, args);
             }
             else if (string.IsNullOrWhiteSpace(newModifiers))
             {
@@ -352,12 +189,11 @@
                     suffix = "s";
                 }
 
-                var result = ComparisonResult.ItemChanged(
-                    change,
-                    match,
-                    $"{match.NewItem.Description} has removed the {oldModifiers} modifier{suffix}");
+                var args = new FormatArguments(
+                    "{DefinitionType} {Identifier} has removed the {OldValue} modifier" + suffix,
+                    match.NewItem.FullName, oldModifiers, null);
 
-                aggregator.AddResult(result);
+                aggregator.AddElementChangedResult(change, match, options.MessageFormatter, args);
             }
             else
             {
@@ -370,19 +206,181 @@
                     suffix = "s";
                 }
 
-                var result = ComparisonResult.ItemChanged(
-                    change,
-                    match,
-                    $"{match.NewItem.Description} has changed the modifier{suffix} from {oldModifiers} to {newModifiers}");
+                var args = new FormatArguments(
+                    $"{{DefinitionType}} {{Identifier}} has changed the modifier{suffix} from {{OldValue}} to {{NewValue}}",
+                    match.NewItem.FullName, oldModifiers, newModifiers);
 
-                aggregator.AddResult(result);
+                aggregator.AddElementChangedResult(change, match, options.MessageFormatter, args);
+            }
+        }
+
+        private static void EvaluateGenericConstraints(ItemMatch<ITypeDefinition> match,
+            IConstraintListDefinition oldConstraintList,
+            IConstraintListDefinition newConstraintList,
+            ComparerOptions options,
+            IChangeResultAggregator aggregator)
+        {
+            var oldConstraintCount = oldConstraintList?.Constraints.Count ?? 0;
+            var newConstraintCount = newConstraintList?.Constraints.Count ?? 0;
+
+            if (oldConstraintCount == 0
+                && newConstraintCount == 0)
+            {
+                // There are no generic constraints defined on either type
+                return;
+            }
+
+            if (oldConstraintCount == 0)
+            {
+                var suffix = string.Empty;
+
+                if (newConstraintCount != 1)
+                {
+                    // There is more than one modifier
+                    suffix = "s";
+                }
+
+                var args = new FormatArguments(
+                    "{DefinitionType} {Identifier} has added {NewValue} generic type constraint" + suffix,
+                    match.NewItem.FullName, null, newConstraintCount.ToString());
+
+                aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
+
+                // No need to look into the constraints themselves
+                return;
+            }
+
+            if (newConstraintCount == 0)
+            {
+                var suffix = string.Empty;
+
+                if (oldConstraintCount != 1)
+                {
+                    // There is more than one modifier
+                    suffix = "s";
+                }
+
+                var args = new FormatArguments(
+                    "{DefinitionType} {Identifier} has removed {OldValue} generic type constraint" + suffix,
+                    match.NewItem.FullName, oldConstraintCount.ToString(), null);
+
+                aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
+
+                // No need to look into the constraints themselves
+                return;
+            }
+
+            // Find the old constraints that have been removed
+            var removedConstraints = oldConstraintList!.Constraints.Except(newConstraintList!.Constraints);
+
+            foreach (var constraint in removedConstraints)
+            {
+                var args = new FormatArguments(
+                    "{DefinitionType} {Identifier} has removed the {OldValue} generic type constraint",
+                    match.NewItem.FullName, constraint, null);
+
+                aggregator.AddElementChangedResult(SemVerChangeType.Feature, match, options.MessageFormatter, args);
+            }
+
+            // Find the new constraints that have been added
+            var addedConstraints = newConstraintList!.Constraints.Except(oldConstraintList!.Constraints);
+
+            foreach (var constraint in addedConstraints)
+            {
+                var args = new FormatArguments(
+                    "{DefinitionType} {Identifier} has added the {NewValue} generic type constraint",
+                    match.NewItem.FullName, null, constraint);
+
+                aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
+            }
+        }
+
+        private static void EvaluateGenericTypeDefinitionChanges(
+            ItemMatch<ITypeDefinition> match,
+            ComparerOptions options,
+            IChangeResultAggregator aggregator)
+        {
+            var oldTypeParameters = match.OldItem.GenericTypeParameters.FastToList();
+            var newTypeParameters = match.NewItem.GenericTypeParameters.FastToList();
+
+            var typeParameterShift = oldTypeParameters.Count - newTypeParameters.Count;
+
+            if (typeParameterShift > 0)
+            {
+                // One or more generic type parameters have been removed
+                var suffix = typeParameterShift == 1 ? "" : "s";
+                var args = new FormatArguments(
+                    "{DefinitionType} {Identifier} has removed {OldValue} generic type parameter" + suffix,
+                    match.NewItem.FullName, typeParameterShift.ToString(), null);
+
+                aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
+
+                // No need to look into how the generic type has changed
+                return;
+            }
+
+            if (typeParameterShift < 0)
+            {
+                // One or more generic type parameters have been removed
+                var shift = Math.Abs(typeParameterShift);
+                var suffix = shift == 1 ? "" : "s";
+                var args = new FormatArguments(
+                    "{DefinitionType} {Identifier} has added {NewValue} generic type parameter" + suffix,
+                    match.NewItem.FullName, null, typeParameterShift.ToString());
+
+                aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
+
+                // No need to look into how the generic type has changed
+                return;
+            }
+
+            // We have the same number of generic types, evaluate the constraints
+            for (var index = 0; index < oldTypeParameters.Count; index++)
+            {
+                var oldName = oldTypeParameters[index];
+                var newName = newTypeParameters[index];
+
+                var oldConstraints = match.OldItem.GenericConstraints.FirstOrDefault(x => x.Name == oldName);
+                var newConstraints = match.NewItem.GenericConstraints.FirstOrDefault(x => x.Name == newName);
+
+                EvaluateGenericConstraints(match, oldConstraints, newConstraints, options, aggregator);
+            }
+        }
+
+        private static void EvaluateImplementedTypeChanges(
+            ItemMatch<ITypeDefinition> match,
+            ComparerOptions options,
+            IChangeResultAggregator aggregator)
+        {
+            // Find the old types that have been removed
+            var removedTypes = match.OldItem.ImplementedTypes.Except(match.NewItem.ImplementedTypes);
+
+            foreach (var removedType in removedTypes)
+            {
+                var args = new FormatArguments(
+                    "{DefinitionType} {Identifier} has removed the implemented type {OldValue}",
+                    match.NewItem.FullName, removedType, null);
+
+                aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
+            }
+
+            // Find the new types that have been added
+            var addedTypes = match.NewItem.ImplementedTypes.Except(match.OldItem.ImplementedTypes);
+
+            foreach (var addedType in addedTypes)
+            {
+                var args = new FormatArguments(
+                    "{DefinitionType} {Identifier} has added the implemented type {NewValue}",
+                    match.NewItem.FullName, null, addedType);
+
+                aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
             }
         }
 
         private void EvaluateFieldChanges(
             ItemMatch<ITypeDefinition> match,
             ComparerOptions options,
-            ChangeResultAggregator aggregator)
+            IChangeResultAggregator aggregator)
         {
             var oldClass = match.OldItem as IClassDefinition;
 
@@ -401,7 +399,7 @@
         private void EvaluatePropertyChanges(
             ItemMatch<ITypeDefinition> match,
             ComparerOptions options,
-            ChangeResultAggregator aggregator)
+            IChangeResultAggregator aggregator)
         {
             var oldProperties = match.OldItem.Properties;
             var newProperties = match.NewItem.Properties;

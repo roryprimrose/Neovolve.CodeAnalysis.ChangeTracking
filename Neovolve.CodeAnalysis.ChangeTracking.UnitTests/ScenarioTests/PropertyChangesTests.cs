@@ -1,6 +1,5 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.ScenarioTests
 {
-    using System;
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
@@ -125,7 +124,10 @@
             {
                 new CodeSource(SingleProperty)
             };
-            var newCode = Array.Empty<CodeSource>();
+            var newCode = new List<CodeSource>
+            {
+                new CodeSource(NoProperty)
+            };
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
                 .ConfigureAwait(false);
@@ -252,7 +254,10 @@
         [Fact]
         public async Task EvaluatesFeatureWhenPropertyAdded()
         {
-            var oldCode = Array.Empty<CodeSource>();
+            var oldCode = new List<CodeSource>
+            {
+                new CodeSource(NoProperty)
+            };
             var newCode = new List<CodeSource>
             {
                 new CodeSource(SingleProperty)
@@ -375,6 +380,18 @@
                 _output.WriteLine(comparisonResult.ChangeType + ": " + comparisonResult.Message);
             }
         }
+
+        public string NoProperty => @"
+namespace MyNamespace 
+{
+    [ClassAttribute(123, false, myName: ""on the class"")]
+    public class MyClass
+    {
+        [FieldAttribute(885, myName: ""on the field"")]
+        public string MyField;
+    }  
+}
+";
 
         public string PropertyOnTypeWithMultipleGenericTypeParameters => @"
 namespace MyNamespace 

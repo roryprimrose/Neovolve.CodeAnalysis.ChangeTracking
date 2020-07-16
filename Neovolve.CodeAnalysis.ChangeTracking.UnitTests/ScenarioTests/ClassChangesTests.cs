@@ -6,6 +6,7 @@
     using System.Threading.Tasks;
     using FluentAssertions;
     using Microsoft.Extensions.Logging;
+    using ModelBuilder;
     using Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Models;
     using Xunit;
     using Xunit.Abstractions;
@@ -40,7 +41,9 @@
                 new CodeSource(SingleClass.Replace("public class MyClass", newModifiers + " class MyClass"))
             };
 
-            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+            var options = ComparerOptions.Default.Set(x => x.MessageFormatter = new GitHubMarkdownMessageFormatter());
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);

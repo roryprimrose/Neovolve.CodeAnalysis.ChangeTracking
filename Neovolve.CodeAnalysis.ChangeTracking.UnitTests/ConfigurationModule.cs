@@ -19,7 +19,6 @@
             configuration.Mapping<IMemberDefinition, TestPropertyDefinition>();
             configuration.Mapping<IItemDefinition, TestClassDefinition>();
             configuration.AddValueGenerator<SemVerChangeTypeValueGenerator>();
-            configuration.AddTypeCreator<ComparisonResultTypeCreator>();
         }
     }
 }

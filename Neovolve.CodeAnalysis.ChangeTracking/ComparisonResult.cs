@@ -5,7 +5,7 @@
 
     public class ComparisonResult
     {
-        private ComparisonResult(SemVerChangeType changeType, IItemDefinition? oldItem, IItemDefinition? newItem,
+        public ComparisonResult(SemVerChangeType changeType, IItemDefinition? oldItem, IItemDefinition? newItem,
             string message)
         {
             ChangeType = changeType;
@@ -35,19 +35,6 @@
             }
 
             return new ComparisonResult(changeType, null, newItem, message);
-        }
-
-        public static ComparisonResult ItemChanged<T>(SemVerChangeType changeType, ItemMatch<T> match,
-            string message) where T : IItemDefinition
-        {
-            changeType = changeType == SemVerChangeType.None
-                ? throw new ArgumentException("The changeType cannot be None to indicate a change on the member.",
-                    nameof(changeType))
-                : changeType;
-            match = match ?? throw new ArgumentNullException(nameof(match));
-            message = string.IsNullOrWhiteSpace(message) ? throw new ArgumentException(nameof(message)) : message;
-
-            return new ComparisonResult(changeType, match.OldItem, match.NewItem, message);
         }
 
         public static ComparisonResult ItemRemoved(IItemDefinition oldItem)

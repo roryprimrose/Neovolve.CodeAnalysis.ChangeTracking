@@ -11,7 +11,7 @@
         protected override void EvaluateMatch(
             ItemMatch<T> match,
             ComparerOptions options,
-            ChangeResultAggregator aggregator)
+            IChangeResultAggregator aggregator)
         {
             RunComparisonStep(EvaluateAccessModifierChanges, match, options, aggregator);
             RunComparisonStep(EvaluateReturnTypeChanges, match, options, aggregator);
@@ -20,7 +20,7 @@
         private static void EvaluateAccessModifierChanges(
             ItemMatch<T> match,
             ComparerOptions options,
-            ChangeResultAggregator aggregator)
+            IChangeResultAggregator aggregator)
         {
             var change = AccessModifierChangeTable.CalculateChange(match);
 
@@ -43,12 +43,11 @@
                     suffix = "s";
                 }
 
-                var result = ComparisonResult.ItemChanged(
-                    change,
-                    match,
-                    $"{match.NewItem.Description} has added the {newModifiers} access modifier{suffix}");
+                var args = new FormatArguments(
+                    "{DefinitionType} {Identifier} has added the {NewValue} access modifier" + suffix,
+                    match.NewItem.FullName, null, newModifiers);
 
-                aggregator.AddResult(result);
+                aggregator.AddElementChangedResult(change, match, options.MessageFormatter, args);
             }
             else if (string.IsNullOrWhiteSpace(newModifiers))
             {
@@ -61,12 +60,11 @@
                     suffix = "s";
                 }
 
-                var result = ComparisonResult.ItemChanged(
-                    change,
-                    match,
-                    $"{match.NewItem.Description} has removed the {oldModifiers} access modifier{suffix}");
+                var args = new FormatArguments(
+                    "{DefinitionType} {Identifier} has removed the {OldValue} access modifier" + suffix,
+                    match.NewItem.FullName, oldModifiers, null);
 
-                aggregator.AddResult(result);
+                aggregator.AddElementChangedResult(change, match, options.MessageFormatter, args);
             }
             else
             {
@@ -79,17 +77,16 @@
                     suffix = "s";
                 }
 
-                var result = ComparisonResult.ItemChanged(
-                    change,
-                    match,
-                    $"{match.NewItem.Description} has changed the access modifier{suffix} from {oldModifiers} to {newModifiers}");
+                var args = new FormatArguments(
+                    $"{{DefinitionType}} {{Identifier}} has changed the access modifier{suffix} from {{OldValue}} to {{NewValue}}",
+                    match.NewItem.FullName, oldModifiers, newModifiers);
 
-                aggregator.AddResult(result);
+                aggregator.AddElementChangedResult(change, match, options.MessageFormatter, args);
             }
         }
 
         private static void EvaluateReturnTypeChanges(ItemMatch<T> match, ComparerOptions options,
-            ChangeResultAggregator aggregator)
+            IChangeResultAggregator aggregator)
         {
             if (match.OldItem.ReturnType != match.NewItem.ReturnType)
             {
@@ -97,12 +94,11 @@
 
                 if (genericTypeMatch != match.NewItem.ReturnType)
                 {
-                    var result = ComparisonResult.ItemChanged(
-                        SemVerChangeType.Breaking,
-                        match,
-                        $"{match.NewItem.Description} return type has changed from {match.OldItem.ReturnType} to {match.NewItem.ReturnType}");
+                    var args = new FormatArguments(
+                        "{DefinitionType} {Identifier} return type has changed from {OldValue} to {NewValue}",
+                        match.NewItem.FullName, match.OldItem.ReturnType, match.NewItem.ReturnType);
 
-                    aggregator.AddResult(result);
+                    aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
                 }
             }
         }

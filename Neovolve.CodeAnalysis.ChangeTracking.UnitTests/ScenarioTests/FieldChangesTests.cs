@@ -69,30 +69,6 @@
         }
 
         [Theory]
-        [ClassData(typeof(AccessModifierDataSet))]
-        public async Task EvaluatesChangeOfClassAccessModifiers(
-            string oldModifiers,
-            string newModifiers,
-            SemVerChangeType expected)
-        {
-            var oldCode = new List<CodeSource>
-            {
-                new CodeSource(SingleField.Replace("public string MyField", oldModifiers + " string MyField"))
-            };
-            var newCode = new List<CodeSource>
-            {
-                new CodeSource(SingleField.Replace("public string MyField", newModifiers + " string MyField"))
-            };
-
-            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
-                .ConfigureAwait(false);
-
-            OutputResult(result);
-
-            result.ChangeType.Should().Be(expected);
-        }
-
-        [Theory]
         [InlineData("", "", SemVerChangeType.None)]
         [InlineData("", "readonly", SemVerChangeType.Breaking)]
         [InlineData("", "static", SemVerChangeType.Breaking)]

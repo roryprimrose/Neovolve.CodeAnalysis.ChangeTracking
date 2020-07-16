@@ -10,7 +10,7 @@
 
         protected override void EvaluateMatch(
             ItemMatch<IFieldDefinition> match,
-            ComparerOptions options, ChangeResultAggregator aggregator)
+            ComparerOptions options, IChangeResultAggregator aggregator)
         {
             RunComparisonStep(EvaluateModifierChanges, match, options, aggregator);
 
@@ -20,7 +20,7 @@
         private static void EvaluateModifierChanges(
             ItemMatch<IFieldDefinition> match,
             ComparerOptions options,
-            ChangeResultAggregator aggregator)
+            IChangeResultAggregator aggregator)
         {
             var change = FieldModifiersChangeTable.CalculateChange(match);
 
@@ -43,12 +43,11 @@
                     suffix = "s";
                 }
 
-                var result = ComparisonResult.ItemChanged(
-                    change,
-                    match,
-                    $"{match.NewItem.Description} has added the {newModifiers} modifier{suffix}");
+                var args = new FormatArguments(
+                    "{DefinitionType} {Identifier} has added the {NewValue} modifier" + suffix,
+                    match.NewItem.FullName, null, newModifiers);
 
-                aggregator.AddResult(result);
+                aggregator.AddElementChangedResult(change, match, options.MessageFormatter, args);
             }
             else if (string.IsNullOrWhiteSpace(newModifiers))
             {
@@ -61,12 +60,11 @@
                     suffix = "s";
                 }
 
-                var result = ComparisonResult.ItemChanged(
-                    change,
-                    match,
-                    $"{match.NewItem.Description} has removed the {oldModifiers} modifier{suffix}");
+                var args = new FormatArguments(
+                    "{DefinitionType} {Identifier} has removed the {OldValue} modifier" + suffix,
+                    match.NewItem.FullName, oldModifiers, null);
 
-                aggregator.AddResult(result);
+                aggregator.AddElementChangedResult(change, match, options.MessageFormatter, args);
             }
             else
             {
@@ -79,12 +77,11 @@
                     suffix = "s";
                 }
 
-                var result = ComparisonResult.ItemChanged(
-                    change,
-                    match,
-                    $"{match.NewItem.Description} has changed the modifier{suffix} from {oldModifiers} to {newModifiers}");
+                var args = new FormatArguments(
+                    $"{{DefinitionType}} {{Identifier}} has changed the modifier{suffix} from {{OldValue}} to {{NewValue}}",
+                    match.NewItem.FullName, oldModifiers, newModifiers);
 
-                aggregator.AddResult(result);
+                aggregator.AddElementChangedResult(change, match, options.MessageFormatter, args);
             }
         }
     }
