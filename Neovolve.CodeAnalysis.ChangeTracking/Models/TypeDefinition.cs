@@ -26,9 +26,9 @@
             DeclaringType = null;
             Namespace = DetermineNamespace(node);
 
-            IsVisible = node.IsVisible(DeclaringType);
+            IsVisible = DetermineIsVisible(node, DeclaringType);
 
-            AccessModifier = node.DetermineAccessModifier(DeclaringType);
+            AccessModifier = DetermineAccessModifier(node, DeclaringType);
             Name = name;
             RawName = rawName;
             FullRawName = Namespace + "." + rawName;
@@ -56,7 +56,7 @@
             var rawName = node.Identifier.Text;
 
             Namespace = DetermineNamespace(node);
-            AccessModifier = node.DetermineAccessModifier(DeclaringType);
+            AccessModifier = DetermineAccessModifier(node, DeclaringType);
             Name = name;
             RawName = rawName;
             FullRawName = DeclaringType.FullRawName + "+" + rawName;
@@ -69,7 +69,7 @@
             ChildTypes = DetermineChildTypes(ChildClasses, ChildInterfaces);
             GenericTypeParameters = DetermineGenericTypeParameters(node);
             GenericConstraints = DetermineGenericConstraints(node);
-            IsVisible = node.IsVisible(DeclaringType);
+            IsVisible = DetermineIsVisible(node, DeclaringType);
         }
 
         /// <summary>
@@ -98,6 +98,19 @@
             }
 
             return string.Empty;
+        }
+
+        private static AccessModifier DetermineAccessModifier(TypeDeclarationSyntax node,
+            ITypeDefinition? declaringType)
+        {
+            node = node ?? throw new ArgumentNullException(nameof(node));
+
+            if (declaringType == null)
+            {
+                return node.Modifiers.DetermineAccessModifier(AccessModifier.Internal);
+            }
+
+            return node.Modifiers.DetermineAccessModifier(AccessModifier.Private);
         }
 
         private static IReadOnlyCollection<ITypeDefinition> DetermineChildTypes(
@@ -155,6 +168,24 @@
             var childTypes = baseList.Types.Select(x => x.ToString()).FastToList();
 
             return childTypes.AsReadOnly();
+        }
+
+        private static bool DetermineIsVisible(TypeDeclarationSyntax node, ITypeDefinition? declaringType)
+        {
+            node = node ?? throw new ArgumentNullException(nameof(node));
+
+            if (declaringType != null
+                && declaringType.IsVisible == false)
+            {
+                // The parent type is not visible so this one can't be either
+                return false;
+            }
+
+            // This is either a top level type or the parent type is visible
+            // Determine visibility based on the access modifier
+            var accessModifier = DetermineAccessModifier(node, declaringType);
+
+            return accessModifier.IsVisible();
         }
 
         private static string DetermineName(BaseTypeDeclarationSyntax node)

@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -64,11 +63,6 @@
             var characterIndex = startPosition.Character;
 
             return new DefinitionLocation(filePath, lineIndex, characterIndex);
-        }
-
-        public static bool HasModifier(this SyntaxTokenList tokenList, SyntaxKind kind)
-        {
-            return tokenList.Any(x => x.RawKind == (int) kind);
         }
     }
 }
