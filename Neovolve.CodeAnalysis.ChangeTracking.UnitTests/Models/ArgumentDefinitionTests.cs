@@ -21,30 +21,6 @@
         }
 
         [Fact]
-        public async Task OrdinalIndexReturnsNullForNamedArgument()
-        {
-            var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.NamedArgument)
-                .ConfigureAwait(false);
-
-            var sut = new ArgumentDefinition(node, 1);
-
-            sut.OrdinalIndex.Should().NotHaveValue();
-        }
-
-        [Fact]
-        public async Task OrdinalIndexReturnsParameterValueForOrdinalArgument()
-        {
-            var index = Environment.TickCount;
-
-            var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.OrdinalArgument)
-                .ConfigureAwait(false);
-
-            var sut = new ArgumentDefinition(node, index);
-
-            sut.OrdinalIndex.Should().Be(index);
-        }
-
-        [Fact]
         public async Task ArgumentTypeReturnsOrdinalForOrdinalArgument()
         {
             var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.OrdinalArgument)
@@ -71,7 +47,8 @@
         {
             var filePath = Guid.NewGuid().ToString();
 
-            var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.OrdinalArgument, filePath)
+            var node = await TestNode
+                .FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.OrdinalArgument, filePath)
                 .ConfigureAwait(false);
 
             var sut = new ArgumentDefinition(node, 1);
@@ -85,7 +62,8 @@
         {
             var filePath = Guid.NewGuid().ToString();
 
-            var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.OrdinalArgument, filePath)
+            var node = await TestNode
+                .FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.OrdinalArgument, filePath)
                 .ConfigureAwait(false);
 
             var sut = new ArgumentDefinition(node, 1);
@@ -94,18 +72,64 @@
         }
 
         [Fact]
-        public async Task NameReturnsEmptyForOrdinalArgument()
+        public async Task NameReturnsParameterNameForNamedArgument()
+        {
+            var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.NamedArgument)
+                .ConfigureAwait(false);
+
+            var sut = new ArgumentDefinition(node, null);
+
+            sut.Name.Should().Be("first");
+        }
+
+        [Fact]
+        public async Task NameReturnsValueForOrdinalArgument()
         {
             var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.OrdinalArgument)
                 .ConfigureAwait(false);
 
             var sut = new ArgumentDefinition(node, 1);
 
-            sut.Name.Should().BeEmpty();
+            sut.Name.Should().Be("123");
         }
 
         [Fact]
-        public async Task NameReturnsNameForNamedArgument()
+        public async Task OrdinalIndexReturnsNullForNamedArgument()
+        {
+            var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.NamedArgument)
+                .ConfigureAwait(false);
+
+            var sut = new ArgumentDefinition(node, 1);
+
+            sut.OrdinalIndex.Should().NotHaveValue();
+        }
+
+        [Fact]
+        public async Task OrdinalIndexReturnsParameterValueForOrdinalArgument()
+        {
+            var index = Environment.TickCount;
+
+            var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.OrdinalArgument)
+                .ConfigureAwait(false);
+
+            var sut = new ArgumentDefinition(node, index);
+
+            sut.OrdinalIndex.Should().Be(index);
+        }
+
+        [Fact]
+        public async Task ParameterNameReturnsEmptyForOrdinalArgument()
+        {
+            var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.OrdinalArgument)
+                .ConfigureAwait(false);
+
+            var sut = new ArgumentDefinition(node, 1);
+
+            sut.ParameterName.Should().BeEmpty();
+        }
+
+        [Fact]
+        public async Task ParameterNameReturnsNameForNamedArgument()
         {
             var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.NamedArgument)
                 .ConfigureAwait(false);

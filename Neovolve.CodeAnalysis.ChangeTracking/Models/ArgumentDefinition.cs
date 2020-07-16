@@ -25,14 +25,16 @@
             if (node.NameColon == null)
             {
                 OrdinalIndex = ordinalIndex;
-                Name = string.Empty;
+                ParameterName = string.Empty;
+                Name = Value;
                 ArgumentType = ArgumentType.Ordinal;
                 Description = $"Ordinal argument {Value}";
             }
             else
             {
                 OrdinalIndex = null;
-                Name = node.NameColon.Name.ToString();
+                ParameterName = node.NameColon.Name.ToString();
+                Name = ParameterName;
                 ArgumentType = ArgumentType.Named;
                 Description = $"Named argument {Name}";
             }
@@ -52,6 +54,9 @@
 
         /// <inheritdoc />
         public int? OrdinalIndex { get; }
+
+        /// <inheritdoc />
+        public string ParameterName { get; }
 
         /// <inheritdoc />
         public string Value { get; }

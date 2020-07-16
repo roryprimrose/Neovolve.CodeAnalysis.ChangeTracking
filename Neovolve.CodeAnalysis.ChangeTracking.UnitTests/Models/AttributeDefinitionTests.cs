@@ -44,14 +44,16 @@
 
             firstArgument.Value.Should().Be("\"stringValue\"");
             firstArgument.OrdinalIndex.Should().Be(0);
-            firstArgument.Name.Should().BeEmpty();
+            firstArgument.Name.Should().Be("\"stringValue\"");
+            firstArgument.ParameterName.Should().BeEmpty();
             firstArgument.ArgumentType.Should().Be(ArgumentType.Ordinal);
 
             var secondArgument = sut.Arguments.Skip(1).First();
 
             secondArgument.Value.Should().Be("123");
             secondArgument.OrdinalIndex.Should().Be(1);
-            secondArgument.Name.Should().BeEmpty();
+            secondArgument.Name.Should().Be("123");
+            secondArgument.ParameterName.Should().BeEmpty();
             secondArgument.ArgumentType.Should().Be(ArgumentType.Ordinal);
 
             var thirdArgument = sut.Arguments.Skip(2).First();
@@ -59,6 +61,7 @@
             thirdArgument.Value.Should().Be("true");
             thirdArgument.OrdinalIndex.Should().NotHaveValue();
             thirdArgument.Name.Should().Be("first");
+            thirdArgument.ParameterName.Should().Be("first");
             thirdArgument.ArgumentType.Should().Be(ArgumentType.Named);
 
             var fourthArgument = sut.Arguments.Skip(3).First();
@@ -66,6 +69,7 @@
             fourthArgument.Value.Should().Be("SomeConstant");
             fourthArgument.OrdinalIndex.Should().NotHaveValue();
             fourthArgument.Name.Should().Be("second");
+            fourthArgument.ParameterName.Should().Be("second");
             fourthArgument.ArgumentType.Should().Be(ArgumentType.Named);
         }
 
@@ -119,21 +123,24 @@
 
             firstArgument.Value.Should().Be("\"stringValue\"");
             firstArgument.OrdinalIndex.Should().Be(0);
-            firstArgument.Name.Should().BeEmpty();
+            firstArgument.Name.Should().Be("\"stringValue\"");
+            firstArgument.ParameterName.Should().BeEmpty();
             firstArgument.ArgumentType.Should().Be(ArgumentType.Ordinal);
 
             var secondArgument = sut.Arguments.Skip(1).First();
 
             secondArgument.Value.Should().Be("123");
             secondArgument.OrdinalIndex.Should().Be(1);
-            secondArgument.Name.Should().BeEmpty();
+            secondArgument.Name.Should().Be("123");
+            secondArgument.ParameterName.Should().BeEmpty();
             secondArgument.ArgumentType.Should().Be(ArgumentType.Ordinal);
 
             var thirdArgument = sut.Arguments.Skip(2).First();
 
             thirdArgument.Value.Should().Be("true");
             thirdArgument.OrdinalIndex.Should().Be(2);
-            thirdArgument.Name.Should().BeEmpty();
+            thirdArgument.Name.Should().Be("true");
+            thirdArgument.ParameterName.Should().BeEmpty();
             thirdArgument.ArgumentType.Should().Be(ArgumentType.Ordinal);
         }
 

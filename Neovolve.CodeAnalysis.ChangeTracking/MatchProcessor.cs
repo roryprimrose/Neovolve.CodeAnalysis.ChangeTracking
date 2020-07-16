@@ -26,7 +26,27 @@
             // Types added which are not publicly visible are ignored
             foreach (var memberAdded in matchingNodes.ItemsAdded.Where(IsVisible))
             {
-                var result = ComparisonResult.ItemAdded(memberAdded);
+                var isVisible = true;
+
+                if (memberAdded is IElementDefinition element)
+                {
+                    isVisible = element.IsVisible;
+                }
+
+                var changeType = SemVerChangeType.None;
+
+                if (isVisible)
+                {
+                    changeType = SemVerChangeType.Feature;
+                }
+
+                var args = new FormatArguments(
+                    "{DefinitionType} {Identifier} has been added",
+                    memberAdded.Name, null, null);
+
+                var message = options.MessageFormatter.FormatMessage(memberAdded, args);
+
+                var result = new ComparisonResult(changeType, null, memberAdded, message);
 
                 yield return result;
             }
@@ -35,7 +55,27 @@
             // Types removed which are not publicly visible are ignored
             foreach (var memberRemoved in matchingNodes.ItemsRemoved.Where(IsVisible))
             {
-                var result = ComparisonResult.ItemRemoved(memberRemoved);
+                var isVisible = true;
+
+                if (memberRemoved is IElementDefinition element)
+                {
+                    isVisible = element.IsVisible;
+                }
+
+                var changeType = SemVerChangeType.None;
+
+                if (isVisible)
+                {
+                    changeType = SemVerChangeType.Breaking;
+                }
+
+                var args = new FormatArguments(
+                    "{DefinitionType} {Identifier} has been removed",
+                    memberRemoved.Name, null, null);
+
+                var message = options.MessageFormatter.FormatMessage(memberRemoved, args);
+
+                var result = new ComparisonResult(changeType, memberRemoved, null, message);
 
                 yield return result;
             }

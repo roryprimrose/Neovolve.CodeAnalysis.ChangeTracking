@@ -43,8 +43,8 @@
         {
             var childResults = new List<ComparisonResult>
             {
-                ComparisonResult.ItemAdded(new TestClassDefinition()),
-                ComparisonResult.ItemRemoved(new TestInterfaceDefinition()),
+                new ComparisonResult(SemVerChangeType.Feature, null, new TestClassDefinition(), Guid.NewGuid().ToString()),
+                new ComparisonResult(SemVerChangeType.Breaking, new TestInterfaceDefinition(), null, Guid.NewGuid().ToString()),
                 new ComparisonResult(
                     SemVerChangeType.Feature,
                     new TestPropertyDefinition(), new TestPropertyDefinition(),
@@ -125,12 +125,12 @@
         [Fact]
         public void ResultsReturnsAddedResults()
         {
-            var first = ComparisonResult.ItemAdded(new TestPropertyDefinition());
-            var second = ComparisonResult.ItemRemoved(new TestFieldDefinition());
+            var first = new ComparisonResult(SemVerChangeType.Feature, null, new TestPropertyDefinition(), Guid.NewGuid().ToString());
+            var second = new ComparisonResult(SemVerChangeType.Breaking, new TestFieldDefinition(), null, Guid.NewGuid().ToString());
             var set = new List<ComparisonResult>
             {
-                ComparisonResult.ItemAdded(new TestClassDefinition()),
-                ComparisonResult.ItemRemoved(new TestInterfaceDefinition()),
+                new ComparisonResult(SemVerChangeType.Feature, null, new TestClassDefinition(), Guid.NewGuid().ToString()),
+                new ComparisonResult(SemVerChangeType.Breaking, new TestInterfaceDefinition(), null, Guid.NewGuid().ToString()),
                 new ComparisonResult(
                     SemVerChangeType.Feature,
                     new TestPropertyDefinition(), new TestPropertyDefinition(),

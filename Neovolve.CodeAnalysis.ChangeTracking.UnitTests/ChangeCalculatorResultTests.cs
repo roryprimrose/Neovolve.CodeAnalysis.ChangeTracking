@@ -3,7 +3,6 @@
     using System;
     using System.Linq;
     using FluentAssertions;
-    using Neovolve.CodeAnalysis.ChangeTracking.UnitTests.TestModels;
     using Xunit;
 
     public class ChangeCalculatorResultTests
@@ -11,10 +10,8 @@
         [Fact]
         public void AddDoesNotDowngradeChangeTypeWhenNewResultAddedWithLesserChangeType()
         {
-            var firstMember = new TestPropertyDefinition();
-            var secondMember = new TestPropertyDefinition();
-            var firstResult = ComparisonResult.ItemRemoved(firstMember);
-            var secondResult = ComparisonResult.ItemAdded(secondMember);
+            var firstResult = new ComparisonResult(SemVerChangeType.Breaking, null, null, Guid.NewGuid().ToString());
+            var secondResult = new ComparisonResult(SemVerChangeType.Feature, null, null, Guid.NewGuid().ToString());
 
             var sut = new ChangeCalculatorResult();
 
@@ -30,8 +27,7 @@
         [Fact]
         public void AddSetsChangeTypeToInitialResult()
         {
-            var member = new TestPropertyDefinition();
-            var result = ComparisonResult.ItemAdded(member);
+            var result = new ComparisonResult(SemVerChangeType.Feature, null, null, Guid.NewGuid().ToString());
 
             var sut = new ChangeCalculatorResult();
 
@@ -55,10 +51,8 @@
         [Fact]
         public void AddUpgradesChangeTypeWhenNewResultAddedWithGreaterChangeType()
         {
-            var firstMember = new TestPropertyDefinition();
-            var secondMember = new TestPropertyDefinition();
-            var firstResult = ComparisonResult.ItemAdded(firstMember);
-            var secondResult = ComparisonResult.ItemRemoved(secondMember);
+            var firstResult = new ComparisonResult(SemVerChangeType.Feature, null, null, Guid.NewGuid().ToString());
+            var secondResult = new ComparisonResult(SemVerChangeType.Breaking, null, null, Guid.NewGuid().ToString());
 
             var sut = new ChangeCalculatorResult();
 
