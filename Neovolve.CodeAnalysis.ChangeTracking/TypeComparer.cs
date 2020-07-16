@@ -56,12 +56,12 @@
         {
             if (item is IClassDefinition)
             {
-                return "a class";
+                return "class";
             }
 
             if (item is IInterfaceDefinition)
             {
-                return "an interface";
+                return "interface";
             }
 
             throw new NotSupportedException("Unknown type provided");

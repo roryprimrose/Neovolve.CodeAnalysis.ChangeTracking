@@ -27,10 +27,12 @@
             foreach (var memberAdded in matchingNodes.ItemsAdded.Where(IsVisible))
             {
                 var isVisible = true;
+                var name = memberAdded.Name;
 
                 if (memberAdded is IElementDefinition element)
                 {
                     isVisible = element.IsVisible;
+                    name = element.FullName;
                 }
 
                 var changeType = SemVerChangeType.None;
@@ -42,7 +44,7 @@
 
                 var args = new FormatArguments(
                     "{DefinitionType} {Identifier} has been added",
-                    memberAdded.Name, null, null);
+                    name, null, null);
 
                 var message = options.MessageFormatter.FormatMessage(memberAdded, args);
 
@@ -56,10 +58,12 @@
             foreach (var memberRemoved in matchingNodes.ItemsRemoved.Where(IsVisible))
             {
                 var isVisible = true;
+                var name = memberRemoved.Name;
 
                 if (memberRemoved is IElementDefinition element)
                 {
                     isVisible = element.IsVisible;
+                    name = element.FullName;
                 }
 
                 var changeType = SemVerChangeType.None;
@@ -71,7 +75,7 @@
 
                 var args = new FormatArguments(
                     "{DefinitionType} {Identifier} has been removed",
-                    memberRemoved.Name, null, null);
+                    name, null, null);
 
                 var message = options.MessageFormatter.FormatMessage(memberRemoved, args);
 
