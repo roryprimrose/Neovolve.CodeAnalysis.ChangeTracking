@@ -10,6 +10,15 @@
 
     public class SyntaxTokenListExtensionsTests
     {
+        private const string EmptyClass = @"
+namespace MyNamespace 
+{
+    public class MyClass
+    {
+    }   
+}
+";
+
         [Theory]
         [InlineData("", AccessModifier.Internal)]
         [InlineData("private", AccessModifier.Private)]
@@ -50,19 +59,26 @@
         [Theory]
         [InlineData("", SyntaxKind.PublicKeyword, false)]
         [InlineData("public", SyntaxKind.PublicKeyword, true)]
-        [InlineData("public static", SyntaxKind.StaticKeyword, true)]
-        public async Task HasModifierReturnsWhetherListContainsModifier(
-            string accessModifiers,
-            SyntaxKind kind,
-            bool expected)
+        [InlineData("private", SyntaxKind.PrivateKeyword, true)]
+        [InlineData("internal", SyntaxKind.InternalKeyword, true)]
+        [InlineData("protected", SyntaxKind.ProtectedKeyword, true)]
+        [InlineData("sealed", SyntaxKind.SealedKeyword, true)]
+        [InlineData("static", SyntaxKind.StaticKeyword, true)]
+        [InlineData("new", SyntaxKind.NewKeyword, true)]
+        [InlineData("abstract", SyntaxKind.AbstractKeyword, true)]
+        [InlineData("partial", SyntaxKind.PartialKeyword, true)]
+        [InlineData("internal protected abstract", SyntaxKind.PublicKeyword, false)]
+        [InlineData("internal protected abstract", SyntaxKind.AbstractKeyword, true)]
+        [InlineData("internal protected abstract", SyntaxKind.ProtectedKeyword, true)]
+        [InlineData("internal protected abstract", SyntaxKind.InternalKeyword, true)]
+        public async Task HasModifierReturnsWhetherModifierExists(string modifiers, SyntaxKind kind, bool expected)
         {
-            var code = TypeDefinitionCode.BuildClassWithScope(accessModifiers);
+            var code = EmptyClass.Replace("public class MyClass", modifiers + " class MyClass");
 
-            var node = await TestNode.FindNode<ClassDeclarationSyntax>(code).ConfigureAwait(false);
+            var node = await TestNode.FindNode<ClassDeclarationSyntax>(code)
+                .ConfigureAwait(false);
 
-            var list = node.Modifiers;
-
-            var actual = list.HasModifier(kind);
+            var actual = node.Modifiers.HasModifier(kind);
 
             actual.Should().Be(expected);
         }

@@ -32,46 +32,6 @@
         }
 
         [Fact]
-        public async Task LocationReturnsEmptyFilePathWhenNodeLacksSourceInformation()
-        {
-            var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.OrdinalArgument)
-                .ConfigureAwait(false);
-
-            var sut = new ArgumentDefinition(node, 1);
-
-            sut.Location.FilePath.Should().BeEmpty();
-        }
-
-        [Fact]
-        public async Task LocationReturnsFileContentLocation()
-        {
-            var filePath = Guid.NewGuid().ToString();
-
-            var node = await TestNode
-                .FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.OrdinalArgument, filePath)
-                .ConfigureAwait(false);
-
-            var sut = new ArgumentDefinition(node, 1);
-
-            sut.Location.LineIndex.Should().Be(3);
-            sut.Location.CharacterIndex.Should().Be(21);
-        }
-
-        [Fact]
-        public async Task LocationReturnsFilePathWhenNodeIncludesSourceInformation()
-        {
-            var filePath = Guid.NewGuid().ToString();
-
-            var node = await TestNode
-                .FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.OrdinalArgument, filePath)
-                .ConfigureAwait(false);
-
-            var sut = new ArgumentDefinition(node, 1);
-
-            sut.Location.FilePath.Should().Be(filePath);
-        }
-
-        [Fact]
         public async Task NameReturnsParameterNameForNamedArgument()
         {
             var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.NamedArgument)

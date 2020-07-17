@@ -158,50 +158,6 @@
         }
 
         [Fact]
-        public async Task LocationReturnsEmptyFilePathWhenNodeLacksSourceInformation()
-        {
-            var declaringItem = Substitute.For<IMemberDefinition>();
-
-            var node = await TestNode.FindNode<AttributeSyntax>(AttributeDefinitionCode.SimpleAttribute)
-                .ConfigureAwait(false);
-
-            var sut = new AttributeDefinition(declaringItem, node);
-
-            sut.Location.FilePath.Should().BeEmpty();
-        }
-
-        [Fact]
-        public async Task LocationReturnsFileContentLocation()
-        {
-            var filePath = Guid.NewGuid().ToString();
-
-            var declaringItem = Substitute.For<IMemberDefinition>();
-
-            var node = await TestNode.FindNode<AttributeSyntax>(AttributeDefinitionCode.SimpleAttribute, filePath)
-                .ConfigureAwait(false);
-
-            var sut = new AttributeDefinition(declaringItem, node);
-
-            sut.Location.LineIndex.Should().Be(3);
-            sut.Location.CharacterIndex.Should().Be(5);
-        }
-
-        [Fact]
-        public async Task LocationReturnsFilePathWhenNodeIncludesSourceInformation()
-        {
-            var filePath = Guid.NewGuid().ToString();
-
-            var declaringItem = Substitute.For<IMemberDefinition>();
-
-            var node = await TestNode.FindNode<AttributeSyntax>(AttributeDefinitionCode.SimpleAttribute, filePath)
-                .ConfigureAwait(false);
-
-            var sut = new AttributeDefinition(declaringItem, node);
-
-            sut.Location.FilePath.Should().Be(filePath);
-        }
-
-        [Fact]
         public async Task NameReturnsNameFromAttribute()
         {
             var declaringItem = Substitute.For<IMemberDefinition>();

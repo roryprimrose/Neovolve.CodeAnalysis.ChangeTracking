@@ -7,7 +7,7 @@
     ///     The <see cref="ArgumentDefinition" />
     ///     class describes an argument for an attribute.
     /// </summary>
-    public class ArgumentDefinition : IArgumentDefinition
+    public class ArgumentDefinition : ItemDefinition, IArgumentDefinition
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ArgumentDefinition" /> class.
@@ -15,11 +15,10 @@
         /// <param name="node">The node that defines the argument.</param>
         /// <param name="ordinalIndex">The ordinal index where the argument exists in the list of arguments.</param>
         /// <exception cref="ArgumentNullException">The <paramref name="node" /> parameter is <c>null</c>.</exception>
-        public ArgumentDefinition(AttributeArgumentSyntax node, int? ordinalIndex)
+        public ArgumentDefinition(AttributeArgumentSyntax node, int? ordinalIndex) : base(node)
         {
             node = node ?? throw new ArgumentNullException(nameof(node));
 
-            Location = node.DetermineLocation();
             Value = node.Expression.ToString();
 
             if (node.NameColon == null)
@@ -42,10 +41,7 @@
         public ArgumentType ArgumentType { get; }
 
         /// <inheritdoc />
-        public DefinitionLocation Location { get; }
-
-        /// <inheritdoc />
-        public string Name { get; }
+        public override string Name { get; }
 
         /// <inheritdoc />
         public int? OrdinalIndex { get; }

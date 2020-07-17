@@ -309,6 +309,18 @@
         }
 
         [Fact]
+        public async Task GenericConstraintsReturnsDeclaredConstraints()
+        {
+            var node = await TestNode
+                .FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithMultipleGenericConstraints)
+                .ConfigureAwait(false);
+
+            var sut = new ClassDefinition(node);
+
+            sut.GenericConstraints.Should().HaveCount(2);
+        }
+
+        [Fact]
         public async Task GenericTypeParametersReturnsEmptyWhenNotGenericType()
         {
             var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithoutParent)

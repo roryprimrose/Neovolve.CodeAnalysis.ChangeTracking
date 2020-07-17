@@ -28,47 +28,6 @@
         }
 
         [Fact]
-        public async Task LocationReturnsEmptyFilePathWhenNodeLacksSourceInformation()
-        {
-            var node = await TestNode
-                .FindNode<TypeParameterConstraintClauseSyntax>(TypeDefinitionCode.ClassWithGenericConstraints)
-                .ConfigureAwait(false);
-
-            var sut = new ConstraintListDefinition(node);
-
-            sut.Location.FilePath.Should().BeEmpty();
-        }
-
-        [Fact]
-        public async Task LocationReturnsFileContentLocation()
-        {
-            var filePath = Guid.NewGuid().ToString();
-
-            var node = await TestNode
-                .FindNode<TypeParameterConstraintClauseSyntax>(TypeDefinitionCode.ClassWithGenericConstraints, filePath)
-                .ConfigureAwait(false);
-
-            var sut = new ConstraintListDefinition(node);
-
-            sut.Location.LineIndex.Should().Be(3);
-            sut.Location.CharacterIndex.Should().Be(45);
-        }
-
-        [Fact]
-        public async Task LocationReturnsFilePathWhenNodeIncludesSourceInformation()
-        {
-            var filePath = Guid.NewGuid().ToString();
-
-            var node = await TestNode
-                .FindNode<TypeParameterConstraintClauseSyntax>(TypeDefinitionCode.ClassWithGenericConstraints, filePath)
-                .ConfigureAwait(false);
-
-            var sut = new ConstraintListDefinition(node);
-
-            sut.Location.FilePath.Should().Be(filePath);
-        }
-
-        [Fact]
         public async Task NameReturnsConstraintName()
         {
             var node = await TestNode
