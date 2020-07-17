@@ -93,19 +93,7 @@
                 return SemVerChangeType.None;
             }
 
-            if (_modifierChanges.ContainsKey(oldModifier) == false)
-            {
-                // There are no changes for this combination
-                return SemVerChangeType.None;
-            }
-
             var possibleChanges = _modifierChanges[oldModifier];
-
-            if (possibleChanges.ContainsKey(newModifier) == false)
-            {
-                // There is no change between the modifiers
-                return SemVerChangeType.None;
-            }
 
             return possibleChanges[newModifier];
         }
