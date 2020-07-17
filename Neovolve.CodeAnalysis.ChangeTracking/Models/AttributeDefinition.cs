@@ -58,9 +58,6 @@
         public IItemDefinition DeclaredOn { get; }
 
         /// <inheritdoc />
-        public string Description => $"Attribute {Name} on {DeclaredOn.Description}";
-
-        /// <inheritdoc />
         public DefinitionLocation Location { get; }
 
         /// <inheritdoc />

@@ -1,6 +1,7 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking
 {
     using System;
+    using System.Diagnostics;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
     public class DefaultMessageFormatter : IMessageFormatter
@@ -14,6 +15,8 @@
             var identifier = FormatIdentifier(definition, arguments.Identifier);
             var oldValue = FormatOldValue(definition, arguments.OldValue);
             var newValue = FormatNewValue(definition, arguments.NewValue);
+
+            ValidateMessageMarkers(arguments);
 
             // The message format is expected to have markers for each of the above values
             var message = arguments.MessageFormat
@@ -90,6 +93,31 @@
         protected virtual string FormatOldValue(IItemDefinition definition, string? value)
         {
             return value ?? string.Empty;
+        }
+
+        [Conditional("DEBUG")]
+        private static void ValidateMessageMarkers(FormatArguments arguments)
+        {
+            if (string.IsNullOrWhiteSpace(arguments.Identifier) == false
+                && arguments.MessageFormat.Contains("{Identifier}") == false)
+            {
+                throw new InvalidOperationException(
+                    "The message format arguments provide an identifier but the message format does not include {Identifier}");
+            }
+
+            if (string.IsNullOrWhiteSpace(arguments.OldValue) == false
+                && arguments.MessageFormat.Contains("{OldValue}") == false)
+            {
+                throw new InvalidOperationException(
+                    "The message format arguments provide an old value but the message format does not include {OldValue}");
+            }
+
+            if (string.IsNullOrWhiteSpace(arguments.NewValue) == false
+                && arguments.MessageFormat.Contains("{NewValue}") == false)
+            {
+                throw new InvalidOperationException(
+                    "The message format arguments provide a new value but the message format does not include {NewValue}");
+            }
         }
     }
 }

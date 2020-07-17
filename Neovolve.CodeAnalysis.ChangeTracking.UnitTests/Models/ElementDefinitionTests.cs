@@ -134,7 +134,7 @@
         {
             public Wrapper(MemberDeclarationSyntax node) : base(node)
             {
-                Description = Guid.NewGuid().ToString();
+                Guid.NewGuid().ToString();
                 Name = Guid.NewGuid().ToString();
                 RawName = Guid.NewGuid().ToString();
                 FullName = Guid.NewGuid().ToString();
@@ -142,7 +142,6 @@
                 IsVisible = true;
             }
 
-            public override string Description { get; }
             public override string FullName { get; }
             public override string FullRawName { get; }
             public override bool IsVisible { get; }

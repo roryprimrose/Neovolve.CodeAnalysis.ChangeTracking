@@ -28,7 +28,6 @@
                 ParameterName = string.Empty;
                 Name = Value;
                 ArgumentType = ArgumentType.Ordinal;
-                Description = $"Ordinal argument {Value}";
             }
             else
             {
@@ -36,15 +35,11 @@
                 ParameterName = node.NameColon.Name.ToString();
                 Name = ParameterName;
                 ArgumentType = ArgumentType.Named;
-                Description = $"Named argument {Name}";
             }
         }
 
         /// <inheritdoc />
         public ArgumentType ArgumentType { get; }
-
-        /// <inheritdoc />
-        public string Description { get; }
 
         /// <inheritdoc />
         public DefinitionLocation Location { get; }

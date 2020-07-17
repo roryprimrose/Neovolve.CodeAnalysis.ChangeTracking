@@ -17,9 +17,6 @@
         }
 
         /// <inheritdoc />
-        public abstract string Description { get; }
-
-        /// <inheritdoc />
         public DefinitionLocation Location { get; }
 
         /// <inheritdoc />

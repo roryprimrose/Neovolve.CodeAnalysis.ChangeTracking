@@ -39,25 +39,6 @@
         [Theory]
         [InlineData(PropertyDefinitionCode.ReadOnlyProperty, "_get")]
         [InlineData(PropertyDefinitionCode.WriteOnlyProperty, "_set")]
-        public async Task DescriptionIncludesName(string code, string expectedSuffix)
-        {
-            var parentName = Guid.NewGuid().ToString();
-
-            var declaringProperty = Substitute.For<IPropertyDefinition>();
-
-            declaringProperty.Name.Returns(parentName);
-
-            var node = await TestNode.FindNode<AccessorDeclarationSyntax>(code)
-                .ConfigureAwait(false);
-
-            var sut = new PropertyAccessorDefinition(declaringProperty, node);
-
-            sut.Description.Should().Contain(parentName + expectedSuffix);
-        }
-
-        [Theory]
-        [InlineData(PropertyDefinitionCode.ReadOnlyProperty, "_get")]
-        [InlineData(PropertyDefinitionCode.WriteOnlyProperty, "_set")]
         public async Task FullNameReturnsPropertyNameCombinedWithParentFullName(string code, string expectedSuffix)
         {
             var parentFullName = Guid.NewGuid().ToString();

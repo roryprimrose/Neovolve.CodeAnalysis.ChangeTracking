@@ -9,7 +9,6 @@
         public PropertyAccessorAccessModifier AccessModifier { get; set; } = PropertyAccessorAccessModifier.None;
         public IReadOnlyCollection<IAttributeDefinition> Attributes { get; set; } = new List<IAttributeDefinition>();
         public string DeclaredModifiers { get; } = string.Empty;
-        public string Description { get; set; } = Guid.NewGuid().ToString();
         public string FullName { get; set; } = Guid.NewGuid().ToString();
         public string FullRawName { get; set; } = Guid.NewGuid().ToString();
         public bool IsVisible { get; set; } = true;

@@ -80,7 +80,6 @@
             {
             }
 
-            public override string Description { get; } = string.Empty;
             public override string FullName { get; } = string.Empty;
             public override string FullRawName { get; } = string.Empty;
             public override string Name { get; } = string.Empty;

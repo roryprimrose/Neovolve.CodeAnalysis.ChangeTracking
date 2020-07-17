@@ -65,11 +65,10 @@
         {
             public Wrapper(MemberDeclarationSyntax node) : base(node)
             {
-                Description = Guid.NewGuid().ToString();
+                Guid.NewGuid().ToString();
                 Name = Guid.NewGuid().ToString();
             }
 
-            public override string Description { get; }
             public override string Name { get; }
         }
     }

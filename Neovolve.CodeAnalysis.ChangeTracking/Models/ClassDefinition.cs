@@ -84,9 +84,6 @@
         }
 
         /// <inheritdoc />
-        public override string Description => $"Class {FullName}";
-
-        /// <inheritdoc />
         public IReadOnlyCollection<IFieldDefinition> Fields { get; }
 
         /// <inheritdoc />

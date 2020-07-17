@@ -26,8 +26,5 @@
             node)
         {
         }
-
-        /// <inheritdoc />
-        public override string Description => $"Interface {FullName}";
     }
 }

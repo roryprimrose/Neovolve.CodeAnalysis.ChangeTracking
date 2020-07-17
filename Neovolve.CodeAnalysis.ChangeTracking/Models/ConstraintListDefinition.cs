@@ -42,9 +42,6 @@
         public IReadOnlyCollection<string> Constraints { get; }
 
         /// <inheritdoc />
-        public string Description => $"Generic constraint {Name}";
-
-        /// <inheritdoc />
         public DefinitionLocation Location { get; }
 
         /// <inheritdoc />
