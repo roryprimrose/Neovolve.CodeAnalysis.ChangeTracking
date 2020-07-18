@@ -5,7 +5,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
     public class MatchResultsTests
     {
         //[Fact]
-        //[SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification = "Testing constructor guard clause")]
+        //[SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification = "The constructor is the target of the test")]
         //public void ThrowsExceptionWhenCreatedWithNullMatches()
         //{
         //    var oldMembersNotMatched = Model.UsingModule<ConfigurationModule>().Create<IEnumerable<OldMemberDefinition>>();
@@ -17,7 +17,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
         //}
 
         //[Fact]
-        //[SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification = "Testing constructor guard clause")]
+        //[SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification = "The constructor is the target of the test")]
         //public void ThrowsExceptionWhenCreatedWithNullOldMembersNotMatched()
         //{
         //    var matches = Model.UsingModule<ConfigurationModule>().Create<IEnumerable<DefinitionMatch>>();
@@ -29,7 +29,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
         //}
 
         //[Fact]
-        //[SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification = "Testing constructor guard clause")]
+        //[SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification = "The constructor is the target of the test")]
         //public void ThrowsExceptionWhenCreatedWithNullNewMembersNotMatched()
         //{
         //    var matches = Model.UsingModule<ConfigurationModule>().Create<IEnumerable<DefinitionMatch>>();

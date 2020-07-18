@@ -15,7 +15,7 @@
         //}
 
         //[Fact]
-        //[SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification = "Testing constructor guard clause")]
+        //[SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification = "The constructor is the target of the test")]
         //public void ThrowsExceptionWhenCreatedWithNullNewNode()
         //{
         //    var oldMember = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>();
@@ -27,7 +27,7 @@
         //}
 
         //[Fact]
-        //[SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification = "Testing constructor guard clause")]
+        //[SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification = "The constructor is the target of the test")]
         //public void ThrowsExceptionWhenCreatedWithNullOldNode()
         //{
         //    var newMember = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>();

@@ -13,10 +13,12 @@
             where T : IElementDefinition
         {
             aggregator = aggregator ?? throw new ArgumentNullException(nameof(aggregator));
+            match = match ?? throw new ArgumentNullException(nameof(match));
             messageFormatter = messageFormatter ?? throw new ArgumentNullException(nameof(messageFormatter));
             arguments = arguments ?? throw new ArgumentNullException(nameof(arguments));
 
-            var definition = match.OldItem ?? match.NewItem;
+            // Use the old item to assist in formatting the message
+            var definition = match.OldItem;
 
             var message = messageFormatter.FormatMessage(definition, arguments);
 

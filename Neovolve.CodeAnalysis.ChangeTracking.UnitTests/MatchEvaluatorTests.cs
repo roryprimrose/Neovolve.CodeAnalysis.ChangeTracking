@@ -277,7 +277,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
         //[Fact]
         //[SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification =
-        //    "Testing constructor guard clause")]
+        //    "The constructor is the target of the test")]
         //public void ThrowsExceptionWhenCreatedWithEmptyMatches()
         //{
         //    var scanner = Substitute.For<INodeScanner>();
@@ -291,7 +291,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
         //[Fact]
         //[SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification =
-        //    "Testing constructor guard clause")]
+        //    "The constructor is the target of the test")]
         //public void ThrowsExceptionWhenCreatedWithNullMatches()
         //{
         //    var scanner = Substitute.For<INodeScanner>();
@@ -303,7 +303,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 
         //[Fact]
         //[SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification =
-        //    "Testing constructor guard clause")]
+        //    "The constructor is the target of the test")]
         //public void ThrowsExceptionWhenCreatedWithNullScanner()
         //{
         //    var matcher = Substitute.For<IMemberMatcher>();
