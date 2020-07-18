@@ -18,6 +18,10 @@
         public override IEnumerable<ComparisonResult> CalculateChanges(IEnumerable<IAttributeDefinition> oldItems,
             IEnumerable<IAttributeDefinition> newItems, ComparerOptions options)
         {
+            oldItems = oldItems ?? throw new ArgumentNullException(nameof(oldItems));
+            newItems = newItems ?? throw new ArgumentNullException(nameof(newItems));
+            options = options ?? throw new ArgumentNullException(nameof(options));
+
             if (options.SkipAttributes)
             {
                 // We are not going to evaluate any attributes

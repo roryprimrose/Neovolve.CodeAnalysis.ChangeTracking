@@ -7,7 +7,6 @@
     using FluentAssertions;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
-    using NSubstitute;
     using Xunit;
 
     public class AttributeDefinitionTests
@@ -17,12 +16,10 @@
         [InlineData(AttributeDefinitionCode.SimpleAttributeWithBrackets)]
         public async Task ArgumentsReturnsEmptyWhenNoParametersDefined(string code)
         {
-            var declaringItem = Substitute.For<IMemberDefinition>();
-
             var node = await TestNode.FindNode<AttributeSyntax>(code)
                 .ConfigureAwait(false);
 
-            var sut = new AttributeDefinition(declaringItem, node);
+            var sut = new AttributeDefinition(node);
 
             sut.Arguments.Should().BeEmpty();
         }
@@ -30,13 +27,11 @@
         [Fact]
         public async Task ArgumentsReturnsMixedOrdinalAndNamedArguments()
         {
-            var declaringItem = Substitute.For<IMemberDefinition>();
-
             var node = await TestNode
                 .FindNode<AttributeSyntax>(AttributeDefinitionCode.AttributeWithMixedOrdinalAndNamedArguments)
                 .ConfigureAwait(false);
 
-            var sut = new AttributeDefinition(declaringItem, node);
+            var sut = new AttributeDefinition(node);
 
             sut.Arguments.Should().HaveCount(4);
 
@@ -76,12 +71,10 @@
         [Fact]
         public async Task ArgumentsReturnsNamedArguments()
         {
-            var declaringItem = Substitute.For<IMemberDefinition>();
-
             var node = await TestNode.FindNode<AttributeSyntax>(AttributeDefinitionCode.AttributeWithNamedArguments)
                 .ConfigureAwait(false);
 
-            var sut = new AttributeDefinition(declaringItem, node);
+            var sut = new AttributeDefinition(node);
 
             sut.Arguments.Should().HaveCount(3);
 
@@ -110,12 +103,10 @@
         [Fact]
         public async Task ArgumentsReturnsOrdinalArguments()
         {
-            var declaringItem = Substitute.For<IMemberDefinition>();
-
             var node = await TestNode.FindNode<AttributeSyntax>(AttributeDefinitionCode.AttributeWithOrdinalArguments)
                 .ConfigureAwait(false);
 
-            var sut = new AttributeDefinition(declaringItem, node);
+            var sut = new AttributeDefinition(node);
 
             sut.Arguments.Should().HaveCount(3);
 
@@ -145,27 +136,12 @@
         }
 
         [Fact]
-        public async Task DeclaredOnReturnsParameterValue()
-        {
-            var declaringItem = Substitute.For<IMemberDefinition>();
-
-            var node = await TestNode.FindNode<AttributeSyntax>(AttributeDefinitionCode.SimpleAttributeWithBrackets)
-                .ConfigureAwait(false);
-
-            var sut = new AttributeDefinition(declaringItem, node);
-
-            sut.DeclaredOn.Should().Be(declaringItem);
-        }
-
-        [Fact]
         public async Task NameReturnsNameFromAttribute()
         {
-            var declaringItem = Substitute.For<IMemberDefinition>();
-
             var node = await TestNode.FindNode<AttributeSyntax>(AttributeDefinitionCode.SimpleAttribute)
                 .ConfigureAwait(false);
 
-            var sut = new AttributeDefinition(declaringItem, node);
+            var sut = new AttributeDefinition(node);
 
             sut.Name.Should().Be("SimpleAttribute");
         }
@@ -173,13 +149,11 @@
         [Fact]
         public async Task NameReturnsNameFromAttributeWithArguments()
         {
-            var declaringItem = Substitute.For<IMemberDefinition>();
-
             var node = await TestNode
                 .FindNode<AttributeSyntax>(AttributeDefinitionCode.AttributeWithMixedOrdinalAndNamedArguments)
                 .ConfigureAwait(false);
 
-            var sut = new AttributeDefinition(declaringItem, node);
+            var sut = new AttributeDefinition(node);
 
             sut.Name.Should().Be("SimpleAttribute");
         }
@@ -187,12 +161,10 @@
         [Fact]
         public async Task NameReturnsNameFromAttributeWithBrackets()
         {
-            var declaringItem = Substitute.For<IMemberDefinition>();
-
             var node = await TestNode.FindNode<AttributeSyntax>(AttributeDefinitionCode.SimpleAttributeWithBrackets)
                 .ConfigureAwait(false);
 
-            var sut = new AttributeDefinition(declaringItem, node);
+            var sut = new AttributeDefinition(node);
 
             sut.Name.Should().Be("SimpleAttribute");
         }
@@ -200,26 +172,10 @@
         [Fact]
         [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification =
             "The constructor is the target of the test")]
-        public async Task ThrowsExceptionWhenCreatedWithNullDeclaringItem()
-        {
-            var node = await TestNode.FindNode<AttributeSyntax>(AttributeDefinitionCode.SimpleAttributeWithBrackets)
-                .ConfigureAwait(false);
-
-            // ReSharper disable once ObjectCreationAsStatement
-            Action action = () => new AttributeDefinition(null!, node);
-
-            action.Should().Throw<ArgumentNullException>();
-        }
-
-        [Fact]
-        [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification =
-            "The constructor is the target of the test")]
         public void ThrowsExceptionWhenCreatedWithNullNode()
         {
-            var declaringItem = Substitute.For<IMemberDefinition>();
-
             // ReSharper disable once ObjectCreationAsStatement
-            Action action = () => new AttributeDefinition(declaringItem, null!);
+            Action action = () => new AttributeDefinition(null!);
 
             action.Should().Throw<ArgumentNullException>();
         }

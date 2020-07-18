@@ -51,7 +51,7 @@
             {
                 foreach (var attribute in list.Attributes)
                 {
-                    var definition = new AttributeDefinition(declaringItem, attribute);
+                    var definition = new AttributeDefinition(attribute);
 
                     definitions.Add(definition);
                 }

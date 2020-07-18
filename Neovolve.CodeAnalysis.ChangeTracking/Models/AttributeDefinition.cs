@@ -13,13 +13,10 @@
         /// <summary>
         ///     Initializes a new instance of the <see cref="AttributeDefinition" /> class.
         /// </summary>
-        /// <param name="declaringItem">The member that declares the attribute.</param>
         /// <param name="node">The node that describes the attribute.</param>
-        /// <exception cref="ArgumentNullException">The <paramref name="declaringItem" /> parameter is <c>null</c>.</exception>
         /// <exception cref="ArgumentNullException">The <paramref name="node" /> parameter is <c>null</c>.</exception>
-        public AttributeDefinition(IItemDefinition declaringItem, AttributeSyntax node) : base(node)
+        public AttributeDefinition(AttributeSyntax node) : base(node)
         {
-            DeclaredOn = declaringItem ?? throw new ArgumentNullException(nameof(declaringItem));
             node = node ?? throw new ArgumentNullException(nameof(node));
 
             Name = node.Name.ToString();
@@ -52,9 +49,6 @@
 
         /// <inheritdoc />
         public IReadOnlyCollection<IArgumentDefinition> Arguments { get; }
-
-        /// <inheritdoc />
-        public IItemDefinition DeclaredOn { get; }
 
         /// <inheritdoc />
         public override string Name { get; }
