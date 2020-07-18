@@ -11,7 +11,7 @@
     public class ChangeResultAggregatorExtensionsTests
     {
         [Fact]
-        public void AddElementChangedResultAddsMessageUsingOldItemResultToAggregator()
+        public void AddElementChangedResultAddsMessageResultToAggregator()
         {
             var oldItem = new TestClassDefinition();
             var newItem = new TestClassDefinition();
@@ -24,7 +24,7 @@
             var aggregator = Substitute.For<IChangeResultAggregator>();
             var formatter = Substitute.For<IMessageFormatter>();
 
-            formatter.FormatMessage(match.OldItem, arguments).Returns(message);
+            formatter.FormatMessage(match, arguments).Returns(message);
 
             aggregator.AddElementChangedResult(changeType, match, formatter, arguments);
 

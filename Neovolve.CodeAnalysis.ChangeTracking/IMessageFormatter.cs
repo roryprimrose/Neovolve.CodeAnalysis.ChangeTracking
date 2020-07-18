@@ -5,5 +5,6 @@
     public interface IMessageFormatter
     {
         string FormatMessage(IItemDefinition definition, FormatArguments arguments);
+        string FormatMessage<T>(ItemMatch<T> match, FormatArguments arguments) where T : IItemDefinition;
     }
 }

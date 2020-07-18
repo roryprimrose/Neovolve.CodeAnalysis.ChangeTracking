@@ -28,6 +28,33 @@
             return message;
         }
 
+        public string FormatMessage<T>(ItemMatch<T> match, FormatArguments arguments) where T : IItemDefinition
+        {
+            match = match ?? throw new ArgumentNullException(nameof(match));
+            arguments = arguments ?? throw new ArgumentNullException(nameof(arguments));
+
+            var definitionType = FormatDefinitionType(match);
+            var identifier = FormatIdentifier(match, arguments.Identifier);
+            var oldValue = FormatOldValue(match, arguments.OldValue);
+            var newValue = FormatNewValue(match, arguments.NewValue);
+
+            ValidateMessageMarkers(arguments);
+
+            // The message format is expected to have markers for each of the above values
+            var message = arguments.MessageFormat
+                .Replace("{DefinitionType}", definitionType)
+                .Replace("{Identifier}", identifier)
+                .Replace("{OldValue}", oldValue)
+                .Replace("{NewValue}", newValue);
+
+            return message;
+        }
+
+        protected virtual string FormatDefinitionType<T>(ItemMatch<T> match) where T : IItemDefinition
+        {
+            return FormatDefinitionType(match.OldItem);
+        }
+
         protected virtual string FormatDefinitionType(IItemDefinition definition)
         {
             definition = definition ?? throw new ArgumentNullException(nameof(definition));
@@ -80,6 +107,11 @@
             return "Element";
         }
 
+        protected virtual string FormatIdentifier<T>(ItemMatch<T> match, string identifier) where T : IItemDefinition
+        {
+            return FormatIdentifier(match.OldItem, identifier);
+        }
+
         protected virtual string FormatIdentifier(IItemDefinition definition, string identifier)
         {
             return identifier;
@@ -118,6 +150,16 @@
                 throw new InvalidOperationException(
                     "The message format arguments provide a new value but the message format does not include {NewValue}");
             }
+        }
+
+        private string FormatNewValue<T>(ItemMatch<T> match, string? value) where T : IItemDefinition
+        {
+            return FormatNewValue(match.OldItem, value);
+        }
+
+        private string FormatOldValue<T>(ItemMatch<T> match, string? value) where T : IItemDefinition
+        {
+            return FormatOldValue(match.OldItem, value);
         }
     }
 }

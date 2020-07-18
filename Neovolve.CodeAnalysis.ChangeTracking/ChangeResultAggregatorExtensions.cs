@@ -17,10 +17,7 @@
             messageFormatter = messageFormatter ?? throw new ArgumentNullException(nameof(messageFormatter));
             arguments = arguments ?? throw new ArgumentNullException(nameof(arguments));
 
-            // Use the old item to assist in formatting the message
-            var definition = match.OldItem;
-
-            var message = messageFormatter.FormatMessage(definition, arguments);
+            var message = messageFormatter.FormatMessage(match, arguments);
 
             var result = new ComparisonResult(
                 changeType,
