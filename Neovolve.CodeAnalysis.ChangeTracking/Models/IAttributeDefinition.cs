@@ -12,10 +12,5 @@
         ///     Gets the arguments supplied to the attribute.
         /// </summary>
         IReadOnlyCollection<IArgumentDefinition> Arguments { get; }
-
-        /// <summary>
-        ///     Gets the item that declares the attribute.
-        /// </summary>
-        IItemDefinition DeclaredOn { get; }
     }
 }

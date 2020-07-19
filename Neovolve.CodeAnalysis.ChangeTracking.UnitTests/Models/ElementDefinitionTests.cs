@@ -55,6 +55,45 @@
         }
 
         [Fact]
+        public async Task AttributesReturnsMultipleAttributesOnMultipleListsDeclaredOnProperty()
+        {
+            var node = await TestNode
+                .FindNode<PropertyDeclarationSyntax>(PropertyDefinitionCode
+                    .PropertyWithMultipleAttributesInMultipleLists)
+                .ConfigureAwait(false);
+
+            var sut = new Wrapper(node);
+
+            sut.Attributes.Should().HaveCount(4);
+
+            sut.Attributes.First().Name.Should().Be("First");
+            sut.Attributes.Skip(1).First().Name.Should().Be("Second");
+            sut.Attributes.Skip(2).First().Name.Should().Be("Third");
+            sut.Attributes.Skip(3).First().Name.Should().Be("Fourth");
+        }
+
+        [Fact]
+        public async Task AttributesReturnsMultipleAttributesOnMultipleListsDeclaredOnPropertyAccessor()
+        {
+            var declaringType = Substitute.For<IClassDefinition>();
+
+            var node = await TestNode
+                .FindNode<PropertyDeclarationSyntax>(PropertyDefinitionCode
+                    .PropertyAccessorWithMultipleAttributesInMultipleLists)
+                .ConfigureAwait(false);
+
+            var sut = new PropertyDefinition(declaringType, node);
+
+            var attributes = sut.GetAccessor!.Attributes;
+            attributes.Should().HaveCount(4);
+
+            attributes.First().Name.Should().Be("First");
+            attributes.Skip(1).First().Name.Should().Be("Second");
+            attributes.Skip(2).First().Name.Should().Be("Third");
+            attributes.Skip(3).First().Name.Should().Be("Fourth");
+        }
+
+        [Fact]
         public async Task AttributesReturnsMultipleAttributesOnSingleList()
         {
             var node = await TestNode
@@ -82,39 +121,28 @@
             sut.Attributes.First().Name.Should().Be("MyAttribute");
         }
 
-        [Fact]
-        public async Task AttributesReturnsMultipleAttributesOnMultipleListsDeclaredOnProperty()
+        [Theory]
+        [InlineData("")]
+        [InlineData("abstract")]
+        [InlineData("partial abstract")]
+        [InlineData("abstract partial")]
+        [InlineData("partial")]
+        [InlineData("sealed")]
+        [InlineData("partial sealed")]
+        [InlineData("sealed partial")]
+        [InlineData("static")]
+        [InlineData("partial static")]
+        [InlineData("static partial")]
+        public async Task ModifiersReturnsExpectedValue(string modifiers)
         {
-            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(PropertyDefinitionCode.PropertyWithMultipleAttributesInMultipleLists)
+            var code = TypeDefinitionCode.BuildClassWithScope(modifiers);
+
+            var node = await TestNode.FindNode<ClassDeclarationSyntax>(code)
                 .ConfigureAwait(false);
 
             var sut = new Wrapper(node);
 
-            sut.Attributes.Should().HaveCount(4);
-
-            sut.Attributes.First().Name.Should().Be("First");
-            sut.Attributes.Skip(1).First().Name.Should().Be("Second");
-            sut.Attributes.Skip(2).First().Name.Should().Be("Third");
-            sut.Attributes.Skip(3).First().Name.Should().Be("Fourth");
-        }
-
-        [Fact]
-        public async Task AttributesReturnsMultipleAttributesOnMultipleListsDeclaredOnPropertyAccessor()
-        {
-            var declaringType = Substitute.For<IClassDefinition>();
-
-            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(PropertyDefinitionCode.PropertyAccessorWithMultipleAttributesInMultipleLists)
-                .ConfigureAwait(false);
-
-            var sut = new PropertyDefinition(declaringType, node);
-
-            var attributes = sut.GetAccessor!.Attributes;
-            attributes.Should().HaveCount(4);
-
-            attributes.First().Name.Should().Be("First");
-            attributes.Skip(1).First().Name.Should().Be("Second");
-            attributes.Skip(2).First().Name.Should().Be("Third");
-            attributes.Skip(3).First().Name.Should().Be("Fourth");
+            sut.DeclaredModifiers.Should().Be(modifiers);
         }
 
         [Fact]
@@ -134,7 +162,6 @@
         {
             public Wrapper(MemberDeclarationSyntax node) : base(node)
             {
-                Description = Guid.NewGuid().ToString();
                 Name = Guid.NewGuid().ToString();
                 RawName = Guid.NewGuid().ToString();
                 FullName = Guid.NewGuid().ToString();
@@ -142,7 +169,6 @@
                 IsVisible = true;
             }
 
-            public override string Description { get; }
             public override string FullName { get; }
             public override string FullRawName { get; }
             public override bool IsVisible { get; }

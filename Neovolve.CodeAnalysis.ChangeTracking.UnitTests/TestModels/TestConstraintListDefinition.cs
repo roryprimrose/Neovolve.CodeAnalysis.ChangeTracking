@@ -9,6 +9,5 @@
         public IReadOnlyCollection<string> Constraints { get; set; } = new List<string>();
         public DefinitionLocation Location { get; set; } = new DefinitionLocation(string.Empty, 0, 0);
         public string Name { get; set; } = Guid.NewGuid().ToString();
-        public string Description { get; set; } = Guid.NewGuid().ToString();
     }
 }

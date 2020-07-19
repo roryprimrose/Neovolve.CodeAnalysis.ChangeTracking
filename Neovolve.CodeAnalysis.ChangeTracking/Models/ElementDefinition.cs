@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
     public abstract class ElementDefinition : ItemDefinition, IElementDefinition
@@ -15,7 +16,7 @@
             node = node ?? throw new ArgumentNullException(nameof(node));
 
             DeclaredModifiers = node.Modifiers.ToString();
-            Attributes = node.DetermineAttributes(this);
+            Attributes = DetermineAttributes(node, this);
         }
 
         /// <summary>
@@ -36,19 +37,38 @@
             node = node ?? throw new ArgumentNullException(nameof(node));
             declaringItem = declaringItem ?? throw new ArgumentNullException(nameof(declaringItem));
 
+            var attributeList = node.AttributeLists;
+
+            return DetermineAttributes(declaringItem, attributeList);
+        }
+
+        private static IReadOnlyCollection<IAttributeDefinition> DetermineAttributes(IElementDefinition declaringItem,
+            SyntaxList<AttributeListSyntax> attributeList)
+        {
             var definitions = new List<IAttributeDefinition>();
 
-            foreach (var list in node.AttributeLists)
+            foreach (var list in attributeList)
             {
                 foreach (var attribute in list.Attributes)
                 {
-                    var definition = new AttributeDefinition(declaringItem, attribute);
+                    var definition = new AttributeDefinition(attribute);
 
                     definitions.Add(definition);
                 }
             }
 
             return definitions.AsReadOnly();
+        }
+
+        private static IReadOnlyCollection<IAttributeDefinition> DetermineAttributes(MemberDeclarationSyntax node,
+            IElementDefinition declaringItem)
+        {
+            node = node ?? throw new ArgumentNullException(nameof(node));
+            declaringItem = declaringItem ?? throw new ArgumentNullException(nameof(declaringItem));
+
+            var attributeList = node.AttributeLists;
+
+            return DetermineAttributes(declaringItem, attributeList);
         }
 
         /// <inheritdoc />

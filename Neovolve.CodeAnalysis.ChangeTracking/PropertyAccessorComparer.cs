@@ -10,7 +10,7 @@
         }
 
         protected override void EvaluateMatch(ItemMatch<IPropertyAccessorDefinition> match, ComparerOptions options,
-            ChangeResultAggregator aggregator)
+            IChangeResultAggregator aggregator)
         {
             match = match ?? throw new ArgumentNullException(nameof(match));
             options = options ?? throw new ArgumentNullException(nameof(options));
@@ -21,7 +21,7 @@
         private static void EvaluateAccessModifierChanges(
             ItemMatch<IPropertyAccessorDefinition> match,
             ComparerOptions options,
-            ChangeResultAggregator aggregator)
+            IChangeResultAggregator aggregator)
         {
             var change = PropertyAccessorAccessModifierChangeTable.CalculateChange(match);
 
@@ -44,12 +44,11 @@
                     suffix = "s";
                 }
 
-                var result = ComparisonResult.ItemChanged(
-                    change,
-                    match,
-                    $"{match.NewItem.Description} has added the {newModifiers} access modifier{suffix}");
+                var args = new FormatArguments(
+                    "{DefinitionType} {Identifier} has added the {NewValue} access modifier" + suffix,
+                    match.NewItem.FullName, null, newModifiers);
 
-                aggregator.AddResult(result);
+                aggregator.AddElementChangedResult(change, match, options.MessageFormatter, args);
             }
             else if (string.IsNullOrWhiteSpace(newModifiers))
             {
@@ -62,12 +61,11 @@
                     suffix = "s";
                 }
 
-                var result = ComparisonResult.ItemChanged(
-                    change,
-                    match,
-                    $"{match.NewItem.Description} has removed the {oldModifiers} access modifier{suffix}");
+                var args = new FormatArguments(
+                    "{DefinitionType} {Identifier} has removed the {OldValue} access modifier" + suffix,
+                    match.NewItem.FullName, oldModifiers, null);
 
-                aggregator.AddResult(result);
+                aggregator.AddElementChangedResult(change, match, options.MessageFormatter, args);
             }
             else
             {
@@ -80,12 +78,11 @@
                     suffix = "s";
                 }
 
-                var result = ComparisonResult.ItemChanged(
-                    change,
-                    match,
-                    $"{match.NewItem.Description} has changed the access modifier{suffix} from {oldModifiers} to {newModifiers}");
+                var args = new FormatArguments(
+                    $"{{DefinitionType}} {{Identifier}} has changed the access modifier{suffix} from {{OldValue}} to {{NewValue}}",
+                    match.NewItem.FullName, oldModifiers, newModifiers);
 
-                aggregator.AddResult(result);
+                aggregator.AddElementChangedResult(change, match, options.MessageFormatter, args);
             }
         }
 

@@ -40,7 +40,9 @@
                 new CodeSource(SingleClass.Replace("public class MyClass", newModifiers + " class MyClass"))
             };
 
-            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);
@@ -184,7 +186,9 @@
                 new CodeSource(SingleClass.Replace("class MyClass", newModifiers + " class MyClass"))
             };
 
-            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);
@@ -204,7 +208,9 @@
                 new CodeSource(SingleClass.Replace("MyClass", "MyNewClass"))
             };
 
-            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);
@@ -224,7 +230,9 @@
                 new CodeSource(SingleClass.Replace("MyNamespace", "MyNewNamespace"))
             };
 
-            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);
@@ -241,7 +249,9 @@
             };
             var newCode = Array.Empty<CodeSource>();
 
-            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);
@@ -258,7 +268,9 @@
                 new CodeSource(SingleClass)
             };
 
-            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);
@@ -278,7 +290,9 @@
                 new CodeSource(SingleClass)
             };
 
-            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);
@@ -299,7 +313,9 @@
                     TypeDefinitionCode.ClassWithMultipleGenericConstraints.Replace("TValue", "TUpdatedValue"))
             };
 
-            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);

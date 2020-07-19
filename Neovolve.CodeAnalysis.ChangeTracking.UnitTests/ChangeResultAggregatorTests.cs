@@ -43,15 +43,15 @@
         {
             var childResults = new List<ComparisonResult>
             {
-                ComparisonResult.ItemAdded(new TestClassDefinition()),
-                ComparisonResult.ItemRemoved(new TestInterfaceDefinition()),
-                ComparisonResult.ItemChanged(
+                new ComparisonResult(SemVerChangeType.Feature, null, new TestClassDefinition(), Guid.NewGuid().ToString()),
+                new ComparisonResult(SemVerChangeType.Breaking, new TestInterfaceDefinition(), null, Guid.NewGuid().ToString()),
+                new ComparisonResult(
                     SemVerChangeType.Feature,
-                    new ItemMatch<IPropertyDefinition>(new TestPropertyDefinition(), new TestPropertyDefinition()),
+                    new TestPropertyDefinition(), new TestPropertyDefinition(),
                     Guid.NewGuid().ToString()),
-                ComparisonResult.ItemChanged(
+                new ComparisonResult(
                     SemVerChangeType.Breaking,
-                    new ItemMatch<IFieldDefinition>(new TestFieldDefinition(), new TestFieldDefinition()),
+                    new TestFieldDefinition(), new TestFieldDefinition(),
                     Guid.NewGuid().ToString()),
             };
             var aggregator = new ChangeResultAggregator
@@ -98,8 +98,9 @@
             var secondItem = new TestPropertyDefinition();
             var match = new ItemMatch<IPropertyDefinition>(firstItem, secondItem);
 
-            var firstResult = firstType == SemVerChangeType.None ? ComparisonResult.NoChange(match) : ComparisonResult.ItemChanged(firstType, match, Guid.NewGuid().ToString());
-            var secondResult = secondType == SemVerChangeType.None ? ComparisonResult.NoChange(match) : ComparisonResult.ItemChanged(secondType, match, Guid.NewGuid().ToString());
+            var firstResult = new ComparisonResult(firstType, match.OldItem, match.NewItem, Guid.NewGuid().ToString());
+            var secondResult =
+                new ComparisonResult(secondType, match.OldItem, match.NewItem, Guid.NewGuid().ToString());
 
             var sut = new ChangeResultAggregator();
 
@@ -124,19 +125,19 @@
         [Fact]
         public void ResultsReturnsAddedResults()
         {
-            var first = ComparisonResult.ItemAdded(new TestPropertyDefinition());
-            var second = ComparisonResult.ItemRemoved(new TestFieldDefinition());
+            var first = new ComparisonResult(SemVerChangeType.Feature, null, new TestPropertyDefinition(), Guid.NewGuid().ToString());
+            var second = new ComparisonResult(SemVerChangeType.Breaking, new TestFieldDefinition(), null, Guid.NewGuid().ToString());
             var set = new List<ComparisonResult>
             {
-                ComparisonResult.ItemAdded(new TestClassDefinition()),
-                ComparisonResult.ItemRemoved(new TestInterfaceDefinition()),
-                ComparisonResult.ItemChanged(
+                new ComparisonResult(SemVerChangeType.Feature, null, new TestClassDefinition(), Guid.NewGuid().ToString()),
+                new ComparisonResult(SemVerChangeType.Breaking, new TestInterfaceDefinition(), null, Guid.NewGuid().ToString()),
+                new ComparisonResult(
                     SemVerChangeType.Feature,
-                    new ItemMatch<IPropertyDefinition>(new TestPropertyDefinition(), new TestPropertyDefinition()),
+                    new TestPropertyDefinition(), new TestPropertyDefinition(),
                     Guid.NewGuid().ToString()),
-                ComparisonResult.ItemChanged(
+                new ComparisonResult(
                     SemVerChangeType.Breaking,
-                    new ItemMatch<IAttributeDefinition>(new TestAttributeDefinition(), new TestAttributeDefinition()),
+                    new TestAttributeDefinition(), new TestAttributeDefinition(),
                     Guid.NewGuid().ToString()),
             };
             var expected = new List<ComparisonResult>

@@ -55,9 +55,6 @@
         }
 
         /// <inheritdoc />
-        public override string Description => $"Field {FullName}";
-
-        /// <inheritdoc />
         public override string FullName { get; }
 
         /// <inheritdoc />

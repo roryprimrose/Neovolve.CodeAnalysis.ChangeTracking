@@ -26,7 +26,29 @@
             // Types added which are not publicly visible are ignored
             foreach (var memberAdded in matchingNodes.ItemsAdded.Where(IsVisible))
             {
-                var result = ComparisonResult.ItemAdded(memberAdded);
+                var isVisible = true;
+                var name = memberAdded.Name;
+
+                if (memberAdded is IElementDefinition element)
+                {
+                    isVisible = element.IsVisible;
+                    name = element.FullName;
+                }
+
+                var changeType = SemVerChangeType.None;
+
+                if (isVisible)
+                {
+                    changeType = SemVerChangeType.Feature;
+                }
+
+                var args = new FormatArguments(
+                    "{DefinitionType} {Identifier} has been added",
+                    name, null, null);
+
+                var message = options.MessageFormatter.FormatItemAddedMessage(memberAdded, args);
+
+                var result = new ComparisonResult(changeType, null, memberAdded, message);
 
                 yield return result;
             }
@@ -35,7 +57,29 @@
             // Types removed which are not publicly visible are ignored
             foreach (var memberRemoved in matchingNodes.ItemsRemoved.Where(IsVisible))
             {
-                var result = ComparisonResult.ItemRemoved(memberRemoved);
+                var isVisible = true;
+                var name = memberRemoved.Name;
+
+                if (memberRemoved is IElementDefinition element)
+                {
+                    isVisible = element.IsVisible;
+                    name = element.FullName;
+                }
+
+                var changeType = SemVerChangeType.None;
+
+                if (isVisible)
+                {
+                    changeType = SemVerChangeType.Breaking;
+                }
+
+                var args = new FormatArguments(
+                    "{DefinitionType} {Identifier} has been removed",
+                    name, null, null);
+
+                var message = options.MessageFormatter.FormatItemRemovedMessage(memberRemoved, args);
+
+                var result = new ComparisonResult(changeType, memberRemoved, null, message);
 
                 yield return result;
             }

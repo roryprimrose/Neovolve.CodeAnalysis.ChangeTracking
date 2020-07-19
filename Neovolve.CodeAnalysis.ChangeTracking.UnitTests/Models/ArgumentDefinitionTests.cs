@@ -21,6 +21,39 @@
         }
 
         [Fact]
+        public async Task ArgumentTypeReturnsOrdinalForOrdinalArgument()
+        {
+            var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.OrdinalArgument)
+                .ConfigureAwait(false);
+
+            var sut = new ArgumentDefinition(node, 1);
+
+            sut.ArgumentType.Should().Be(ArgumentType.Ordinal);
+        }
+
+        [Fact]
+        public async Task NameReturnsParameterNameForNamedArgument()
+        {
+            var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.NamedArgument)
+                .ConfigureAwait(false);
+
+            var sut = new ArgumentDefinition(node, null);
+
+            sut.Name.Should().Be("first");
+        }
+
+        [Fact]
+        public async Task NameReturnsValueForOrdinalArgument()
+        {
+            var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.OrdinalArgument)
+                .ConfigureAwait(false);
+
+            var sut = new ArgumentDefinition(node, 1);
+
+            sut.Name.Should().Be("123");
+        }
+
+        [Fact]
         public async Task OrdinalIndexReturnsNullForNamedArgument()
         {
             var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.NamedArgument)
@@ -45,67 +78,18 @@
         }
 
         [Fact]
-        public async Task ArgumentTypeReturnsOrdinalForOrdinalArgument()
+        public async Task ParameterNameReturnsEmptyForOrdinalArgument()
         {
             var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.OrdinalArgument)
                 .ConfigureAwait(false);
 
             var sut = new ArgumentDefinition(node, 1);
 
-            sut.ArgumentType.Should().Be(ArgumentType.Ordinal);
+            sut.ParameterName.Should().BeEmpty();
         }
 
         [Fact]
-        public async Task LocationReturnsEmptyFilePathWhenNodeLacksSourceInformation()
-        {
-            var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.OrdinalArgument)
-                .ConfigureAwait(false);
-
-            var sut = new ArgumentDefinition(node, 1);
-
-            sut.Location.FilePath.Should().BeEmpty();
-        }
-
-        [Fact]
-        public async Task LocationReturnsFileContentLocation()
-        {
-            var filePath = Guid.NewGuid().ToString();
-
-            var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.OrdinalArgument, filePath)
-                .ConfigureAwait(false);
-
-            var sut = new ArgumentDefinition(node, 1);
-
-            sut.Location.LineIndex.Should().Be(3);
-            sut.Location.CharacterIndex.Should().Be(21);
-        }
-
-        [Fact]
-        public async Task LocationReturnsFilePathWhenNodeIncludesSourceInformation()
-        {
-            var filePath = Guid.NewGuid().ToString();
-
-            var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.OrdinalArgument, filePath)
-                .ConfigureAwait(false);
-
-            var sut = new ArgumentDefinition(node, 1);
-
-            sut.Location.FilePath.Should().Be(filePath);
-        }
-
-        [Fact]
-        public async Task NameReturnsEmptyForOrdinalArgument()
-        {
-            var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.OrdinalArgument)
-                .ConfigureAwait(false);
-
-            var sut = new ArgumentDefinition(node, 1);
-
-            sut.Name.Should().BeEmpty();
-        }
-
-        [Fact]
-        public async Task NameReturnsNameForNamedArgument()
+        public async Task ParameterNameReturnsNameForNamedArgument()
         {
             var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.NamedArgument)
                 .ConfigureAwait(false);

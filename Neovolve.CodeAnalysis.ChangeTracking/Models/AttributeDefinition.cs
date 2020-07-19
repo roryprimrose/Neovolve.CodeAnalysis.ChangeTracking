@@ -8,22 +8,18 @@
     ///     The <see cref="AttributeDefinition" />
     ///     class is used to define an attribute declaration.
     /// </summary>
-    public class AttributeDefinition : IAttributeDefinition
+    public class AttributeDefinition : ItemDefinition, IAttributeDefinition
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="AttributeDefinition" /> class.
         /// </summary>
-        /// <param name="declaringItem">The member that declares the attribute.</param>
         /// <param name="node">The node that describes the attribute.</param>
-        /// <exception cref="ArgumentNullException">The <paramref name="declaringItem" /> parameter is <c>null</c>.</exception>
         /// <exception cref="ArgumentNullException">The <paramref name="node" /> parameter is <c>null</c>.</exception>
-        public AttributeDefinition(IItemDefinition declaringItem, AttributeSyntax node)
+        public AttributeDefinition(AttributeSyntax node) : base(node)
         {
-            DeclaredOn = declaringItem ?? throw new ArgumentNullException(nameof(declaringItem));
             node = node ?? throw new ArgumentNullException(nameof(node));
 
             Name = node.Name.ToString();
-            Location = node.DetermineLocation();
             Arguments = DetermineParameters(node);
         }
 
@@ -55,15 +51,6 @@
         public IReadOnlyCollection<IArgumentDefinition> Arguments { get; }
 
         /// <inheritdoc />
-        public IItemDefinition DeclaredOn { get; }
-
-        /// <inheritdoc />
-        public string Description => $"Attribute {Name} on {DeclaredOn.Description}";
-
-        /// <inheritdoc />
-        public DefinitionLocation Location { get; }
-
-        /// <inheritdoc />
-        public string Name { get; }
+        public override string Name { get; }
     }
 }

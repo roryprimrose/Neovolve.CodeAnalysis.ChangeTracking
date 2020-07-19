@@ -1,6 +1,5 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.ScenarioTests
 {
-    using System;
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
@@ -42,7 +41,9 @@
                 new CodeSource(SingleProperty.Replace("get;", modifiers + " get;"))
             };
 
-            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);
@@ -69,7 +70,9 @@
                 new CodeSource(SingleProperty.Replace("set;", modifiers + " set;"))
             };
 
-            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);
@@ -90,7 +93,9 @@
                     PropertyOnTypeWithMultipleGenericTypeParameters.Replace("TKey MyProperty", "TValue MyProperty"))
             };
 
-            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);
@@ -110,7 +115,9 @@
                 new CodeSource(SingleProperty.Replace("MyProperty", "MyNewProperty"))
             };
 
-            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);
@@ -125,9 +132,14 @@
             {
                 new CodeSource(SingleProperty)
             };
-            var newCode = Array.Empty<CodeSource>();
+            var newCode = new List<CodeSource>
+            {
+                new CodeSource(NoProperty)
+            };
 
-            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);
@@ -147,7 +159,9 @@
                 new CodeSource(SingleProperty.Replace("string MyProperty", "bool MyProperty"))
             };
 
-            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);
@@ -171,7 +185,9 @@
                 new CodeSource(SingleProperty.Replace("public string MyProperty", newModifiers + " string MyProperty"))
             };
 
-            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);
@@ -195,7 +211,9 @@
                 new CodeSource(SingleProperty.Replace("get;", newModifiers + " get;"))
             };
 
-            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);
@@ -217,7 +235,9 @@
                 new CodeSource(SingleProperty.Replace("string MyProperty", newModifiers + " string MyProperty"))
             };
 
-            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);
@@ -241,7 +261,9 @@
                 new CodeSource(SingleProperty.Replace("set;", newModifiers + " set;"))
             };
 
-            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);
@@ -252,13 +274,18 @@
         [Fact]
         public async Task EvaluatesFeatureWhenPropertyAdded()
         {
-            var oldCode = Array.Empty<CodeSource>();
+            var oldCode = new List<CodeSource>
+            {
+                new CodeSource(NoProperty)
+            };
             var newCode = new List<CodeSource>
             {
                 new CodeSource(SingleProperty)
             };
 
-            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);
@@ -278,7 +305,9 @@
                 new CodeSource(SingleProperty)
             };
 
-            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);
@@ -298,7 +327,9 @@
                 new CodeSource(PropertyOnTypeWithMultipleGenericTypeParameters.Replace("TKey", "TMyKey"))
             };
 
-            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);
@@ -325,7 +356,9 @@
                 new CodeSource(SingleProperty.Replace("get;", string.Empty))
             };
 
-            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);
@@ -352,7 +385,9 @@
                 new CodeSource(SingleProperty.Replace("set;", string.Empty))
             };
 
-            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);
@@ -375,6 +410,18 @@
                 _output.WriteLine(comparisonResult.ChangeType + ": " + comparisonResult.Message);
             }
         }
+
+        public string NoProperty => @"
+namespace MyNamespace 
+{
+    [ClassAttribute(123, false, myName: ""on the class"")]
+    public class MyClass
+    {
+        [FieldAttribute(885, myName: ""on the field"")]
+        public string MyField;
+    }  
+}
+";
 
         public string PropertyOnTypeWithMultipleGenericTypeParameters => @"
 namespace MyNamespace 

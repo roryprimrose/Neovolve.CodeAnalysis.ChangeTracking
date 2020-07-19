@@ -127,9 +127,6 @@
         }
 
         /// <inheritdoc />
-        public override string Description => $"Property {FullName}";
-
-        /// <inheritdoc />
         public override string FullName { get; }
 
         /// <inheritdoc />

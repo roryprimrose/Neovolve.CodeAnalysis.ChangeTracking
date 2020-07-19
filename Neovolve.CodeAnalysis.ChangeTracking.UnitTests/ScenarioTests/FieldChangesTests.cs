@@ -36,7 +36,9 @@
                     FieldOnTypeWithMultipleGenericTypeParameters.Replace("TKey MyField", "TValue MyField"))
             };
 
-            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);
@@ -60,31 +62,9 @@
                 new CodeSource(SingleField.Replace("public string MyField", newModifiers + " string MyField"))
             };
 
-            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
-                .ConfigureAwait(false);
+            var options = OptionsFactory.BuildOptions();
 
-            OutputResult(result);
-
-            result.ChangeType.Should().Be(expected);
-        }
-
-        [Theory]
-        [ClassData(typeof(AccessModifierDataSet))]
-        public async Task EvaluatesChangeOfClassAccessModifiers(
-            string oldModifiers,
-            string newModifiers,
-            SemVerChangeType expected)
-        {
-            var oldCode = new List<CodeSource>
-            {
-                new CodeSource(SingleField.Replace("public string MyField", oldModifiers + " string MyField"))
-            };
-            var newCode = new List<CodeSource>
-            {
-                new CodeSource(SingleField.Replace("public string MyField", newModifiers + " string MyField"))
-            };
-
-            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);
@@ -130,7 +110,9 @@
                 new CodeSource(SingleField.Replace("string MyField", newModifiers + " string MyField"))
             };
 
-            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);
@@ -150,7 +132,9 @@
                 new CodeSource(FieldOnTypeWithMultipleGenericTypeParameters.Replace("TKey", "TMyKey"))
             };
 
-            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);
@@ -170,7 +154,9 @@
                 new CodeSource(SingleField.Replace("MyField", "MyNewField"))
             };
 
-            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);
@@ -187,7 +173,9 @@
             };
             var newCode = Array.Empty<CodeSource>();
 
-            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);
@@ -207,7 +195,9 @@
                 new CodeSource(SingleField.Replace("string MyField", "bool MyField"))
             };
 
-            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);
@@ -224,7 +214,9 @@
                 new CodeSource(SingleField)
             };
 
-            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);
@@ -244,7 +236,9 @@
                 new CodeSource(SingleField)
             };
 
-            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);

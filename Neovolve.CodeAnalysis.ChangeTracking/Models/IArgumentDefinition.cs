@@ -17,6 +17,11 @@
         public int? OrdinalIndex { get; }
 
         /// <summary>
+        ///     Gets the name of the parameter.
+        /// </summary>
+        public string ParameterName { get; }
+
+        /// <summary>
         ///     Gets the value of the argument.
         /// </summary>
         string Value { get; }

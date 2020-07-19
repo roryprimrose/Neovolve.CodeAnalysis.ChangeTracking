@@ -18,7 +18,6 @@
             var name = declaringProperty.Name + nameSuffix;
 
             Name = name;
-            Description = $"Property accessor {name}";
             FullName = declaringProperty.FullName + nameSuffix;
             FullRawName = declaringProperty.FullRawName + nameSuffix;
             RawName = declaringProperty.RawName + nameSuffix;
@@ -79,7 +78,6 @@
         }
 
         public PropertyAccessorAccessModifier AccessModifier { get; }
-        public override string Description { get; }
         public override string FullName { get; }
         public override string FullRawName { get; }
         public override bool IsVisible { get; }

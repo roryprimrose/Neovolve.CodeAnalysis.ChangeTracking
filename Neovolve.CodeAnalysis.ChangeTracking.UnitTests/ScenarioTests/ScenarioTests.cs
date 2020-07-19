@@ -34,7 +34,9 @@
                 new CodeSource(SingleClass.Replace("class", "interface"))
             };
 
-            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);
@@ -54,7 +56,9 @@
                 new CodeSource(SingleInterface)
             };
 
-            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);
@@ -74,7 +78,9 @@
                 new CodeSource(SingleInterface.Replace("interface", "class"))
             };
 
-            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
 
             OutputResult(result);
@@ -104,7 +110,7 @@
         //")
         //            };
 
-        //            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+        //            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
         //                .ConfigureAwait(false);
 
         //            OutputResult(result);
@@ -134,7 +140,7 @@
         //")
         //            };
 
-        //            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+        //            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
         //                .ConfigureAwait(false);
 
         //            OutputResult(result);
@@ -155,7 +161,7 @@
         //                new CodeSource(TestNode.Field)
         //            };
 
-        //            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+        //            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
         //                .ConfigureAwait(false);
 
         //            OutputResult(result);
@@ -185,7 +191,7 @@
         //")
         //            };
 
-        //            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+        //            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
         //                .ConfigureAwait(false);
 
         //            OutputResult(result);
@@ -215,7 +221,7 @@
         //")
         //            };
 
-        //            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+        //            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
         //                .ConfigureAwait(false);
 
         //            OutputResult(result);
@@ -245,7 +251,7 @@
         //")
         //            };
 
-        //            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+        //            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
         //                .ConfigureAwait(false);
 
         //            OutputResult(result);
@@ -275,7 +281,7 @@
         //")
         //            };
 
-        //            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+        //            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
         //                .ConfigureAwait(false);
 
         //            OutputResult(result);
@@ -305,7 +311,7 @@
         //")
         //            };
 
-        //            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+        //            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
         //                .ConfigureAwait(false);
 
         //            OutputResult(result);
@@ -326,7 +332,7 @@
         //                new CodeSource(TestNode.Field)
         //            };
 
-        //            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+        //            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
         //                .ConfigureAwait(false);
 
         //            OutputResult(result);
@@ -356,7 +362,7 @@
         //")
         //            };
 
-        //            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+        //            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
         //                .ConfigureAwait(false);
 
         //            OutputResult(result);
@@ -386,7 +392,7 @@
         //")
         //            };
 
-        //            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+        //            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
         //                .ConfigureAwait(false);
 
         //            OutputResult(result);
@@ -416,7 +422,7 @@
         //")
         //            };
 
-        //            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+        //            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
         //                .ConfigureAwait(false);
 
         //            OutputResult(result);
@@ -438,7 +444,7 @@
         //                new CodeSource(TestNode.Field)
         //            };
 
-        //            var result = await _calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
+        //            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
         //                .ConfigureAwait(false);
 
         //            OutputResult(result);

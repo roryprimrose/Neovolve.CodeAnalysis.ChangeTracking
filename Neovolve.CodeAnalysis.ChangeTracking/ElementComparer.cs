@@ -40,22 +40,22 @@
         protected abstract void EvaluateMatch(
             ItemMatch<T> match,
             ComparerOptions options,
-            ChangeResultAggregator aggregator);
+            IChangeResultAggregator aggregator);
 
         protected void RunComparisonStep(
-            Action<ItemMatch<T>, ComparerOptions, ChangeResultAggregator> step,
+            Action<ItemMatch<T>, ComparerOptions, IChangeResultAggregator> step,
             ItemMatch<T> match,
             ComparerOptions options,
-            ChangeResultAggregator aggregator)
+            IChangeResultAggregator aggregator)
         {
             RunComparisonStep(step, match, options, aggregator, false);
         }
 
         protected void RunComparisonStep(
-            Action<ItemMatch<T>, ComparerOptions, ChangeResultAggregator> step,
+            Action<ItemMatch<T>, ComparerOptions, IChangeResultAggregator> step,
             ItemMatch<T> match,
             ComparerOptions options,
-            ChangeResultAggregator aggregator,
+            IChangeResultAggregator aggregator,
             bool exitOnBreakingChange)
         {
             match = match ?? throw new ArgumentNullException(nameof(match));
@@ -84,7 +84,7 @@
         private void EvaluateAttributeChanges(
             ItemMatch<T> match,
             ComparerOptions options,
-            ChangeResultAggregator aggregator)
+            IChangeResultAggregator aggregator)
         {
             var results = _attributeProcessor.CalculateChanges(
                 match.OldItem.Attributes,
