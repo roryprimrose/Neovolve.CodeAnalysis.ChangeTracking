@@ -5,7 +5,7 @@
 
     public class TestClassDefinition : TestTypeDefinition, IClassDefinition
     {
-        public IReadOnlyCollection<IFieldDefinition> Fields { get; set; } = new List<IFieldDefinition>();
+        public IReadOnlyCollection<IFieldDefinition> Fields { get; set; } = new List<TestFieldDefinition>();
         public ClassModifiers Modifiers { get; set;  } = ClassModifiers.None;
     }
 }

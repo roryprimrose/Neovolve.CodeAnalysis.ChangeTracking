@@ -88,7 +88,7 @@
         [Fact]
         public void FormatItemAddedMessageThrowsExceptionWithNullDefinition()
         {
-            var arguments = Model.Create<FormatArguments>();
+            var arguments = Model.UsingModule<ConfigurationModule>().Create<FormatArguments>();
 
             var sut = new DefaultMessageFormatter();
 

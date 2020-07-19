@@ -7,7 +7,7 @@
     public class TestPropertyDefinition : IPropertyDefinition
     {
         public AccessModifier AccessModifier { get; set; } = AccessModifier.Public;
-        public IReadOnlyCollection<IAttributeDefinition> Attributes { get; set; } = new List<IAttributeDefinition>();
+        public IReadOnlyCollection<IAttributeDefinition> Attributes { get; set; } = new List<TestAttributeDefinition>();
         public string DeclaredModifiers { get; } = "public";
         public ITypeDefinition DeclaringType { get; set; } = new TestClassDefinition();
         public string FullName { get; set; } = Guid.NewGuid().ToString();

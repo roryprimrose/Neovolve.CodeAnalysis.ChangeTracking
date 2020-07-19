@@ -7,13 +7,13 @@
     public abstract class TestTypeDefinition : ITypeDefinition
     {
         public AccessModifier AccessModifier { get; set; } = AccessModifier.Public;
-        public IReadOnlyCollection<IAttributeDefinition> Attributes { get; set; } = new List<IAttributeDefinition>();
-        public IReadOnlyCollection<IClassDefinition> ChildClasses { get; set; } = new List<IClassDefinition>();
+        public IReadOnlyCollection<IAttributeDefinition> Attributes { get; set; } = new List<TestAttributeDefinition>();
+        public IReadOnlyCollection<IClassDefinition> ChildClasses { get; set; } = new List<TestClassDefinition>();
 
         public IReadOnlyCollection<IInterfaceDefinition> ChildInterfaces { get; set; } =
-            new List<IInterfaceDefinition>();
+            new List<TestInterfaceDefinition>();
 
-        public IReadOnlyCollection<ITypeDefinition> ChildTypes { get; set; } = new List<ITypeDefinition>();
+        public IReadOnlyCollection<ITypeDefinition> ChildTypes { get; set; } = new List<TestClassDefinition>();
         public string DeclaredModifiers { get; } = "public";
         public ITypeDefinition? DeclaringType { get; set; } = null;
         public string FullName { get; set; } = Guid.NewGuid().ToString();
@@ -28,7 +28,7 @@
         public DefinitionLocation Location { get; set; } = new DefinitionLocation(string.Empty, 0, 0);
         public string Name { get; set; } = Guid.NewGuid().ToString();
         public string Namespace { get; set; } = Guid.NewGuid().ToString();
-        public IReadOnlyCollection<IPropertyDefinition> Properties { get; set; } = new List<IPropertyDefinition>();
+        public IReadOnlyCollection<IPropertyDefinition> Properties { get; set; } = new List<TestPropertyDefinition>();
         public string RawName { get; set; } = Guid.NewGuid().ToString();
     }
 }
