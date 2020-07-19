@@ -1,5 +1,6 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking
 {
+    using System;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
     public class ComparisonResult
@@ -10,7 +11,7 @@
             ChangeType = changeType;
             OldItem = oldItem;
             NewItem = newItem;
-            Message = message;
+            Message = message ?? throw new ArgumentNullException(nameof(message));
         }
 
         public SemVerChangeType ChangeType { get; }

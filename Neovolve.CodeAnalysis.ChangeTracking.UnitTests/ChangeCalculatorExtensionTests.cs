@@ -83,7 +83,7 @@
             calculator.CalculateChanges(
                 Arg.Is<IEnumerable<ITypeDefinition>>(x => x.OfType<ClassDefinition>().First().Fields.Count == 0),
                 Arg.Is<IEnumerable<ITypeDefinition>>(x => x.OfType<ClassDefinition>().First().Fields.Count == 1),
-                Arg.Is<ComparerOptions>(x => x == ComparerOptions.Default)).Returns(expected);
+                Arg.Any<ComparerOptions>()).Returns(expected);
 
             var actual = await calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
                 .ConfigureAwait(false);
@@ -178,7 +178,7 @@
             calculator.CalculateChanges(
                 Arg.Is<IEnumerable<ITypeDefinition>>(x => x.OfType<ClassDefinition>().First().Fields.Count == 0),
                 Arg.Is<IEnumerable<ITypeDefinition>>(x => x.OfType<ClassDefinition>().First().Fields.Count == 1),
-                Arg.Is<ComparerOptions>(x => x == ComparerOptions.Default)).Returns(expected);
+                Arg.Any<ComparerOptions>()).Returns(expected);
 
             var actual = calculator.CalculateChanges(oldNodes, newNodes);
 

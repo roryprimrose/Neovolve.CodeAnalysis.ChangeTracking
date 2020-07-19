@@ -6,13 +6,13 @@
 
     public class DefaultMessageFormatter : IMessageFormatter
     {
-        public string FormatMessage(IItemDefinition definition, FormatArguments arguments)
+        public string FormatItemAddedMessage(IItemDefinition definition, FormatArguments arguments)
         {
             definition = definition ?? throw new ArgumentNullException(nameof(definition));
             arguments = arguments ?? throw new ArgumentNullException(nameof(arguments));
 
             var definitionType = FormatDefinitionType(definition);
-            var identifier = FormatIdentifier(definition, arguments.Identifier);
+            var identifier = FormatItemAddedIdentifier(definition, arguments.Identifier);
             var oldValue = FormatOldValue(definition, arguments.OldValue);
             var newValue = FormatNewValue(definition, arguments.NewValue);
 
@@ -28,7 +28,8 @@
             return message;
         }
 
-        public string FormatMessage<T>(ItemMatch<T> match, FormatArguments arguments) where T : IItemDefinition
+        public string FormatItemChangedMessage<T>(ItemMatch<T> match, FormatArguments arguments)
+            where T : IItemDefinition
         {
             match = match ?? throw new ArgumentNullException(nameof(match));
             arguments = arguments ?? throw new ArgumentNullException(nameof(arguments));
@@ -37,6 +38,28 @@
             var identifier = FormatIdentifier(match, arguments.Identifier);
             var oldValue = FormatOldValue(match, arguments.OldValue);
             var newValue = FormatNewValue(match, arguments.NewValue);
+
+            ValidateMessageMarkers(arguments);
+
+            // The message format is expected to have markers for each of the above values
+            var message = arguments.MessageFormat
+                .Replace("{DefinitionType}", definitionType)
+                .Replace("{Identifier}", identifier)
+                .Replace("{OldValue}", oldValue)
+                .Replace("{NewValue}", newValue);
+
+            return message;
+        }
+
+        public string FormatItemRemovedMessage(IItemDefinition definition, FormatArguments arguments)
+        {
+            definition = definition ?? throw new ArgumentNullException(nameof(definition));
+            arguments = arguments ?? throw new ArgumentNullException(nameof(arguments));
+
+            var definitionType = FormatDefinitionType(definition);
+            var identifier = FormatItemRemovedIdentifier(definition, arguments.Identifier);
+            var oldValue = FormatOldValue(definition, arguments.OldValue);
+            var newValue = FormatNewValue(definition, arguments.NewValue);
 
             ValidateMessageMarkers(arguments);
 
@@ -110,6 +133,16 @@
         protected virtual string FormatIdentifier<T>(ItemMatch<T> match, string identifier) where T : IItemDefinition
         {
             return FormatIdentifier(match.OldItem, identifier);
+        }
+
+        protected virtual string FormatItemAddedIdentifier(IItemDefinition definition, string identifier)
+        {
+            return FormatIdentifier(definition, identifier);
+        }
+
+        protected virtual string FormatItemRemovedIdentifier(IItemDefinition definition, string identifier)
+        {
+            return FormatIdentifier(definition, identifier);
         }
 
         protected virtual string FormatIdentifier(IItemDefinition definition, string identifier)

@@ -1,5 +1,11 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 {
+    using System;
+    using FluentAssertions;
+    using ModelBuilder;
+    using Neovolve.CodeAnalysis.ChangeTracking.Models;
+    using NSubstitute;
+    using Xunit;
     using Xunit.Abstractions;
 
     public class ComparisonResultTests
@@ -11,148 +17,81 @@
             _output = output;
         }
 
-        //[Theory]
-        //[InlineData(true, SemVerChangeType.Feature)]
-        //[InlineData(false, SemVerChangeType.None)]
-        //public void MemberAddedPopulatesInformationFromParameters(bool isVisible, SemVerChangeType expected)
-        //{
-        //    var newMember = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>()
-        //        .Set(x => x.IsVisible = isVisible);
+        [Fact]
+        public void CanCreateWithNullNewItem()
+        {
+            var message = Guid.NewGuid().ToString();
+            var changeType = Model.Create<SemVerChangeType>();
 
-        //    var actual = ComparisonResult.MemberAdded(newMember);
+            var oldItem = Substitute.For<IPropertyDefinition>();
 
-        //    actual.Should().NotBeNull();
+            var actual = new ComparisonResult(changeType, oldItem, null!, message);
 
-        //    _output.WriteLine(actual.Message);
+            actual.Should().NotBeNull();
 
-        //    actual.ChangeType.Should().Be(expected);
-        //    actual.OldMember.Should().BeNull();
-        //    actual.NewMember.Should().Be(newMember);
-        //    actual.Message.Should().NotBeNullOrWhiteSpace();
-        //}
+            _output.WriteLine(actual.Message);
 
-        //[Fact]
-        //public void MemberAddedThrowsExceptionWithNullOldMember()
-        //{
-        //    Action action = () => ComparisonResult.MemberAdded(null!);
+            actual.ChangeType.Should().Be(changeType);
+            actual.OldItem.Should().Be(oldItem);
+            actual.NewItem.Should().BeNull();
+            actual.Message.Should().Be(message);
+        }
 
-        //    action.Should().Throw<ArgumentNullException>();
-        //}
+        [Fact]
+        public void CanCreateWithNullOldItem()
+        {
+            var message = Guid.NewGuid().ToString();
+            var changeType = Model.Create<SemVerChangeType>();
 
-        //[Theory]
-        //[InlineData(SemVerChangeType.Feature)]
-        //[InlineData(SemVerChangeType.Breaking)]
-        //public void MemberChangedPopulatesInformationFromParameters(SemVerChangeType changeType)
-        //{
-        //    var newMember = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
-        //    var oldMember = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
-        //    var match = new DefinitionMatch(oldMember, newMember);
-        //    var message = Guid.NewGuid().ToString();
+            var newItem = Substitute.For<IPropertyDefinition>();
 
-        //    var actual = ComparisonResult.MemberChanged(changeType, match, message);
+            var actual = new ComparisonResult(changeType, null!, newItem, message);
 
-        //    actual.Should().NotBeNull();
+            actual.Should().NotBeNull();
 
-        //    _output.WriteLine(actual.Message);
+            _output.WriteLine(actual.Message);
 
-        //    actual.ChangeType.Should().Be(changeType);
-        //    actual.OldMember.Should().Be(oldMember);
-        //    actual.NewMember.Should().Be(newMember);
-        //    actual.Message.Should().Be(message);
-        //}
+            actual.ChangeType.Should().Be(changeType);
+            actual.OldItem.Should().BeNull();
+            actual.NewItem.Should().Be(newItem);
+            actual.Message.Should().Be(message);
+        }
 
-        //[Theory]
-        //[InlineData(null)]
-        //[InlineData("")]
-        //[InlineData("  ")]
-        //public void MemberChangedThrowsExceptionWithInvalidMessage(string message)
-        //{
-        //    var newMember = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
-        //    var oldMember = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
-        //    var match = new DefinitionMatch(oldMember, newMember);
+        [Theory]
+        [InlineData(SemVerChangeType.None)]
+        [InlineData(SemVerChangeType.Feature)]
+        [InlineData(SemVerChangeType.Breaking)]
+        public void PropertiesReturnParameterValues(SemVerChangeType changeType)
+        {
+            var message = Guid.NewGuid().ToString();
 
-        //    Action action = () =>
-        //        ComparisonResult.MemberChanged(SemVerChangeType.Feature, match, message);
+            var newItem = Substitute.For<IPropertyDefinition>();
+            var oldItem = Substitute.For<IPropertyDefinition>();
 
-        //    action.Should().Throw<ArgumentException>();
-        //}
+            var actual = new ComparisonResult(changeType, oldItem, newItem, message);
 
-        //[Fact]
-        //public void MemberChangedThrowsExceptionWithNoneChangeType()
-        //{
-        //    var newMember = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
-        //    var oldMember = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
-        //    var match = new DefinitionMatch(oldMember, newMember);
-        //    var message = Guid.NewGuid().ToString();
+            actual.Should().NotBeNull();
 
-        //    Action action = () => ComparisonResult.MemberChanged(SemVerChangeType.None, match, message);
+            _output.WriteLine(actual.Message);
 
-        //    action.Should().Throw<ArgumentException>();
-        //}
+            actual.ChangeType.Should().Be(changeType);
+            actual.OldItem.Should().Be(oldItem);
+            actual.NewItem.Should().Be(newItem);
+            actual.Message.Should().Be(message);
+        }
 
-        //[Fact]
-        //public void MemberChangedThrowsExceptionWithNullMatch()
-        //{
-        //    var message = Guid.NewGuid().ToString();
+        [Fact]
+        public void ThrowsExceptionWhenCreatedWithNullMessage()
+        {
+            var changeType = Model.Create<SemVerChangeType>();
 
-        //    Action action = () => ComparisonResult.MemberChanged(SemVerChangeType.Feature, null!, message);
+            var newItem = Substitute.For<IPropertyDefinition>();
+            var oldItem = Substitute.For<IPropertyDefinition>();
 
-        //    action.Should().Throw<ArgumentNullException>();
-        //}
+            // ReSharper disable once ObjectCreationAsStatement
+            Action action = () => new ComparisonResult(changeType, oldItem, newItem, null!);
 
-        //[Theory]
-        //[InlineData(true, SemVerChangeType.Breaking)]
-        //[InlineData(false, SemVerChangeType.None)]
-        //public void MemberRemovedPopulatesInformationFromParameters(bool isVisible, SemVerChangeType expected)
-        //{
-        //    var oldMember = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>()
-        //        .Set(x => x.IsVisible = isVisible);
-
-        //    var actual = ComparisonResult.MemberRemoved(oldMember);
-
-        //    actual.Should().NotBeNull();
-
-        //    _output.WriteLine(actual.Message);
-
-        //    actual.ChangeType.Should().Be(expected);
-        //    actual.OldMember.Should().Be(oldMember);
-        //    actual.NewMember.Should().BeNull();
-        //    actual.Message.Should().NotBeNullOrWhiteSpace();
-        //}
-
-        //[Fact]
-        //public void MemberRemovedThrowsExceptionWithNullOldMember()
-        //{
-        //    Action action = () => ComparisonResult.MemberRemoved(null!);
-
-        //    action.Should().Throw<ArgumentNullException>();
-        //}
-
-        //[Fact]
-        //public void NoChangeReturnsValuesFromParameters()
-        //{
-        //    var oldMember = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
-        //    var newMember = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
-        //    var match = new DefinitionMatch(oldMember, newMember);
-
-        //    var actual = ComparisonResult.NoChange(match);
-
-        //    actual.Should().NotBeNull();
-
-        //    _output.WriteLine(actual.Message);
-
-        //    actual.ChangeType.Should().Be(SemVerChangeType.None);
-        //    actual.OldMember.Should().Be(oldMember);
-        //    actual.NewMember.Should().Be(newMember);
-        //    actual.Message.Should().NotBeNullOrWhiteSpace();
-        //}
-
-        //[Fact]
-        //public void NoChangeThrowsExceptionWithNullMatch()
-        //{
-        //    Action action = () => ComparisonResult.NoChange(null!);
-
-        //    action.Should().Throw<ArgumentNullException>();
-        //}
+            action.Should().Throw<ArgumentNullException>();
+        }
     }
 }

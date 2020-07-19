@@ -46,7 +46,7 @@
                     "{DefinitionType} {Identifier} has been added",
                     name, null, null);
 
-                var message = options.MessageFormatter.FormatMessage(memberAdded, args);
+                var message = options.MessageFormatter.FormatItemAddedMessage(memberAdded, args);
 
                 var result = new ComparisonResult(changeType, null, memberAdded, message);
 
@@ -77,7 +77,7 @@
                     "{DefinitionType} {Identifier} has been removed",
                     name, null, null);
 
-                var message = options.MessageFormatter.FormatMessage(memberRemoved, args);
+                var message = options.MessageFormatter.FormatItemRemovedMessage(memberRemoved, args);
 
                 var result = new ComparisonResult(changeType, memberRemoved, null, message);
 
