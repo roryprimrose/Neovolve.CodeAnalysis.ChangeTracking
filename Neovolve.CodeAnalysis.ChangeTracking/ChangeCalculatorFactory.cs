@@ -15,17 +15,19 @@
 
             var attributeComparer = new AttributeComparer();
             var attributeProcessor = new AttributeMatchProcessor(attributeComparer, evaluator, logger);
-            
+
             var fieldComparer = new FieldComparer(attributeProcessor);
             var fieldProcessor = new FieldMatchProcessor(fieldComparer, evaluator, logger);
-            
+
             var propertyAccessorComparer = new PropertyAccessorComparer(attributeProcessor);
-            var propertyAccessorProcessor = new PropertyAccessorMatchProcessor(propertyAccessorComparer, evaluator, logger);
+            var propertyAccessorProcessor =
+                new PropertyAccessorMatchProcessor(propertyAccessorComparer, evaluator, logger);
             var propertyComparer = new PropertyComparer(propertyAccessorProcessor, attributeProcessor);
             var propertyProcessor = new PropertyMatchProcessor(propertyComparer, evaluator, logger);
-            
+
             var typeComparer = new TypeComparer(fieldProcessor, propertyProcessor, attributeProcessor);
-            var typeProcessor = new TypeMatchProcessor(typeComparer, evaluator, logger);
+            var typeMatchEvaluator = new TypeMatchEvaluator();
+            var typeProcessor = new TypeMatchProcessor(typeComparer, typeMatchEvaluator, logger);
 
             return new ChangeCalculator(typeProcessor, logger);
         }

@@ -27,6 +27,7 @@
             options = options ?? throw new ArgumentNullException(nameof(options));
 
             RunComparisonStep(CompareDefinitionType, match, options, aggregator, true);
+            RunComparisonStep(CompareNamespace, match, options, aggregator, true);
             RunComparisonStep(EvaluateAccessModifierChanges, match, options, aggregator);
             RunComparisonStep(EvaluateClassModifierChanges, match, options, aggregator);
             RunComparisonStep(EvaluateGenericTypeDefinitionChanges, match, options, aggregator);
@@ -47,6 +48,22 @@
 
                 var args = new FormatArguments("{DefinitionType} {Identifier} has changed to {NewValue}",
                     match.OldItem.FullName, null, newType);
+
+                aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
+            }
+        }
+
+        private static void CompareNamespace(
+            ItemMatch<ITypeDefinition> match,
+            ComparerOptions options,
+            IChangeResultAggregator aggregator)
+        {
+            // Check for a change in type
+            if (match.OldItem.Namespace != match.NewItem.Namespace)
+            {
+                var args = new FormatArguments(
+                    "{DefinitionType} {Identifier} has changed namespace from {OldValue} to {NewValue}",
+                    match.OldItem.FullName, match.OldItem.Namespace, match.NewItem.Namespace);
 
                 aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
             }
@@ -148,7 +165,7 @@
                 return;
             }
 
-            var newItem = (IClassDefinition)match.NewItem;
+            var newItem = (IClassDefinition) match.NewItem;
             var classMatch = new ItemMatch<IClassDefinition>(oldItem, newItem);
 
             var change = ClassModifierChangeTable.CalculateChange(classMatch);
@@ -389,7 +406,7 @@
                 return;
             }
 
-            var newClass = (IClassDefinition)match.NewItem;
+            var newClass = (IClassDefinition) match.NewItem;
 
             var changes = _fieldProcessor.CalculateChanges(oldClass.Fields, newClass.Fields, options);
 
