@@ -8,6 +8,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Neovolve.CodeAnalysis.ChangeTracking.UnitTests", "Neovolve.CodeAnalysis.ChangeTracking.UnitTests\Neovolve.CodeAnalysis.ChangeTracking.UnitTests.csproj", "{5DD95CDD-2201-42EA-BEAB-BD8C69B1E933}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{EC90BE0D-6999-4EA4-ABB7-D6F586E6F6E2}"
+	ProjectSection(SolutionItems) = preProject
+		.github\dependabot.yml = .github\dependabot.yml
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{DDA349BC-69E8-46E5-9977-9CECBC77720C}"
 	ProjectSection(SolutionItems) = preProject
@@ -18,7 +21,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
-		dependabot.yml = dependabot.yml
 		GitVersion.yml = GitVersion.yml
 		LICENSE = LICENSE
 		README.md = README.md
