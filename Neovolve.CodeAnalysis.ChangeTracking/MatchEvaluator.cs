@@ -6,7 +6,8 @@
 
     public class MatchEvaluator : IMatchEvaluator
     {
-        public IMatchResults<T> MatchItems<T>(IEnumerable<T> oldItems, IEnumerable<T> newItems, Func<T, T, bool> evaluator) where T : IItemDefinition
+        public IMatchResults<T> MatchItems<T>(IEnumerable<T> oldItems, IEnumerable<T> newItems,
+            Func<T, T, bool> evaluator) where T : IItemDefinition
         {
             oldItems = oldItems ?? throw new ArgumentNullException(nameof(oldItems));
             newItems = newItems ?? throw new ArgumentNullException(nameof(newItems));
@@ -44,7 +45,14 @@
                 }
             }
 
-            return new MatchResults<T>(matches, oldDefinitions, newDefinitions);
+            return BuildMatchResults(matches, oldDefinitions, newDefinitions);
+        }
+
+        protected virtual IMatchResults<T> BuildMatchResults<T>(List<ItemMatch<T>> matches, List<T> itemsRemoved,
+            List<T> itemsAdded)
+            where T : IItemDefinition
+        {
+            return new MatchResults<T>(matches, itemsRemoved, itemsAdded);
         }
     }
 }

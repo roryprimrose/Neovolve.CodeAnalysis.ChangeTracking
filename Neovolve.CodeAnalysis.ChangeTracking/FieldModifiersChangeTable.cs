@@ -64,19 +64,7 @@
                 return SemVerChangeType.None;
             }
 
-            if (_modifierChanges.ContainsKey(oldModifiers) == false)
-            {
-                // There are no changes for this combination
-                return SemVerChangeType.None;
-            }
-
             var possibleChanges = _modifierChanges[oldModifiers];
-
-            if (possibleChanges.ContainsKey(newModifiers) == false)
-            {
-                // There is no change between the modifiers
-                return SemVerChangeType.None;
-            }
 
             return possibleChanges[newModifiers];
         }
