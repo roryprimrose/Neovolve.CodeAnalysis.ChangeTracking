@@ -6,7 +6,7 @@
 
     public class DefaultMessageFormatter : IMessageFormatter
     {
-        public string FormatItemAddedMessage(IItemDefinition definition, FormatArguments arguments)
+        public virtual string FormatItemAddedMessage(IItemDefinition definition, FormatArguments arguments)
         {
             definition = definition ?? throw new ArgumentNullException(nameof(definition));
             arguments = arguments ?? throw new ArgumentNullException(nameof(arguments));
@@ -28,7 +28,7 @@
             return message;
         }
 
-        public string FormatItemChangedMessage<T>(ItemMatch<T> match, FormatArguments arguments)
+        public virtual string FormatItemChangedMessage<T>(ItemMatch<T> match, FormatArguments arguments)
             where T : IItemDefinition
         {
             match = match ?? throw new ArgumentNullException(nameof(match));
@@ -51,7 +51,7 @@
             return message;
         }
 
-        public string FormatItemRemovedMessage(IItemDefinition definition, FormatArguments arguments)
+        public virtual string FormatItemRemovedMessage(IItemDefinition definition, FormatArguments arguments)
         {
             definition = definition ?? throw new ArgumentNullException(nameof(definition));
             arguments = arguments ?? throw new ArgumentNullException(nameof(arguments));
