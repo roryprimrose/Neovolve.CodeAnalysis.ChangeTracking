@@ -1,11 +1,15 @@
 name: CI
 
 on:
+  # Trigger the workflow on push or pull request,
+  # for any branch or version tag
   push:
-    branches:    
+    branches:
       - '**'
+    tags:
+      - 'v*.*.*'
   pull_request:
-    branches:    
+    branches:
       - '**'
 
 jobs:
@@ -19,7 +23,7 @@ jobs:
 
     - name: ResolveProject
       shell: pwsh
-      run: Write-Host "::set-env name=PROJECT_NAME::$(${env:GITHUB_REPOSITORY}.substring(${env:GITHUB_REPOSITORY}.IndexOf('/') + 1))"
+      run: Write-Host "::set-env name=projectName::$(${env:GITHUB_REPOSITORY}.substring(${env:GITHUB_REPOSITORY}.IndexOf('/') + 1))"
       
     - name: Fetch all history for all tags and branches
       run: git fetch --prune --unshallow
@@ -32,6 +36,9 @@ jobs:
     - name: Use GitVersion
       id: gitversion # step id used as reference for output values
       uses: gittools/actions/gitversion/execute@v0.9.4
+      with:
+        useConfigFile: true
+        configFilePath: ./GitVersion.yml
 
     - name: Update project version
       uses: roryprimrose/set-vs-sdk-project-version@v1
@@ -41,49 +48,125 @@ jobs:
         fileVersion: ${{ steps.gitversion.outputs.MajorMinorPatch }}
         informationalVersion: ${{ steps.gitversion.outputs.InformationalVersion }}  
 
+    - name: Setup dotnet v2.1
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '2.1.300' # SDK Version to use.
+
+    - name: Setup dotnet v3.1
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '3.1.100' # SDK Version to use.
+
+    # This step is required while waiting on https://github.com/actions/setup-dotnet/issues/25 to be resolved
+    - name: .net SxS
+      run: rsync -a ${DOTNET_ROOT/3.1.100/2.1.300}/* $DOTNET_ROOT/
+      
     - name: Restore
       run: dotnet restore
 
     - name: Build
       run: dotnet build -c Release --no-restore
-
+    
     - name: Test
-      run: dotnet test -c Release --no-build /p:CollectCoverage=true /p:CoverletOutput="$GITHUB_WORKSPACE/coverage/lcov.info" /p:MergeWith="$GITHUB_WORKSPACE/coverage/lcov.info" /p:CoverletOutputFormat=lcov                                                       
-    
-    - name: Coveralls
-      uses: coverallsapp/github-action@master
+      run: dotnet test -c Release --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura
+
+    - name: Generate Coverage Report
+      # run: reportgenerator -reports:**/coverage.cobertura.xml -targetdir:Report -reporttypes:HtmlInline_AzurePipelines;Cobertura
+      uses: danielpalme/ReportGenerator-GitHub-Action@4.6.4
       with:
-        github-token: ${{ secrets.github_token }}
-        path-to-lcov: /home/runner/work/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}/coverage/lcov.info
-    
+        reports: "**/coverage.*.cobertura.xml"
+        targetdir: "Report"
+        reporttypes: "HtmlInline;Cobertura"
+        tag: '${{ github.run_number }}_${{ github.run_id }}'
+      if: github.event_name == 'pull_request' && github.repository_owner == 'roryprimrose'       # Don't run on forks
+
+    - name: Publish Coverage Report
+      uses: 5monkeys/cobertura-action@master
+      with:
+        path: Report/Cobertura.xml
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        minimum_coverage: 75
+      if: github.event_name == 'pull_request' && github.repository_owner == 'roryprimrose'       # Don't run on forks
+
     - name: Pack
-      run: dotnet pack "./${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj" -c Release --no-build --include-symbols -o ./staging
+      run: dotnet pack "./${{ env.projectName }}/${{ env.projectName }}.csproj" -c Release --no-build --include-symbols -o $GITHUB_WORKSPACE/staging
 
     - name: Publish build artifacts
       uses: actions/upload-artifact@master
       with:
         name: packages
-        path: ./staging
+        path: staging
     
+    - shell: bash
+      name: Write version
+      run: |
+        echo '${{ steps.gitversion.outputs.NuGetVersionV2 }}' > version.txt
+    - name: Upload version
+      uses: actions/upload-artifact@v2
+      with:
+        name: version
+        path: version.txt
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.repository_owner == 'roryprimrose'       # Don't run on forks
+
+    steps:
+    - name: Download packages
+      uses: actions/download-artifact@v2
+      with:
+        name: packages
+      
+    - name: Setup nuget
+      uses: olegtarasov/download-nuget@v1
+
     - name: Publish to MyGet.org
       env: 
         MYGET_APIKEY: ${{ secrets.MYGET_APIKEY }}
-      run: dotnet nuget push ./staging/${{ env.PROJECT_NAME }}.*.symbols.nupkg --api-key $MYGET_APIKEY --source https://www.myget.org/F/neovolve/api/v2/package
-      if: github.event_name == 'pull_request'
+      run: mono $NUGET_EXE push *.*.symbols.nupkg $MYGET_APIKEY -source https://www.myget.org/F/neovolve/api/v2/package
+      
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.repository_owner == 'roryprimrose' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v'))
+
+    steps:
+    
+    - name: ResolveProject
+      shell: pwsh
+      run: Write-Host "::set-env name=projectName::$(${env:GITHUB_REPOSITORY}.substring(${env:GITHUB_REPOSITORY}.IndexOf('/') + 1))"
+      
+    - name: Download packages
+      uses: actions/download-artifact@v2
+      with:
+        name: packages
+      
+    - name: Download version
+      uses: actions/download-artifact@v2
+      with:
+        name: version
+
+    - name: Read version
+      shell: bash
+      run: |
+        value=`cat version.txt`
+        echo ::set-env name=NuGetVersionV2::$(echo $value)
+    
+    - name: Setup nuget
+      uses: olegtarasov/download-nuget@v1
+
+#    - name: Add GitHub registry to NuGet config
+#      run: mono $NUGET_EXE sources add -name "GPR" -Source https://nuget.pkg.github.com/neovolve/index.json -UserName roryprimrose -Password ${{ secrets.GITHUB_TOKEN }}
+# 
+#    - name: Push generated package to GitHub registry
+#      run: mono $NUGET_EXE push *.*.symbols.nupkg -Source "GPR"
 
     - name: Publish to NuGet.org
       env: 
         NUGET_APIKEY: ${{ secrets.NUGET_APIKEY }}
-      run: dotnet nuget push ./staging/${{ env.PROJECT_NAME }}.*.symbols.nupkg --api-key $NUGET_APIKEY --source https://api.nuget.org/v3/index.json
-      if: github.ref == 'refs/heads/master'
-
-#    - name: Add GitHub registry to NuGet config
-#      run: dotnet nuget add source https://nuget.pkg.github.com/roryprimrose/index.json --name "GPR" --username  roryprimrose --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text
-#      if: github.ref == 'refs/heads/master'
-
-#    - name: Push generated package to GitHub registry
-#      run: dotnet nuget push ./staging/${{ env.PROJECT_NAME }}.*.symbols.nupkg --source "GPR"
-#      if: github.ref == 'refs/heads/master'
+      run: mono $NUGET_EXE push *.*.symbols.nupkg $NUGET_APIKEY -source https://api.nuget.org/v3/index.json
 
     - name: Create Release
       id: create_release
@@ -91,20 +174,29 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ steps.gitversion.outputs.NuGetVersionV2 }}
-        release_name: Release ${{ steps.gitversion.outputs.NuGetVersionV2 }}
+        tag_name: ${{ env.NuGetVersionV2 }}
+        release_name: Release ${{ env.NuGetVersionV2 }}
         draft: false
-        prerelease: ${{ contains(steps.gitversion.outputs.NuGetVersionV2, 'beta') }}
-      if: github.ref == 'refs/heads/master'
+        prerelease: ${{ contains(env.NuGetVersionV2, 'beta') }}
     
-    - name: Upload Release Asset
-      id: upload-release-asset 
+    - name: Upload Release Asset for package
+      id: upload-release-asset-package
       uses: actions/upload-release-asset@v1.0.2
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{ format('./staging/{0}.{1}.symbols.nupkg', env.PROJECT_NAME, steps.gitversion.outputs.NuGetVersionV2) }}
-        asset_name: ${{ format('{0}.{1}.nupkg', env.PROJECT_NAME, steps.gitversion.outputs.NuGetVersionV2) }}
+        asset_path: ${{ env.projectName }}.${{ env.NuGetVersionV2 }}.nupkg
+        asset_name: ${{ env.projectName }}.${{ env.NuGetVersionV2 }}.nupkg
         asset_content_type: application/zip
-      if: github.ref == 'refs/heads/master'
+    
+    - name: Upload Release Asset for symbol package
+      id: upload-release-asset-symbolpackage
+      uses: actions/upload-release-asset@v1.0.2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ${{ env.projectName }}.${{ env.NuGetVersionV2 }}.symbols.nupkg
+        asset_name: ${{ env.projectName }}.${{ env.NuGetVersionV2 }}.symbols.nupkg
+        asset_content_type: application/zip
