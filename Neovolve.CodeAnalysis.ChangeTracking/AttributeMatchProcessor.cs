@@ -2,6 +2,8 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
+    using System.Text.RegularExpressions;
     using Microsoft.Extensions.Logging;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
@@ -28,7 +30,18 @@
                 return Array.Empty<ComparisonResult>();
             }
 
-            return base.CalculateChanges(oldItems, newItems, options);
+            if (options.CompareAttributes == AttributeCompareOption.All)
+            {
+                return base.CalculateChanges(oldItems, newItems, options);
+            }
+
+            var attributesToMatch = options.AttributeNamesToCompare.ToList();
+
+            // Trim down the items to those where the name matches the compare options
+            var oldItemsToCompare = oldItems.Where(x => ShouldCompare(x, attributesToMatch));
+            var newItemsToCompare = newItems.Where(x => ShouldCompare(x, attributesToMatch));
+
+            return base.CalculateChanges(oldItemsToCompare, newItemsToCompare, options);
         }
 
         protected override IEnumerable<ComparisonResult> EvaluateMatch(ItemMatch<IAttributeDefinition> match,
@@ -53,6 +66,19 @@
         protected override bool IsVisible(IAttributeDefinition item)
         {
             return true;
+        }
+
+        private static bool ShouldCompare(IAttributeDefinition item, IEnumerable<Regex> expressions)
+        {
+            var name = item.Name;
+
+            // This assumes that the expressions in ComparerOptions do not handle the Attribute suffix that is not required by the compiler
+            if (name.EndsWith("Attribute", StringComparison.OrdinalIgnoreCase))
+            {
+                name = name[..10];
+            }
+
+            return expressions.Any(x => x.IsMatch(name));
         }
     }
 }
