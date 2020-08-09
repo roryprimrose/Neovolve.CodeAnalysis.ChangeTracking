@@ -110,6 +110,12 @@
 
                 resolvedTypes.Add(typeDefinition);
             }
+            else if (node is StructDeclarationSyntax structNode)
+            {
+                var typeDefinition = new StructDefinition(structNode);
+
+                resolvedTypes.Add(typeDefinition);
+            }
             else if (node is InterfaceDeclarationSyntax interfaceNode)
             {
                 var typeDefinition = new InterfaceDefinition(interfaceNode);

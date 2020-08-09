@@ -38,7 +38,8 @@
             Properties = DetermineProperties(node);
             ChildClasses = DetermineChildClasses(node);
             ChildInterfaces = DetermineChildInterfaces(node);
-            ChildTypes = DetermineChildTypes(ChildClasses, ChildInterfaces);
+            ChildStructs = DetermineChildStructs(node);
+            ChildTypes = DetermineChildTypes(ChildClasses, ChildInterfaces, ChildStructs);
             GenericTypeParameters = DetermineGenericTypeParameters(node);
             GenericConstraints = DetermineGenericConstraints(node);
         }
@@ -66,38 +67,24 @@
             Properties = DetermineProperties(node);
             ChildClasses = DetermineChildClasses(node);
             ChildInterfaces = DetermineChildInterfaces(node);
-            ChildTypes = DetermineChildTypes(ChildClasses, ChildInterfaces);
+            ChildStructs = DetermineChildStructs(node);
+            ChildTypes = DetermineChildTypes(ChildClasses, ChildInterfaces, ChildStructs);
             GenericTypeParameters = DetermineGenericTypeParameters(node);
             GenericConstraints = DetermineGenericConstraints(node);
             IsVisible = DetermineIsVisible(node, DeclaringType);
         }
 
         /// <summary>
-        ///     Gets the namespace that contains the node.
+        ///     Gets the fields that are declared on the node.
         /// </summary>
         /// <param name="node">The node to evaluate.</param>
-        /// <returns>The namespace that contains the node or <see cref="string.Empty" /> if no namespace is found.</returns>
-        public static string DetermineNamespace(SyntaxNode node)
+        /// <returns>The fields that are declared on the node.</returns>
+        protected IReadOnlyCollection<FieldDefinition> DetermineFields(SyntaxNode node)
         {
-            node = node ?? throw new ArgumentNullException(nameof(node));
+            var childNodes = node.ChildNodes().OfType<FieldDeclarationSyntax>();
+            var childTypes = childNodes.Select(childNode => new FieldDefinition(this, childNode)).FastToList();
 
-            var containerNamespace = node.FirstAncestorOrSelf<NamespaceDeclarationSyntax>(x => x != node);
-
-            if (containerNamespace != null)
-            {
-                var parentNamespace = DetermineNamespace(containerNamespace);
-
-                var namespaceValue = containerNamespace.Name.GetText().ToString().Trim();
-
-                if (string.IsNullOrWhiteSpace(parentNamespace))
-                {
-                    return namespaceValue;
-                }
-
-                return parentNamespace + "." + namespaceValue;
-            }
-
-            return string.Empty;
+            return childTypes.AsReadOnly();
         }
 
         private static AccessModifier DetermineAccessModifier(TypeDeclarationSyntax node,
@@ -115,11 +102,12 @@
 
         private static IReadOnlyCollection<ITypeDefinition> DetermineChildTypes(
             IReadOnlyCollection<ITypeDefinition> childClasses,
-            IReadOnlyCollection<ITypeDefinition> childInterfaces)
+            IReadOnlyCollection<ITypeDefinition> childInterfaces, IReadOnlyCollection<IStructDefinition> childStructs)
         {
             var childTypes = new List<ITypeDefinition>(childClasses);
 
             childTypes.AddRange(childInterfaces);
+            childTypes.AddRange(childStructs);
 
             return childTypes;
         }
@@ -206,6 +194,34 @@
             return name + parameterList;
         }
 
+        /// <summary>
+        ///     Gets the namespace that contains the node.
+        /// </summary>
+        /// <param name="node">The node to evaluate.</param>
+        /// <returns>The namespace that contains the node or <see cref="string.Empty" /> if no namespace is found.</returns>
+        private static string DetermineNamespace(SyntaxNode node)
+        {
+            node = node ?? throw new ArgumentNullException(nameof(node));
+
+            var containerNamespace = node.FirstAncestorOrSelf<NamespaceDeclarationSyntax>(x => x != node);
+
+            if (containerNamespace != null)
+            {
+                var parentNamespace = DetermineNamespace(containerNamespace);
+
+                var namespaceValue = containerNamespace.Name.GetText().ToString().Trim();
+
+                if (string.IsNullOrWhiteSpace(parentNamespace))
+                {
+                    return namespaceValue;
+                }
+
+                return parentNamespace + "." + namespaceValue;
+            }
+
+            return string.Empty;
+        }
+
         private IReadOnlyCollection<IClassDefinition> DetermineChildClasses(SyntaxNode node)
         {
             var childNodes = node.ChildNodes().OfType<ClassDeclarationSyntax>();
@@ -218,6 +234,14 @@
         {
             var childNodes = node.ChildNodes().OfType<InterfaceDeclarationSyntax>();
             var childTypes = childNodes.Select(childNode => new InterfaceDefinition(this, childNode)).FastToList();
+
+            return childTypes.AsReadOnly();
+        }
+
+        private IReadOnlyCollection<IStructDefinition> DetermineChildStructs(SyntaxNode node)
+        {
+            var childNodes = node.ChildNodes().OfType<StructDeclarationSyntax>();
+            var childTypes = childNodes.Select(childNode => new StructDefinition(this, childNode)).FastToList();
 
             return childTypes.AsReadOnly();
         }
@@ -238,6 +262,9 @@
 
         /// <inheritdoc />
         public IReadOnlyCollection<IInterfaceDefinition> ChildInterfaces { get; }
+
+        /// <inheritdoc />
+        public IReadOnlyCollection<IStructDefinition> ChildStructs { get; }
 
         /// <inheritdoc />
         public IReadOnlyCollection<ITypeDefinition> ChildTypes { get; }

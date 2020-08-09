@@ -34,6 +34,19 @@ namespace MyNamespace
 }
 ";
 
+        public const string MultipleStructs = @"
+namespace MyNamespace 
+{
+    public struct FirstStruct
+    {
+    }   
+
+    public struct SecondStruct
+    {
+    }   
+}
+";
+
         public const string MultipleInterfaces = @"
 namespace MyNamespace 
 {
