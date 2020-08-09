@@ -30,6 +30,7 @@
             RunComparisonStep(CompareNamespace, match, options, aggregator, true);
             RunComparisonStep(EvaluateAccessModifierChanges, match, options, aggregator);
             RunComparisonStep(EvaluateClassModifierChanges, match, options, aggregator);
+            RunComparisonStep(EvaluateStructModifierChanges, match, options, aggregator);
             RunComparisonStep(EvaluateGenericTypeDefinitionChanges, match, options, aggregator);
             RunComparisonStep(EvaluateImplementedTypeChanges, match, options, aggregator, true);
             RunComparisonStep(EvaluateFieldChanges, match, options, aggregator);
@@ -74,6 +75,11 @@
             if (item is IClassDefinition)
             {
                 return "class";
+            }
+
+            if (item is IStructDefinition)
+            {
+                return "struct";
             }
 
             if (item is IInterfaceDefinition)
@@ -169,6 +175,85 @@
             var classMatch = new ItemMatch<IClassDefinition>(oldItem, newItem);
 
             var change = ClassModifierChangeTable.CalculateChange(classMatch);
+
+            if (change == SemVerChangeType.None)
+            {
+                return;
+            }
+
+            var newModifiers = match.NewItem.GetDeclaredModifiers();
+            var oldModifiers = match.OldItem.GetDeclaredModifiers();
+
+            if (string.IsNullOrWhiteSpace(oldModifiers))
+            {
+                // Modifiers have been added where there were previously none defined
+                var suffix = string.Empty;
+
+                if (newModifiers.Contains(" "))
+                {
+                    // There is more than one modifier
+                    suffix = "s";
+                }
+
+                var args = new FormatArguments(
+                    "{DefinitionType} {Identifier} has added the {NewValue} modifier" + suffix,
+                    match.NewItem.FullName, null, newModifiers);
+
+                aggregator.AddElementChangedResult(change, match, options.MessageFormatter, args);
+            }
+            else if (string.IsNullOrWhiteSpace(newModifiers))
+            {
+                // All previous modifiers have been removed
+                var suffix = string.Empty;
+
+                if (oldModifiers.Contains(" "))
+                {
+                    // There is more than one modifier
+                    suffix = "s";
+                }
+
+                var args = new FormatArguments(
+                    "{DefinitionType} {Identifier} has removed the {OldValue} modifier" + suffix,
+                    match.NewItem.FullName, oldModifiers, null);
+
+                aggregator.AddElementChangedResult(change, match, options.MessageFormatter, args);
+            }
+            else
+            {
+                // Modifiers have been changed
+                var suffix = string.Empty;
+
+                if (oldModifiers.Contains(" "))
+                {
+                    // There is more than one modifier
+                    suffix = "s";
+                }
+
+                var args = new FormatArguments(
+                    $"{{DefinitionType}} {{Identifier}} has changed the modifier{suffix} from {{OldValue}} to {{NewValue}}",
+                    match.NewItem.FullName, oldModifiers, newModifiers);
+
+                aggregator.AddElementChangedResult(change, match, options.MessageFormatter, args);
+            }
+        }
+
+        private static void EvaluateStructModifierChanges(
+            ItemMatch<ITypeDefinition> match,
+            ComparerOptions options,
+            IChangeResultAggregator aggregator)
+        {
+            var oldItem = match.OldItem as IStructDefinition;
+
+            if (oldItem == null)
+            {
+                // This is not a class
+                return;
+            }
+
+            var newItem = (IStructDefinition)match.NewItem;
+            var classMatch = new ItemMatch<IStructDefinition>(oldItem, newItem);
+
+            var change = StructModifierChangeTable.CalculateChange(classMatch);
 
             if (change == SemVerChangeType.None)
             {

@@ -13,6 +13,8 @@
         public IReadOnlyCollection<IInterfaceDefinition> ChildInterfaces { get; set; } =
             new List<TestInterfaceDefinition>();
 
+        public IReadOnlyCollection<IStructDefinition> ChildStructs { get; } = new List<IStructDefinition>();
+
         public IReadOnlyCollection<ITypeDefinition> ChildTypes { get; set; } = new List<TestClassDefinition>();
         public string DeclaredModifiers { get; } = "public";
         public ITypeDefinition? DeclaringType { get; set; } = null;

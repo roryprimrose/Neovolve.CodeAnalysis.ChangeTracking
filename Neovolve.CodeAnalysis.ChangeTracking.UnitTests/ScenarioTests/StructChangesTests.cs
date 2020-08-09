@@ -1,19 +1,21 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.ScenarioTests
 {
+    using System;
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using FluentAssertions;
     using Microsoft.Extensions.Logging;
+    using Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Models;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class ScenarioTests
+    public class StructChangesTests
     {
         private readonly IChangeCalculator _calculator;
         private readonly ITestOutputHelper _output;
 
-        public ScenarioTests(ITestOutputHelper output)
+        public StructChangesTests(ITestOutputHelper output)
         {
             _output = output;
 
@@ -22,18 +24,165 @@
             _calculator = ChangeCalculatorFactory.BuildCalculator(logger);
         }
 
-        [Fact]
-        public async Task NoChangeFoundWhenMatchingSameCode()
+        [Theory]
+        [ClassData(typeof(AccessModifierDataSet))]
+        public async Task EvaluatesChangeOfStructAccessModifiers(
+            string oldModifiers,
+            string newModifiers,
+            SemVerChangeType expected)
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(TestNode.ClassProperty),
-                new CodeSource(TestNode.Field)
+                new CodeSource(SingleStruct.Replace("public struct MyStruct", oldModifiers + " struct MyStruct"))
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(TestNode.ClassProperty),
-                new CodeSource(TestNode.Field)
+                new CodeSource(SingleStruct.Replace("public struct MyStruct", newModifiers + " struct MyStruct"))
+            };
+
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            OutputResult(result);
+
+            result.ChangeType.Should().Be(expected);
+        }
+
+        [Theory]
+        [InlineData("", "", SemVerChangeType.None)]
+        [InlineData("", "readonly", SemVerChangeType.Breaking)]
+        [InlineData("", "partial", SemVerChangeType.None)]
+        [InlineData("", "readonly partial", SemVerChangeType.Breaking)]
+        [InlineData("readonly", "", SemVerChangeType.Feature)]
+        [InlineData("readonly", "readonly", SemVerChangeType.None)]
+        [InlineData("readonly", "partial", SemVerChangeType.Feature)]
+        [InlineData("readonly", "readonly partial", SemVerChangeType.None)]
+        [InlineData("partial", "", SemVerChangeType.None)]
+        [InlineData("partial", "readonly", SemVerChangeType.Breaking)]
+        [InlineData("partial", "partial", SemVerChangeType.None)]
+        [InlineData("partial", "readonly partial", SemVerChangeType.Breaking)]
+        [InlineData("readonly partial", "", SemVerChangeType.Feature)]
+        [InlineData("readonly partial", "readonly", SemVerChangeType.None)]
+        [InlineData("readonly partial", "partial", SemVerChangeType.Feature)]
+        [InlineData("readonly partial", "readonly partial", SemVerChangeType.None)]
+        public async Task EvaluatesChangeOfStructModifiers(
+            string oldModifiers,
+            string newModifiers,
+            SemVerChangeType expected)
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new CodeSource(SingleStruct.Replace("struct MyStruct", oldModifiers + " struct MyStruct"))
+            };
+            var newCode = new List<CodeSource>
+            {
+                new CodeSource(SingleStruct.Replace("struct MyStruct", newModifiers + " struct MyStruct"))
+            };
+
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            OutputResult(result);
+
+            result.ChangeType.Should().Be(expected);
+        }
+
+        [Fact]
+        public async Task ReturnsBreakingWhenStructChangesName()
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new CodeSource(SingleStruct)
+            };
+            var newCode = new List<CodeSource>
+            {
+                new CodeSource(SingleStruct.Replace("MyStruct", "MyNewStruct"))
+            };
+
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            OutputResult(result);
+
+            result.ChangeType.Should().Be(SemVerChangeType.Breaking);
+        }
+
+        [Fact]
+        public async Task ReturnsBreakingWhenStructChangesNamespace()
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new CodeSource(SingleStruct)
+            };
+            var newCode = new List<CodeSource>
+            {
+                new CodeSource(SingleStruct.Replace("MyNamespace", "MyNewNamespace"))
+            };
+
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            OutputResult(result);
+
+            result.ChangeType.Should().Be(SemVerChangeType.Breaking);
+        }
+
+        [Fact]
+        public async Task ReturnsBreakingWhenStructRemoved()
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new CodeSource(SingleStruct)
+            };
+            var newCode = Array.Empty<CodeSource>();
+
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            OutputResult(result);
+
+            result.ChangeType.Should().Be(SemVerChangeType.Breaking);
+        }
+
+        [Fact]
+        public async Task ReturnsFeatureWhenStructAdded()
+        {
+            var oldCode = Array.Empty<CodeSource>();
+            var newCode = new List<CodeSource>
+            {
+                new CodeSource(SingleStruct)
+            };
+
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            OutputResult(result);
+
+            result.ChangeType.Should().Be(SemVerChangeType.Feature);
+        }
+
+        [Fact]
+        public async Task ReturnsNoneWhenMatchingSameStruct()
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new CodeSource(SingleStruct)
+            };
+            var newCode = new List<CodeSource>
+            {
+                new CodeSource(SingleStruct)
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -47,15 +196,16 @@
         }
 
         [Fact]
-        public async Task ReturnsBreakingWhenClassChangesToInterface()
+        public async Task ReturnsNoneWhenRenamingGenericTypeParameter()
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleClass)
+                new CodeSource(TypeDefinitionCode.StructWithMultipleGenericConstraints)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleClass.Replace("class", "interface"))
+                new CodeSource(
+                    TypeDefinitionCode.StructWithMultipleGenericConstraints.Replace("TValue", "TUpdatedValue"))
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -65,139 +215,32 @@
 
             OutputResult(result);
 
-            result.ChangeType.Should().Be(SemVerChangeType.Breaking);
+            result.ChangeType.Should().Be(SemVerChangeType.None);
+        }
+
+        [Fact(Skip = "Not implemented yet")]
+        public void TestChildStructsAttributes()
+        {
         }
 
         [Fact]
-        public async Task ReturnsBreakingWhenClassChangesToStruct()
+        public void TestChildInterfacesAttributes()
         {
-            var oldCode = new List<CodeSource>
-            {
-                new CodeSource(SingleClass)
-            };
-            var newCode = new List<CodeSource>
-            {
-                new CodeSource(SingleClass.Replace("class", "struct"))
-            };
-
-            var options = OptionsFactory.BuildOptions();
-
-            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
-                .ConfigureAwait(false);
-
-            OutputResult(result);
-
-            result.ChangeType.Should().Be(SemVerChangeType.Breaking);
         }
 
-        [Fact]
-        public async Task ReturnsBreakingWhenClassReplacedByInterface()
+        [Fact(Skip = "Not implemented yet")]
+        public void TestStructAttributes()
         {
-            var oldCode = new List<CodeSource>
-            {
-                new CodeSource(SingleClass)
-            };
-            var newCode = new List<CodeSource>
-            {
-                new CodeSource(SingleInterface)
-            };
-
-            var options = OptionsFactory.BuildOptions();
-
-            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
-                .ConfigureAwait(false);
-
-            OutputResult(result);
-
-            result.ChangeType.Should().Be(SemVerChangeType.Breaking);
         }
 
-        [Fact]
-        public async Task ReturnsBreakingWhenInterfaceChangesToClass()
+        [Fact(Skip = "Not implemented yet")]
+        public void TestGenericTypeConstraints()
         {
-            var oldCode = new List<CodeSource>
-            {
-                new CodeSource(SingleInterface)
-            };
-            var newCode = new List<CodeSource>
-            {
-                new CodeSource(SingleInterface.Replace("interface", "class"))
-            };
-
-            var options = OptionsFactory.BuildOptions();
-
-            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
-                .ConfigureAwait(false);
-
-            OutputResult(result);
-
-            result.ChangeType.Should().Be(SemVerChangeType.Breaking);
         }
 
-        [Fact]
-        public async Task ReturnsBreakingWhenInterfaceChangesToStruct()
+        [Fact(Skip = "Not implemented yet")]
+        public void TestGenericTypes()
         {
-            var oldCode = new List<CodeSource>
-            {
-                new CodeSource(SingleInterface)
-            };
-            var newCode = new List<CodeSource>
-            {
-                new CodeSource(SingleInterface.Replace("interface", "struct"))
-            };
-
-            var options = OptionsFactory.BuildOptions();
-
-            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
-                .ConfigureAwait(false);
-
-            OutputResult(result);
-
-            result.ChangeType.Should().Be(SemVerChangeType.Breaking);
-        }
-
-        [Fact]
-        public async Task ReturnsBreakingWhenStructChangesToClass()
-        {
-            var oldCode = new List<CodeSource>
-            {
-                new CodeSource(SingleStruct)
-            };
-            var newCode = new List<CodeSource>
-            {
-                new CodeSource(SingleStruct.Replace("struct", "class"))
-            };
-
-            var options = OptionsFactory.BuildOptions();
-
-            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
-                .ConfigureAwait(false);
-
-            OutputResult(result);
-
-            result.ChangeType.Should().Be(SemVerChangeType.Breaking);
-        }
-
-        [Fact]
-        public async Task ReturnsBreakingWhenStructChangesToInterface()
-        {
-            var oldCode = new List<CodeSource>
-            {
-                new CodeSource(SingleStruct)
-            };
-            var newCode = new List<CodeSource>
-            {
-                new CodeSource(SingleStruct.Replace("struct", "interface"))
-            };
-
-            var options = OptionsFactory.BuildOptions();
-
-            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
-                .ConfigureAwait(false);
-
-            OutputResult(result);
-
-            result.ChangeType.Should().Be(SemVerChangeType.Breaking);
         }
 
         private void OutputResult(ChangeCalculatorResult result)
@@ -211,37 +254,18 @@
             }
         }
 
-        public string SingleClass => @"
+        public string SingleStruct =>
+            @"
 namespace MyNamespace 
 {
-    [ClassAttribute(123, false, myName: ""on the class"")]
-    public class MyClass
+    [StructAttribute(123, false, myName: ""on the struct"")]
+    public struct MyStruct
     {
         [PropertyAttribute(344, true, myName: ""on the property"")]
         public string MyProperty { get; set; }
 
         [FieldAttribute(885, myName: ""on the field"")]
         public string MyField;
-    }  
-}
-";
-
-        public string SingleInterface => @"
-namespace MyNamespace 
-{
-    public interface MyInterface
-    {
-        string MyProperty { get; set; }
-    }  
-}
-";
-
-        public string SingleStruct => @"
-namespace MyNamespace 
-{
-    public struct MyStruct
-    {
-        string MyProperty { get; set; }
     }  
 }
 ";

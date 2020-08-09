@@ -301,6 +301,22 @@ namespace MyNamespace
 }
 ";
 
+        public const string MultipleChildStructs = @"
+namespace MyNamespace 
+{
+    public struct MyStruct
+    {
+        public struct FirstChild
+        {
+        }
+
+        public struct SecondChild
+        {
+        }
+    }    
+}
+";
+
         public const string MultipleChildTypes = @"
 namespace MyNamespace 
 {
@@ -321,7 +337,120 @@ namespace MyNamespace
         public interface SecondInterface
         {
         }
+
+        public struct FirstStruct
+        {
+        }
+
+        public struct SecondStruct
+        {
+        }
     }    
+}
+";
+
+        public const string StructInGrandparentStruct = @"
+namespace MyNamespace 
+{
+    public struct MyGrandparentStruct
+    {
+        public struct MyParentStruct
+        {
+            public struct MyStruct
+            {
+            }  
+        }  
+    }   
+}
+";
+
+        public const string StructInParentStruct = @"
+namespace MyNamespace 
+{
+    public struct MyParentStruct
+    {
+        public struct MyStruct
+        {
+        }  
+    }   
+}
+";
+
+        public const string StructInParentStructAndInterface = @"
+namespace MyNamespace 
+{
+    public struct MyGrandparentStruct
+    {
+        public interface IMyInterface
+        {
+            public struct MyParentStruct
+            {
+                public struct MyStruct
+                {
+                    public interface IChildInterface
+                    {
+                    }
+                }  
+            }
+       }  
+    }   
+}
+";
+
+        public const string StructWithGenericConstraints = @"
+namespace MyNamespace 
+{
+    public struct MyStruct<T> : IEnumerable<T> where T : Stream, new()
+    {
+    }
+}
+";
+
+        public const string StructWithGenericType = @"
+namespace MyNamespace 
+{
+    public struct MyStruct<T>
+    {
+    }  
+}
+";
+
+        public const string StructWithMultipleGenericConstraints = @"
+namespace MyNamespace
+{
+    using System.Collections.Generic;
+    using System.IO;
+
+    public struct MyStruct<TKey, TValue> : IEnumerable<TKey> where TKey : Stream, new() where TValue : struct
+    {
+        public TKey DefaultKey;
+        public TValue GetValue(TKey key);
+        public TValue RandomValue { get; set; }
+
+        public struct MyChildStruct
+        {
+            public TValue Value;
+        }
+    }
+}";
+
+        public const string StructWithoutParent = @"
+namespace MyNamespace 
+{
+    public struct MyClass
+    {
+    }   
+}
+";
+
+        public const string StructWithProperties = @"
+namespace MyNamespace 
+{
+    public struct MyStruct
+    {
+        public string First { get; set; }
+        public DateTimeOffset Second { get; set; }
+    }   
 }
 ";
 

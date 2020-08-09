@@ -138,7 +138,7 @@
             {
                 oldNode
             };
-            var newNode = await TestNode.Parse(TestNode.MultipleInterfaces).ConfigureAwait(false);
+            var newNode = await TestNode.Parse(TestNode.MultipleStructs).ConfigureAwait(false);
             var newNodes = new List<SyntaxNode>
             {
                 newNode
@@ -150,7 +150,7 @@
 
             calculator.CalculateChanges(
                 Arg.Is<IEnumerable<ITypeDefinition>>(x => x.OfType<ClassDefinition>().Count() == 2),
-                Arg.Is<IEnumerable<ITypeDefinition>>(x => x.OfType<InterfaceDefinition>().Count() == 2),
+                Arg.Is<IEnumerable<ITypeDefinition>>(x => x.OfType<StructDefinition>().Count() == 2),
                 options).Returns(expected);
 
             var actual = calculator.CalculateChanges(oldNodes, newNodes, options);

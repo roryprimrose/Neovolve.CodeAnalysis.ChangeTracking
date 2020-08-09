@@ -25,6 +25,20 @@
             child.AccessModifier.Should().Be(AccessModifier.Private);
         }
 
+        [Fact]
+        public async Task AccessModifierReturnsPrivateForNestedStructWithoutAccessModifier()
+        {
+            var code = TypeDefinitionCode.MultipleChildTypes.Replace("public struct FirstStruct", "struct FirstStruct");
+
+            var node = await TestNode.FindNode<ClassDeclarationSyntax>(code).ConfigureAwait(false);
+
+            var sut = new ClassDefinition(node);
+
+            var child = sut.ChildStructs.Single(x => x.Name == "FirstStruct");
+
+            child.AccessModifier.Should().Be(AccessModifier.Private);
+        }
+
         [Theory]
         [InlineData("", AccessModifier.Internal)]
         [InlineData("private", AccessModifier.Private)]
@@ -162,6 +176,97 @@
         }
 
         [Fact]
+        public async Task ChildStructsIncludesHierarchyOfStructsAndInterfaces()
+        {
+            var node = await TestNode
+                .FindNode<StructDeclarationSyntax>(TypeDefinitionCode.StructInParentStructAndInterface)
+                .ConfigureAwait(false);
+
+            var sut = new StructDefinition(node);
+
+            sut.Name.Should().Be("MyGrandparentStruct");
+            sut.FullName.Should().Be("MyNamespace.MyGrandparentStruct");
+            sut.DeclaringType.Should().BeNull();
+
+            var myInterface = sut.ChildInterfaces.Single();
+
+            myInterface.Name.Should().Be("IMyInterface");
+            myInterface.FullName.Should().Be("MyNamespace.MyGrandparentStruct+IMyInterface");
+            myInterface.DeclaringType.Should().Be(sut);
+
+            var parent = myInterface.ChildStructs.Single();
+
+            parent.Name.Should().Be("MyParentStruct");
+            parent.FullName.Should().Be("MyNamespace.MyGrandparentStruct+IMyInterface+MyParentStruct");
+            parent.DeclaringType.Should().Be(myInterface);
+
+            var myStruct = parent.ChildStructs.Single();
+
+            myStruct.Name.Should().Be("MyStruct");
+            myStruct.FullName.Should().Be("MyNamespace.MyGrandparentStruct+IMyInterface+MyParentStruct+MyStruct");
+            myStruct.DeclaringType.Should().Be(parent);
+
+            var myChildInterface = myStruct.ChildInterfaces.Single();
+
+            myChildInterface.Name.Should().Be("IChildInterface");
+            myChildInterface.FullName.Should().Be(
+                "MyNamespace.MyGrandparentStruct+IMyInterface+MyParentStruct+MyStruct+IChildInterface");
+            myChildInterface.DeclaringType.Should().Be(myStruct);
+        }
+
+        [Fact]
+        public async Task ChildStructsReturnsEmptyWhenNoDeclarationsFound()
+        {
+            var node = await TestNode.FindNode<StructDeclarationSyntax>(TypeDefinitionCode.StructWithoutParent)
+                .ConfigureAwait(false);
+
+            var sut = new StructDefinition(node);
+
+            sut.ChildStructs.Should().BeEmpty();
+        }
+
+        [Fact]
+        public async Task ChildStructsReturnsMultipleStructDefinitions()
+        {
+            var node = await TestNode.FindNode<StructDeclarationSyntax>(TypeDefinitionCode.MultipleChildStructs)
+                .ConfigureAwait(false);
+
+            var sut = new StructDefinition(node);
+
+            sut.ChildStructs.Should().HaveCount(2);
+
+            var firstStruct = sut.ChildStructs.First();
+            var secondStruct = sut.ChildStructs.Skip(1).First();
+
+            firstStruct.Name.Should().Be("FirstChild");
+            firstStruct.FullName.Should().Be("MyNamespace.MyStruct+FirstChild");
+            firstStruct.DeclaringType.Should().Be(sut);
+
+            secondStruct.Name.Should().Be("SecondChild");
+            secondStruct.FullName.Should().Be("MyNamespace.MyStruct+SecondChild");
+            secondStruct.DeclaringType.Should().Be(sut);
+        }
+
+        [Fact]
+        public async Task ChildStructsReturnsSingleStructDefinition()
+        {
+            var node = await TestNode.FindNode<StructDeclarationSyntax>(TypeDefinitionCode.StructInParentStruct)
+                .ConfigureAwait(false);
+
+            var sut = new StructDefinition(node);
+
+            sut.Name.Should().Be("MyParentStruct");
+            sut.FullName.Should().Be("MyNamespace.MyParentStruct");
+            sut.ChildStructs.Should().HaveCount(1);
+
+            var childStruct = sut.ChildStructs.First();
+
+            childStruct.Name.Should().Be("MyStruct");
+            childStruct.FullName.Should().Be("MyNamespace.MyParentStruct+MyStruct");
+            childStruct.DeclaringType.Should().Be(sut);
+        }
+
+        [Fact]
         public async Task ChildTypesReturnsMultipleTypeDefinitions()
         {
             var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.MultipleChildTypes)
@@ -169,10 +274,11 @@
 
             var sut = new ClassDefinition(node);
 
-            sut.ChildTypes.Should().HaveCount(4);
+            sut.ChildTypes.Should().HaveCount(6);
 
             sut.ChildTypes.OfType<ClassDefinition>().Should().HaveCount(2);
             sut.ChildTypes.OfType<InterfaceDefinition>().Should().HaveCount(2);
+            sut.ChildTypes.OfType<StructDefinition>().Should().HaveCount(2);
         }
 
         [Fact]
@@ -192,6 +298,25 @@
             var childClass = parentClass.ChildClasses.Single();
 
             childClass.DeclaringType.Should().Be(parentClass);
+        }
+
+        [Fact]
+        public async Task DeclaringTypeReturnsDeclaringStruct()
+        {
+            var node = await TestNode.FindNode<StructDeclarationSyntax>(TypeDefinitionCode.StructInGrandparentStruct)
+                .ConfigureAwait(false);
+
+            var sut = new StructDefinition(node);
+
+            sut.DeclaringType.Should().BeNull();
+
+            var parentStruct = sut.ChildStructs.Single();
+
+            parentStruct.DeclaringType.Should().Be(sut);
+
+            var childStruct = parentStruct.ChildStructs.Single();
+
+            childStruct.DeclaringType.Should().Be(parentStruct);
         }
 
         [Fact]
@@ -257,6 +382,41 @@
         }
 
         [Fact]
+        public async Task FullNameReturnsNameFromStructCombinedWithDeclaringTypeFullName()
+        {
+            var node = await TestNode.FindNode<StructDeclarationSyntax>(TypeDefinitionCode.StructInGrandparentStruct)
+                .ConfigureAwait(false);
+
+            var sut = new StructDefinition(node);
+
+            sut.FullName.Should().Be("MyNamespace.MyGrandparentStruct");
+
+            var parentStruct = sut.ChildStructs.Single();
+
+            parentStruct.FullName.Should().Be("MyNamespace.MyGrandparentStruct+MyParentStruct");
+
+            var childStruct = parentStruct.ChildStructs.Single();
+
+            childStruct.FullName.Should().Be("MyNamespace.MyGrandparentStruct+MyParentStruct+MyStruct");
+        }
+
+        [Fact]
+        public async Task FullNameReturnsNameFromStructCombinedWithDeclaringTypeFullNameAndGenericTypeParameters()
+        {
+            var node = await TestNode
+                .FindNode<StructDeclarationSyntax>(TypeDefinitionCode.StructWithMultipleGenericConstraints)
+                .ConfigureAwait(false);
+
+            var sut = new StructDefinition(node);
+
+            sut.FullName.Should().Be("MyNamespace.MyStruct<TKey, TValue>");
+
+            var child = sut.ChildStructs.Single();
+
+            child.FullName.Should().Be("MyNamespace.MyStruct<TKey, TValue>+MyChildStruct");
+        }
+
+        [Fact]
         public async Task FullRawNameReturnsNameFromClassCombinedWithDeclaringTypeFullRawName()
         {
             var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassInGrandparentClass)
@@ -306,6 +466,41 @@
             var child = sut.ChildInterfaces.Single();
 
             child.FullRawName.Should().Be("MyNamespace.MyInterface+MyChildInterface");
+        }
+
+        [Fact]
+        public async Task FullRawNameReturnsNameFromStructCombinedWithDeclaringTypeFullRawName()
+        {
+            var node = await TestNode.FindNode<StructDeclarationSyntax>(TypeDefinitionCode.StructInGrandparentStruct)
+                .ConfigureAwait(false);
+
+            var sut = new StructDefinition(node);
+
+            sut.FullRawName.Should().Be("MyNamespace.MyGrandparentStruct");
+
+            var parentStruct = sut.ChildStructs.Single();
+
+            parentStruct.FullRawName.Should().Be("MyNamespace.MyGrandparentStruct+MyParentStruct");
+
+            var childStruct = parentStruct.ChildStructs.Single();
+
+            childStruct.FullRawName.Should().Be("MyNamespace.MyGrandparentStruct+MyParentStruct+MyStruct");
+        }
+
+        [Fact]
+        public async Task FullRawNameReturnsNameFromStructCombinedWithDeclaringTypeFullRawNameAndGenericTypeParameters()
+        {
+            var node = await TestNode
+                .FindNode<StructDeclarationSyntax>(TypeDefinitionCode.StructWithMultipleGenericConstraints)
+                .ConfigureAwait(false);
+
+            var sut = new StructDefinition(node);
+
+            sut.FullRawName.Should().Be("MyNamespace.MyStruct");
+
+            var child = sut.ChildStructs.Single();
+
+            child.FullRawName.Should().Be("MyNamespace.MyStruct+MyChildStruct");
         }
 
         [Fact]
@@ -523,6 +718,52 @@
         }
 
         [Fact]
+        public async Task NameReturnsNameFromStruct()
+        {
+            var node = await TestNode.FindNode<StructDeclarationSyntax>(TypeDefinitionCode.StructInGrandparentStruct)
+                .ConfigureAwait(false);
+
+            var sut = new StructDefinition(node);
+
+            sut.Name.Should().Be("MyGrandparentStruct");
+
+            var parentStruct = sut.ChildStructs.Single();
+
+            parentStruct.Name.Should().Be("MyParentStruct");
+
+            var childStruct = parentStruct.ChildStructs.Single();
+
+            childStruct.Name.Should().Be("MyStruct");
+        }
+
+        [Fact]
+        public async Task NameReturnsNameFromStructWithGenericTypeParameters()
+        {
+            var node = await TestNode.FindNode<StructDeclarationSyntax>(TypeDefinitionCode.StructWithGenericType)
+                .ConfigureAwait(false);
+
+            var sut = new StructDefinition(node);
+
+            sut.Name.Should().Be("MyStruct<T>");
+        }
+
+        [Fact]
+        public async Task NameReturnsNameFromStructWithParentsAndGenericTypeParameters()
+        {
+            var node = await TestNode
+                .FindNode<StructDeclarationSyntax>(TypeDefinitionCode.StructWithMultipleGenericConstraints)
+                .ConfigureAwait(false);
+
+            var sut = new StructDefinition(node);
+
+            sut.Name.Should().Be("MyStruct<TKey, TValue>");
+
+            var childStruct = sut.ChildStructs.Single();
+
+            childStruct.Name.Should().Be("MyChildStruct");
+        }
+
+        [Fact]
         public async Task NamespaceReturnsDeclarationWhenInComplexNamespace()
         {
             var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithComplexNamespace)
@@ -624,6 +865,25 @@
         }
 
         [Fact]
+        public async Task PropertiesReturnsDeclaredPropertiesOnStruct()
+        {
+            var node = await TestNode.FindNode<StructDeclarationSyntax>(TypeDefinitionCode.StructWithProperties)
+                .ConfigureAwait(false);
+
+            var sut = new StructDefinition(node);
+
+            sut.Properties.Should().HaveCount(2);
+
+            var first = sut.Properties.First();
+
+            first.Name.Should().Be("First");
+
+            var second = sut.Properties.Skip(1).First();
+
+            second.Name.Should().Be("Second");
+        }
+
+        [Fact]
         public async Task RawNameReturnsNameFromClass()
         {
             var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassInGrandparentClass)
@@ -705,6 +965,52 @@
             var child = sut.ChildInterfaces.Single();
 
             child.RawName.Should().Be("MyChildInterface");
+        }
+
+        [Fact]
+        public async Task RawNameReturnsNameFromStruct()
+        {
+            var node = await TestNode.FindNode<StructDeclarationSyntax>(TypeDefinitionCode.StructInGrandparentStruct)
+                .ConfigureAwait(false);
+
+            var sut = new StructDefinition(node);
+
+            sut.RawName.Should().Be("MyGrandparentStruct");
+
+            var parentStruct = sut.ChildStructs.Single();
+
+            parentStruct.RawName.Should().Be("MyParentStruct");
+
+            var childStruct = parentStruct.ChildStructs.Single();
+
+            childStruct.RawName.Should().Be("MyStruct");
+        }
+
+        [Fact]
+        public async Task RawNameReturnsNameFromStructWithoutGenericTypeParameters()
+        {
+            var node = await TestNode.FindNode<StructDeclarationSyntax>(TypeDefinitionCode.StructWithGenericType)
+                .ConfigureAwait(false);
+
+            var sut = new StructDefinition(node);
+
+            sut.RawName.Should().Be("MyStruct");
+        }
+
+        [Fact]
+        public async Task RawNameReturnsNameFromStructWithParentsAndGenericTypeParameters()
+        {
+            var node = await TestNode
+                .FindNode<StructDeclarationSyntax>(TypeDefinitionCode.StructWithMultipleGenericConstraints)
+                .ConfigureAwait(false);
+
+            var sut = new StructDefinition(node);
+
+            sut.RawName.Should().Be("MyStruct");
+
+            var childStruct = sut.ChildStructs.Single();
+
+            childStruct.RawName.Should().Be("MyChildStruct");
         }
 
         [Fact]

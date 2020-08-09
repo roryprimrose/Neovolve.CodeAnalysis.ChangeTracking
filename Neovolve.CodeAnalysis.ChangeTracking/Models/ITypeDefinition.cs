@@ -24,6 +24,11 @@
         IReadOnlyCollection<IInterfaceDefinition> ChildInterfaces { get; }
 
         /// <summary>
+        ///     Gets the child structs defined on this type.
+        /// </summary>
+        public IReadOnlyCollection<IStructDefinition> ChildStructs { get; }
+
+        /// <summary>
         ///     Gets the child types defined on this type.
         /// </summary>
         /// <remarks>This should be a combination of child classes and child interfaces.</remarks>

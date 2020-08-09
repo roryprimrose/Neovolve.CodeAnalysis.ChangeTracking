@@ -38,10 +38,14 @@
                 return node.Modifiers.DetermineAccessModifier(AccessModifier.Private);
             }
 
+            if (declaringType is IStructDefinition)
+            {
+                return node.Modifiers.DetermineAccessModifier(AccessModifier.Private);
+            }
+
             // TODO: Fill these out when the types are supported
             throw new NotSupportedException();
 
-            // Struct default access modifier is private
             // Struct default enum is public
         }
 
