@@ -28,7 +28,7 @@
             var newItems = Model.UsingModule<ConfigurationModule>().Create<List<IAttributeDefinition>>();
             var options = ComparerOptions.Default;
 
-            options.SkipAttributes = true;
+            options.CompareAttributes = AttributeCompareOption.Skip;
 
             var comparer = Substitute.For<IAttributeComparer>();
             var evaluator = Substitute.For<IMatchEvaluator>();
@@ -52,7 +52,7 @@
             var itemsAdded = Model.UsingModule<ConfigurationModule>().Create<List<IAttributeDefinition>>();
             var matchResults = new MatchResults<IAttributeDefinition>(matchingItems, itemsRemoved, itemsAdded);
 
-            options.SkipAttributes = false;
+            options.CompareAttributes = AttributeCompareOption.All;
 
             var comparer = Substitute.For<IAttributeComparer>();
             var evaluator = Substitute.For<IMatchEvaluator>();

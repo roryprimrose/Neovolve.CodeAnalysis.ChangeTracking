@@ -22,7 +22,7 @@
             newItems = newItems ?? throw new ArgumentNullException(nameof(newItems));
             options = options ?? throw new ArgumentNullException(nameof(options));
 
-            if (options.SkipAttributes)
+            if (options.CompareAttributes == AttributeCompareOption.Skip)
             {
                 // We are not going to evaluate any attributes
                 return Array.Empty<ComparisonResult>();
