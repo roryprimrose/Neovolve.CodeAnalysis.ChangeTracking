@@ -1,4 +1,4 @@
-namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.ScenarioTests
+namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 {
     internal static class OptionsFactory
     {

@@ -50,7 +50,7 @@
             match = match ?? throw new ArgumentNullException(nameof(match));
             options = options ?? throw new ArgumentNullException(nameof(options));
 
-            return _comparer.CompareTypes(match, options);
+            return _comparer.CompareItems(match, options);
         }
 
         protected override bool IsItemMatch(IAttributeDefinition oldItem, IAttributeDefinition newItem)
@@ -58,9 +58,12 @@
             oldItem = oldItem ?? throw new ArgumentNullException(nameof(oldItem));
             newItem = newItem ?? throw new ArgumentNullException(nameof(newItem));
 
+            var oldName = StripAttributeSuffix(oldItem.Name);
+            var newName = StripAttributeSuffix(newItem.Name);
+
             // NOTE: This is not able to adequately handle multiple attribute definitions
             // Unfortunately there is no accurate way to match up different usages of the same attribute type when the argument list may have been altered
-            return oldItem.Name == newItem.Name;
+            return oldName == newName;
         }
 
         protected override bool IsVisible(IAttributeDefinition item)
@@ -70,15 +73,20 @@
 
         private static bool ShouldCompare(IAttributeDefinition item, IEnumerable<Regex> expressions)
         {
-            var name = item.Name;
+            var name = StripAttributeSuffix(item.Name);
 
+            return expressions.Any(x => x.IsMatch(name));
+        }
+
+        private static string StripAttributeSuffix(string name)
+        {
             // This assumes that the expressions in ComparerOptions do not handle the Attribute suffix that is not required by the compiler
             if (name.EndsWith("Attribute", StringComparison.OrdinalIgnoreCase))
             {
-                name = name[..10];
+                return name.Substring(0, name.Length - 9);
             }
 
-            return expressions.Any(x => x.IsMatch(name));
+            return name;
         }
     }
 }

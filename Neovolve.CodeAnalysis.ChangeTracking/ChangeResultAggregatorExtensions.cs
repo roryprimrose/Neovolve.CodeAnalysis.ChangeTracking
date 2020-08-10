@@ -10,7 +10,7 @@
             ItemMatch<T> match,
             IMessageFormatter messageFormatter,
             FormatArguments arguments)
-            where T : IElementDefinition
+            where T : IItemDefinition
         {
             aggregator = aggregator ?? throw new ArgumentNullException(nameof(aggregator));
             match = match ?? throw new ArgumentNullException(nameof(match));

@@ -6,6 +6,7 @@
     internal class TestArgumentDefinition : IArgumentDefinition
     {
         public ArgumentType ArgumentType { get; set; } = ArgumentType.Ordinal;
+        public string Declaration { get; } = Guid.NewGuid().ToString();
         public DefinitionLocation Location { get; set; } = new DefinitionLocation(string.Empty, 0, 0);
         public string Name { get; set; } = Guid.NewGuid().ToString();
         public int? OrdinalIndex { get; } = null;

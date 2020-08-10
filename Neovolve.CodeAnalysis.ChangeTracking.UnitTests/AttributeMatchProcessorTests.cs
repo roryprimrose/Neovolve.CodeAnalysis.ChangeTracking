@@ -159,7 +159,7 @@
             var comparer = Substitute.For<IAttributeComparer>();
             var evaluator = Substitute.For<IMatchEvaluator>();
 
-            comparer.CompareTypes(match, options).Returns(expected);
+            comparer.CompareItems(match, options).Returns(expected);
 
             var sut = new Wrapper(comparer, evaluator, _logger);
 
@@ -202,6 +202,9 @@
 
         [Theory]
         [InlineData("MyName", "MyName", true)]
+        [InlineData("MyNameAttribute", "MyNameAttribute", true)]
+        [InlineData("MyNameAttribute", "MyName", true)]
+        [InlineData("MyName", "MyNameAttribute", true)]
         [InlineData("MyName", "myname", false)]
         [InlineData("MyName", "SomeOtherName", false)]
         public void IsItemMatchReturnsTrueWhenItemNamesMatch(string firstName, string secondName, bool expected)

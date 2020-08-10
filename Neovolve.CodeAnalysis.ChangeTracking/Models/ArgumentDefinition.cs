@@ -19,6 +19,7 @@
         {
             node = node ?? throw new ArgumentNullException(nameof(node));
 
+            Declaration = node.ToFullString();
             Value = node.Expression.ToString();
 
             if (node.NameColon == null)
@@ -39,6 +40,9 @@
 
         /// <inheritdoc />
         public ArgumentType ArgumentType { get; }
+
+        /// <inheritdoc />
+        public string Declaration { get; }
 
         /// <inheritdoc />
         public override string Name { get; }
