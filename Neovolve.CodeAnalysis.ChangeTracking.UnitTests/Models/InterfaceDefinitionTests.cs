@@ -4,24 +4,29 @@
     using System.Threading.Tasks;
     using FluentAssertions;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
+    using Microsoft.Extensions.Logging;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class InterfaceDefinitionTests
     {
-        private const string EmptyInterface = @"
-namespace MyNamespace 
-{
-    public interface MyInterface
-    {
-    }   
-}
-";
+        private readonly IChangeCalculator _calculator;
+        private readonly ITestOutputHelper _output;
+
+        public InterfaceDefinitionTests(ITestOutputHelper output)
+        {
+            _output = output;
+
+            var logger = output.BuildLogger(LogLevel.Information);
+
+            _calculator = ChangeCalculatorFactory.BuildCalculator(logger);
+        }
 
         [Fact]
         public async Task CanCreateFromDeclarationNode()
         {
-            var node = await TestNode.FindNode<InterfaceDeclarationSyntax>(EmptyInterface)
+            var node = await TestNode.FindNode<InterfaceDeclarationSyntax>(TypeDefinitionCode.EmptyInterface)
                 .ConfigureAwait(false);
 
             var sut = new InterfaceDefinition(node);
