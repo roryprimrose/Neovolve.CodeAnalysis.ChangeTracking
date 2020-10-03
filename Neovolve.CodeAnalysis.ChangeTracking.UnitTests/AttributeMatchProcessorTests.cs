@@ -2,10 +2,12 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using FluentAssertions;
     using Microsoft.Extensions.Logging;
     using ModelBuilder;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
+    using Neovolve.CodeAnalysis.ChangeTracking.UnitTests.TestModels;
     using NSubstitute;
     using Xunit;
     using Xunit.Abstractions;
@@ -28,7 +30,7 @@
             var newItems = Model.UsingModule<ConfigurationModule>().Create<List<IAttributeDefinition>>();
             var options = ComparerOptions.Default;
 
-            options.SkipAttributes = true;
+            options.CompareAttributes = AttributeCompareOption.Skip;
 
             var comparer = Substitute.For<IAttributeComparer>();
             var evaluator = Substitute.For<IMatchEvaluator>();
@@ -41,7 +43,7 @@
         }
 
         [Fact]
-        public void CalculateChangesReturnsMatchResultsWhenComparingAttributes()
+        public void CalculateChangesReturnsMatchResultsWhenComparingAllAttributes()
         {
             var oldItems = Model.UsingModule<ConfigurationModule>().Create<List<IAttributeDefinition>>();
             var newItems = Model.UsingModule<ConfigurationModule>().Create<List<IAttributeDefinition>>();
@@ -52,12 +54,41 @@
             var itemsAdded = Model.UsingModule<ConfigurationModule>().Create<List<IAttributeDefinition>>();
             var matchResults = new MatchResults<IAttributeDefinition>(matchingItems, itemsRemoved, itemsAdded);
 
-            options.SkipAttributes = false;
+            options.CompareAttributes = AttributeCompareOption.All;
 
             var comparer = Substitute.For<IAttributeComparer>();
             var evaluator = Substitute.For<IMatchEvaluator>();
 
             evaluator.MatchItems(oldItems, newItems, Arg.Any<Func<IAttributeDefinition, IAttributeDefinition, bool>>())
+                .Returns(matchResults);
+
+            var sut = new AttributeMatchProcessor(comparer, evaluator, _logger);
+
+            var actual = sut.CalculateChanges(oldItems, newItems, options);
+
+            actual.Should().NotBeEmpty();
+        }
+
+        [Fact]
+        public void CalculateChangesReturnsMatchResultsWhenComparingAttributesMatchingOptions()
+        {
+            var oldItems = Model.UsingModule<ConfigurationModule>().Create<List<TestAttributeDefinition>>()
+                .Set(x => x[3].Name = "System.Text.Json.Serialization.JsonPropertyName");
+            var newItems = Model.UsingModule<ConfigurationModule>().Create<List<TestAttributeDefinition>>()
+                .Set(x => x[5].Name = "JsonIgnoreAttribute");
+            var options = ComparerOptions.Default;
+            var matchingItems =
+                Model.UsingModule<ConfigurationModule>().Create<List<ItemMatch<IAttributeDefinition>>>();
+            var itemsRemoved = Model.UsingModule<ConfigurationModule>().Create<List<IAttributeDefinition>>();
+            var itemsAdded = Model.UsingModule<ConfigurationModule>().Create<List<IAttributeDefinition>>();
+            var matchResults = new MatchResults<IAttributeDefinition>(matchingItems, itemsRemoved, itemsAdded);
+
+            var comparer = Substitute.For<IAttributeComparer>();
+            var evaluator = Substitute.For<IMatchEvaluator>();
+
+            evaluator.MatchItems(
+                    Arg.Is<IEnumerable<IAttributeDefinition>>(x => x.Single() == oldItems[3]),
+                    Arg.Is<IEnumerable<IAttributeDefinition>>(x => x.Single() == newItems[5]), Arg.Any<Func<IAttributeDefinition, IAttributeDefinition, bool>>())
                 .Returns(matchResults);
 
             var sut = new AttributeMatchProcessor(comparer, evaluator, _logger);
@@ -128,7 +159,7 @@
             var comparer = Substitute.For<IAttributeComparer>();
             var evaluator = Substitute.For<IMatchEvaluator>();
 
-            comparer.CompareTypes(match, options).Returns(expected);
+            comparer.CompareItems(match, options).Returns(expected);
 
             var sut = new Wrapper(comparer, evaluator, _logger);
 
@@ -171,6 +202,9 @@
 
         [Theory]
         [InlineData("MyName", "MyName", true)]
+        [InlineData("MyNameAttribute", "MyNameAttribute", true)]
+        [InlineData("MyNameAttribute", "MyName", true)]
+        [InlineData("MyName", "MyNameAttribute", true)]
         [InlineData("MyName", "myname", false)]
         [InlineData("MyName", "SomeOtherName", false)]
         public void IsItemMatchReturnsTrueWhenItemNamesMatch(string firstName, string secondName, bool expected)

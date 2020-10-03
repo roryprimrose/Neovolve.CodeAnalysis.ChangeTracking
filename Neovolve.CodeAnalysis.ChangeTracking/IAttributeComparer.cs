@@ -5,6 +5,6 @@
 
     public interface IAttributeComparer
     {
-        IEnumerable<ComparisonResult> CompareTypes(ItemMatch<IAttributeDefinition> match, ComparerOptions options);
+        IEnumerable<ComparisonResult> CompareItems(ItemMatch<IAttributeDefinition> match, ComparerOptions options);
     }
 }

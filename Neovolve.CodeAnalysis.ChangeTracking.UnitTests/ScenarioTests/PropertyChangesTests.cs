@@ -5,6 +5,7 @@
     using System.Threading.Tasks;
     using FluentAssertions;
     using Microsoft.Extensions.Logging;
+    using ModelBuilder;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -271,6 +272,66 @@
             result.ChangeType.Should().Be(expected);
         }
 
+        [Theory]
+        [InlineData("[PropertyAttribute(344, true, myName: \"on the property\")]", AttributeCompareOption.Skip,
+            SemVerChangeType.None)]
+        [InlineData("[PropertyAttribute(344, true, myName: \"on the property\")]", AttributeCompareOption.ByExpression,
+            SemVerChangeType.None)]
+        [InlineData("[PropertyAttribute(344, true, myName: \"on the property\")]", AttributeCompareOption.All,
+            SemVerChangeType.None)]
+        [InlineData("[Property(344, true, myName: \"on the property\")]", AttributeCompareOption.Skip,
+            SemVerChangeType.None)]
+        [InlineData("[Property(344, true, myName: \"on the property\")]", AttributeCompareOption.ByExpression,
+            SemVerChangeType.None)]
+        [InlineData("[Property(344, true, myName: \"on the property\")]", AttributeCompareOption.All,
+            SemVerChangeType.None)]
+        [InlineData("[Property(344, myName: \"on the property\")]", AttributeCompareOption.Skip, SemVerChangeType.None)]
+        [InlineData("[Property(344, myName: \"on the property\")]", AttributeCompareOption.ByExpression,
+            SemVerChangeType.None)]
+        [InlineData("[Property(344, myName: \"on the property\")]", AttributeCompareOption.All,
+            SemVerChangeType.Breaking)]
+        [InlineData("[Property(344, true, myName: \"on the property updated\")]", AttributeCompareOption.Skip,
+            SemVerChangeType.None)]
+        [InlineData("[Property(344, true, myName: \"on the property updated\")]", AttributeCompareOption.ByExpression,
+            SemVerChangeType.None)]
+        [InlineData("[Property(344, true, myName: \"on the property updated\")]", AttributeCompareOption.All,
+            SemVerChangeType.Breaking)]
+        [InlineData("[Property(344, 654, true, myName: \"on the property updated\")]", AttributeCompareOption.Skip,
+            SemVerChangeType.None)]
+        [InlineData("[Property(344, 654, true, myName: \"on the property updated\")]",
+            AttributeCompareOption.ByExpression, SemVerChangeType.None)]
+        [InlineData("[Property(344, 654, true, myName: \"on the property updated\")]", AttributeCompareOption.All,
+            SemVerChangeType.Breaking)]
+        [InlineData("[Property(344, true, otherName: \"on the property updated\")]", AttributeCompareOption.Skip,
+            SemVerChangeType.None)]
+        [InlineData("[Property(344, true, otherName: \"on the property updated\")]",
+            AttributeCompareOption.ByExpression, SemVerChangeType.None)]
+        [InlineData("[Property(344, true, otherName: \"on the property updated\")]", AttributeCompareOption.All,
+            SemVerChangeType.Breaking)]
+        public async Task EvaluatesChangesToAttribute(string updatedValue,
+            AttributeCompareOption compareOption,
+            SemVerChangeType expected)
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new CodeSource(SingleProperty)
+            };
+            var newCode = new List<CodeSource>
+            {
+                new CodeSource(SingleProperty.Replace("[PropertyAttribute(344, true, myName: \"on the property\")]",
+                    updatedValue))
+            };
+
+            var options = OptionsFactory.BuildOptions().Set(x => x.CompareAttributes = compareOption);
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            OutputResult(result);
+
+            result.ChangeType.Should().Be(expected);
+        }
+
         [Fact]
         public async Task EvaluatesFeatureWhenPropertyAdded()
         {
@@ -393,11 +454,6 @@
             OutputResult(result);
 
             result.ChangeType.Should().Be(expected);
-        }
-
-        [Fact(Skip = "Not implemented yet")]
-        public void TestPropertyAttributes()
-        {
         }
 
         private void OutputResult(ChangeCalculatorResult result)

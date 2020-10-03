@@ -2,6 +2,46 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Models
 {
     internal static class TypeDefinitionCode
     {
+        public const string ChildClassWithAttribute = @"
+namespace MyNamespace
+{
+    using System.Collections.Generic;
+    using System.IO;
+
+    public class MyClass
+    {
+        public string DefaultKey;
+        public DateTime GetValue(TKey key);
+        public int RandomValue { get; set; }
+
+        [JsonPropertyName(""item"")]
+        public class MyChildClass
+        {
+            public DateTime Value;
+        }
+    }
+}";
+
+        public const string ChildInterfaceWithAttribute = @"
+namespace MyNamespace
+{
+    using System.Collections.Generic;
+    using System.IO;
+
+    public interface MyClass
+    {
+        public string DefaultKey;
+        public DateTime GetValue(TKey key);
+        public int RandomValue { get; set; }
+
+        [JsonPropertyName(""item"")]
+        public interface MyChildClass
+        {
+            public DateTime Value;
+        }
+    }
+}";
+
         public const string ClassImplementsMultipleTypes = @"
 namespace MyNamespace 
 {
@@ -67,6 +107,21 @@ namespace MyNamespace
     }   
 }
 ";
+
+        public const string ClassWithAttribute = @"
+namespace MyNamespace
+{
+    using System.Collections.Generic;
+    using System.IO;
+
+    [JsonPropertyName(""item"")]
+    public class MyClass
+    {
+        public string DefaultKey;
+        public DateTime GetValue(TKey key);
+        public int RandomValue { get; set; }
+    }
+}";
 
         public const string ClassWithComplexNamespace = @"
 namespace MyNamespace.OtherNamespace.FinalNamespace
@@ -194,12 +249,31 @@ namespace MyNamespace
 }
 ";
 
+        public const string EmptyInterface = @"
+namespace MyNamespace 
+{
+    public interface MyInterface
+    {
+    }   
+}
+";
+
         public const string InterfaceImplementsMultipleTypes = @"
 namespace MyNamespace 
 {
     public interface IMyInterface<T> : IDisposable, IEnumerable<T>
     {
     }  
+}
+";
+
+        public const string InterfaceWithAttribute = @"
+namespace MyNamespace 
+{
+    [JsonPropertyName(""item"")]
+    public interface MyInterface
+    {
+    }   
 }
 ";
 

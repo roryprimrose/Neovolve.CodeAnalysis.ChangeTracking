@@ -32,6 +32,28 @@
         }
 
         [Fact]
+        public async Task DeclarationReturnsParameterNameAndValueForNamedArgument()
+        {
+            var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.NamedArgument)
+                .ConfigureAwait(false);
+
+            var sut = new ArgumentDefinition(node, null);
+
+            sut.Declaration.Should().Be("first: 123");
+        }
+
+        [Fact]
+        public async Task DeclarationReturnsValueForOrdinalArgument()
+        {
+            var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.OrdinalArgument)
+                .ConfigureAwait(false);
+
+            var sut = new ArgumentDefinition(node, 1);
+
+            sut.Declaration.Should().Be("123");
+        }
+
+        [Fact]
         public async Task NameReturnsParameterNameForNamedArgument()
         {
             var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.NamedArgument)

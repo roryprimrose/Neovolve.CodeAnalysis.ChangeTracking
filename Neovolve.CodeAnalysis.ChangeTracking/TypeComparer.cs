@@ -343,8 +343,8 @@
                 }
 
                 var args = new FormatArguments(
-                    "{DefinitionType} {Identifier} has added {NewValue} generic type constraint" + suffix,
-                    match.NewItem.FullName, null, newConstraintCount.ToString());
+                    $"{{DefinitionType}} {{Identifier}} has added {newConstraintCount} generic type constraint{suffix}",
+                    match.NewItem.FullName, null, null);
 
                 aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
 
@@ -363,8 +363,8 @@
                 }
 
                 var args = new FormatArguments(
-                    "{DefinitionType} {Identifier} has removed {OldValue} generic type constraint" + suffix,
-                    match.NewItem.FullName, oldConstraintCount.ToString(), null);
+                    $"{{DefinitionType}} {{Identifier}} has removed {oldConstraintCount} generic type constraint{suffix}",
+                    match.NewItem.FullName, null, null);
 
                 aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
 
@@ -412,8 +412,8 @@
                 // One or more generic type parameters have been removed
                 var suffix = typeParameterShift == 1 ? "" : "s";
                 var args = new FormatArguments(
-                    "{DefinitionType} {Identifier} has removed {OldValue} generic type parameter" + suffix,
-                    match.NewItem.FullName, typeParameterShift.ToString(), null);
+                    $"{{DefinitionType}} {{Identifier}} has removed {typeParameterShift} generic type parameter{suffix}",
+                    match.NewItem.FullName, null, null);
 
                 aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
 
@@ -423,12 +423,12 @@
 
             if (typeParameterShift < 0)
             {
-                // One or more generic type parameters have been removed
+                // One or more generic type parameters have been added
                 var shift = Math.Abs(typeParameterShift);
                 var suffix = shift == 1 ? "" : "s";
                 var args = new FormatArguments(
-                    "{DefinitionType} {Identifier} has added {NewValue} generic type parameter" + suffix,
-                    match.NewItem.FullName, null, typeParameterShift.ToString());
+                    $"{{DefinitionType}} {{Identifier}} has added {shift} generic type parameter{suffix}",
+                    match.NewItem.FullName, null, null);
 
                 aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
 
