@@ -83,7 +83,7 @@
                 return;
             }
 
-            // No need to check for a different in named argument counts because at this point we have the same number of overall arguments and the same number of ordinal arguments
+            // No need to check for a difference in named argument counts because at this point we have the same number of overall arguments and the same number of ordinal arguments
             // The number of named arguments must be the same
 
             // At this point we have the same number of ordinal and named arguments
