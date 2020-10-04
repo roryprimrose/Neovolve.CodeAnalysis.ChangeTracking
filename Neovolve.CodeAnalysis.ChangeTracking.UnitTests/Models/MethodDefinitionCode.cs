@@ -47,6 +47,23 @@ namespace MyNamespace
     }
 }";
 
+        public const string MethodWithAttributes = @"
+namespace MyNamespace
+{
+    using System.Collections.Generic;
+    using System.IO;
+
+    public class MyClass
+    {
+        [Stuff]
+        [Here(123, true, ""more"", named: 986]
+        public string GetValue()
+        {
+            return Guid.NewGuid().ToString();
+        }
+    }
+}";
+
         public const string ClassWithMethodInGenericType = @"
 namespace MyNamespace
 {
