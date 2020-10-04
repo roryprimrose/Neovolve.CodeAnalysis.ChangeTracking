@@ -1,5 +1,6 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.Models
 {
+    using System.Collections.Generic;
     using System.Linq;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -17,6 +18,41 @@
             RawName = rawName;
             FullName = DeclaringType.FullName + "." + name;
             FullRawName = DeclaringType.FullRawName + "." + rawName;
+
+            GenericTypeParameters = DetermineGenericTypeParameters(node);
+            GenericConstraints = DetermineGenericConstraints(node);
+        }
+
+        private static IReadOnlyCollection<IConstraintListDefinition> DetermineGenericConstraints(
+            MethodDeclarationSyntax node)
+        {
+            var constraintLists = new List<ConstraintListDefinition>();
+
+            foreach (var clauses in node.ConstraintClauses)
+            {
+                var constraintList = new ConstraintListDefinition(clauses);
+
+                constraintLists.Add(constraintList);
+            }
+
+            return constraintLists.AsReadOnly();
+        }
+
+        private static IReadOnlyCollection<string> DetermineGenericTypeParameters(MethodDeclarationSyntax node)
+        {
+            var typeParameters = new List<string>();
+
+            if (node.TypeParameterList == null)
+            {
+                return typeParameters;
+            }
+
+            foreach (var typeParameter in node.TypeParameterList.Parameters)
+            {
+                typeParameters.Add(typeParameter.Identifier.Text);
+            }
+
+            return typeParameters;
         }
 
         private static MethodModifiers DetermineModifiers(MethodDeclarationSyntax node)
@@ -93,6 +129,12 @@
 
         public override string FullName { get; }
         public override string FullRawName { get; }
+
+        /// <inheritdoc />
+        public IReadOnlyCollection<IConstraintListDefinition> GenericConstraints { get; protected set; }
+
+        /// <inheritdoc />
+        public IReadOnlyCollection<string> GenericTypeParameters { get; }
 
         public MethodModifiers Modifiers { get; }
 

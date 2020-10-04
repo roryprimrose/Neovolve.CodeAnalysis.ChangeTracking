@@ -79,6 +79,36 @@ namespace MyNamespace
     }
 }";
 
+        public const string MethodWithMultipleGenericTypes = @"
+namespace MyNamespace
+{
+    using System.Collections.Generic;
+    using System.IO;
+
+    public class MyClass
+    {
+        public T GetValue<T, V>(V value) where V : class, where T : new()
+        {
+            return new T();
+        }
+    }
+}";
+
+        public const string MethodWithMultipleGenericConstraints = @"
+namespace MyNamespace
+{
+    using System.Collections.Generic;
+    using System.IO;
+
+    public class MyClass
+    {
+        public T GetValue<T, V>(V value) where V : class, IDisposable where T : new()
+        {
+            return new T();
+        }
+    }
+}";
+
         public const string ClassWithTaskMethod = @"
 namespace MyNamespace
 {

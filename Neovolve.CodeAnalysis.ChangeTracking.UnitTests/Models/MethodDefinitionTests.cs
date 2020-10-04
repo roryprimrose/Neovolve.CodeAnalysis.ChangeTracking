@@ -95,6 +95,74 @@
             sut.FullRawName.Should().Be(declaringType.FullRawName + "." + expected);
         }
 
+        [Fact]
+        public async Task GenericConstraintsReturnsDeclaredConstraints()
+        {
+            var declaringType = Substitute.For<IClassDefinition>();
+
+            var node = await TestNode
+                .FindNode<MethodDeclarationSyntax>(MethodDefinitionCode.MethodWithMultipleGenericConstraints)
+                .ConfigureAwait(false);
+
+            var sut = new MethodDefinition(declaringType, node);
+
+            sut.GenericConstraints.Should().HaveCount(2);
+
+            var firstConstraints = sut.GenericConstraints.Single(x => x.Name == "T");
+
+            firstConstraints.Constraints.Count.Should().Be(1);
+            firstConstraints.Constraints.First().Should().Be("new()");
+
+            var secondConstraints = sut.GenericConstraints.Single(x => x.Name == "V");
+
+            secondConstraints.Constraints.Count.Should().Be(2);
+            secondConstraints.Constraints.First().Should().Be("class");
+            secondConstraints.Constraints.Skip(1).First().Should().Be("IDisposable");
+        }
+
+        [Fact]
+        public async Task GenericTypeParametersReturnsEmptyWhenNotGenericType()
+        {
+            var declaringType = Substitute.For<IClassDefinition>();
+
+            var node = await TestNode.FindNode<MethodDeclarationSyntax>(MethodDefinitionCode.ClassWithMethod)
+                .ConfigureAwait(false);
+
+            var sut = new MethodDefinition(declaringType, node);
+
+            sut.GenericTypeParameters.Should().BeEmpty();
+        }
+
+        [Fact]
+        public async Task GenericTypeParametersReturnsNameOfSingleGenericType()
+        {
+            var declaringType = Substitute.For<IClassDefinition>();
+
+            var node = await TestNode.FindNode<MethodDeclarationSyntax>(MethodDefinitionCode.ClassWithGenericMethod)
+                .ConfigureAwait(false);
+
+            var sut = new MethodDefinition(declaringType, node);
+
+            sut.GenericTypeParameters.Should().HaveCount(1);
+            sut.GenericTypeParameters.Single().Should().Be("T");
+        }
+
+        [Fact]
+        public async Task GenericTypeParametersReturnsNamesOfMultipleGenericTypes()
+        {
+            var declaringType = Substitute.For<IClassDefinition>();
+
+            var node = await TestNode
+                .FindNode<MethodDeclarationSyntax>(MethodDefinitionCode.MethodWithMultipleGenericTypes)
+                .ConfigureAwait(false);
+
+            var sut = new MethodDefinition(declaringType, node);
+
+            sut.GenericTypeParameters.Should().HaveCount(2);
+            sut.GenericTypeParameters.First().Should().Be("T");
+            sut.GenericTypeParameters.Skip(1).First().Should().Be("V");
+        }
+
         [Theory]
         [InlineData("", MethodModifiers.None)]
         [InlineData("new", MethodModifiers.New)]
