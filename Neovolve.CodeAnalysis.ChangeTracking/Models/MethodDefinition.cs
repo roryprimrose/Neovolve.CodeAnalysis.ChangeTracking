@@ -5,7 +5,7 @@
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-    public class MethodDefinition : MemberDefinition
+    public class MethodDefinition : MemberDefinition, IMethodDefinition
     {
         public MethodDefinition(ITypeDefinition declaringType, MethodDeclarationSyntax node) : base(node, declaringType)
         {
