@@ -94,6 +94,21 @@ namespace MyNamespace
     }
 }";
 
+        public const string MethodWithMultipleParameters = @"
+namespace MyNamespace
+{
+    using System.Collections.Generic;
+    using System.IO;
+
+    public class MyClass
+    {
+        public T GetValue<T, V>(V value, params object[] otherValues) where V : class, where T : new()
+        {
+            return new T();
+        }
+    }
+}";
+
         public const string MethodWithMultipleGenericConstraints = @"
 namespace MyNamespace
 {

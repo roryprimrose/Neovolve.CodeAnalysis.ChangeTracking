@@ -246,6 +246,48 @@
             sut.Name.Should().Be(expected);
         }
 
+        [Fact]
+        public async Task ParametersReturnsEmptyWithNoDeclaredValues()
+        {
+            var parentFullName = Guid.NewGuid().ToString();
+
+            var declaringType = Substitute.For<IClassDefinition>();
+
+            declaringType.FullName.Returns(parentFullName);
+
+            var node = await TestNode
+                .FindNode<MethodDeclarationSyntax>(MethodDefinitionCode.ClassWithMethod)
+                .ConfigureAwait(false);
+
+            var sut = new MethodDefinition(declaringType, node);
+
+            sut.Parameters.Should().BeEmpty();
+        }
+
+        [Fact]
+        public async Task ParametersReturnsMultipleDeclaredValues()
+        {
+            var parentFullName = Guid.NewGuid().ToString();
+
+            var declaringType = Substitute.For<IClassDefinition>();
+
+            declaringType.FullName.Returns(parentFullName);
+
+            var node = await TestNode
+                .FindNode<MethodDeclarationSyntax>(MethodDefinitionCode.MethodWithMultipleParameters)
+                .ConfigureAwait(false);
+
+            var sut = new MethodDefinition(declaringType, node);
+
+            sut.Parameters.Should().HaveCount(2);
+            sut.Parameters.First().Type.Should().Be("V");
+            sut.Parameters.First().Name.Should().Be("value");
+            sut.Parameters.First().Modifier.Should().Be(ParameterModifier.None);
+            sut.Parameters.Skip(1).First().Type.Should().Be("object[]");
+            sut.Parameters.Skip(1).First().Name.Should().Be("otherValues");
+            sut.Parameters.Skip(1).First().Modifier.Should().Be(ParameterModifier.Params);
+        }
+
         [Theory]
         [InlineData(MethodDefinitionCode.ClassWithMethod, "GetValue")]
         [InlineData(MethodDefinitionCode.InterfaceWithMethod, "GetValue")]

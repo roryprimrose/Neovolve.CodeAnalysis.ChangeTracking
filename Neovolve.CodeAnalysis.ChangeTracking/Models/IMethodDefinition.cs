@@ -18,5 +18,10 @@
         ///     Gets the modifiers of the method.
         /// </summary>
         MethodModifiers Modifiers { get; }
+
+        /// <summary>
+        ///     Gets the parameters declared on the method.
+        /// </summary>
+        IReadOnlyCollection<IParameterDefinition> Parameters { get; }
     }
 }

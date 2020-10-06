@@ -21,6 +21,7 @@
 
             GenericTypeParameters = DetermineGenericTypeParameters(node);
             GenericConstraints = DetermineGenericConstraints(node);
+            Parameters = DetermineParameters(node);
         }
 
         private static IReadOnlyCollection<IConstraintListDefinition> DetermineGenericConstraints(
@@ -127,19 +128,45 @@
             return name;
         }
 
+        private IReadOnlyCollection<IParameterDefinition> DetermineParameters(MethodDeclarationSyntax node)
+        {
+            var parameters = new List<IParameterDefinition>();
+
+            foreach (var declaredParameter in node.ParameterList.Parameters)
+            {
+                var parameter = new ParameterDefinition(this, declaredParameter);
+
+                parameters.Add(parameter);
+            }
+
+            return parameters;
+        }
+
+        /// <inheritdoc />
         public override string FullName { get; }
+
+        /// <inheritdoc />
         public override string FullRawName { get; }
 
         /// <inheritdoc />
-        public IReadOnlyCollection<IConstraintListDefinition> GenericConstraints { get; protected set; }
+        public IReadOnlyCollection<IConstraintListDefinition> GenericConstraints { get; }
 
         /// <inheritdoc />
         public IReadOnlyCollection<string> GenericTypeParameters { get; }
 
+        /// <inheritdoc />
         public MethodModifiers Modifiers { get; }
 
+        /// <inheritdoc />
         public override string Name { get; }
+
+        /// <inheritdoc />
+        public IReadOnlyCollection<IParameterDefinition> Parameters { get; }
+
+        /// <inheritdoc />
         public override string RawName { get; }
+
+        /// <inheritdoc />
         public override string ReturnType { get; }
     }
 }
