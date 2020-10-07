@@ -1,10 +1,13 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking
 {
-    using System.Collections.Generic;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
-    public interface IElementComparer<T> where T : IElementDefinition
+    /// <summary>
+    ///     The <see cref="IElementComparer{T}" />
+    ///     interface defines the members for comparing elements.
+    /// </summary>
+    /// <typeparam name="T">The type of element to compare.</typeparam>
+    public interface IElementComparer<T> : IItemComparer<T> where T : IElementDefinition
     {
-        IEnumerable<ComparisonResult> CompareItems(ItemMatch<T> match, ComparerOptions options);
     }
 }

@@ -58,8 +58,8 @@
             oldItem = oldItem ?? throw new ArgumentNullException(nameof(oldItem));
             newItem = newItem ?? throw new ArgumentNullException(nameof(newItem));
 
-            var oldName = StripAttributeSuffix(oldItem.Name);
-            var newName = StripAttributeSuffix(newItem.Name);
+            var oldName = oldItem.GetRawName();
+            var newName = newItem.GetRawName();
 
             // NOTE: This is not able to adequately handle multiple attribute definitions
             // Unfortunately there is no accurate way to match up different usages of the same attribute type when the argument list may have been altered
@@ -73,20 +73,9 @@
 
         private static bool ShouldCompare(IAttributeDefinition item, IEnumerable<Regex> expressions)
         {
-            var name = StripAttributeSuffix(item.Name);
+            var name = item.GetRawName();
 
             return expressions.Any(x => x.IsMatch(name));
-        }
-
-        private static string StripAttributeSuffix(string name)
-        {
-            // This assumes that the expressions in ComparerOptions do not handle the Attribute suffix that is not required by the compiler
-            if (name.EndsWith("Attribute", StringComparison.OrdinalIgnoreCase))
-            {
-                return name[..^9];
-            }
-
-            return name;
         }
     }
 }

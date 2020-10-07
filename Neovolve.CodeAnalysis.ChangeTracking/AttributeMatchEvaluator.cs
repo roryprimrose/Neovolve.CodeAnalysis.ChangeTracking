@@ -15,7 +15,7 @@
 
             var results = new MatchResults<IAttributeDefinition>(oldItems, newItems);
 
-            return FindMatches(results, (x, y) => x.Name == y.Name);
+            return FindMatches(results, (x, y) => x.GetRawName() == y.GetRawName());
         }
     }
 }

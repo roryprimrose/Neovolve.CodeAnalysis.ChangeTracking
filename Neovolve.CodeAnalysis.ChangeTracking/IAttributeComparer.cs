@@ -1,10 +1,8 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking
 {
-    using System.Collections.Generic;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
-    public interface IAttributeComparer
+    public interface IAttributeComparer : IItemComparer<IAttributeDefinition>
     {
-        IEnumerable<ComparisonResult> CompareItems(ItemMatch<IAttributeDefinition> match, ComparerOptions options);
     }
 }

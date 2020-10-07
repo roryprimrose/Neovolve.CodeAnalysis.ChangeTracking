@@ -2,35 +2,26 @@
 {
     using System;
     using System.Linq;
-    using System.Threading.Tasks;
     using FluentAssertions;
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
+    using ModelBuilder;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
-    using Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Models;
+    using Neovolve.CodeAnalysis.ChangeTracking.UnitTests.TestModels;
     using Xunit;
 
     public class AttributeMatchEvaluatorTests
     {
         [Fact]
-        public async Task MatchItemsIdentifiesAttributesNotMatching()
+        public void MatchItemsIdentifiesAttributesNotMatching()
         {
-            var oldNode = await TestNode
-                .FindNode<AttributeSyntax>(AttributeDefinitionCode.SimpleAttribute.Replace("Simple", "Old"))
-                .ConfigureAwait(false);
-            var newNode = await TestNode
-                .FindNode<AttributeSyntax>(AttributeDefinitionCode.SimpleAttribute.Replace("Simple", "New"))
-                .ConfigureAwait(false);
-            var matchingNode = await TestNode.FindNode<AttributeSyntax>(AttributeDefinitionCode.SimpleAttribute)
-                .ConfigureAwait(false);
-
-            var oldAttribute = new AttributeDefinition(oldNode);
-            var newAttribute = new AttributeDefinition(newNode);
-            var oldMatchingAttribute = new AttributeDefinition(matchingNode);
+            var oldAttribute = Model.UsingModule<ConfigurationModule>().Create<IAttributeDefinition>();
+            var newAttribute = Model.UsingModule<ConfigurationModule>().Create<IAttributeDefinition>();
+            var oldMatchingAttribute = Model.UsingModule<ConfigurationModule>().Create<IAttributeDefinition>();
             var oldAttributes = new[]
             {
                 oldAttribute, oldMatchingAttribute
             };
-            var newMatchingAttribute = new AttributeDefinition(matchingNode);
+            var newMatchingAttribute =
+                Model.UsingModule<ConfigurationModule>().Create<TestAttributeDefinition>().Set(x => x.Name = oldMatchingAttribute.Name);
             var newAttributes = new[]
             {
                 newMatchingAttribute, newAttribute
@@ -50,17 +41,14 @@
         }
 
         [Fact]
-        public async Task MatchItemsReturnsSingleAttributeMatchingByName()
+        public void MatchItemsReturnsSingleAttributeMatchingByName()
         {
-            var node = await TestNode.FindNode<AttributeSyntax>(AttributeDefinitionCode.SimpleAttribute)
-                .ConfigureAwait(false);
-
-            var oldAttribute = new AttributeDefinition(node);
+            var oldAttribute = Model.UsingModule<ConfigurationModule>().Create<TestAttributeDefinition>();
             var oldAttributes = new[]
             {
                 oldAttribute
             };
-            var newAttribute = new AttributeDefinition(node);
+            var newAttribute = Model.UsingModule<ConfigurationModule>().Create<TestAttributeDefinition>().Set(x => x.Name = oldAttribute.Name);
             var newAttributes = new[]
             {
                 newAttribute
@@ -78,20 +66,14 @@
         }
 
         [Fact]
-        public async Task MatchItemsReturnsSingleAttributeMatchingByNameIgnoringAttributeSuffix()
+        public void MatchItemsReturnsSingleAttributeMatchingByNameIgnoringAttributeSuffix()
         {
-            var oldNode = await TestNode.FindNode<AttributeSyntax>(AttributeDefinitionCode.SimpleAttribute)
-                .ConfigureAwait(false);
-            var newNode = await TestNode
-                .FindNode<AttributeSyntax>(AttributeDefinitionCode.SimpleAttribute.Replace("Attribute", string.Empty))
-                .ConfigureAwait(false);
-
-            var oldAttribute = new AttributeDefinition(oldNode);
+            var oldAttribute = Model.UsingModule<ConfigurationModule>().Create<TestAttributeDefinition>().Set(x => x.Name = "SomethingAttribute");
             var oldAttributes = new[]
             {
                 oldAttribute
             };
-            var newAttribute = new AttributeDefinition(newNode);
+            var newAttribute = Model.UsingModule<ConfigurationModule>().Create<TestAttributeDefinition>().Set(x => x.Name = "Something");
             var newAttributes = new[]
             {
                 newAttribute
