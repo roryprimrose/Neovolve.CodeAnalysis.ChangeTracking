@@ -11,7 +11,7 @@
     {
         private readonly IAttributeComparer _comparer;
 
-        public AttributeMatchProcessor(IAttributeComparer comparer, IMatchEvaluator evaluator, ILogger? logger) : base(
+        public AttributeMatchProcessor(IAttributeComparer comparer, IMatchEvaluator<IAttributeDefinition> evaluator, ILogger? logger) : base(
             evaluator, logger)
         {
             _comparer = comparer ?? throw new ArgumentNullException(nameof(comparer));

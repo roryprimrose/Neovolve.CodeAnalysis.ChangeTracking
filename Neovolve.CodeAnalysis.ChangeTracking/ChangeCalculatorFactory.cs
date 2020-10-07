@@ -14,7 +14,8 @@
             var evaluator = new MatchEvaluator();
 
             var attributeComparer = new AttributeComparer();
-            var attributeProcessor = new AttributeMatchProcessor(attributeComparer, evaluator, logger);
+            var attributeMatcher = new AttributeMatchEvaluator();
+            var attributeProcessor = new AttributeMatchProcessor(attributeComparer, attributeMatcher, logger);
 
             var fieldComparer = new FieldComparer(attributeProcessor);
             var fieldProcessor = new FieldMatchProcessor(fieldComparer, evaluator, logger);

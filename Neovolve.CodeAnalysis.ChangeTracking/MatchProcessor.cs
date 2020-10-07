@@ -8,19 +8,37 @@
 
     public abstract class MatchProcessor<T> : IMatchProcessor<T> where T : IItemDefinition
     {
-        private readonly IMatchEvaluator _evaluator;
         private readonly ILogger? _logger;
+        private readonly IMatchEvaluator? _oldEvaluator;
+        private readonly IMatchEvaluator<T>? _evaluator;
 
         protected MatchProcessor(IMatchEvaluator evaluator, ILogger? logger)
+        {
+            _oldEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
+            _logger = logger;
+        }
+
+        protected MatchProcessor(IMatchEvaluator<T> evaluator, ILogger? logger)
         {
             _evaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             _logger = logger;
         }
 
-        public virtual IEnumerable<ComparisonResult> CalculateChanges(IEnumerable<T> oldItems,
-            IEnumerable<T> newItems, ComparerOptions options)
+        public virtual IEnumerable<ComparisonResult> CalculateChanges(
+            IEnumerable<T> oldItems,
+            IEnumerable<T> newItems,
+            ComparerOptions options)
         {
-            var matchingNodes = _evaluator.MatchItems(oldItems, newItems, IsItemMatch);
+            IMatchResults<T> matchingNodes;
+
+            if (_evaluator != null)
+            {
+                matchingNodes = _evaluator.MatchItems(oldItems, newItems);
+            }
+            else
+            {
+                matchingNodes = _oldEvaluator!.MatchItems(oldItems, newItems, IsItemMatch);
+            }
 
             // Record any visible types that have been added
             // Types added which are not publicly visible are ignored
@@ -42,9 +60,7 @@
                     changeType = SemVerChangeType.Feature;
                 }
 
-                var args = new FormatArguments(
-                    "{DefinitionType} {Identifier} has been added",
-                    name, null, null);
+                var args = new FormatArguments("{DefinitionType} {Identifier} has been added", name, null, null);
 
                 var message = options.MessageFormatter.FormatItemAddedMessage(memberAdded, args);
 
@@ -73,9 +89,7 @@
                     changeType = SemVerChangeType.Breaking;
                 }
 
-                var args = new FormatArguments(
-                    "{DefinitionType} {Identifier} has been removed",
-                    name, null, null);
+                var args = new FormatArguments("{DefinitionType} {Identifier} has been removed", name, null, null);
 
                 var message = options.MessageFormatter.FormatItemRemovedMessage(memberRemoved, args);
 
@@ -101,8 +115,7 @@
         protected abstract bool IsItemMatch(T oldItem, T newItem);
         protected abstract bool IsVisible(T item);
 
-        private IEnumerable<ComparisonResult> CompareMatchingItems(ItemMatch<T> match,
-            ComparerOptions options)
+        private IEnumerable<ComparisonResult> CompareMatchingItems(ItemMatch<T> match, ComparerOptions options)
         {
             var results = EvaluateMatch(match, options);
 

@@ -118,7 +118,7 @@
 
             sut.Attributes.Should().HaveCount(1);
 
-            sut.Attributes.First().Name.Should().Be("MyAttribute");
+            sut.Attributes.First().Name.Should().Be("My");
         }
 
         [Theory]
