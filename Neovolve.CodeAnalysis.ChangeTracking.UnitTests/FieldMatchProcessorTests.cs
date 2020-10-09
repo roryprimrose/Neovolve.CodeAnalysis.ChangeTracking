@@ -34,9 +34,9 @@
             var matchResults = new MatchResults<IFieldDefinition>(matchingItems, itemsRemoved, itemsAdded);
 
             var comparer = Substitute.For<IFieldComparer>();
-            var evaluator = Substitute.For<IMatchEvaluator>();
+            var evaluator = Substitute.For<IMatchEvaluator<IFieldDefinition>>();
 
-            evaluator.MatchItems(oldItems, newItems, Arg.Any<Func<IFieldDefinition, IFieldDefinition, bool>>())
+            evaluator.MatchItems(oldItems, newItems)
                 .Returns(matchResults);
 
             var sut = new FieldMatchProcessor(comparer, evaluator, _logger);
@@ -57,7 +57,7 @@
             var expected = new List<ComparisonResult> {result};
 
             var comparer = Substitute.For<IFieldComparer>();
-            var evaluator = Substitute.For<IMatchEvaluator>();
+            var evaluator = Substitute.For<IMatchEvaluator<IFieldDefinition>>();
 
             comparer.CompareItems(match, options).Returns(expected);
 
@@ -74,7 +74,7 @@
             var options = ComparerOptions.Default;
 
             var comparer = Substitute.For<IFieldComparer>();
-            var evaluator = Substitute.For<IMatchEvaluator>();
+            var evaluator = Substitute.For<IMatchEvaluator<IFieldDefinition>>();
 
             var sut = new Wrapper(comparer, evaluator, _logger);
 
@@ -91,7 +91,7 @@
             var match = new ItemMatch<IFieldDefinition>(oldItem, newItem);
 
             var comparer = Substitute.For<IFieldComparer>();
-            var evaluator = Substitute.For<IMatchEvaluator>();
+            var evaluator = Substitute.For<IMatchEvaluator<IFieldDefinition>>();
 
             var sut = new Wrapper(comparer, evaluator, _logger);
 
@@ -113,7 +113,7 @@
             newItem.Name.Returns(secondName);
 
             var comparer = Substitute.For<IFieldComparer>();
-            var evaluator = Substitute.For<IMatchEvaluator>();
+            var evaluator = Substitute.For<IMatchEvaluator<IFieldDefinition>>();
 
             var sut = new Wrapper(comparer, evaluator, _logger);
 
@@ -128,7 +128,7 @@
             var newItem = new TestFieldDefinition();
 
             var comparer = Substitute.For<IFieldComparer>();
-            var evaluator = Substitute.For<IMatchEvaluator>();
+            var evaluator = Substitute.For<IMatchEvaluator<IFieldDefinition>>();
 
             var sut = new Wrapper(comparer, evaluator, _logger);
 
@@ -143,7 +143,7 @@
             var oldItem = new TestFieldDefinition();
 
             var comparer = Substitute.For<IFieldComparer>();
-            var evaluator = Substitute.For<IMatchEvaluator>();
+            var evaluator = Substitute.For<IMatchEvaluator<IFieldDefinition>>();
 
             var sut = new Wrapper(comparer, evaluator, _logger);
 
@@ -158,7 +158,7 @@
             var item = new TestFieldDefinition();
 
             var comparer = Substitute.For<IFieldComparer>();
-            var evaluator = Substitute.For<IMatchEvaluator>();
+            var evaluator = Substitute.For<IMatchEvaluator<IFieldDefinition>>();
 
             var sut = new Wrapper(comparer, evaluator, _logger);
 
@@ -170,7 +170,7 @@
         [Fact]
         public void ThrowsExceptionWhenCreatedWithNullComparer()
         {
-            var evaluator = Substitute.For<IMatchEvaluator>();
+            var evaluator = Substitute.For<IMatchEvaluator<IFieldDefinition>>();
 
             // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new FieldMatchProcessor(null!, evaluator, _logger);
@@ -180,7 +180,7 @@
 
         private class Wrapper : FieldMatchProcessor
         {
-            public Wrapper(IFieldComparer comparer, IMatchEvaluator evaluator, ILogger? logger) : base(
+            public Wrapper(IFieldComparer comparer, IMatchEvaluator<IFieldDefinition> evaluator, ILogger? logger) : base(
                 comparer,
                 evaluator,
                 logger)

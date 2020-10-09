@@ -13,7 +13,7 @@
         public IReadOnlyCollection<IInterfaceDefinition> ChildInterfaces { get; set; } =
             new List<TestInterfaceDefinition>();
 
-        public IReadOnlyCollection<IStructDefinition> ChildStructs { get; } = new List<IStructDefinition>();
+        public IReadOnlyCollection<IStructDefinition> ChildStructs { get; } = new List<TestStructDefinition>();
 
         public IReadOnlyCollection<ITypeDefinition> ChildTypes { get; set; } = new List<TestClassDefinition>();
         public string DeclaredModifiers { get; } = "public";
@@ -22,7 +22,7 @@
         public string FullRawName { get; set; } = Guid.NewGuid().ToString();
 
         public IReadOnlyCollection<IConstraintListDefinition> GenericConstraints { get; set; } =
-            new List<IConstraintListDefinition>();
+            new List<TestConstraintListDefinition>();
 
         public IReadOnlyCollection<string> GenericTypeParameters { get; set; } = new List<string>();
         public IReadOnlyCollection<string> ImplementedTypes { get; set; } = new List<string>();

@@ -9,7 +9,7 @@
     {
         private readonly IFieldComparer _comparer;
 
-        public FieldMatchProcessor(IFieldComparer comparer, IMatchEvaluator evaluator, ILogger? logger) : base(
+        public FieldMatchProcessor(IFieldComparer comparer, IMatchEvaluator<IFieldDefinition> evaluator, ILogger? logger) : base(
             evaluator, logger)
         {
             _comparer = comparer ?? throw new ArgumentNullException(nameof(comparer));
