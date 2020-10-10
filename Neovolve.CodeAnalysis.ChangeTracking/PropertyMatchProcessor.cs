@@ -9,7 +9,7 @@
     {
         private readonly IPropertyComparer _comparer;
 
-        public PropertyMatchProcessor(IPropertyComparer comparer, IMatchEvaluator evaluator, ILogger? logger) : base(
+        public PropertyMatchProcessor(IPropertyComparer comparer, IMatchEvaluator<IPropertyDefinition> evaluator, ILogger? logger) : base(
             evaluator, logger)
         {
             _comparer = comparer ?? throw new ArgumentNullException(nameof(comparer));
@@ -19,11 +19,6 @@
             ComparerOptions options)
         {
             return _comparer.CompareItems(match, options);
-        }
-
-        protected override bool IsItemMatch(IPropertyDefinition oldItem, IPropertyDefinition newItem)
-        {
-            return oldItem.Name == newItem.Name;
         }
 
         protected override bool IsVisible(IPropertyDefinition item)

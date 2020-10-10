@@ -42,17 +42,20 @@
             results.ItemsRemoved.First().Should().Be(oldField);
         }
 
-        [Fact]
-        public void MatchItemsReturnsSingleFieldMatchingByName()
+        [Theory]
+        [InlineData("MyName", "MyName", true)]
+        [InlineData("MyName", "myname", false)]
+        [InlineData("MyName", "SomeOtherName", false)]
+        public void MatchItemsReturnsSingleFieldMatchingByName(string firstName, string secondName, bool expected)
         {
             var executeStrategy = Model.UsingModule<ConfigurationModule>()
                 .Ignoring<TestFieldDefinition>(x => x.DeclaringType).Ignoring<TestFieldDefinition>(x => x.Attributes);
-            var oldField = executeStrategy.Create<TestFieldDefinition>();
+            var oldField = executeStrategy.Create<TestFieldDefinition>().Set(x => x.Name = firstName);
             var oldFields = new[]
             {
                 oldField
             };
-            var newField = executeStrategy.Create<TestFieldDefinition>().Set(x => x.Name = oldField.Name);
+            var newField = executeStrategy.Create<TestFieldDefinition>().Set(x => x.Name = secondName);
             var newFields = new[]
             {
                 newField
@@ -62,11 +65,18 @@
 
             var results = sut.MatchItems(oldFields, newFields);
 
-            results.MatchingItems.Should().HaveCount(1);
-            results.MatchingItems.First().OldItem.Should().Be(oldField);
-            results.MatchingItems.First().NewItem.Should().Be(newField);
-            results.ItemsAdded.Should().BeEmpty();
-            results.ItemsRemoved.Should().BeEmpty();
+            if (expected)
+            {
+                results.MatchingItems.Should().HaveCount(1);
+                results.MatchingItems.First().OldItem.Should().Be(oldField);
+                results.MatchingItems.First().NewItem.Should().Be(newField);
+                results.ItemsAdded.Should().BeEmpty();
+                results.ItemsRemoved.Should().BeEmpty();
+            }
+            else
+            {
+                results.MatchingItems.Should().BeEmpty();
+            }
         }
 
         [Fact]

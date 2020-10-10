@@ -24,20 +24,33 @@
         [Fact]
         public void CalculateChangesReturnsMatchResultsWhenComparingFields()
         {
-            var oldItems = new List<IFieldDefinition> {new TestFieldDefinition()};
-            var newItems = new List<IFieldDefinition> {new TestFieldDefinition()};
+            var oldItems = new List<IFieldDefinition>
+            {
+                new TestFieldDefinition()
+            };
+            var newItems = new List<IFieldDefinition>
+            {
+                new TestFieldDefinition()
+            };
             var options = ComparerOptions.Default;
             var matchingItems = new List<ItemMatch<IFieldDefinition>>
-                {new ItemMatch<IFieldDefinition>(new TestFieldDefinition(), new TestFieldDefinition())};
-            var itemsRemoved = new List<IFieldDefinition> {new TestFieldDefinition()};
-            var itemsAdded = new List<IFieldDefinition> {new TestFieldDefinition()};
+            {
+                new ItemMatch<IFieldDefinition>(new TestFieldDefinition(), new TestFieldDefinition())
+            };
+            var itemsRemoved = new List<IFieldDefinition>
+            {
+                new TestFieldDefinition()
+            };
+            var itemsAdded = new List<IFieldDefinition>
+            {
+                new TestFieldDefinition()
+            };
             var matchResults = new MatchResults<IFieldDefinition>(matchingItems, itemsRemoved, itemsAdded);
 
             var comparer = Substitute.For<IFieldComparer>();
             var evaluator = Substitute.For<IMatchEvaluator<IFieldDefinition>>();
 
-            evaluator.MatchItems(oldItems, newItems)
-                .Returns(matchResults);
+            evaluator.MatchItems(oldItems, newItems).Returns(matchResults);
 
             var sut = new FieldMatchProcessor(comparer, evaluator, _logger);
 
@@ -54,7 +67,10 @@
             var match = new ItemMatch<IFieldDefinition>(oldItem, newItem);
             var options = ComparerOptions.Default;
             var result = new ComparisonResult(SemVerChangeType.Breaking, oldItem, newItem, Guid.NewGuid().ToString());
-            var expected = new List<ComparisonResult> {result};
+            var expected = new List<ComparisonResult>
+            {
+                result
+            };
 
             var comparer = Substitute.For<IFieldComparer>();
             var evaluator = Substitute.For<IMatchEvaluator<IFieldDefinition>>();
@@ -100,58 +116,6 @@
             action.Should().Throw<ArgumentNullException>();
         }
 
-        [Theory]
-        [InlineData("MyName", "MyName", true)]
-        [InlineData("MyName", "myname", false)]
-        [InlineData("MyName", "SomeOtherName", false)]
-        public void IsItemMatchReturnsTrueWhenItemNamesMatch(string firstName, string secondName, bool expected)
-        {
-            var oldItem = Substitute.For<IFieldDefinition>();
-            var newItem = Substitute.For<IFieldDefinition>();
-
-            oldItem.Name.Returns(firstName);
-            newItem.Name.Returns(secondName);
-
-            var comparer = Substitute.For<IFieldComparer>();
-            var evaluator = Substitute.For<IMatchEvaluator<IFieldDefinition>>();
-
-            var sut = new Wrapper(comparer, evaluator, _logger);
-
-            var actual = sut.RunIsItemMatch(oldItem, newItem);
-
-            actual.Should().Be(expected);
-        }
-
-        [Fact]
-        public void IsItemMatchThrowsExceptionWithNullNewItem()
-        {
-            var newItem = new TestFieldDefinition();
-
-            var comparer = Substitute.For<IFieldComparer>();
-            var evaluator = Substitute.For<IMatchEvaluator<IFieldDefinition>>();
-
-            var sut = new Wrapper(comparer, evaluator, _logger);
-
-            Action action = () => sut.RunIsItemMatch(null!, newItem);
-
-            action.Should().Throw<ArgumentNullException>();
-        }
-
-        [Fact]
-        public void IsItemMatchThrowsExceptionWithNullOldItem()
-        {
-            var oldItem = new TestFieldDefinition();
-
-            var comparer = Substitute.For<IFieldComparer>();
-            var evaluator = Substitute.For<IMatchEvaluator<IFieldDefinition>>();
-
-            var sut = new Wrapper(comparer, evaluator, _logger);
-
-            Action action = () => sut.RunIsItemMatch(oldItem, null!);
-
-            action.Should().Throw<ArgumentNullException>();
-        }
-
         [Fact]
         public void IsVisibleReturnsTrue()
         {
@@ -180,10 +144,10 @@
 
         private class Wrapper : FieldMatchProcessor
         {
-            public Wrapper(IFieldComparer comparer, IMatchEvaluator<IFieldDefinition> evaluator, ILogger? logger) : base(
-                comparer,
-                evaluator,
-                logger)
+            public Wrapper(
+                IFieldComparer comparer,
+                IMatchEvaluator<IFieldDefinition> evaluator,
+                ILogger? logger) : base(comparer, evaluator, logger)
             {
             }
 
@@ -192,11 +156,6 @@
                 ComparerOptions options)
             {
                 return base.EvaluateMatch(match, options);
-            }
-
-            public bool RunIsItemMatch(IFieldDefinition oldItem, IFieldDefinition newItem)
-            {
-                return base.IsItemMatch(oldItem, newItem);
             }
 
             public bool RunIsVisible(IFieldDefinition item)

@@ -11,8 +11,6 @@
 
         public static IChangeCalculator BuildCalculator(ILogger? logger)
         {
-            var evaluator = new MatchEvaluator();
-
             var attributeComparer = new AttributeComparer();
             var attributeMatcher = new AttributeMatchEvaluator();
             var attributeProcessor = new AttributeMatchProcessor(attributeComparer, attributeMatcher, logger);
@@ -26,7 +24,8 @@
             var propertyAccessorProcessor =
                 new PropertyAccessorMatchProcessor(propertyAccessorComparer, propertyAccessorMatcher, logger);
             var propertyComparer = new PropertyComparer(propertyAccessorProcessor, attributeProcessor);
-            var propertyProcessor = new PropertyMatchProcessor(propertyComparer, evaluator, logger);
+            var propertyMatcher = new PropertyMatchEvaluator();
+            var propertyProcessor = new PropertyMatchProcessor(propertyComparer, propertyMatcher, logger);
 
             var typeComparer = new TypeComparer(fieldProcessor, propertyProcessor, attributeProcessor);
             var typeMatchEvaluator = new TypeMatchEvaluator();

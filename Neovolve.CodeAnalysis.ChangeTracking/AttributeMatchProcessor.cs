@@ -53,19 +53,6 @@
             return _comparer.CompareItems(match, options);
         }
 
-        protected override bool IsItemMatch(IAttributeDefinition oldItem, IAttributeDefinition newItem)
-        {
-            oldItem = oldItem ?? throw new ArgumentNullException(nameof(oldItem));
-            newItem = newItem ?? throw new ArgumentNullException(nameof(newItem));
-
-            var oldName = oldItem.GetRawName();
-            var newName = newItem.GetRawName();
-
-            // NOTE: This is not able to adequately handle multiple attribute definitions
-            // Unfortunately there is no accurate way to match up different usages of the same attribute type when the argument list may have been altered
-            return oldName == newName;
-        }
-
         protected override bool IsVisible(IAttributeDefinition item)
         {
             return true;

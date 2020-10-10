@@ -5,81 +5,33 @@
     using System.Linq;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
-    public class TypeMatchEvaluator : MatchEvaluator
+    public class TypeMatchEvaluator : MatchEvaluator<ITypeDefinition>
     {
-        protected override IMatchResults<T> BuildMatchResults<T>(List<ItemMatch<T>> matches, List<T> itemsRemoved,
-            List<T> itemsAdded)
+        public override IMatchResults<ITypeDefinition> MatchItems(
+            IEnumerable<ITypeDefinition> oldItems,
+            IEnumerable<ITypeDefinition> newItems)
         {
-            matches = matches ?? throw new ArgumentNullException(nameof(matches));
-            itemsRemoved = itemsRemoved ?? throw new ArgumentNullException(nameof(itemsRemoved));
-            itemsAdded = itemsAdded ?? throw new ArgumentNullException(nameof(itemsAdded));
+            oldItems = oldItems ?? throw new ArgumentNullException(nameof(oldItems));
+            newItems = newItems ?? throw new ArgumentNullException(nameof(newItems));
 
-            // We want to check if there is a rename on a type before we return the match results
-            // The reason this is required is because the TypeComparer class will only evaluate items as matches when they exist in the same namespace
-            // If a type has moved interface it will otherwise be identified as a remove + add rather than a namespace rename
+            IMatchResults<ITypeDefinition>? results = new MatchResults<ITypeDefinition>(oldItems, newItems);
 
-            // Loop in reverse so that we can remove matched members as we go
-            // Removing matched members as we find them means that we have less iterations of the inner loop for each subsequent old member
-            // The set of old members and new members can also then be reported as not matches once all matches are removed
-            // A for loop is required here because removing items would break a foreach iterator
-            for (var oldIndex = itemsRemoved.Count - 1; oldIndex >= 0; oldIndex--)
-            {
-                var oldItem = itemsRemoved[oldIndex];
+            results = FindMatches(results, (x, y) => x.IsMatch(y));
 
-                if (oldItem == null)
-                {
-                    continue;
-                }
+            var currentItemsRemoved = results.ItemsRemoved;
+            var currentItemsAdded = results.ItemsAdded;
 
-                for (var newIndex = itemsAdded.Count - 1; newIndex >= 0; newIndex--)
-                {
-                    var newItem = itemsAdded[newIndex];
+            results = FindMatches(results, (x, y) => IsMovedType(x, y, currentItemsRemoved, currentItemsAdded));
 
-                    if (newItem == null)
-                    {
-                        continue;
-                    }
-
-                    var isMovedType = IsMovedType(oldItem, newItem, itemsRemoved, itemsAdded);
-
-                    if (isMovedType == false)
-                    {
-                        continue;
-                    }
-
-                    // These items are the same type and name but have different namespaces
-                    var match = new ItemMatch<T>(oldItem, newItem);
-
-                    // Track the match
-                    matches.Add(match);
-
-                    // Remove the indices
-                    itemsAdded.RemoveAt(newIndex);
-                    itemsRemoved.RemoveAt(oldIndex);
-
-                    break;
-                }
-            }
-
-            return base.BuildMatchResults(matches, itemsRemoved, itemsAdded);
+            return results;
         }
 
-        private static bool IsMovedType<T>(IItemDefinition oldItem, IItemDefinition newItem,
-            IEnumerable<T> itemsRemoved,
-            IEnumerable<T> itemsAdded)
+        private static bool IsMovedType(
+            ITypeDefinition oldType,
+            ITypeDefinition newType,
+            IEnumerable<ITypeDefinition> itemsRemoved,
+            IEnumerable<ITypeDefinition> itemsAdded)
         {
-            if (!(oldItem is ITypeDefinition oldType))
-            {
-                // This is not a type element
-                return false;
-            }
-
-            if (!(newItem is ITypeDefinition newType))
-            {
-                // This is not a type element
-                return false;
-            }
-
             if (oldType.Name != newType.Name)
             {
                 // The types don't have the same name
@@ -99,8 +51,8 @@
                 return false;
             }
 
-            var possibleMatchesRemoved = itemsRemoved.OfType<ITypeDefinition>()
-                .Count(x => x.Name == oldType.Name && x.GetType() == oldType.GetType());
+            var possibleMatchesRemoved =
+                itemsRemoved.Count(x => x.Name == oldType.Name && x.GetType() == oldType.GetType());
 
             if (possibleMatchesRemoved > 1)
             {
@@ -109,8 +61,8 @@
                 return false;
             }
 
-            var possibleMatchesAdded = itemsAdded.OfType<ITypeDefinition>()
-                .Count(x => x.Name == oldType.Name && x.GetType() == oldType.GetType());
+            var possibleMatchesAdded =
+                itemsAdded.Count(x => x.Name == oldType.Name && x.GetType() == oldType.GetType());
 
             if (possibleMatchesAdded > 1)
             {

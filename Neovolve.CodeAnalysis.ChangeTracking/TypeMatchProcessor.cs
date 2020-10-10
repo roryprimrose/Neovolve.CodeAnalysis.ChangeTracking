@@ -9,14 +9,9 @@
     {
         private readonly ITypeComparer _comparer;
 
-        public TypeMatchProcessor(ITypeComparer comparer, IMatchEvaluator evaluator, ILogger? logger) : base(evaluator, logger)
+        public TypeMatchProcessor(ITypeComparer comparer, IMatchEvaluator<ITypeDefinition> evaluator, ILogger? logger) : base(evaluator, logger)
         {
             _comparer = comparer ?? throw new ArgumentNullException(nameof(comparer));
-        }
-
-        protected override bool IsItemMatch(ITypeDefinition oldItem, ITypeDefinition newItem)
-        {
-            return oldItem.IsMatch(newItem);
         }
 
         protected override bool IsVisible(ITypeDefinition item)

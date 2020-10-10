@@ -9,14 +9,7 @@
     public abstract class MatchProcessor<T> : IMatchProcessor<T> where T : IItemDefinition
     {
         private readonly ILogger? _logger;
-        private readonly IMatchEvaluator? _oldEvaluator;
-        private readonly IMatchEvaluator<T>? _evaluator;
-
-        protected MatchProcessor(IMatchEvaluator evaluator, ILogger? logger)
-        {
-            _oldEvaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
-            _logger = logger;
-        }
+        private readonly IMatchEvaluator<T> _evaluator;
 
         protected MatchProcessor(IMatchEvaluator<T> evaluator, ILogger? logger)
         {
@@ -29,16 +22,7 @@
             IEnumerable<T> newItems,
             ComparerOptions options)
         {
-            IMatchResults<T> matchingNodes;
-
-            if (_evaluator != null)
-            {
-                matchingNodes = _evaluator.MatchItems(oldItems, newItems);
-            }
-            else
-            {
-                matchingNodes = _oldEvaluator!.MatchItems(oldItems, newItems, IsItemMatch);
-            }
+            IMatchResults<T> matchingNodes = _evaluator.MatchItems(oldItems, newItems);
 
             // Record any visible types that have been added
             // Types added which are not publicly visible are ignored
@@ -112,7 +96,6 @@
 
         protected abstract IEnumerable<ComparisonResult> EvaluateMatch(ItemMatch<T> match, ComparerOptions options);
 
-        protected abstract bool IsItemMatch(T oldItem, T newItem);
         protected abstract bool IsVisible(T item);
 
         private IEnumerable<ComparisonResult> CompareMatchingItems(ItemMatch<T> match, ComparerOptions options)

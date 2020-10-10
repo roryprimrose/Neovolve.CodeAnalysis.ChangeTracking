@@ -64,7 +64,12 @@
 
             var sut = new AttributeMatchProcessor(comparer, evaluator, _logger);
 
-            var actual = sut.CalculateChanges(oldItems, newItems, options);
+            var actual = sut.CalculateChanges(oldItems, newItems, options).ToList();
+
+            foreach (var result in actual)
+            {
+                _output.WriteLine(result.Message);
+            }
 
             actual.Should().NotBeEmpty();
         }
@@ -93,7 +98,12 @@
 
             var sut = new AttributeMatchProcessor(comparer, evaluator, _logger);
 
-            var actual = sut.CalculateChanges(oldItems, newItems, options);
+            var actual = sut.CalculateChanges(oldItems, newItems, options).ToList();
+
+            foreach (var result in actual)
+            {
+                _output.WriteLine(result.Message);
+            }
 
             actual.Should().NotBeEmpty();
         }
@@ -200,61 +210,6 @@
             action.Should().Throw<ArgumentNullException>();
         }
 
-        [Theory]
-        [InlineData("MyName", "MyName", true)]
-        [InlineData("MyNameAttribute", "MyNameAttribute", true)]
-        [InlineData("MyNameAttribute", "MyName", true)]
-        [InlineData("MyName", "MyNameAttribute", true)]
-        [InlineData("MyName", "myname", false)]
-        [InlineData("MyName", "SomeOtherName", false)]
-        public void IsItemMatchReturnsTrueWhenItemNamesMatch(string firstName, string secondName, bool expected)
-        {
-            var oldItem = Substitute.For<IAttributeDefinition>();
-            var newItem = Substitute.For<IAttributeDefinition>();
-
-            oldItem.Name.Returns(firstName);
-            newItem.Name.Returns(secondName);
-
-            var comparer = Substitute.For<IAttributeComparer>();
-            var evaluator = Substitute.For<IMatchEvaluator<IAttributeDefinition>>();
-
-            var sut = new Wrapper(comparer, evaluator, _logger);
-
-            var actual = sut.RunIsItemMatch(oldItem, newItem);
-
-            actual.Should().Be(expected);
-        }
-
-        [Fact]
-        public void IsItemMatchThrowsExceptionWithNullNewItem()
-        {
-            var newItem = Model.UsingModule<ConfigurationModule>().Create<IAttributeDefinition>();
-
-            var comparer = Substitute.For<IAttributeComparer>();
-            var evaluator = Substitute.For<IMatchEvaluator<IAttributeDefinition>>();
-
-            var sut = new Wrapper(comparer, evaluator, _logger);
-
-            Action action = () => sut.RunIsItemMatch(null!, newItem);
-
-            action.Should().Throw<ArgumentNullException>();
-        }
-
-        [Fact]
-        public void IsItemMatchThrowsExceptionWithNullOldItem()
-        {
-            var oldItem = Model.UsingModule<ConfigurationModule>().Create<IAttributeDefinition>();
-
-            var comparer = Substitute.For<IAttributeComparer>();
-            var evaluator = Substitute.For<IMatchEvaluator<IAttributeDefinition>>();
-
-            var sut = new Wrapper(comparer, evaluator, _logger);
-
-            Action action = () => sut.RunIsItemMatch(oldItem, null!);
-
-            action.Should().Throw<ArgumentNullException>();
-        }
-
         [Fact]
         public void IsVisibleReturnsTrue()
         {
@@ -295,11 +250,6 @@
                 ComparerOptions options)
             {
                 return base.EvaluateMatch(match, options);
-            }
-
-            public bool RunIsItemMatch(IAttributeDefinition oldItem, IAttributeDefinition newItem)
-            {
-                return base.IsItemMatch(oldItem, newItem);
             }
 
             public bool RunIsVisible(IAttributeDefinition item)

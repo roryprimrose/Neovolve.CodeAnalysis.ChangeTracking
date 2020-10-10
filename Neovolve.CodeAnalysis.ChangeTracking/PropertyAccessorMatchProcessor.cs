@@ -21,11 +21,6 @@
             return _comparer.CompareItems(match, options);
         }
 
-        protected override bool IsItemMatch(IPropertyAccessorDefinition oldItem, IPropertyAccessorDefinition newItem)
-        {
-            return oldItem.Name == newItem.Name;
-        }
-
         protected override bool IsVisible(IPropertyAccessorDefinition item)
         {
             return item.IsVisible;

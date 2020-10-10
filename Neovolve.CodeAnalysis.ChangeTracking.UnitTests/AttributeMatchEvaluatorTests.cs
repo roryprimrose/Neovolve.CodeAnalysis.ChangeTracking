@@ -20,8 +20,8 @@
             {
                 oldAttribute, oldMatchingAttribute
             };
-            var newMatchingAttribute =
-                Model.UsingModule<ConfigurationModule>().Create<TestAttributeDefinition>().Set(x => x.Name = oldMatchingAttribute.Name);
+            var newMatchingAttribute = Model.UsingModule<ConfigurationModule>().Create<TestAttributeDefinition>()
+                .Set(x => x.Name = oldMatchingAttribute.Name);
             var newAttributes = new[]
             {
                 newMatchingAttribute, newAttribute
@@ -40,15 +40,23 @@
             results.ItemsRemoved.First().Should().Be(oldAttribute);
         }
 
-        [Fact]
-        public void MatchItemsReturnsSingleAttributeMatchingByName()
+        [Theory]
+        [InlineData("MyName", "MyName", true)]
+        [InlineData("MyNameAttribute", "MyNameAttribute", true)]
+        [InlineData("MyNameAttribute", "MyName", true)]
+        [InlineData("MyName", "MyNameAttribute", true)]
+        [InlineData("MyName", "myname", false)]
+        [InlineData("MyName", "SomeOtherName", false)]
+        public void MatchItemsReturnsSingleAttributeMatchingByName(string firstName, string secondName, bool expected)
         {
-            var oldAttribute = Model.UsingModule<ConfigurationModule>().Create<TestAttributeDefinition>();
+            var oldAttribute = Model.UsingModule<ConfigurationModule>().Create<TestAttributeDefinition>()
+                .Set(x => x.Name = firstName);
             var oldAttributes = new[]
             {
                 oldAttribute
             };
-            var newAttribute = Model.UsingModule<ConfigurationModule>().Create<TestAttributeDefinition>().Set(x => x.Name = oldAttribute.Name);
+            var newAttribute = Model.UsingModule<ConfigurationModule>().Create<TestAttributeDefinition>()
+                .Set(x => x.Name = secondName);
             var newAttributes = new[]
             {
                 newAttribute
@@ -58,22 +66,31 @@
 
             var results = sut.MatchItems(oldAttributes, newAttributes);
 
-            results.MatchingItems.Should().HaveCount(1);
-            results.MatchingItems.First().OldItem.Should().Be(oldAttribute);
-            results.MatchingItems.First().NewItem.Should().Be(newAttribute);
-            results.ItemsAdded.Should().BeEmpty();
-            results.ItemsRemoved.Should().BeEmpty();
+            if (expected)
+            {
+                results.MatchingItems.Should().HaveCount(1);
+                results.MatchingItems.First().OldItem.Should().Be(oldAttribute);
+                results.MatchingItems.First().NewItem.Should().Be(newAttribute);
+                results.ItemsAdded.Should().BeEmpty();
+                results.ItemsRemoved.Should().BeEmpty();
+            }
+            else
+            {
+                results.MatchingItems.Should().BeEmpty();
+            }
         }
 
         [Fact]
         public void MatchItemsReturnsSingleAttributeMatchingByNameIgnoringAttributeSuffix()
         {
-            var oldAttribute = Model.UsingModule<ConfigurationModule>().Create<TestAttributeDefinition>().Set(x => x.Name = "SomethingAttribute");
+            var oldAttribute = Model.UsingModule<ConfigurationModule>().Create<TestAttributeDefinition>()
+                .Set(x => x.Name = "SomethingAttribute");
             var oldAttributes = new[]
             {
                 oldAttribute
             };
-            var newAttribute = Model.UsingModule<ConfigurationModule>().Create<TestAttributeDefinition>().Set(x => x.Name = "Something");
+            var newAttribute = Model.UsingModule<ConfigurationModule>().Create<TestAttributeDefinition>()
+                .Set(x => x.Name = "Something");
             var newAttributes = new[]
             {
                 newAttribute
