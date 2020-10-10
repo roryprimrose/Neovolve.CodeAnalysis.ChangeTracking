@@ -22,8 +22,9 @@
             var fieldProcessor = new FieldMatchProcessor(fieldComparer, fieldMatcher, logger);
 
             var propertyAccessorComparer = new PropertyAccessorComparer(attributeProcessor);
+            var propertyAccessorMatcher = new PropertyAccessorMatchEvaluator();
             var propertyAccessorProcessor =
-                new PropertyAccessorMatchProcessor(propertyAccessorComparer, evaluator, logger);
+                new PropertyAccessorMatchProcessor(propertyAccessorComparer, propertyAccessorMatcher, logger);
             var propertyComparer = new PropertyComparer(propertyAccessorProcessor, attributeProcessor);
             var propertyProcessor = new PropertyMatchProcessor(propertyComparer, evaluator, logger);
 

@@ -9,7 +9,7 @@
     {
         private readonly IPropertyAccessorComparer _comparer;
 
-        public PropertyAccessorMatchProcessor(IPropertyAccessorComparer comparer, IMatchEvaluator evaluator, ILogger? logger) : base(
+        public PropertyAccessorMatchProcessor(IPropertyAccessorComparer comparer, IMatchEvaluator<IPropertyAccessorDefinition> evaluator, ILogger? logger) : base(
             evaluator, logger)
         {
             _comparer = comparer ?? throw new ArgumentNullException(nameof(comparer));
