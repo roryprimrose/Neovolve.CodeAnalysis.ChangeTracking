@@ -52,7 +52,7 @@
             }
 
             var possibleMatchesRemoved =
-                itemsRemoved.Count(x => x.Name == oldType.Name && x.GetType() == oldType.GetType());
+                itemsRemoved.Count(x => x.Name == oldType.Name);
 
             if (possibleMatchesRemoved > 1)
             {
@@ -62,7 +62,7 @@
             }
 
             var possibleMatchesAdded =
-                itemsAdded.Count(x => x.Name == oldType.Name && x.GetType() == oldType.GetType());
+                itemsAdded.Count(x => x.Name == oldType.Name);
 
             if (possibleMatchesAdded > 1)
             {
