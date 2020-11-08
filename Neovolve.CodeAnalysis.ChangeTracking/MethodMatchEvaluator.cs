@@ -14,69 +14,82 @@
             oldItems = oldItems ?? throw new ArgumentNullException(nameof(oldItems));
             newItems = newItems ?? throw new ArgumentNullException(nameof(newItems));
 
-            var matches = new List<ItemMatch<IMethodDefinition>>();
-            var oldMethods = oldItems.ToList();
-            var newMethods = newItems.ToList();
+            var tracker = new MatchTracker(oldItems, newItems);
 
-            // Loop in reverse so that the items in the loop can be removed safely
-            for (var index = oldMethods.Count - 1; index >= 0; index--)
+            // Find all the members that match by name, generic type parameter count and parameter set
+            // This is finding direct matches on method signatures
+            IdentifyMatches(tracker, (source, target) =>
+                target.RawName == source.RawName
+                && target.GenericTypeParameters.Count == source.GenericTypeParameters.Count
+                && ParameterListMatches(source, target));
+
+            // Find all members that match on name, generic type parameter count and parameter count
+            // This is finding methods that have changed their parameter types
+            IdentifyMatches(tracker, (source, target) =>
+                target.RawName == source.RawName
+                && target.GenericTypeParameters.Count == source.GenericTypeParameters.Count
+                && target.Parameters.Count == source.Parameters.Count);
+
+            // Find all members that match on name and parameter count but generic type parameter count has changed
+            // This is finding methods that have changed their generic type parameters
+            IdentifyMatches(tracker, (source, target) =>
+                target.RawName == source.RawName
+                && target.Parameters.Count == source.Parameters.Count);
+
+            // Find members with the same name and generic type parameter count but different parameters
+            // In this case it is a member that has changed the parameters
+            IdentifyMatches(tracker, (source, target) =>
+                target.RawName == source.RawName
+                && target.GenericTypeParameters.Count == source.GenericTypeParameters.Count);
+
+            // Find members with the same name where there is only one remaining match by name
+            // In this case it is a member that has changed the parameters
+            IdentifyMatches(tracker, (source, target) =>
+                target.RawName == source.RawName);
+
+            // Find members that have been renamed where there is only one where the parameter set is the same but with a different name
+            IdentifyMatches(tracker, (source, target) =>
+                target.GenericTypeParameters.Count == source.GenericTypeParameters.Count
+                && ParameterListMatches(source, target));
+
+            // At this point we have matched as many related methods between the old code and the new code
+            return tracker.Results;
+        }
+
+        private static void IdentifyMatches(MatchTracker tracker,
+            Func<IMethodDefinition, IMethodDefinition, bool> matcher)
+        {
+            // Loop in reverse so that the items in the loop can be removed safely by the tracker
+            for (var index = tracker.OldItems.Count - 1; index >= 0; index--)
             {
-                var oldMethod = oldMethods[index];
+                var oldMethod = tracker.OldItems[index];
 
-                // Get the new methods that have the same name
-                var matchingMethods = newMethods.Where(x => x.RawName == oldMethod.RawName).ToList();
+                // Get the new methods that match the predicate
+                var matchingOldMethods = tracker.OldItems.Count(x => matcher(oldMethod, x));
 
-                if (matchingMethods.Count == 0)
+                if (matchingOldMethods > 1)
                 {
-                    // This method has been removed
+                    // There is more than one old method matching the predicate
+                    // We can't match old methods to new methods in this case because there are multiple that could match
                     continue;
                 }
 
-                if (matchingMethods.Count == 1)
+                // Get the new methods that also match the predicate
+                var matchingMethods = tracker.NewItems.Where(x => matcher(oldMethod, x)).ToList();
+
+                if (matchingMethods.Count != 1)
                 {
-                    // This method may have changed but it is assumed to be directly related to the new method
-                    var match = new ItemMatch<IMethodDefinition>(oldMethod, matchingMethods[0]);
-
-                    oldMethods.RemoveAt(index);
-                    newMethods.Remove(matchingMethods[0]);
-
-                    matches.Add(match);
-
+                    // There are either no new methods matching the predicate or there are more than one
+                    // In either case we can't match the old method to a new method because there are multiple that could match
                     continue;
                 }
 
-                // There are more than one method that matches the name of the old method
-                // The only reliable match will be to attempt to match on the parameters
-                // First start with an exact match on the parameter types
-                var matchByParameterTypes = FindMethodMatchingParameterTypes(oldMethod, matchingMethods);
+                var matchingMethod = matchingMethods[0];
 
-                if (matchByParameterTypes != null)
-                {
-                    var match = new ItemMatch<IMethodDefinition>(oldMethod, matchByParameterTypes);
-
-                    oldMethods.RemoveAt(index);
-                    newMethods.Remove(matchByParameterTypes);
-
-                    matches.Add(match);
-
-                    continue;
-                }
-
-                // Then match on the same number of parameters if there is a single match
-                var matchByParameterCounts = FindMethodMatchingParameterCount(oldMethod, matchingMethods);
-
-                if (matchByParameterCounts != null)
-                {
-                    var match = new ItemMatch<IMethodDefinition>(oldMethod, matchByParameterCounts);
-
-                    oldMethods.RemoveAt(index);
-                    newMethods.Remove(matchByParameterCounts);
-
-                    matches.Add(match);
-                }
+                // There is only one old and new method that match the predicate
+                // The assumption here is that these two methods are a match
+                tracker.MatchFound(oldMethod, matchingMethod);
             }
-
-            return new MatchResults<IMethodDefinition>(matches, oldMethods, newMethods);
         }
 
         private static bool ParameterListMatches(IMethodDefinition oldMethod, IMethodDefinition newMethod)
@@ -99,34 +112,38 @@
                     return false;
                 }
             }
+
             return true;
         }
 
-        private static IMethodDefinition? FindMethodMatchingParameterCount(
-            IMethodDefinition oldMethod,
-            IEnumerable<IMethodDefinition> newMethods)
+        private class MatchTracker
         {
-            var methodsWithSameCount = newMethods.Where(x => x.Parameters.Count == oldMethod.Parameters.Count).ToList();
+            private readonly List<ItemMatch<IMethodDefinition>> _matches;
+            private readonly List<IMethodDefinition> _newItems;
+            private readonly List<IMethodDefinition> _oldItems;
 
-            if (methodsWithSameCount.Count == 1)
+            public MatchTracker(IEnumerable<IMethodDefinition> oldItems, IEnumerable<IMethodDefinition> newItems)
             {
-                // There is only one method with the same number of parameters
-                // The assumption here is that it is the same method but the parameter types have been changed
-                return methodsWithSameCount[0];
+                _oldItems = oldItems.ToList();
+                _newItems = newItems.ToList();
+                _matches = new List<ItemMatch<IMethodDefinition>>();
             }
 
-            // There are either no methods with the same parameter count or there are multiple methods with the same parameter count
-            // We can't reliable determine a match between the old method and the new methods
-            return null;
-        }
+            public void MatchFound(IMethodDefinition oldItem, IMethodDefinition newItem)
+            {
+                var match = new ItemMatch<IMethodDefinition>(oldItem, newItem);
 
-        private static IMethodDefinition? FindMethodMatchingParameterTypes(
-            IMethodDefinition oldMethod,
-            IEnumerable<IMethodDefinition> newMethods)
-        {
-            // SingleOrDefault is more technically correct here but there should only ever be one method matching by name and exact parameter list
-            // FirstOrDefault allows for an early exit on the loop whereas SingleOrDefault forces a full enumeration
-            return newMethods.FirstOrDefault(x => ParameterListMatches(oldMethod, x));
+                _matches.Add(match);
+                _oldItems.Remove(oldItem);
+                _newItems.Remove(newItem);
+            }
+
+            public IReadOnlyList<IMethodDefinition> NewItems => _newItems;
+
+            public IReadOnlyList<IMethodDefinition> OldItems => _oldItems;
+
+            public IMatchResults<IMethodDefinition> Results =>
+                new MatchResults<IMethodDefinition>(_matches, _oldItems, _newItems);
         }
     }
 }
