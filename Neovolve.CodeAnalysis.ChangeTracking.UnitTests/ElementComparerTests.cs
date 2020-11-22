@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using FluentAssertions;
     using ModelBuilder;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
@@ -33,7 +34,7 @@
             var secondItem = Substitute.For<IClassDefinition>();
             var secondItemAttributes = Model.UsingModule<ConfigurationModule>().Create<List<TestAttributeDefinition>>();
             var itemResult = new ComparisonResult(changeType, firstItem, secondItem, Guid.NewGuid().ToString());
-            var attributeResult = new ComparisonResult(changeType, firstItemAttributes[^1], secondItemAttributes[^1], Guid.NewGuid().ToString());
+            var attributeResult = new ComparisonResult(changeType, firstItemAttributes.Last(), secondItemAttributes.Last(), Guid.NewGuid().ToString());
             var attributeResults = new List<ComparisonResult> {attributeResult};
             var match = new ItemMatch<IClassDefinition>(firstItem, secondItem);
             var options = ComparerOptions.Default;

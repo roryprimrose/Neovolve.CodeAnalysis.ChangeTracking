@@ -11,7 +11,7 @@
             definition = definition ?? throw new ArgumentNullException(nameof(definition));
 
             var accessModifiers = new List<string>(2);
-            var parts = definition.DeclaredModifiers.Split(" ", StringSplitOptions.RemoveEmptyEntries);
+            var parts = definition.DeclaredModifiers.Split(new []{" " }, StringSplitOptions.RemoveEmptyEntries);
 
             foreach (var part in parts)
             {
@@ -34,7 +34,7 @@
             definition = definition ?? throw new ArgumentNullException(nameof(definition));
 
             var accessModifiers = new List<string>(2);
-            var parts = definition.DeclaredModifiers.Split(" ", StringSplitOptions.RemoveEmptyEntries);
+            var parts = definition.DeclaredModifiers.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries);
 
             foreach (var part in parts)
             {

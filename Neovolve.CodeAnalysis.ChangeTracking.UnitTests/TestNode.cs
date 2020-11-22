@@ -1,5 +1,6 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 {
+    using System;
     using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.CodeAnalysis;
@@ -88,10 +89,17 @@ namespace MyNamespace
         {
             var root = await Parse(code, filePath).ConfigureAwait(false);
 
-            return FindNode<T>(root);
+            var node = FindNode<T>(root);
+
+            if (node == null)
+            {
+                throw new InvalidOperationException("Failed to find node");
+            }
+
+            return node;
         }
 
-        public static T FindNode<T>(SyntaxNode node) where T : SyntaxNode
+        public static T? FindNode<T>(SyntaxNode node) where T : SyntaxNode
         {
             if (node is T syntaxNode)
             {

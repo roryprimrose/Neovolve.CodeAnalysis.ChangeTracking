@@ -317,8 +317,8 @@
         }
 
         private static void EvaluateGenericConstraints(ItemMatch<ITypeDefinition> match,
-            IConstraintListDefinition oldConstraintList,
-            IConstraintListDefinition newConstraintList,
+            IConstraintListDefinition? oldConstraintList,
+            IConstraintListDefinition? newConstraintList,
             ComparerOptions options,
             IChangeResultAggregator aggregator)
         {
