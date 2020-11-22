@@ -8,7 +8,7 @@ C# code analysis tool for evaluating changes to contracts
 - [Features](#features)
 - [Usage](#usage)
 - [Limitations](#limitations)
-- [Frequently asked questions](#frequently_asked_questions)
+- [Frequently asked questions](#frequently-asked-questions)
 
 ## Introduction
 
