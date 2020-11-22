@@ -111,13 +111,13 @@ public MyNamespace
 
 ## Frequently asked questions
 
-**Why does the SemVerChangeType return None instead of Patch?**
+**Why does SemVerChangeType define None instead of Patch?**
 
 This package attempts to calculate the Semantic Version impact on a C# binary based on changes to the public API surface (see attribute comparison below). Adding new signatures would be calculated as a feature and removing or modifying signatures would result in a breaking change. 
 
 There are only two other types of changes that could occur between two sets of C# code. There is either no change or there is a change to internal logic where there is no impact on the public API surface. No change really should not even be identified as a Patch change while changes to internal logic should be a patch change. As the library does not look at internal code, it can't actually determine the difference between these two scenarios so it does not attempt to identify a patch change.
 
-**Why do attribute changes identify a feature or breaking change when the public signature hasn't changed?**
+**Why do attribute changes identify a feature or breaking change when the public API signature hasn't changed?**
 
 There is an edge case to the idea that the library only compares the public API surface between two versions of C# code. The library also evaluates changes to attributes based on the `ComparerOptions` class in order to determine a Semantic Version impact of attributes. 
 
