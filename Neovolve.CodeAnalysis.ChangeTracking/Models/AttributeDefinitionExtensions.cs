@@ -24,7 +24,7 @@
             // This assumes that the expressions in ComparerOptions do not handle the Attribute suffix that is not required by the compiler
             if (name.EndsWith("Attribute", StringComparison.OrdinalIgnoreCase))
             {
-                return name[..^9];
+                return name.Substring(0, name.Length - 9);
             }
 
             return name;
