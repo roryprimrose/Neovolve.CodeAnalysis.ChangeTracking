@@ -9,6 +9,7 @@ C# code analysis tool for evaluating changes to contracts
 - [Usage](#usage)
 - [Limitations](#limitations)
 - [Frequently asked questions](#frequently-asked-questions)
+- [Resources](#resources)
 
 ## Introduction
 
@@ -154,3 +155,9 @@ public MyNamespace
 ```
 
 This is a breaking change to consumers because the json serialization of this class has changed the name of the property from `MyValue` to `otherValue`.
+
+## Resources
+
+Combinations of data sets (combinations of access modifiers for example) were calculated using https://www.mathsisfun.com/combinatorics/combinations-permutations-calculator.html.
+
+This project is supported by [JetBrains](https://www.jetbrains.com/?from=ModelBuilder)

@@ -64,7 +64,7 @@
             {
                 var oldMethod = tracker.OldItems[index];
 
-                // Get the new methods that match the predicate
+                // Get the old methods that match the predicate
                 var matchingOldMethods = tracker.OldItems.Count(x => matcher(oldMethod, x));
 
                 if (matchingOldMethods > 1)

@@ -4,7 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
-
+    
     public class AttributeComparer : IAttributeComparer
     {
         public IEnumerable<ComparisonResult> CompareItems(ItemMatch<IAttributeDefinition> match,

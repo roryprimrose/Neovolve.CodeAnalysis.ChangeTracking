@@ -39,7 +39,7 @@
             AddModifierChange(changes, FieldModifiers.None, FieldModifiers.ReadOnly, SemVerChangeType.Breaking);
             AddModifierChange(changes, FieldModifiers.None, FieldModifiers.Static, SemVerChangeType.Breaking);
             AddModifierChange(changes, FieldModifiers.None, FieldModifiers.StaticReadOnly, SemVerChangeType.Breaking);
-            AddModifierChange(changes, FieldModifiers.ReadOnly, FieldModifiers.None, SemVerChangeType.Breaking);
+            AddModifierChange(changes, FieldModifiers.ReadOnly, FieldModifiers.None, SemVerChangeType.Feature);
             AddModifierChange(changes, FieldModifiers.ReadOnly, FieldModifiers.ReadOnly, SemVerChangeType.None);
             AddModifierChange(changes, FieldModifiers.ReadOnly, FieldModifiers.Static, SemVerChangeType.Breaking);
             AddModifierChange(changes, FieldModifiers.ReadOnly, FieldModifiers.StaticReadOnly, SemVerChangeType.Breaking);
@@ -49,7 +49,7 @@
             AddModifierChange(changes, FieldModifiers.Static, FieldModifiers.StaticReadOnly, SemVerChangeType.Breaking);
             AddModifierChange(changes, FieldModifiers.StaticReadOnly, FieldModifiers.None, SemVerChangeType.Breaking);
             AddModifierChange(changes, FieldModifiers.StaticReadOnly, FieldModifiers.ReadOnly, SemVerChangeType.Breaking);
-            AddModifierChange(changes, FieldModifiers.StaticReadOnly, FieldModifiers.Static, SemVerChangeType.Breaking);
+            AddModifierChange(changes, FieldModifiers.StaticReadOnly, FieldModifiers.Static, SemVerChangeType.Feature);
             AddModifierChange(changes, FieldModifiers.StaticReadOnly, FieldModifiers.StaticReadOnly, SemVerChangeType.None);
             // @formatter:on — enable formatter after this line
 

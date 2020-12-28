@@ -13,7 +13,7 @@
         [InlineData(FieldModifiers.None, FieldModifiers.ReadOnly, SemVerChangeType.Breaking)]
         [InlineData(FieldModifiers.None, FieldModifiers.Static, SemVerChangeType.Breaking)]
         [InlineData(FieldModifiers.None, FieldModifiers.StaticReadOnly, SemVerChangeType.Breaking)]
-        [InlineData(FieldModifiers.ReadOnly, FieldModifiers.None, SemVerChangeType.Breaking)]
+        [InlineData(FieldModifiers.ReadOnly, FieldModifiers.None, SemVerChangeType.Feature)]
         [InlineData(FieldModifiers.ReadOnly, FieldModifiers.ReadOnly, SemVerChangeType.None)]
         [InlineData(FieldModifiers.ReadOnly, FieldModifiers.Static, SemVerChangeType.Breaking)]
         [InlineData(FieldModifiers.ReadOnly, FieldModifiers.StaticReadOnly, SemVerChangeType.Breaking)]
@@ -23,7 +23,7 @@
         [InlineData(FieldModifiers.Static, FieldModifiers.StaticReadOnly, SemVerChangeType.Breaking)]
         [InlineData(FieldModifiers.StaticReadOnly, FieldModifiers.None, SemVerChangeType.Breaking)]
         [InlineData(FieldModifiers.StaticReadOnly, FieldModifiers.ReadOnly, SemVerChangeType.Breaking)]
-        [InlineData(FieldModifiers.StaticReadOnly, FieldModifiers.Static, SemVerChangeType.Breaking)]
+        [InlineData(FieldModifiers.StaticReadOnly, FieldModifiers.Static, SemVerChangeType.Feature)]
         [InlineData(FieldModifiers.StaticReadOnly, FieldModifiers.StaticReadOnly, SemVerChangeType.None)]
         public void CalculateChangeReturnsExpectedValue(FieldModifiers oldModifiers,
             FieldModifiers newModifiers,
