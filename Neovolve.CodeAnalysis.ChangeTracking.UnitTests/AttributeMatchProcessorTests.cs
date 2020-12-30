@@ -35,7 +35,7 @@
             var comparer = Substitute.For<IAttributeComparer>();
             var evaluator = Substitute.For<IMatchEvaluator<IAttributeDefinition>>();
 
-            var sut = new AttributeMatchProcessor(comparer, evaluator, _logger);
+            var sut = new AttributeMatchProcessor(evaluator, comparer, _logger);
 
             var actual = sut.CalculateChanges(oldItems, newItems, options);
 
@@ -62,7 +62,7 @@
             evaluator.MatchItems(oldItems, newItems)
                 .Returns(matchResults);
 
-            var sut = new AttributeMatchProcessor(comparer, evaluator, _logger);
+            var sut = new AttributeMatchProcessor(evaluator, comparer, _logger);
 
             var actual = sut.CalculateChanges(oldItems, newItems, options).ToList();
 
@@ -96,7 +96,7 @@
                     Arg.Is<IEnumerable<IAttributeDefinition>>(x => x.Single() == newItems[5]))
                 .Returns(matchResults);
 
-            var sut = new AttributeMatchProcessor(comparer, evaluator, _logger);
+            var sut = new AttributeMatchProcessor(evaluator, comparer, _logger);
 
             var actual = sut.CalculateChanges(oldItems, newItems, options).ToList();
 
@@ -117,7 +117,7 @@
             var comparer = Substitute.For<IAttributeComparer>();
             var evaluator = Substitute.For<IMatchEvaluator<IAttributeDefinition>>();
 
-            var sut = new AttributeMatchProcessor(comparer, evaluator, _logger);
+            var sut = new AttributeMatchProcessor(evaluator, comparer, _logger);
 
             Action action = () => sut.CalculateChanges(oldItems, null!, options);
 
@@ -133,7 +133,7 @@
             var comparer = Substitute.For<IAttributeComparer>();
             var evaluator = Substitute.For<IMatchEvaluator<IAttributeDefinition>>();
 
-            var sut = new AttributeMatchProcessor(comparer, evaluator, _logger);
+            var sut = new AttributeMatchProcessor(evaluator, comparer, _logger);
 
             Action action = () => sut.CalculateChanges(null!, newItems, options);
 
@@ -149,7 +149,7 @@
             var comparer = Substitute.For<IAttributeComparer>();
             var evaluator = Substitute.For<IMatchEvaluator<IAttributeDefinition>>();
 
-            var sut = new AttributeMatchProcessor(comparer, evaluator, _logger);
+            var sut = new AttributeMatchProcessor(evaluator, comparer, _logger);
 
             Action action = () => sut.CalculateChanges(oldItems, newItems, null!);
 
@@ -231,7 +231,7 @@
             var evaluator = Substitute.For<IMatchEvaluator<IAttributeDefinition>>();
 
             // ReSharper disable once ObjectCreationAsStatement
-            Action action = () => new AttributeMatchProcessor(null!, evaluator, _logger);
+            Action action = () => new AttributeMatchProcessor(evaluator, null!, _logger);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -239,8 +239,8 @@
         private class Wrapper : AttributeMatchProcessor
         {
             public Wrapper(IAttributeComparer comparer, IMatchEvaluator<IAttributeDefinition> evaluator, ILogger? logger) : base(
-                comparer,
                 evaluator,
+                comparer,
                 logger)
             {
             }

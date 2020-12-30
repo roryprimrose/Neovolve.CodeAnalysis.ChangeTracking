@@ -1,27 +1,23 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking
 {
-    using System;
     using System.Collections.Generic;
     using Microsoft.Extensions.Logging;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
-    public class TypeMatchProcessor : MatchProcessor<ITypeDefinition>, ITypeMatchProcessor
+    public class TypeMatchProcessor : ElementMatchProcessor<ITypeDefinition>, ITypeMatchProcessor
     {
-        private readonly ITypeComparer _comparer;
-
-        public TypeMatchProcessor(ITypeComparer comparer, IMatchEvaluator<ITypeDefinition> evaluator, ILogger? logger) : base(evaluator, logger)
+        public TypeMatchProcessor(
+            IMatchEvaluator<ITypeDefinition> evaluator,
+            ITypeComparer comparer,
+            ILogger? logger) : base(evaluator, comparer, logger)
         {
-            _comparer = comparer ?? throw new ArgumentNullException(nameof(comparer));
         }
 
-        protected override bool IsVisible(ITypeDefinition item)
+        protected override IEnumerable<ComparisonResult> EvaluateMatch(
+            ItemMatch<ITypeDefinition> match,
+            ComparerOptions options)
         {
-            return item.IsVisible;
-        }
-
-        protected override IEnumerable<ComparisonResult> EvaluateMatch(ItemMatch<ITypeDefinition> match, ComparerOptions options)
-        {
-            var results = _comparer.CompareItems(match, options);
+            var results = base.EvaluateMatch(match, options);
 
             foreach (var result in results)
             {

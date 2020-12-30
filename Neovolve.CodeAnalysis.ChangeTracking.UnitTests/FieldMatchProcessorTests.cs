@@ -52,7 +52,7 @@
 
             evaluator.MatchItems(oldItems, newItems).Returns(matchResults);
 
-            var sut = new FieldMatchProcessor(comparer, evaluator, _logger);
+            var sut = new FieldMatchProcessor(evaluator, comparer, _logger);
 
             var actual = sut.CalculateChanges(oldItems, newItems, options);
 
@@ -137,7 +137,7 @@
             var evaluator = Substitute.For<IMatchEvaluator<IFieldDefinition>>();
 
             // ReSharper disable once ObjectCreationAsStatement
-            Action action = () => new FieldMatchProcessor(null!, evaluator, _logger);
+            Action action = () => new FieldMatchProcessor(evaluator, null!, _logger);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -147,7 +147,7 @@
             public Wrapper(
                 IFieldComparer comparer,
                 IMatchEvaluator<IFieldDefinition> evaluator,
-                ILogger? logger) : base(comparer, evaluator, logger)
+                ILogger? logger) : base(evaluator, comparer, logger)
             {
             }
 

@@ -9,16 +9,17 @@
 
     public class AttributeMatchProcessor : MatchProcessor<IAttributeDefinition>, IAttributeMatchProcessor
     {
-        private readonly IAttributeComparer _comparer;
-
-        public AttributeMatchProcessor(IAttributeComparer comparer, IMatchEvaluator<IAttributeDefinition> evaluator, ILogger? logger) : base(
-            evaluator, logger)
+        public AttributeMatchProcessor(
+            IMatchEvaluator<IAttributeDefinition> evaluator,
+            IAttributeComparer comparer,
+            ILogger? logger) : base(evaluator, comparer, logger)
         {
-            _comparer = comparer ?? throw new ArgumentNullException(nameof(comparer));
         }
 
-        public override IEnumerable<ComparisonResult> CalculateChanges(IEnumerable<IAttributeDefinition> oldItems,
-            IEnumerable<IAttributeDefinition> newItems, ComparerOptions options)
+        public override IEnumerable<ComparisonResult> CalculateChanges(
+            IEnumerable<IAttributeDefinition> oldItems,
+            IEnumerable<IAttributeDefinition> newItems,
+            ComparerOptions options)
         {
             oldItems = oldItems ?? throw new ArgumentNullException(nameof(oldItems));
             newItems = newItems ?? throw new ArgumentNullException(nameof(newItems));
@@ -42,15 +43,6 @@
             var newItemsToCompare = newItems.Where(x => ShouldCompare(x, attributesToMatch));
 
             return base.CalculateChanges(oldItemsToCompare, newItemsToCompare, options);
-        }
-
-        protected override IEnumerable<ComparisonResult> EvaluateMatch(ItemMatch<IAttributeDefinition> match,
-            ComparerOptions options)
-        {
-            match = match ?? throw new ArgumentNullException(nameof(match));
-            options = options ?? throw new ArgumentNullException(nameof(options));
-
-            return _comparer.CompareItems(match, options);
         }
 
         protected override bool IsVisible(IAttributeDefinition item)

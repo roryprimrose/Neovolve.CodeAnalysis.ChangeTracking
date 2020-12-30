@@ -5,7 +5,7 @@
     using System.Linq;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
-    public class MethodMatchEvaluator : MatchEvaluator<IMethodDefinition>
+    public class MethodMatchEvaluator : MatchEvaluator<IMethodDefinition>, IMethodMatchEvaluator
     {
         public override IMatchResults<IMethodDefinition> MatchItems(
             IEnumerable<IMethodDefinition> oldItems,

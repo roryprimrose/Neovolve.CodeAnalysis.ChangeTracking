@@ -1,34 +1,15 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking
 {
-    using System;
-    using System.Collections.Generic;
     using Microsoft.Extensions.Logging;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
-    public class FieldMatchProcessor : MatchProcessor<IFieldDefinition>, IFieldMatchProcessor
+    public class FieldMatchProcessor : ElementMatchProcessor<IFieldDefinition>, IFieldMatchProcessor
     {
-        private readonly IFieldComparer _comparer;
-
-        public FieldMatchProcessor(IFieldComparer comparer, IMatchEvaluator<IFieldDefinition> evaluator, ILogger? logger) : base(
-            evaluator, logger)
+        public FieldMatchProcessor(
+            IMatchEvaluator<IFieldDefinition> evaluator,
+            IFieldComparer comparer,
+            ILogger? logger) : base(evaluator, comparer, logger)
         {
-            _comparer = comparer ?? throw new ArgumentNullException(nameof(comparer));
-        }
-
-        protected override IEnumerable<ComparisonResult> EvaluateMatch(ItemMatch<IFieldDefinition> match,
-            ComparerOptions options)
-        {
-            match = match ?? throw new ArgumentNullException(nameof(match));
-            options = options ?? throw new ArgumentNullException(nameof(options));
-
-            return _comparer.CompareItems(match, options);
-        }
-
-        protected override bool IsVisible(IFieldDefinition item)
-        {
-            item = item ?? throw new ArgumentNullException(nameof(item));
-
-            return item.IsVisible;
         }
     }
 }
