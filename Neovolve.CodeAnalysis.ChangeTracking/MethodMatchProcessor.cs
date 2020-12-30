@@ -1,23 +1,28 @@
-﻿//namespace Neovolve.CodeAnalysis.ChangeTracking
-//{
-//    using System;
-//    using System.Collections.Generic;
-//    using Microsoft.Extensions.Logging;
-//    using Neovolve.CodeAnalysis.ChangeTracking.Models;
+﻿namespace Neovolve.CodeAnalysis.ChangeTracking
+{
+    using System;
+    using System.Collections.Generic;
+    using Microsoft.Extensions.Logging;
+    using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
-//    public class MethodMatchProcessor : IMethodMatchProcessor
-//    {
-//        private readonly IMethodComparer _comparer;
+    public class MethodMatchProcessor : MatchProcessor<IMethodDefinition>, IMethodMatchProcessor
+    {
+        private readonly IMethodComparer _comparer;
 
-//        public MethodMatchProcessor(IMethodComparer comparer, IMatchEvaluator<IMethodDefinition> evaluator, ILogger? logger) : base(
-//            evaluator, logger)
-//        {
-//            _comparer = comparer ?? throw new ArgumentNullException(nameof(comparer));
-//        }
+        public MethodMatchProcessor(IMethodComparer comparer, IMatchEvaluator<IMethodDefinition> evaluator, ILogger? logger) : base(
+            evaluator, logger)
+        {
+            _comparer = comparer ?? throw new ArgumentNullException(nameof(comparer));
+        }
+        
+        protected override IEnumerable<ComparisonResult> EvaluateMatch(ItemMatch<IMethodDefinition> match, ComparerOptions options)
+        {
+            return _comparer.CompareItems(match, options);
+        }
 
-//        public IEnumerable<ComparisonResult> CalculateChanges(IEnumerable<IMethodDefinition> oldItems, IEnumerable<IMethodDefinition> newItems, ComparerOptions options)
-//        {
-//            return TODO_IMPLEMENT_ME;
-//        }
-//    }
-//}
+        protected override bool IsVisible(IMethodDefinition item)
+        {
+            return item.IsVisible;
+        }
+    }
+}
