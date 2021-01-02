@@ -1,6 +1,9 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking
 {
     using Microsoft.Extensions.Logging;
+    using Neovolve.CodeAnalysis.ChangeTracking.Comparers;
+    using Neovolve.CodeAnalysis.ChangeTracking.Evaluators;
+    using Neovolve.CodeAnalysis.ChangeTracking.Processors;
 
     public static class ChangeCalculatorFactory
     {

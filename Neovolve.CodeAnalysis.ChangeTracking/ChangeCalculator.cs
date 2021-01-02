@@ -5,6 +5,7 @@
     using System.Globalization;
     using Microsoft.Extensions.Logging;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
+    using Neovolve.CodeAnalysis.ChangeTracking.Processors;
 
     public class ChangeCalculator : IChangeCalculator
     {
