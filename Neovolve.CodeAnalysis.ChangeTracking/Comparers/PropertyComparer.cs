@@ -10,8 +10,9 @@
     {
         private readonly IPropertyAccessorMatchProcessor _accessorProcessor;
 
-        public PropertyComparer(IPropertyAccessorMatchProcessor accessorProcessor,
-            IAttributeMatchProcessor attributeProcessor) : base(attributeProcessor)
+        public PropertyComparer(
+            IAccessModifiersComparer accessModifiersComparer, IPropertyAccessorMatchProcessor accessorProcessor,
+            IAttributeMatchProcessor attributeProcessor) : base(accessModifiersComparer, attributeProcessor)
         {
             _accessorProcessor = accessorProcessor ?? throw new ArgumentNullException(nameof(accessorProcessor));
         }
@@ -48,12 +49,12 @@
 
                 if (newModifiers.Contains(" "))
                 {
-                    // There is more than one modifier
+                    // There is more than one modifiers
                     suffix = "s";
                 }
 
                 var args = new FormatArguments(
-                    "{DefinitionType} {Identifier} has added the {NewValue} modifier" + suffix,
+                    "{DefinitionType} {Identifier} has added the {NewValue} modifiers" + suffix,
                     match.NewItem.FullName, null, newModifiers);
 
                 aggregator.AddElementChangedResult(change, match, options.MessageFormatter, args);
@@ -65,13 +66,13 @@
 
                 if (oldModifiers.Contains(" "))
                 {
-                    // There is more than one modifier
+                    // There is more than one modifiers
                     suffix = "s";
                 }
 
                 var args = new FormatArguments(
-                    "{DefinitionType} {Identifier} has removed the {OldValue} modifier" + suffix,
-                    match.NewItem.FullName,  oldModifiers, null);
+                    "{DefinitionType} {Identifier} has removed the {OldValue} modifiers" + suffix,
+                    match.NewItem.FullName, oldModifiers, null);
 
                 aggregator.AddElementChangedResult(change, match, options.MessageFormatter, args);
             }
@@ -82,12 +83,12 @@
 
                 if (oldModifiers.Contains(" "))
                 {
-                    // There is more than one modifier
+                    // There is more than one modifiers
                     suffix = "s";
                 }
 
                 var args = new FormatArguments(
-                    $"{{DefinitionType}} {{Identifier}} has changed the modifier{suffix} from {{OldValue}} to {{NewValue}}",
+                    $"{{DefinitionType}} {{Identifier}} has changed the modifiers{suffix} from {{OldValue}} to {{NewValue}}",
                     match.NewItem.FullName, oldModifiers, newModifiers);
 
                 aggregator.AddElementChangedResult(change, match, options.MessageFormatter, args);

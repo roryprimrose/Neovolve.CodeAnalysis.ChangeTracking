@@ -3,7 +3,7 @@
     using System.Collections.Generic;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
-    public static class ClassModifierChangeTable
+    public static class ClassModifiersChangeTable
     {
         private static readonly Dictionary<ClassModifiers, Dictionary<ClassModifiers, SemVerChangeType>>
             _modifierChanges =

@@ -7,8 +7,15 @@
 
     public class PropertyAccessorComparer : ElementComparer<IPropertyAccessorDefinition>, IPropertyAccessorComparer
     {
-        public PropertyAccessorComparer(IAttributeMatchProcessor attributeProcessor) : base(attributeProcessor)
+        private readonly IPropertyAccessorAccessModifierChangeTable _propertyAccessorAccessModifierChangeTable;
+
+        public PropertyAccessorComparer(
+            IPropertyAccessorAccessModifierChangeTable propertyAccessorAccessModifierChangeTable,
+            IAttributeMatchProcessor attributeProcessor) : base(attributeProcessor)
         {
+            _propertyAccessorAccessModifierChangeTable = propertyAccessorAccessModifierChangeTable
+                                                         ?? throw new ArgumentNullException(
+                                                             nameof(propertyAccessorAccessModifierChangeTable));
         }
 
         protected override void EvaluateMatch(ItemMatch<IPropertyAccessorDefinition> match, ComparerOptions options,
@@ -20,12 +27,13 @@
             RunComparisonStep(EvaluateAccessModifierChanges, match, options, aggregator, true);
         }
 
-        private static void EvaluateAccessModifierChanges(
+        private void EvaluateAccessModifierChanges(
             ItemMatch<IPropertyAccessorDefinition> match,
             ComparerOptions options,
             IChangeResultAggregator aggregator)
         {
-            var change = PropertyAccessorAccessModifierChangeTable.CalculateChange(match);
+            var change = _propertyAccessorAccessModifierChangeTable.CalculateChange(match.OldItem.AccessModifiers,
+                match.NewItem.AccessModifiers);
 
             if (change == SemVerChangeType.None)
             {
@@ -42,12 +50,12 @@
 
                 if (newModifiers.Contains(" "))
                 {
-                    // There is more than one modifier
+                    // There is more than one modifiers
                     suffix = "s";
                 }
 
                 var args = new FormatArguments(
-                    "{DefinitionType} {Identifier} has added the {NewValue} access modifier" + suffix,
+                    "{DefinitionType} {Identifier} has added the {NewValue} access modifiers" + suffix,
                     match.NewItem.FullName, null, newModifiers);
 
                 aggregator.AddElementChangedResult(change, match, options.MessageFormatter, args);
@@ -59,12 +67,12 @@
 
                 if (oldModifiers.Contains(" "))
                 {
-                    // There is more than one modifier
+                    // There is more than one modifiers
                     suffix = "s";
                 }
 
                 var args = new FormatArguments(
-                    "{DefinitionType} {Identifier} has removed the {OldValue} access modifier" + suffix,
+                    "{DefinitionType} {Identifier} has removed the {OldValue} access modifiers" + suffix,
                     match.NewItem.FullName, oldModifiers, null);
 
                 aggregator.AddElementChangedResult(change, match, options.MessageFormatter, args);
@@ -76,17 +84,16 @@
 
                 if (oldModifiers.Contains(" "))
                 {
-                    // There is more than one modifier
+                    // There is more than one modifiers
                     suffix = "s";
                 }
 
                 var args = new FormatArguments(
-                    $"{{DefinitionType}} {{Identifier}} has changed the access modifier{suffix} from {{OldValue}} to {{NewValue}}",
+                    $"{{DefinitionType}} {{Identifier}} has changed the access modifiers{suffix} from {{OldValue}} to {{NewValue}}",
                     match.NewItem.FullName, oldModifiers, newModifiers);
 
                 aggregator.AddElementChangedResult(change, match, options.MessageFormatter, args);
             }
         }
-
     }
 }

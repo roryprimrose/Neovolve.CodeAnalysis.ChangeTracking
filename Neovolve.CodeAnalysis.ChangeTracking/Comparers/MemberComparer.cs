@@ -1,13 +1,18 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.Comparers
 {
-    using Neovolve.CodeAnalysis.ChangeTracking.ChangeTables;
+    using System;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
     using Neovolve.CodeAnalysis.ChangeTracking.Processors;
 
     public abstract class MemberComparer<T> : ElementComparer<T>, IMemberComparer<T> where T : IMemberDefinition
     {
-        protected MemberComparer(IAttributeMatchProcessor attributeProcessor) : base(attributeProcessor)
+        private readonly IAccessModifiersComparer _accessModifiersComparer;
+        
+        protected MemberComparer(
+            IAccessModifiersComparer accessModifiersComparer, IAttributeMatchProcessor attributeProcessor) : base(attributeProcessor)
         {
+            _accessModifiersComparer = accessModifiersComparer
+                                       ?? throw new ArgumentNullException(nameof(accessModifiersComparer));
         }
 
         protected override void EvaluateMatch(
@@ -19,72 +24,16 @@
             RunComparisonStep(EvaluateReturnTypeChanges, match, options, aggregator);
         }
 
-        private static void EvaluateAccessModifierChanges(
+        private void EvaluateAccessModifierChanges(
             ItemMatch<T> match,
             ComparerOptions options,
             IChangeResultAggregator aggregator)
         {
-            var change = AccessModifierChangeTable.CalculateChange(match);
+            var convertedMatch = new ItemMatch<IAccessModifiersElement<AccessModifiers>>(match.OldItem, match.NewItem);
 
-            if (change == SemVerChangeType.None)
-            {
-                return;
-            }
+            var results = _accessModifiersComparer.CompareItems(convertedMatch, options);
 
-            var newModifiers = match.NewItem.GetDeclaredAccessModifiers();
-            var oldModifiers = match.OldItem.GetDeclaredAccessModifiers();
-
-            if (string.IsNullOrWhiteSpace(oldModifiers))
-            {
-                // Modifiers have been added where there were previously none defined
-                var suffix = string.Empty;
-
-                if (newModifiers.Contains(" "))
-                {
-                    // There is more than one modifier
-                    suffix = "s";
-                }
-
-                var args = new FormatArguments(
-                    "{DefinitionType} {Identifier} has added the {NewValue} access modifier" + suffix,
-                    match.NewItem.FullName, null, newModifiers);
-
-                aggregator.AddElementChangedResult(change, match, options.MessageFormatter, args);
-            }
-            else if (string.IsNullOrWhiteSpace(newModifiers))
-            {
-                // All previous modifiers have been removed
-                var suffix = string.Empty;
-
-                if (oldModifiers.Contains(" "))
-                {
-                    // There is more than one modifier
-                    suffix = "s";
-                }
-
-                var args = new FormatArguments(
-                    "{DefinitionType} {Identifier} has removed the {OldValue} access modifier" + suffix,
-                    match.NewItem.FullName, oldModifiers, null);
-
-                aggregator.AddElementChangedResult(change, match, options.MessageFormatter, args);
-            }
-            else
-            {
-                // Modifiers have been changed
-                var suffix = string.Empty;
-
-                if (oldModifiers.Contains(" "))
-                {
-                    // There is more than one modifier
-                    suffix = "s";
-                }
-
-                var args = new FormatArguments(
-                    $"{{DefinitionType}} {{Identifier}} has changed the access modifier{suffix} from {{OldValue}} to {{NewValue}}",
-                    match.NewItem.FullName, oldModifiers, newModifiers);
-
-                aggregator.AddElementChangedResult(change, match, options.MessageFormatter, args);
-            }
+            aggregator.AddResults(results);
         }
 
         private static void EvaluateReturnTypeChanges(ItemMatch<T> match, ComparerOptions options,

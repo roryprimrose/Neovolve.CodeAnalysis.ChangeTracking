@@ -6,7 +6,7 @@
     using NSubstitute;
     using Xunit;
 
-    public class ClassModifierChangeTableTests
+    public class ClassModifiersChangeTableTests
     {
         [Theory]
         [InlineData(ClassModifiers.None, ClassModifiers.None, SemVerChangeType.None)]
@@ -85,7 +85,7 @@
 
             var match = new ItemMatch<IClassDefinition>(oldItem, newItem);
 
-            var actual = ClassModifierChangeTable.CalculateChange(match);
+            var actual = ClassModifiersChangeTable.CalculateChange(match);
 
             actual.Should().Be(expected);
         }

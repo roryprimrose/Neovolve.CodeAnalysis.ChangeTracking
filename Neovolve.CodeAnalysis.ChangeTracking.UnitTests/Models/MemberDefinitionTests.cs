@@ -21,7 +21,7 @@
 
             var sut = new Wrapper(declaringType, node);
 
-            sut.AccessModifier.Should().Be(AccessModifier.Private);
+            sut.AccessModifiers.Should().Be(AccessModifiers.Private);
         }
 
         [Fact]
@@ -35,21 +35,21 @@
 
             var sut = new Wrapper(declaringType, node);
 
-            sut.AccessModifier.Should().Be(AccessModifier.Public);
+            sut.AccessModifiers.Should().Be(AccessModifiers.Public);
         }
 
         [Theory]
-        [InlineData("private", AccessModifier.Private)]
-        [InlineData("internal", AccessModifier.Internal)]
-        [InlineData("protected", AccessModifier.Protected)]
-        [InlineData("private protected", AccessModifier.ProtectedPrivate)]
-        [InlineData("protected private", AccessModifier.ProtectedPrivate)]
-        [InlineData("protected internal", AccessModifier.ProtectedInternal)]
-        [InlineData("internal protected", AccessModifier.ProtectedInternal)]
-        [InlineData("public", AccessModifier.Public)]
+        [InlineData("private", AccessModifiers.Private)]
+        [InlineData("internal", AccessModifiers.Internal)]
+        [InlineData("protected", AccessModifiers.Protected)]
+        [InlineData("private protected", AccessModifiers.ProtectedPrivate)]
+        [InlineData("protected private", AccessModifiers.ProtectedPrivate)]
+        [InlineData("protected internal", AccessModifiers.ProtectedInternal)]
+        [InlineData("internal protected", AccessModifiers.ProtectedInternal)]
+        [InlineData("public", AccessModifiers.Public)]
         public async Task AccessModifierReturnsValueBasedOnAccessModifiers(
             string accessModifiers,
-            AccessModifier expected)
+            AccessModifiers expected)
         {
             var code = FieldDefinitionCode.BuildFieldWithModifiers(accessModifiers);
 
@@ -59,7 +59,7 @@
 
             var sut = new Wrapper(declaringType, node);
 
-            sut.AccessModifier.Should().Be(expected);
+            sut.AccessModifiers.Should().Be(expected);
         }
 
         [Fact]

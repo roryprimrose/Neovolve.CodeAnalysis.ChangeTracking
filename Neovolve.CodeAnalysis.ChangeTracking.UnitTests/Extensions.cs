@@ -1,10 +1,18 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 {
     using System;
+    using System.Collections.Generic;
     using Newtonsoft.Json;
 
     internal static class Extensions
     {
+        public static void ForceEnumeration<T>(this IEnumerable<T> source)
+        {
+            foreach (var item in source)
+            {
+            }
+        }
+
         public static T JsonClone<T>(this T value) where T : class
         {
             var data = JsonConvert.SerializeObject(value);

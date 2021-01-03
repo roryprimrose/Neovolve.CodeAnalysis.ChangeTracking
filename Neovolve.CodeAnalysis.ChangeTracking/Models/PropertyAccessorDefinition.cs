@@ -11,8 +11,8 @@
         {
             declaringProperty = declaringProperty ?? throw new ArgumentNullException(nameof(declaringProperty));
 
-            AccessModifier = DetermineAccessModifier(node);
-            IsVisible = DetermineIsVisible(declaringProperty, AccessModifier);
+            AccessModifiers = DetermineAccessModifier(node);
+            IsVisible = DetermineIsVisible(declaringProperty, AccessModifiers);
 
             var nameSuffix = node.Kind() == SyntaxKind.GetAccessorDeclaration ? "_get" : "_set";
             var name = declaringProperty.Name + nameSuffix;
@@ -23,34 +23,34 @@
             RawName = declaringProperty.RawName + nameSuffix;
         }
 
-        private static PropertyAccessorAccessModifier DetermineAccessModifier(AccessorDeclarationSyntax node)
+        private static PropertyAccessorAccessModifiers DetermineAccessModifier(AccessorDeclarationSyntax node)
         {
             // Check this one first as it is the most common
             if (node.Modifiers.HasModifier(SyntaxKind.PrivateKeyword))
             {
-                return PropertyAccessorAccessModifier.Private;
+                return PropertyAccessorAccessModifiers.Private;
             }
 
             if (node.Modifiers.HasModifier(SyntaxKind.ProtectedKeyword))
             {
                 if (node.Modifiers.HasModifier(SyntaxKind.InternalKeyword))
                 {
-                    return PropertyAccessorAccessModifier.ProtectedInternal;
+                    return PropertyAccessorAccessModifiers.ProtectedInternal;
                 }
 
-                return PropertyAccessorAccessModifier.Protected;
+                return PropertyAccessorAccessModifiers.Protected;
             }
 
             if (node.Modifiers.HasModifier(SyntaxKind.InternalKeyword))
             {
-                return PropertyAccessorAccessModifier.Internal;
+                return PropertyAccessorAccessModifiers.Internal;
             }
 
-            return PropertyAccessorAccessModifier.None;
+            return PropertyAccessorAccessModifiers.None;
         }
 
         private static bool DetermineIsVisible(IPropertyDefinition propertyDefinition,
-            PropertyAccessorAccessModifier accessModifier)
+            PropertyAccessorAccessModifiers accessModifiers)
         {
             if (propertyDefinition.IsVisible == false)
             {
@@ -58,18 +58,18 @@
                 return false;
             }
 
-            if (accessModifier == PropertyAccessorAccessModifier.None)
+            if (accessModifiers == PropertyAccessorAccessModifiers.None)
             {
-                // There is no access modifier defined to further restrict visibility so we inherit from the declaring property
+                // There is no access modifiers defined to further restrict visibility so we inherit from the declaring property
                 return true;
             }
 
-            if (accessModifier == PropertyAccessorAccessModifier.Protected)
+            if (accessModifiers == PropertyAccessorAccessModifiers.Protected)
             {
                 return true;
             }
 
-            if (accessModifier == PropertyAccessorAccessModifier.ProtectedInternal)
+            if (accessModifiers == PropertyAccessorAccessModifiers.ProtectedInternal)
             {
                 return true;
             }
@@ -77,7 +77,7 @@
             return false;
         }
 
-        public PropertyAccessorAccessModifier AccessModifier { get; }
+        public PropertyAccessorAccessModifiers AccessModifiers { get; }
         public override string FullName { get; }
         public override string FullRawName { get; }
         public override bool IsVisible { get; }

@@ -4,20 +4,20 @@
 
     public static class IsVisibleExtensions
     {
-        public static bool IsVisible(this AccessModifier modifier)
+        public static bool IsVisible(this AccessModifiers modifiers)
         {
-            switch (modifier)
+            switch (modifiers)
             {
-                case AccessModifier.Internal:
-                case AccessModifier.Private:
+                case AccessModifiers.Internal:
+                case AccessModifiers.Private:
                     return false;
-                case AccessModifier.ProtectedPrivate:
-                case AccessModifier.ProtectedInternal:
-                case AccessModifier.Protected:
-                case AccessModifier.Public:
+                case AccessModifiers.ProtectedPrivate:
+                case AccessModifiers.ProtectedInternal:
+                case AccessModifiers.Protected:
+                case AccessModifiers.Public:
                     return true;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(modifier), modifier, null);
+                    throw new ArgumentOutOfRangeException(nameof(modifiers), modifiers, null);
             }
         }
     }

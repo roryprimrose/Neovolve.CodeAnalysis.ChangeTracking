@@ -6,7 +6,9 @@
 
     public class FieldComparer : MemberComparer<IFieldDefinition>, IFieldComparer
     {
-        public FieldComparer(IAttributeMatchProcessor attributeProcessor) : base(attributeProcessor)
+        public FieldComparer(
+            IAccessModifiersComparer accessModifiersComparer, IAttributeMatchProcessor attributeProcessor) : base(
+            accessModifiersComparer, attributeProcessor)
         {
         }
 
@@ -41,12 +43,12 @@
 
                 if (newModifiers.Contains(" "))
                 {
-                    // There is more than one modifier
+                    // There is more than one modifiers
                     suffix = "s";
                 }
 
                 var args = new FormatArguments(
-                    "{DefinitionType} {Identifier} has added the {NewValue} modifier" + suffix,
+                    "{DefinitionType} {Identifier} has added the {NewValue} modifiers" + suffix,
                     match.NewItem.FullName, null, newModifiers);
 
                 aggregator.AddElementChangedResult(change, match, options.MessageFormatter, args);
@@ -58,12 +60,12 @@
 
                 if (oldModifiers.Contains(" "))
                 {
-                    // There is more than one modifier
+                    // There is more than one modifiers
                     suffix = "s";
                 }
 
                 var args = new FormatArguments(
-                    "{DefinitionType} {Identifier} has removed the {OldValue} modifier" + suffix,
+                    "{DefinitionType} {Identifier} has removed the {OldValue} modifiers" + suffix,
                     match.NewItem.FullName, oldModifiers, null);
 
                 aggregator.AddElementChangedResult(change, match, options.MessageFormatter, args);
@@ -75,12 +77,12 @@
 
                 if (oldModifiers.Contains(" "))
                 {
-                    // There is more than one modifier
+                    // There is more than one modifiers
                     suffix = "s";
                 }
 
                 var args = new FormatArguments(
-                    $"{{DefinitionType}} {{Identifier}} has changed the modifier{suffix} from {{OldValue}} to {{NewValue}}",
+                    $"{{DefinitionType}} {{Identifier}} has changed the modifiers{suffix} from {{OldValue}} to {{NewValue}}",
                     match.NewItem.FullName, oldModifiers, newModifiers);
 
                 aggregator.AddElementChangedResult(change, match, options.MessageFormatter, args);

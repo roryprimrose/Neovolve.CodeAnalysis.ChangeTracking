@@ -1,5 +1,6 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Comparers
 {
+    using System;
     using System.Linq;
     using FluentAssertions;
     using ModelBuilder;
@@ -59,8 +60,9 @@
             var options = ComparerOptions.Default;
 
             var attributeProcessor = Substitute.For<IAttributeMatchProcessor>();
+            var accessModifiersComparer = Substitute.For<IAccessModifiersComparer>();
 
-            var sut = new FieldComparer(attributeProcessor);
+            var sut = new FieldComparer(accessModifiersComparer, attributeProcessor);
 
             var actual = sut.CompareItems(match, options).ToList();
 
@@ -85,8 +87,9 @@
             var options = ComparerOptions.Default;
 
             var attributeProcessor = Substitute.For<IAttributeMatchProcessor>();
+            var accessModifiersComparer = Substitute.For<IAccessModifiersComparer>();
 
-            var sut = new FieldComparer(attributeProcessor);
+            var sut = new FieldComparer(accessModifiersComparer, attributeProcessor);
 
             var actual = sut.CompareItems(match, options).ToList();
 
@@ -102,13 +105,36 @@
             var options = ComparerOptions.Default;
 
             var attributeProcessor = Substitute.For<IAttributeMatchProcessor>();
+            var accessModifiersComparer = Substitute.For<IAccessModifiersComparer>();
 
-            var sut = new FieldComparer(attributeProcessor);
+            var sut = new FieldComparer(accessModifiersComparer, attributeProcessor);
 
             // This should find a change in return type as well as modifiers
             var actual = sut.CompareItems(match, options).ToList();
 
             actual.Should().HaveCount(2);
+        }
+
+        [Fact]
+        public void ThrowsExceptionWhenCreatedWithNullAccessModifiersComparer()
+        {
+            var attributeProcessor = Substitute.For<IAttributeMatchProcessor>();
+
+            // ReSharper disable once ObjectCreationAsStatement
+            Action action = () => new FieldComparer(null!, attributeProcessor);
+
+            action.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
+        public void ThrowsExceptionWhenCreatedWithNullAttributeProcessor()
+        {
+            var accessModifiersComparer = Substitute.For<IAccessModifiersComparer>();
+
+            // ReSharper disable once ObjectCreationAsStatement
+            Action action = () => new FieldComparer(accessModifiersComparer, null!);
+
+            action.Should().Throw<ArgumentNullException>();
         }
     }
 }

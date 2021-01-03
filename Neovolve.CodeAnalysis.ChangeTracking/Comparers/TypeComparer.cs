@@ -10,12 +10,16 @@
     {
         private readonly IFieldMatchProcessor _fieldProcessor;
         private readonly IPropertyMatchProcessor _propertyProcessor;
+        private readonly IAccessModifiersComparer _accessModifiersComparer;
 
         public TypeComparer(
+            IAccessModifiersComparer accessModifiersComparer,
             IFieldMatchProcessor fieldProcessor,
             IPropertyMatchProcessor propertyProcessor,
             IAttributeMatchProcessor attributeProcessor) : base(attributeProcessor)
         {
+            _accessModifiersComparer = accessModifiersComparer
+                                       ?? throw new ArgumentNullException(nameof(accessModifiersComparer));
             _propertyProcessor = propertyProcessor ?? throw new ArgumentNullException(nameof(propertyProcessor));
             _fieldProcessor = fieldProcessor ?? throw new ArgumentNullException(nameof(fieldProcessor));
         }
@@ -92,72 +96,16 @@
             throw new NotSupportedException("Unknown type provided");
         }
 
-        private static void EvaluateAccessModifierChanges(
+        private void EvaluateAccessModifierChanges(
             ItemMatch<ITypeDefinition> match,
             ComparerOptions options,
             IChangeResultAggregator aggregator)
         {
-            var change = AccessModifierChangeTable.CalculateChange(match);
+            var convertedMatch = new ItemMatch<IAccessModifiersElement<AccessModifiers>>(match.OldItem, match.NewItem);
 
-            if (change == SemVerChangeType.None)
-            {
-                return;
-            }
+            var results = _accessModifiersComparer.CompareItems(convertedMatch, options);
 
-            var newModifiers = match.NewItem.GetDeclaredAccessModifiers();
-            var oldModifiers = match.OldItem.GetDeclaredAccessModifiers();
-
-            if (string.IsNullOrWhiteSpace(oldModifiers))
-            {
-                // Modifiers have been added where there were previously none defined
-                var suffix = string.Empty;
-
-                if (newModifiers.Contains(" "))
-                {
-                    // There is more than one modifier
-                    suffix = "s";
-                }
-
-                var args = new FormatArguments(
-                    "{DefinitionType} {Identifier} has added the {NewValue} access modifier" + suffix,
-                    match.NewItem.FullName, null, newModifiers);
-
-                aggregator.AddElementChangedResult(change, match, options.MessageFormatter, args);
-            }
-            else if (string.IsNullOrWhiteSpace(newModifiers))
-            {
-                // All previous modifiers have been removed
-                var suffix = string.Empty;
-
-                if (oldModifiers.Contains(" "))
-                {
-                    // There is more than one modifier
-                    suffix = "s";
-                }
-
-                var args = new FormatArguments(
-                    "{DefinitionType} {Identifier} has removed the {OldValue} access modifier" + suffix,
-                    match.NewItem.FullName, oldModifiers, null);
-
-                aggregator.AddElementChangedResult(change, match, options.MessageFormatter, args);
-            }
-            else
-            {
-                // Modifiers have been changed
-                var suffix = string.Empty;
-
-                if (oldModifiers.Contains(" "))
-                {
-                    // There is more than one modifier
-                    suffix = "s";
-                }
-
-                var args = new FormatArguments(
-                    $"{{DefinitionType}} {{Identifier}} has changed the access modifier{suffix} from {{OldValue}} to {{NewValue}}",
-                    match.NewItem.FullName, oldModifiers, newModifiers);
-
-                aggregator.AddElementChangedResult(change, match, options.MessageFormatter, args);
-            }
+            aggregator.AddResults(results);
         }
 
         private static void EvaluateClassModifierChanges(
@@ -176,7 +124,7 @@
             var newItem = (IClassDefinition) match.NewItem;
             var classMatch = new ItemMatch<IClassDefinition>(oldItem, newItem);
 
-            var change = ClassModifierChangeTable.CalculateChange(classMatch);
+            var change = ClassModifiersChangeTable.CalculateChange(classMatch);
 
             if (change == SemVerChangeType.None)
             {
@@ -193,12 +141,12 @@
 
                 if (newModifiers.Contains(" "))
                 {
-                    // There is more than one modifier
+                    // There is more than one modifiers
                     suffix = "s";
                 }
 
                 var args = new FormatArguments(
-                    "{DefinitionType} {Identifier} has added the {NewValue} modifier" + suffix,
+                    "{DefinitionType} {Identifier} has added the {NewValue} modifiers" + suffix,
                     match.NewItem.FullName, null, newModifiers);
 
                 aggregator.AddElementChangedResult(change, match, options.MessageFormatter, args);
@@ -210,12 +158,12 @@
 
                 if (oldModifiers.Contains(" "))
                 {
-                    // There is more than one modifier
+                    // There is more than one modifiers
                     suffix = "s";
                 }
 
                 var args = new FormatArguments(
-                    "{DefinitionType} {Identifier} has removed the {OldValue} modifier" + suffix,
+                    "{DefinitionType} {Identifier} has removed the {OldValue} modifiers" + suffix,
                     match.NewItem.FullName, oldModifiers, null);
 
                 aggregator.AddElementChangedResult(change, match, options.MessageFormatter, args);
@@ -227,12 +175,12 @@
 
                 if (oldModifiers.Contains(" "))
                 {
-                    // There is more than one modifier
+                    // There is more than one modifiers
                     suffix = "s";
                 }
 
                 var args = new FormatArguments(
-                    $"{{DefinitionType}} {{Identifier}} has changed the modifier{suffix} from {{OldValue}} to {{NewValue}}",
+                    $"{{DefinitionType}} {{Identifier}} has changed the modifiers{suffix} from {{OldValue}} to {{NewValue}}",
                     match.NewItem.FullName, oldModifiers, newModifiers);
 
                 aggregator.AddElementChangedResult(change, match, options.MessageFormatter, args);
@@ -272,12 +220,12 @@
 
                 if (newModifiers.Contains(" "))
                 {
-                    // There is more than one modifier
+                    // There is more than one modifiers
                     suffix = "s";
                 }
 
                 var args = new FormatArguments(
-                    "{DefinitionType} {Identifier} has added the {NewValue} modifier" + suffix,
+                    "{DefinitionType} {Identifier} has added the {NewValue} modifiers" + suffix,
                     match.NewItem.FullName, null, newModifiers);
 
                 aggregator.AddElementChangedResult(change, match, options.MessageFormatter, args);
@@ -289,12 +237,12 @@
 
                 if (oldModifiers.Contains(" "))
                 {
-                    // There is more than one modifier
+                    // There is more than one modifiers
                     suffix = "s";
                 }
 
                 var args = new FormatArguments(
-                    "{DefinitionType} {Identifier} has removed the {OldValue} modifier" + suffix,
+                    "{DefinitionType} {Identifier} has removed the {OldValue} modifiers" + suffix,
                     match.NewItem.FullName, oldModifiers, null);
 
                 aggregator.AddElementChangedResult(change, match, options.MessageFormatter, args);
@@ -306,12 +254,12 @@
 
                 if (oldModifiers.Contains(" "))
                 {
-                    // There is more than one modifier
+                    // There is more than one modifiers
                     suffix = "s";
                 }
 
                 var args = new FormatArguments(
-                    $"{{DefinitionType}} {{Identifier}} has changed the modifier{suffix} from {{OldValue}} to {{NewValue}}",
+                    $"{{DefinitionType}} {{Identifier}} has changed the modifiers{suffix} from {{OldValue}} to {{NewValue}}",
                     match.NewItem.FullName, oldModifiers, newModifiers);
 
                 aggregator.AddElementChangedResult(change, match, options.MessageFormatter, args);
@@ -340,7 +288,7 @@
 
                 if (newConstraintCount != 1)
                 {
-                    // There is more than one modifier
+                    // There is more than one modifiers
                     suffix = "s";
                 }
 
@@ -360,7 +308,7 @@
 
                 if (oldConstraintCount != 1)
                 {
-                    // There is more than one modifier
+                    // There is more than one modifiers
                     suffix = "s";
                 }
 

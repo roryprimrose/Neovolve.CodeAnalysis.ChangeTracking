@@ -12,13 +12,13 @@
     public class PropertyAccessorDefinitionTests
     {
         [Theory]
-        [InlineData("", PropertyAccessorAccessModifier.None)]
-        [InlineData("internal", PropertyAccessorAccessModifier.Internal)]
-        [InlineData("protected", PropertyAccessorAccessModifier.Protected)]
-        [InlineData("internal protected", PropertyAccessorAccessModifier.ProtectedInternal)]
-        [InlineData("protected internal", PropertyAccessorAccessModifier.ProtectedInternal)]
-        [InlineData("private", PropertyAccessorAccessModifier.Private)]
-        public async Task AccessModifierReturnsExpectedValue(string modifiers, PropertyAccessorAccessModifier expected)
+        [InlineData("", PropertyAccessorAccessModifiers.None)]
+        [InlineData("internal", PropertyAccessorAccessModifiers.Internal)]
+        [InlineData("protected", PropertyAccessorAccessModifiers.Protected)]
+        [InlineData("internal protected", PropertyAccessorAccessModifiers.ProtectedInternal)]
+        [InlineData("protected internal", PropertyAccessorAccessModifiers.ProtectedInternal)]
+        [InlineData("private", PropertyAccessorAccessModifiers.Private)]
+        public async Task AccessModifierReturnsExpectedValue(string modifiers, PropertyAccessorAccessModifiers expected)
         {
             var parentName = Guid.NewGuid().ToString();
 
@@ -33,7 +33,7 @@
 
             var sut = new PropertyAccessorDefinition(declaringProperty, node);
 
-            sut.AccessModifier.Should().Be(expected);
+            sut.AccessModifiers.Should().Be(expected);
         }
 
         [Theory]
