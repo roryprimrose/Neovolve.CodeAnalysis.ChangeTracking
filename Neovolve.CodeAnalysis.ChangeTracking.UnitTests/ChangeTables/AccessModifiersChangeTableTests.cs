@@ -1,5 +1,6 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.ChangeTables
 {
+    using System;
     using FluentAssertions;
     using Neovolve.CodeAnalysis.ChangeTracking.ChangeTables;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
@@ -8,6 +9,18 @@
     public class AccessModifiersChangeTableTests
     {
         [Theory]
+        [ClassData(typeof(EnumCombinationsDataSet<AccessModifiers>))]
+        public void CalculateChangeHandlesAllPossibleValues(AccessModifiers oldValue, AccessModifiers newValue)
+        {
+            var sut = new AccessModifiersChangeTable();
+
+            Action action = () => sut.CalculateChange(oldValue, newValue);
+
+            action.Should().NotThrow();
+        }
+
+        [Theory]
+        // @formatter:off — disable formatter after this line
         [InlineData(AccessModifiers.Internal, AccessModifiers.Internal, SemVerChangeType.None)]
         [InlineData(AccessModifiers.Internal, AccessModifiers.Private, SemVerChangeType.None)]
         [InlineData(AccessModifiers.Internal, AccessModifiers.Protected, SemVerChangeType.Feature)]
@@ -44,7 +57,8 @@
         [InlineData(AccessModifiers.ProtectedPrivate, AccessModifiers.Public, SemVerChangeType.Feature)]
         [InlineData(AccessModifiers.ProtectedPrivate, AccessModifiers.ProtectedInternal, SemVerChangeType.None)]
         [InlineData(AccessModifiers.ProtectedPrivate, AccessModifiers.ProtectedPrivate, SemVerChangeType.None)]
-        public void CalculateChangeReturnsExpectedValueForMemberDefinition(
+        // @formatter:on — enable formatter after this line
+        public void CalculateChangeReturnsExpectedValue(
             AccessModifiers oldValue,
             AccessModifiers newValue,
             SemVerChangeType expected)

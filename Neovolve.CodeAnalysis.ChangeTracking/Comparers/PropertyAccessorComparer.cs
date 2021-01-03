@@ -1,21 +1,20 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.Comparers
 {
     using System;
-    using Neovolve.CodeAnalysis.ChangeTracking.ChangeTables;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
     using Neovolve.CodeAnalysis.ChangeTracking.Processors;
 
     public class PropertyAccessorComparer : ElementComparer<IPropertyAccessorDefinition>, IPropertyAccessorComparer
     {
-        private readonly IPropertyAccessorAccessModifierChangeTable _propertyAccessorAccessModifierChangeTable;
+        private readonly IPropertyAccessorAccessModifiersComparer _propertyAccessorAccessModifiersComparer;
 
         public PropertyAccessorComparer(
-            IPropertyAccessorAccessModifierChangeTable propertyAccessorAccessModifierChangeTable,
+            IPropertyAccessorAccessModifiersComparer propertyAccessorAccessModifiersComparer,
             IAttributeMatchProcessor attributeProcessor) : base(attributeProcessor)
         {
-            _propertyAccessorAccessModifierChangeTable = propertyAccessorAccessModifierChangeTable
-                                                         ?? throw new ArgumentNullException(
-                                                             nameof(propertyAccessorAccessModifierChangeTable));
+            _propertyAccessorAccessModifiersComparer = propertyAccessorAccessModifiersComparer
+                                                       ?? throw new ArgumentNullException(
+                                                           nameof(propertyAccessorAccessModifiersComparer));
         }
 
         protected override void EvaluateMatch(ItemMatch<IPropertyAccessorDefinition> match, ComparerOptions options,
@@ -32,68 +31,12 @@
             ComparerOptions options,
             IChangeResultAggregator aggregator)
         {
-            var change = _propertyAccessorAccessModifierChangeTable.CalculateChange(match.OldItem.AccessModifiers,
-                match.NewItem.AccessModifiers);
+            var convertedMatch =
+                new ItemMatch<IAccessModifiersElement<PropertyAccessorAccessModifiers>>(match.OldItem, match.NewItem);
 
-            if (change == SemVerChangeType.None)
-            {
-                return;
-            }
+            var results = _propertyAccessorAccessModifiersComparer.CompareItems(convertedMatch, options);
 
-            var newModifiers = match.NewItem.GetDeclaredAccessModifiers();
-            var oldModifiers = match.OldItem.GetDeclaredAccessModifiers();
-
-            if (string.IsNullOrWhiteSpace(oldModifiers))
-            {
-                // Modifiers have been added where there were previously none defined
-                var suffix = string.Empty;
-
-                if (newModifiers.Contains(" "))
-                {
-                    // There is more than one modifiers
-                    suffix = "s";
-                }
-
-                var args = new FormatArguments(
-                    "{DefinitionType} {Identifier} has added the {NewValue} access modifiers" + suffix,
-                    match.NewItem.FullName, null, newModifiers);
-
-                aggregator.AddElementChangedResult(change, match, options.MessageFormatter, args);
-            }
-            else if (string.IsNullOrWhiteSpace(newModifiers))
-            {
-                // All previous modifiers have been removed
-                var suffix = string.Empty;
-
-                if (oldModifiers.Contains(" "))
-                {
-                    // There is more than one modifiers
-                    suffix = "s";
-                }
-
-                var args = new FormatArguments(
-                    "{DefinitionType} {Identifier} has removed the {OldValue} access modifiers" + suffix,
-                    match.NewItem.FullName, oldModifiers, null);
-
-                aggregator.AddElementChangedResult(change, match, options.MessageFormatter, args);
-            }
-            else
-            {
-                // Modifiers have been changed
-                var suffix = string.Empty;
-
-                if (oldModifiers.Contains(" "))
-                {
-                    // There is more than one modifiers
-                    suffix = "s";
-                }
-
-                var args = new FormatArguments(
-                    $"{{DefinitionType}} {{Identifier}} has changed the access modifiers{suffix} from {{OldValue}} to {{NewValue}}",
-                    match.NewItem.FullName, oldModifiers, newModifiers);
-
-                aggregator.AddElementChangedResult(change, match, options.MessageFormatter, args);
-            }
+            aggregator.AddResults(results);
         }
     }
 }

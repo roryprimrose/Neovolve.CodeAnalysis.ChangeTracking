@@ -2,7 +2,7 @@
 {
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
-    public interface IPropertyAccessorAccessModifierChangeTable : IChangeTable<PropertyAccessorAccessModifiers>
+    public interface IPropertyAccessorAccessModifiersChangeTable : IChangeTable<PropertyAccessorAccessModifiers>
     {
 
     }

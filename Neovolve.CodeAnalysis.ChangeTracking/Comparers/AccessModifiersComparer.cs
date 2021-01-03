@@ -9,10 +9,4 @@
         {
         }
     }
-    public class ClassModifiersComparer : ModifiersElementComparer<ClassModifiers>, IClassModifiersComparer
-    {
-        public ClassModifiersComparer(IClassModifiersChangeTable changeTable) : base(changeTable)
-        {
-        }
-    }
 }
