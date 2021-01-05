@@ -3,26 +3,23 @@
     using System.Collections.Generic;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
-    public static class StructModifierChangeTable
+    public class StructModifiersChangeTable : IStructModifiersChangeTable
     {
         private static readonly Dictionary<StructModifiers, Dictionary<StructModifiers, SemVerChangeType>>
             _modifierChanges =
                 BuildModifierChanges();
 
-        public static SemVerChangeType CalculateChange(ItemMatch<IStructDefinition> match)
+        public SemVerChangeType CalculateChange(StructModifiers oldValue, StructModifiers newValue)
         {
-            var oldModifiers = match.OldItem.Modifiers;
-            var newModifiers = match.NewItem.Modifiers;
-
-            if (oldModifiers == newModifiers)
+            if (oldValue == newValue)
             {
                 // There is no change in the modifiers
                 return SemVerChangeType.None;
             }
 
-            var possibleChanges = _modifierChanges[oldModifiers];
+            var possibleChanges = _modifierChanges[oldValue];
 
-            return possibleChanges[newModifiers];
+            return possibleChanges[newValue];
         }
 
         private static void AddModifierChange(

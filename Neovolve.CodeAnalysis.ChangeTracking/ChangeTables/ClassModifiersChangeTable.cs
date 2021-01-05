@@ -3,26 +3,23 @@
     using System.Collections.Generic;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
-    public static class ClassModifiersChangeTable
+    public class ClassModifiersChangeTable : IClassModifiersChangeTable
     {
         private static readonly Dictionary<ClassModifiers, Dictionary<ClassModifiers, SemVerChangeType>>
             _modifierChanges =
                 BuildModifierChanges();
 
-        public static SemVerChangeType CalculateChange(ItemMatch<IClassDefinition> match)
+        public SemVerChangeType CalculateChange(ClassModifiers oldValue, ClassModifiers newValue)
         {
-            var oldModifiers = match.OldItem.Modifiers;
-            var newModifiers = match.NewItem.Modifiers;
-
-            if (oldModifiers == newModifiers)
+            if (oldValue == newValue)
             {
                 // There is no change in the modifiers
                 return SemVerChangeType.None;
             }
 
-            var possibleChanges = _modifierChanges[oldModifiers];
+            var possibleChanges = _modifierChanges[oldValue];
 
-            return possibleChanges[newModifiers];
+            return possibleChanges[newValue];
         }
 
         private static void AddModifierChange(

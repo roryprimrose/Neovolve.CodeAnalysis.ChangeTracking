@@ -1,27 +1,36 @@
-﻿namespace Neovolve.CodeAnalysis.ChangeTracking.Evaluators
+﻿namespace Neovolve.CodeAnalysis.ChangeTracking.Processors
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using Microsoft.Extensions.Logging;
+    using Neovolve.CodeAnalysis.ChangeTracking.Comparers;
+    using Neovolve.CodeAnalysis.ChangeTracking.Evaluators;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
-    using Neovolve.CodeAnalysis.ChangeTracking.Processors;
 
     public abstract class MatchProcessor<T> : IMatchProcessor<T> where T : IItemDefinition
     {
-        private readonly IMatchEvaluator _evaluator;
+        private readonly IItemComparer<T> _comparer;
+        private readonly IMatchEvaluator<T> _evaluator;
         private readonly ILogger? _logger;
 
-        protected MatchProcessor(IMatchEvaluator evaluator, ILogger? logger)
+        protected MatchProcessor(IMatchEvaluator<T> evaluator, IItemComparer<T> comparer, ILogger? logger)
         {
             _evaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
+            _comparer = comparer ?? throw new ArgumentNullException(nameof(comparer));
             _logger = logger;
         }
 
-        public virtual IEnumerable<ComparisonResult> CalculateChanges(IEnumerable<T> oldItems,
-            IEnumerable<T> newItems, ComparerOptions options)
+        public virtual IEnumerable<ComparisonResult> CalculateChanges(
+            IEnumerable<T> oldItems,
+            IEnumerable<T> newItems,
+            ComparerOptions options)
         {
-            var matchingNodes = _evaluator.MatchItems(oldItems, newItems, IsItemMatch);
+            oldItems = oldItems ?? throw new ArgumentNullException(nameof(oldItems));
+            newItems = newItems ?? throw new ArgumentNullException(nameof(newItems));
+            options = options ?? throw new ArgumentNullException(nameof(options));
+
+            IMatchResults<T> matchingNodes = _evaluator.MatchItems(oldItems, newItems);
 
             // Record any visible types that have been added
             // Types added which are not publicly visible are ignored
@@ -43,9 +52,7 @@
                     changeType = SemVerChangeType.Feature;
                 }
 
-                var args = new FormatArguments(
-                    "{DefinitionType} {Identifier} has been added",
-                    name, null, null);
+                var args = new FormatArguments("{DefinitionType} {Identifier} has been added", name, null, null);
 
                 var message = options.MessageFormatter.FormatItemAddedMessage(memberAdded, args);
 
@@ -74,9 +81,7 @@
                     changeType = SemVerChangeType.Breaking;
                 }
 
-                var args = new FormatArguments(
-                    "{DefinitionType} {Identifier} has been removed",
-                    name, null, null);
+                var args = new FormatArguments("{DefinitionType} {Identifier} has been removed", name, null, null);
 
                 var message = options.MessageFormatter.FormatItemRemovedMessage(memberRemoved, args);
 
@@ -97,22 +102,26 @@
             }
         }
 
-        protected abstract IEnumerable<ComparisonResult> EvaluateMatch(ItemMatch<T> match, ComparerOptions options);
+        protected virtual IEnumerable<ComparisonResult> EvaluateMatch(ItemMatch<T> match, ComparerOptions options)
+        {
+            match = match ?? throw new ArgumentNullException(nameof(match));
+            options = options ?? throw new ArgumentNullException(nameof(options));
 
-        protected abstract bool IsItemMatch(T oldItem, T newItem);
+            return _comparer.CompareItems(match, options);
+        }
+
         protected abstract bool IsVisible(T item);
 
-        private IEnumerable<ComparisonResult> CompareMatchingItems(ItemMatch<T> match,
-            ComparerOptions options)
+        private IEnumerable<ComparisonResult> CompareMatchingItems(ItemMatch<T> match, ComparerOptions options)
         {
             var results = EvaluateMatch(match, options);
 
             foreach (var result in results)
             {
+                _logger?.LogDebug(result.Message);
+
                 if (result.ChangeType == SemVerChangeType.None)
                 {
-                    _logger?.LogDebug(result.Message);
-
                     // Don't add comparison results to the outcome where it looks like there is no change
                     continue;
                 }

@@ -4,18 +4,16 @@
     using System.Collections.Generic;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
-    public class MatchEvaluator : IMatchEvaluator
+    public abstract class MatchEvaluator<T> : IMatchEvaluator<T> where T : IItemDefinition
     {
-        public IMatchResults<T> MatchItems<T>(IEnumerable<T> oldItems, IEnumerable<T> newItems,
-            Func<T, T, bool> evaluator) where T : IItemDefinition
+        protected virtual IMatchResults<T> FindMatches(IMatchResults<T> results, Func<T, T, bool> evaluator)
         {
-            oldItems = oldItems ?? throw new ArgumentNullException(nameof(oldItems));
-            newItems = newItems ?? throw new ArgumentNullException(nameof(newItems));
+            results = results ?? throw new ArgumentNullException(nameof(results));
 
-            var matches = new List<ItemMatch<T>>();
+            var matches = new List<ItemMatch<T>>(results.MatchingItems);
 
-            var oldDefinitions = oldItems.FastToList();
-            var newDefinitions = newItems.FastToList();
+            var oldDefinitions = results.ItemsRemoved.FastToList();
+            var newDefinitions = results.ItemsAdded.FastToList();
 
             // Loop in reverse so that we can remove matched members as we go
             // Removing matched members as we find them means that we have less iterations of the inner loop for each subsequent old member
@@ -45,14 +43,9 @@
                 }
             }
 
-            return BuildMatchResults(matches, oldDefinitions, newDefinitions);
+            return new MatchResults<T>(matches, oldDefinitions, newDefinitions);
         }
 
-        protected virtual IMatchResults<T> BuildMatchResults<T>(List<ItemMatch<T>> matches, List<T> itemsRemoved,
-            List<T> itemsAdded)
-            where T : IItemDefinition
-        {
-            return new MatchResults<T>(matches, itemsRemoved, itemsAdded);
-        }
+        public abstract IMatchResults<T> MatchItems(IEnumerable<T> oldItems, IEnumerable<T> newItems);
     }
 }

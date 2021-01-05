@@ -15,6 +15,21 @@
         /// <summary>
         ///     Initializes a new instance of the <see cref="MatchResults{T}" /> class.
         /// </summary>
+        /// <param name="itemsRemoved">The items that have been removed.</param>
+        /// <param name="itemsAdded">The items that have been added.</param>
+        public MatchResults(IEnumerable<T> itemsRemoved, IEnumerable<T> itemsAdded)
+        {
+            itemsRemoved = itemsRemoved ?? throw new ArgumentNullException(nameof(itemsRemoved));
+            itemsAdded = itemsAdded ?? throw new ArgumentNullException(nameof(itemsAdded));
+
+            MatchingItems = Array.Empty<ItemMatch<T>>();
+            ItemsRemoved = new ReadOnlyCollection<T>(itemsRemoved.FastToList());
+            ItemsAdded = new ReadOnlyCollection<T>(itemsAdded.FastToList());
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="MatchResults{T}" /> class.
+        /// </summary>
         /// <param name="matchingItems">The set of old items that match to new items.</param>
         /// <param name="itemsRemoved">The items that have been removed.</param>
         /// <param name="itemsAdded">The items that have been added.</param>

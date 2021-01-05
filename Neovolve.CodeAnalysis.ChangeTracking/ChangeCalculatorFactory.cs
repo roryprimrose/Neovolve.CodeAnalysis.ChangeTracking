@@ -15,29 +15,55 @@
 
         public static IChangeCalculator BuildCalculator(ILogger? logger)
         {
-            var evaluator = new MatchEvaluator();
-
-            var accessModifiersChangeTable = new AccessModifiersChangeTable();
-            var accessModifiersComparer = new AccessModifiersComparer(accessModifiersChangeTable);
-
             var attributeComparer = new AttributeComparer();
-            var attributeProcessor = new AttributeMatchProcessor(attributeComparer, evaluator, logger);
+            var attributeMatcher = new AttributeMatchEvaluator();
+            var attributeProcessor = new AttributeMatchProcessor(attributeMatcher, attributeComparer, logger);
+
+            var accessModifierChangeTable = new AccessModifiersChangeTable();
+            var accessModifiersComparer = new AccessModifiersComparer(accessModifierChangeTable);
 
             var fieldComparer = new FieldComparer(accessModifiersComparer, attributeProcessor);
-            var fieldProcessor = new FieldMatchProcessor(fieldComparer, evaluator, logger);
+            var fieldMatcher = new FieldMatchEvaluator();
+            var fieldProcessor = new FieldMatchProcessor(fieldMatcher, fieldComparer, logger);
 
-            var propertyAccessorAccessModifierChangeTable = new PropertyAccessorAccessModifiersChangeTable();
-            var propertyAccessorAccessModifierComparer = new PropertyAccessorAccessModifiersComparer(propertyAccessorAccessModifierChangeTable);
-            var propertyAccessorComparer = new PropertyAccessorComparer(propertyAccessorAccessModifierComparer, attributeProcessor);
+            var propertyAccessorAccessModifiersChangeTable = new PropertyAccessorAccessModifiersChangeTable();
+            var propertyAccessorAccessModifiersComparer = new PropertyAccessorAccessModifiersComparer(propertyAccessorAccessModifiersChangeTable);
+            var propertyAccessorComparer = new PropertyAccessorComparer(propertyAccessorAccessModifiersComparer, attributeProcessor);
+            var propertyAccessorMatcher = new PropertyAccessorMatchEvaluator();
             var propertyAccessorProcessor =
-                new PropertyAccessorMatchProcessor(propertyAccessorComparer, evaluator, logger);
+                new PropertyAccessorMatchProcessor(propertyAccessorMatcher, propertyAccessorComparer, logger);
             var propertyComparer = new PropertyComparer(accessModifiersComparer, propertyAccessorProcessor, attributeProcessor);
-            var propertyProcessor = new PropertyMatchProcessor(propertyComparer, evaluator, logger);
+            var propertyMatcher = new PropertyMatchEvaluator();
+            var propertyProcessor = new PropertyMatchProcessor(propertyMatcher, propertyComparer, logger);
 
-            var typeComparer = new TypeComparer(accessModifiersComparer, fieldProcessor, propertyProcessor,
+            var classModifiersChangeTable = new ClassModifiersChangeTable();
+            var classModifiersComparer = new ClassModifiersComparer(classModifiersChangeTable);
+            var classComparer = new ClassComparer(
+                accessModifiersComparer,
+                classModifiersComparer,
+                fieldProcessor,
+                propertyProcessor,
                 attributeProcessor);
+
+            var interfaceComparer = new InterfaceComparer(
+                accessModifiersComparer,
+                fieldProcessor,
+                propertyProcessor,
+                attributeProcessor);
+
+            var structModifiersChangeTable = new StructModifiersChangeTable();
+            var structModifiersComparer = new StructModifiersComparer(structModifiersChangeTable);
+            var structComparer = new StructComparer(
+                accessModifiersComparer,
+                structModifiersComparer,
+                fieldProcessor,
+                propertyProcessor,
+                attributeProcessor);
+
+            var aggregateTypeComparer = new AggregateTypeComparer(classComparer, interfaceComparer, structComparer);
+
             var typeMatchEvaluator = new TypeMatchEvaluator();
-            var typeProcessor = new TypeMatchProcessor(typeComparer, typeMatchEvaluator, logger);
+            var typeProcessor = new TypeMatchProcessor(typeMatchEvaluator, aggregateTypeComparer, logger);
 
             return new ChangeCalculator(typeProcessor, logger);
         }

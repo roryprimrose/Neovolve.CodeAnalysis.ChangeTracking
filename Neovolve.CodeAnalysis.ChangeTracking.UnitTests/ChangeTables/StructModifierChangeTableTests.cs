@@ -1,13 +1,24 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.ChangeTables
 {
+    using System;
     using FluentAssertions;
     using Neovolve.CodeAnalysis.ChangeTracking.ChangeTables;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
-    using NSubstitute;
     using Xunit;
 
     public class StructModifierChangeTableTests
     {
+        [Theory]
+        [ClassData(typeof(EnumCombinationsDataSet<StructModifiers>))]
+        public void CalculateChangeHandlesAllPossibleValues(StructModifiers oldValue, StructModifiers newValue)
+        {
+            var sut = new StructModifiersChangeTable();
+
+            Action action = () => sut.CalculateChange(oldValue, newValue);
+
+            action.Should().NotThrow();
+        }
+
         [Theory]
         [InlineData(StructModifiers.None, StructModifiers.None, SemVerChangeType.None)]
         [InlineData(StructModifiers.None, StructModifiers.ReadOnly, SemVerChangeType.Breaking)]
@@ -29,15 +40,9 @@
             StructModifiers newValue,
             SemVerChangeType expected)
         {
-            var oldItem = Substitute.For<IStructDefinition>();
-            var newItem = Substitute.For<IStructDefinition>();
+            var sut = new StructModifiersChangeTable();
 
-            oldItem.Modifiers.Returns(oldValue);
-            newItem.Modifiers.Returns(newValue);
-
-            var match = new ItemMatch<IStructDefinition>(oldItem, newItem);
-
-            var actual = StructModifierChangeTable.CalculateChange(match);
+            var actual = sut.CalculateChange(oldValue, newValue);
 
             actual.Should().Be(expected);
         }
