@@ -3,18 +3,35 @@
     using System.Collections.Generic;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
-    public static class MemberModifiersChangeTable
+    public class MemberModifiersChangeTable : IMemberModifiersChangeTable
     {
         private static readonly Dictionary<MemberModifiers, Dictionary<MemberModifiers, SemVerChangeType>>
             _modifierChanges =
                 BuildModifierChanges();
 
-        public static SemVerChangeType CalculateChange(ItemMatch<IPropertyDefinition> match)
+        public SemVerChangeType CalculateChange(MemberModifiers oldValue, MemberModifiers newValue)
         {
-            var oldModifiers = match.OldItem.Modifiers;
-            var newModifiers = match.NewItem.Modifiers;
+            if (oldValue == newValue)
+            {
+                // There is no change in the modifiers
+                return SemVerChangeType.None;
+            }
 
-            return CalculateChange(oldModifiers, newModifiers);
+            if (_modifierChanges.ContainsKey(oldValue) == false)
+            {
+                // There are no changes for this combination
+                return SemVerChangeType.None;
+            }
+
+            var possibleChanges = _modifierChanges[oldValue];
+
+            if (possibleChanges.ContainsKey(newValue) == false)
+            {
+                // There is no change between the modifiers
+                return SemVerChangeType.None;
+            }
+
+            return possibleChanges[newValue];
         }
 
         private static void AddModifierChange(
@@ -207,31 +224,6 @@
             // @formatter:on — enable formatter after this line
 
             return changes;
-        }
-
-        private static SemVerChangeType CalculateChange(MemberModifiers oldModifiers, MemberModifiers newModifiers)
-        {
-            if (oldModifiers == newModifiers)
-            {
-                // There is no change in the modifiers
-                return SemVerChangeType.None;
-            }
-
-            if (_modifierChanges.ContainsKey(oldModifiers) == false)
-            {
-                // There are no changes for this combination
-                return SemVerChangeType.None;
-            }
-
-            var possibleChanges = _modifierChanges[oldModifiers];
-
-            if (possibleChanges.ContainsKey(newModifiers) == false)
-            {
-                // There is no change between the modifiers
-                return SemVerChangeType.None;
-            }
-
-            return possibleChanges[newModifiers];
         }
     }
 }

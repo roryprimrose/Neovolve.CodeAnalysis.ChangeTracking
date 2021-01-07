@@ -21,8 +21,12 @@
 
             var accessModifierChangeTable = new AccessModifiersChangeTable();
             var accessModifiersComparer = new AccessModifiersComparer(accessModifierChangeTable);
+            var memberModifiersChangeTable = new MemberModifiersChangeTable();
+            var memberModifiersComparer = new MemberModifiersComparer(memberModifiersChangeTable);
 
-            var fieldComparer = new FieldComparer(accessModifiersComparer, attributeProcessor);
+            var fieldModifiersChangeTable = new FieldModifiersChangeTable();
+            var fieldModifiersComparer = new FieldModifiersComparer(fieldModifiersChangeTable);
+            var fieldComparer = new FieldComparer(accessModifiersComparer, fieldModifiersComparer, attributeProcessor);
             var fieldMatcher = new FieldMatchEvaluator();
             var fieldProcessor = new FieldMatchProcessor(fieldMatcher, fieldComparer, logger);
 
@@ -32,7 +36,7 @@
             var propertyAccessorMatcher = new PropertyAccessorMatchEvaluator();
             var propertyAccessorProcessor =
                 new PropertyAccessorMatchProcessor(propertyAccessorMatcher, propertyAccessorComparer, logger);
-            var propertyComparer = new PropertyComparer(accessModifiersComparer, propertyAccessorProcessor, attributeProcessor);
+            var propertyComparer = new PropertyComparer(accessModifiersComparer, memberModifiersComparer, propertyAccessorProcessor, attributeProcessor);
             var propertyMatcher = new PropertyMatchEvaluator();
             var propertyProcessor = new PropertyMatchProcessor(propertyMatcher, propertyComparer, logger);
 

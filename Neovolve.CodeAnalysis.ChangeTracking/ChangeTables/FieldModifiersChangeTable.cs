@@ -3,18 +3,23 @@
     using System.Collections.Generic;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
-    public static class FieldModifiersChangeTable
+    public class FieldModifiersChangeTable : IFieldModifiersChangeTable
     {
         private static readonly Dictionary<FieldModifiers, Dictionary<FieldModifiers, SemVerChangeType>>
             _modifierChanges =
                 BuildModifierChanges();
-
-        public static SemVerChangeType CalculateChange(ItemMatch<IFieldDefinition> match)
+        
+        public SemVerChangeType CalculateChange(FieldModifiers oldValue, FieldModifiers newValue)
         {
-            var oldModifiers = match.OldItem.Modifiers;
-            var newModifiers = match.NewItem.Modifiers;
+            if (oldValue == newValue)
+            {
+                // There is no change in the modifiers
+                return SemVerChangeType.None;
+            }
 
-            return CalculateChange(oldModifiers, newModifiers);
+            var possibleChanges = _modifierChanges[oldValue];
+
+            return possibleChanges[newValue];
         }
 
         private static void AddModifierChange(
@@ -54,19 +59,6 @@
             // @formatter:on — enable formatter after this line
 
             return changes;
-        }
-
-        private static SemVerChangeType CalculateChange(FieldModifiers oldModifiers, FieldModifiers newModifiers)
-        {
-            if (oldModifiers == newModifiers)
-            {
-                // There is no change in the modifiers
-                return SemVerChangeType.None;
-            }
-
-            var possibleChanges = _modifierChanges[oldModifiers];
-
-            return possibleChanges[newModifiers];
         }
     }
 }
