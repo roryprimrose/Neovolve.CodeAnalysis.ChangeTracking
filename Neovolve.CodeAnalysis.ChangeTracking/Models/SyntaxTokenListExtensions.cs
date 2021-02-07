@@ -6,37 +6,37 @@
 
     public static class SyntaxTokenListExtensions
     {
-        public static AccessModifier DetermineAccessModifier(this SyntaxTokenList tokenList,
-            AccessModifier defaultValue)
+        public static AccessModifiers DetermineAccessModifier(this SyntaxTokenList tokenList,
+            AccessModifiers defaultValue)
         {
             if (tokenList.HasModifier(SyntaxKind.ProtectedKeyword))
             {
                 if (tokenList.HasModifier(SyntaxKind.InternalKeyword))
                 {
-                    return AccessModifier.ProtectedInternal;
+                    return AccessModifiers.ProtectedInternal;
                 }
 
                 if (tokenList.HasModifier(SyntaxKind.PrivateKeyword))
                 {
-                    return AccessModifier.ProtectedPrivate;
+                    return AccessModifiers.ProtectedPrivate;
                 }
 
-                return AccessModifier.Protected;
+                return AccessModifiers.Protected;
             }
 
             if (tokenList.HasModifier(SyntaxKind.InternalKeyword))
             {
-                return AccessModifier.Internal;
+                return AccessModifiers.Internal;
             }
 
             if (tokenList.HasModifier(SyntaxKind.PrivateKeyword))
             {
-                return AccessModifier.Private;
+                return AccessModifiers.Private;
             }
 
             if (tokenList.HasModifier(SyntaxKind.PublicKeyword))
             {
-                return AccessModifier.Public;
+                return AccessModifiers.Public;
             }
 
             return defaultValue;

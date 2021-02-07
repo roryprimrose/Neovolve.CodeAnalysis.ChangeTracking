@@ -4,6 +4,7 @@
     using System.Linq;
     using FluentAssertions;
     using ModelBuilder;
+    using Neovolve.CodeAnalysis.ChangeTracking.Evaluators;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
     using Neovolve.CodeAnalysis.ChangeTracking.UnitTests.TestModels;
     using Xunit;

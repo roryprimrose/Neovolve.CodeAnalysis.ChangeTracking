@@ -4,17 +4,12 @@
     ///     The <see cref="IPropertyDefinition" />
     ///     interface defines the members that describe a property.
     /// </summary>
-    public interface IPropertyDefinition : IMemberDefinition
+    public interface IPropertyDefinition : IMemberDefinition, IModifiersElement<MemberModifiers>
     {
         /// <summary>
         ///     Gets the property get accessor.
         /// </summary>
         IPropertyAccessorDefinition? GetAccessor { get; }
-
-        /// <summary>
-        ///     Gets the property modifiers.
-        /// </summary>
-        MemberModifiers Modifiers { get; }
 
         /// <summary>
         ///     Gets the property set accessor.

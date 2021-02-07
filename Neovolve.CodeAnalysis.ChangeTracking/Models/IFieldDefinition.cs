@@ -4,11 +4,7 @@
     ///     The <see cref="IFieldDefinition" />
     ///     interface defines the members that describe a field.
     /// </summary>
-    public interface IFieldDefinition : IMemberDefinition
+    public interface IFieldDefinition : IMemberDefinition, IModifiersElement<FieldModifiers>
     {
-        /// <summary>
-        ///     Gets the property modifiers.
-        /// </summary>
-        FieldModifiers Modifiers { get; }
     }
 }

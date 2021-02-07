@@ -6,13 +6,8 @@
     ///     The <see cref="ITypeDefinition" />
     ///     interface defines common properties for types.
     /// </summary>
-    public interface ITypeDefinition : IElementDefinition
+    public interface ITypeDefinition : IAccessModifiersElement<AccessModifiers>
     {
-        /// <summary>
-        ///     Gets the access modifier for the type.
-        /// </summary>
-        AccessModifier AccessModifier { get; }
-
         /// <summary>
         ///     Gets the child classes defined on this type.
         /// </summary>

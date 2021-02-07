@@ -1,10 +1,6 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.Models
 {
-    public interface IPropertyAccessorDefinition : IElementDefinition
+    public interface IPropertyAccessorDefinition : IAccessModifiersElement<PropertyAccessorAccessModifiers>
     {
-        /// <summary>
-        /// Gets the access modifier for the property accessor.
-        /// </summary>
-        PropertyAccessorAccessModifier AccessModifier { get; }
     }
 }

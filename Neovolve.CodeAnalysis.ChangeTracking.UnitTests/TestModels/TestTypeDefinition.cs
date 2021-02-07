@@ -6,7 +6,7 @@
 
     public abstract class TestTypeDefinition : ITypeDefinition
     {
-        public AccessModifier AccessModifier { get; set; } = AccessModifier.Public;
+        public AccessModifiers AccessModifiers { get; set; } = AccessModifiers.Public;
         public IReadOnlyCollection<IAttributeDefinition> Attributes { get; set; } = new List<TestAttributeDefinition>();
         public IReadOnlyCollection<IClassDefinition> ChildClasses { get; set; } = new List<TestClassDefinition>();
 

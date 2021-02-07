@@ -6,7 +6,7 @@
 
     public class TestPropertyDefinition : IPropertyDefinition
     {
-        public AccessModifier AccessModifier { get; set; } = AccessModifier.Public;
+        public AccessModifiers AccessModifiers { get; set; } = AccessModifiers.Public;
         public IReadOnlyCollection<IAttributeDefinition> Attributes { get; set; } = new List<TestAttributeDefinition>();
         public string DeclaredModifiers { get; } = "public";
         public ITypeDefinition DeclaringType { get; set; } = new TestClassDefinition();
