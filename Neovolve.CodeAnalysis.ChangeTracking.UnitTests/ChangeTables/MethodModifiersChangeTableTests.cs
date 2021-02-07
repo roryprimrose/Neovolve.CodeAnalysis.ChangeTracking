@@ -1,5 +1,6 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.ChangeTables
 {
+    using System;
     using FluentAssertions;
     using Neovolve.CodeAnalysis.ChangeTracking.ChangeTables;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
@@ -7,6 +8,17 @@
 
     public class MethodModifiersChangeTableTests
     {
+        [Theory]
+        [ClassData(typeof(EnumCombinationsDataSet<MethodModifiers>))]
+        public void CalculateChangeHandlesAllPossibleValues(MethodModifiers oldValue, MethodModifiers newValue)
+        {
+            var sut = new MethodModifiersChangeTable();
+
+            Action action = () => sut.CalculateChange(oldValue, newValue);
+
+            action.Should().NotThrow();
+        }
+
         // @formatter:off — disable formatter after this line
         [Theory]
         [InlineData(MethodModifiers.None, MethodModifiers.None, SemVerChangeType.None)]

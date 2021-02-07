@@ -14,6 +14,12 @@
             T newModifiers,
             SemVerChangeType changeType)
         {
+            if (oldModifiers.Equals(newModifiers))
+            {
+                throw new InvalidOperationException(
+                    "The values stored are the same. Do not add a change with the same values as it will consume unnecessary memory.");
+            }
+
             if (_changes.ContainsKey(oldModifiers) == false)
             {
                 _changes[oldModifiers] = new Dictionary<T, SemVerChangeType>();

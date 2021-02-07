@@ -7,7 +7,6 @@
         protected override void BuildChanges()
         {
             // @formatter:off — disable formatter after this line
-            AddChange(MethodModifiers.None, MethodModifiers.None, SemVerChangeType.None); 
             AddChange(MethodModifiers.None, MethodModifiers.Abstract, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.None, MethodModifiers.New, SemVerChangeType.None);
             AddChange(MethodModifiers.None, MethodModifiers.Override, SemVerChangeType.Feature);
@@ -34,7 +33,6 @@
             AddChange(MethodModifiers.None, MethodModifiers.AsyncNewVirtual, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.None, MethodModifiers.AsyncSealedOverride, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.Abstract, MethodModifiers.None, SemVerChangeType.Breaking);
-            AddChange(MethodModifiers.Abstract, MethodModifiers.Abstract, SemVerChangeType.None);
             AddChange(MethodModifiers.Abstract, MethodModifiers.New, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.Abstract, MethodModifiers.Override, SemVerChangeType.Feature);
             AddChange(MethodModifiers.Abstract, MethodModifiers.Sealed, SemVerChangeType.Breaking);
@@ -61,7 +59,6 @@
             AddChange(MethodModifiers.Abstract, MethodModifiers.AsyncSealedOverride, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.New, MethodModifiers.None, SemVerChangeType.None);
             AddChange(MethodModifiers.New, MethodModifiers.Abstract, SemVerChangeType.Breaking);
-            AddChange(MethodModifiers.New, MethodModifiers.New, SemVerChangeType.None);
             AddChange(MethodModifiers.New, MethodModifiers.Override, SemVerChangeType.Feature);
             AddChange(MethodModifiers.New, MethodModifiers.Sealed, SemVerChangeType.None);
             AddChange(MethodModifiers.New, MethodModifiers.Static, SemVerChangeType.Breaking);
@@ -88,7 +85,6 @@
             AddChange(MethodModifiers.Override, MethodModifiers.None, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.Override, MethodModifiers.Abstract, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.Override, MethodModifiers.New, SemVerChangeType.Breaking);
-            AddChange(MethodModifiers.Override, MethodModifiers.Override, SemVerChangeType.None);
             AddChange(MethodModifiers.Override, MethodModifiers.Sealed, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.Override, MethodModifiers.Static, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.Override, MethodModifiers.Virtual, SemVerChangeType.None);
@@ -115,7 +111,6 @@
             AddChange(MethodModifiers.Sealed, MethodModifiers.Abstract, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.Sealed, MethodModifiers.New, SemVerChangeType.None);
             AddChange(MethodModifiers.Sealed, MethodModifiers.Override, SemVerChangeType.Feature);
-            AddChange(MethodModifiers.Sealed, MethodModifiers.Sealed, SemVerChangeType.None);
             AddChange(MethodModifiers.Sealed, MethodModifiers.Static, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.Sealed, MethodModifiers.Virtual, SemVerChangeType.Feature);
             AddChange(MethodModifiers.Sealed, MethodModifiers.Async, SemVerChangeType.Breaking);
@@ -142,7 +137,6 @@
             AddChange(MethodModifiers.Static, MethodModifiers.New, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.Static, MethodModifiers.Override, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.Static, MethodModifiers.Sealed, SemVerChangeType.Breaking);
-            AddChange(MethodModifiers.Static, MethodModifiers.Static, SemVerChangeType.None);
             AddChange(MethodModifiers.Static, MethodModifiers.Virtual, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.Static, MethodModifiers.Async, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.Static, MethodModifiers.AsyncAbstract, SemVerChangeType.Breaking);
@@ -169,7 +163,6 @@
             AddChange(MethodModifiers.Virtual, MethodModifiers.Override, SemVerChangeType.None);
             AddChange(MethodModifiers.Virtual, MethodModifiers.Sealed, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.Virtual, MethodModifiers.Static, SemVerChangeType.Breaking);
-            AddChange(MethodModifiers.Virtual, MethodModifiers.Virtual, SemVerChangeType.None);
             AddChange(MethodModifiers.Virtual, MethodModifiers.Async, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.Virtual, MethodModifiers.AsyncAbstract, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.Virtual, MethodModifiers.AsyncNew, SemVerChangeType.Breaking);
@@ -196,7 +189,6 @@
             AddChange(MethodModifiers.Async, MethodModifiers.Sealed, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.Async, MethodModifiers.Static, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.Async, MethodModifiers.Virtual, SemVerChangeType.Breaking);
-            AddChange(MethodModifiers.Async, MethodModifiers.Async, SemVerChangeType.None);
             AddChange(MethodModifiers.Async, MethodModifiers.AsyncAbstract, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.Async, MethodModifiers.AsyncNew, SemVerChangeType.None);
             AddChange(MethodModifiers.Async, MethodModifiers.AsyncOverride, SemVerChangeType.Feature);
@@ -223,7 +215,6 @@
             AddChange(MethodModifiers.AsyncAbstract, MethodModifiers.Static, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.AsyncAbstract, MethodModifiers.Virtual, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.AsyncAbstract, MethodModifiers.Async, SemVerChangeType.Breaking);
-            AddChange(MethodModifiers.AsyncAbstract, MethodModifiers.AsyncAbstract, SemVerChangeType.None);
             AddChange(MethodModifiers.AsyncAbstract, MethodModifiers.AsyncNew, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.AsyncAbstract, MethodModifiers.AsyncOverride, SemVerChangeType.Feature);
             AddChange(MethodModifiers.AsyncAbstract, MethodModifiers.AsyncSealed, SemVerChangeType.Breaking);
@@ -250,7 +241,6 @@
             AddChange(MethodModifiers.AsyncNew, MethodModifiers.Virtual, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.AsyncNew, MethodModifiers.Async, SemVerChangeType.None);
             AddChange(MethodModifiers.AsyncNew, MethodModifiers.AsyncAbstract, SemVerChangeType.Breaking);
-            AddChange(MethodModifiers.AsyncNew, MethodModifiers.AsyncNew, SemVerChangeType.None);
             AddChange(MethodModifiers.AsyncNew, MethodModifiers.AsyncOverride, SemVerChangeType.Feature);
             AddChange(MethodModifiers.AsyncNew, MethodModifiers.AsyncSealed, SemVerChangeType.None);
             AddChange(MethodModifiers.AsyncNew, MethodModifiers.AsyncStatic, SemVerChangeType.Breaking);
@@ -277,7 +267,6 @@
             AddChange(MethodModifiers.AsyncOverride, MethodModifiers.Async, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.AsyncOverride, MethodModifiers.AsyncAbstract, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.AsyncOverride, MethodModifiers.AsyncNew, SemVerChangeType.Breaking);
-            AddChange(MethodModifiers.AsyncOverride, MethodModifiers.AsyncOverride, SemVerChangeType.None);
             AddChange(MethodModifiers.AsyncOverride, MethodModifiers.AsyncSealed, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.AsyncOverride, MethodModifiers.AsyncStatic, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.AsyncOverride, MethodModifiers.AsyncVirtual, SemVerChangeType.Feature);
@@ -304,7 +293,6 @@
             AddChange(MethodModifiers.AsyncSealed, MethodModifiers.AsyncAbstract, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.AsyncSealed, MethodModifiers.AsyncNew, SemVerChangeType.None);
             AddChange(MethodModifiers.AsyncSealed, MethodModifiers.AsyncOverride, SemVerChangeType.Feature);
-            AddChange(MethodModifiers.AsyncSealed, MethodModifiers.AsyncSealed, SemVerChangeType.None);
             AddChange(MethodModifiers.AsyncSealed, MethodModifiers.AsyncStatic, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.AsyncSealed, MethodModifiers.AsyncVirtual, SemVerChangeType.Feature);
             AddChange(MethodModifiers.AsyncSealed, MethodModifiers.AbstractOverride, SemVerChangeType.Breaking);
@@ -331,7 +319,6 @@
             AddChange(MethodModifiers.AsyncStatic, MethodModifiers.AsyncNew, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.AsyncStatic, MethodModifiers.AsyncOverride, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.AsyncStatic, MethodModifiers.AsyncSealed, SemVerChangeType.Breaking);
-            AddChange(MethodModifiers.AsyncStatic, MethodModifiers.AsyncStatic, SemVerChangeType.None);
             AddChange(MethodModifiers.AsyncStatic, MethodModifiers.AsyncVirtual, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.AsyncStatic, MethodModifiers.AbstractOverride, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.AsyncStatic, MethodModifiers.NewAbstract, SemVerChangeType.Breaking);
@@ -358,7 +345,6 @@
             AddChange(MethodModifiers.AsyncVirtual, MethodModifiers.AsyncOverride, SemVerChangeType.None);
             AddChange(MethodModifiers.AsyncVirtual, MethodModifiers.AsyncSealed, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.AsyncVirtual, MethodModifiers.AsyncStatic, SemVerChangeType.Breaking);
-            AddChange(MethodModifiers.AsyncVirtual, MethodModifiers.AsyncVirtual, SemVerChangeType.None);
             AddChange(MethodModifiers.AsyncVirtual, MethodModifiers.AbstractOverride, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.AsyncVirtual, MethodModifiers.NewAbstract, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.AsyncVirtual, MethodModifiers.NewAbstractVirtual, SemVerChangeType.Breaking);
@@ -385,7 +371,6 @@
             AddChange(MethodModifiers.AbstractOverride, MethodModifiers.AsyncSealed, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.AbstractOverride, MethodModifiers.AsyncStatic, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.AbstractOverride, MethodModifiers.AsyncVirtual, SemVerChangeType.Breaking);
-            AddChange(MethodModifiers.AbstractOverride, MethodModifiers.AbstractOverride, SemVerChangeType.None);
             AddChange(MethodModifiers.AbstractOverride, MethodModifiers.NewAbstract, SemVerChangeType.None);
             AddChange(MethodModifiers.AbstractOverride, MethodModifiers.NewAbstractVirtual, SemVerChangeType.None);
             AddChange(MethodModifiers.AbstractOverride, MethodModifiers.NewStatic, SemVerChangeType.Breaking);
@@ -412,7 +397,6 @@
             AddChange(MethodModifiers.NewAbstract, MethodModifiers.AsyncStatic, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.NewAbstract, MethodModifiers.AsyncVirtual, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.NewAbstract, MethodModifiers.AbstractOverride, SemVerChangeType.None);
-            AddChange(MethodModifiers.NewAbstract, MethodModifiers.NewAbstract, SemVerChangeType.None);
             AddChange(MethodModifiers.NewAbstract, MethodModifiers.NewAbstractVirtual, SemVerChangeType.None);
             AddChange(MethodModifiers.NewAbstract, MethodModifiers.NewStatic, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.NewAbstract, MethodModifiers.NewVirtual, SemVerChangeType.Feature);
@@ -439,7 +423,6 @@
             AddChange(MethodModifiers.NewAbstractVirtual, MethodModifiers.AsyncVirtual, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.NewAbstractVirtual, MethodModifiers.AbstractOverride, SemVerChangeType.None);
             AddChange(MethodModifiers.NewAbstractVirtual, MethodModifiers.NewAbstract, SemVerChangeType.None);
-            AddChange(MethodModifiers.NewAbstractVirtual, MethodModifiers.NewAbstractVirtual, SemVerChangeType.None);
             AddChange(MethodModifiers.NewAbstractVirtual, MethodModifiers.NewStatic, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.NewAbstractVirtual, MethodModifiers.NewVirtual, SemVerChangeType.Feature);
             AddChange(MethodModifiers.NewAbstractVirtual, MethodModifiers.SealedOverride, SemVerChangeType.Breaking);
@@ -466,7 +449,6 @@
             AddChange(MethodModifiers.NewStatic, MethodModifiers.AbstractOverride, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.NewStatic, MethodModifiers.NewAbstract, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.NewStatic, MethodModifiers.NewAbstractVirtual, SemVerChangeType.Breaking);
-            AddChange(MethodModifiers.NewStatic, MethodModifiers.NewStatic, SemVerChangeType.None);
             AddChange(MethodModifiers.NewStatic, MethodModifiers.NewVirtual, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.NewStatic, MethodModifiers.SealedOverride, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.NewStatic, MethodModifiers.AsyncAbstractOverride, SemVerChangeType.Breaking);
@@ -493,7 +475,6 @@
             AddChange(MethodModifiers.NewVirtual, MethodModifiers.NewAbstract, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.NewVirtual, MethodModifiers.NewAbstractVirtual, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.NewVirtual, MethodModifiers.NewStatic, SemVerChangeType.Breaking);
-            AddChange(MethodModifiers.NewVirtual, MethodModifiers.NewVirtual, SemVerChangeType.None);
             AddChange(MethodModifiers.NewVirtual, MethodModifiers.SealedOverride, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.NewVirtual, MethodModifiers.AsyncAbstractOverride, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.NewVirtual, MethodModifiers.AsyncNewAbstract, SemVerChangeType.Breaking);
@@ -520,7 +501,6 @@
             AddChange(MethodModifiers.SealedOverride, MethodModifiers.NewAbstractVirtual, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.SealedOverride, MethodModifiers.NewStatic, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.SealedOverride, MethodModifiers.NewVirtual, SemVerChangeType.Feature);
-            AddChange(MethodModifiers.SealedOverride, MethodModifiers.SealedOverride, SemVerChangeType.None);
             AddChange(MethodModifiers.SealedOverride, MethodModifiers.AsyncAbstractOverride, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.SealedOverride, MethodModifiers.AsyncNewAbstract, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.SealedOverride, MethodModifiers.AsyncNewAbstractVirtual, SemVerChangeType.Breaking);
@@ -547,7 +527,6 @@
             AddChange(MethodModifiers.AsyncAbstractOverride, MethodModifiers.NewStatic, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.AsyncAbstractOverride, MethodModifiers.NewVirtual, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.AsyncAbstractOverride, MethodModifiers.SealedOverride, SemVerChangeType.Breaking);
-            AddChange(MethodModifiers.AsyncAbstractOverride, MethodModifiers.AsyncAbstractOverride, SemVerChangeType.None);
             AddChange(MethodModifiers.AsyncAbstractOverride, MethodModifiers.AsyncNewAbstract, SemVerChangeType.None);
             AddChange(MethodModifiers.AsyncAbstractOverride, MethodModifiers.AsyncNewAbstractVirtual, SemVerChangeType.None);
             AddChange(MethodModifiers.AsyncAbstractOverride, MethodModifiers.AsyncNewStatic, SemVerChangeType.Breaking);
@@ -574,7 +553,6 @@
             AddChange(MethodModifiers.AsyncNewAbstract, MethodModifiers.NewVirtual, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.AsyncNewAbstract, MethodModifiers.SealedOverride, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.AsyncNewAbstract, MethodModifiers.AsyncAbstractOverride, SemVerChangeType.None);
-            AddChange(MethodModifiers.AsyncNewAbstract, MethodModifiers.AsyncNewAbstract, SemVerChangeType.None);
             AddChange(MethodModifiers.AsyncNewAbstract, MethodModifiers.AsyncNewAbstractVirtual, SemVerChangeType.None);
             AddChange(MethodModifiers.AsyncNewAbstract, MethodModifiers.AsyncNewStatic, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.AsyncNewAbstract, MethodModifiers.AsyncNewVirtual, SemVerChangeType.Feature);
@@ -601,7 +579,6 @@
             AddChange(MethodModifiers.AsyncNewAbstractVirtual, MethodModifiers.SealedOverride, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.AsyncNewAbstractVirtual, MethodModifiers.AsyncAbstractOverride, SemVerChangeType.None);
             AddChange(MethodModifiers.AsyncNewAbstractVirtual, MethodModifiers.AsyncNewAbstract, SemVerChangeType.None);
-            AddChange(MethodModifiers.AsyncNewAbstractVirtual, MethodModifiers.AsyncNewAbstractVirtual, SemVerChangeType.None);
             AddChange(MethodModifiers.AsyncNewAbstractVirtual, MethodModifiers.AsyncNewStatic, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.AsyncNewAbstractVirtual, MethodModifiers.AsyncNewVirtual, SemVerChangeType.Feature);
             AddChange(MethodModifiers.AsyncNewAbstractVirtual, MethodModifiers.AsyncSealedOverride, SemVerChangeType.Breaking);
@@ -628,7 +605,6 @@
             AddChange(MethodModifiers.AsyncNewStatic, MethodModifiers.AsyncAbstractOverride, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.AsyncNewStatic, MethodModifiers.AsyncNewAbstract, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.AsyncNewStatic, MethodModifiers.AsyncNewAbstractVirtual, SemVerChangeType.Breaking);
-            AddChange(MethodModifiers.AsyncNewStatic, MethodModifiers.AsyncNewStatic, SemVerChangeType.None);
             AddChange(MethodModifiers.AsyncNewStatic, MethodModifiers.AsyncNewVirtual, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.AsyncNewStatic, MethodModifiers.AsyncSealedOverride, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.AsyncNewVirtual, MethodModifiers.None, SemVerChangeType.Breaking);
@@ -655,7 +631,6 @@
             AddChange(MethodModifiers.AsyncNewVirtual, MethodModifiers.AsyncNewAbstract, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.AsyncNewVirtual, MethodModifiers.AsyncNewAbstractVirtual, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.AsyncNewVirtual, MethodModifiers.AsyncNewStatic, SemVerChangeType.Breaking);
-            AddChange(MethodModifiers.AsyncNewVirtual, MethodModifiers.AsyncNewVirtual, SemVerChangeType.None);
             AddChange(MethodModifiers.AsyncNewVirtual, MethodModifiers.AsyncSealedOverride, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.AsyncSealedOverride, MethodModifiers.None, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.AsyncSealedOverride, MethodModifiers.Abstract, SemVerChangeType.Breaking);
@@ -682,7 +657,6 @@
             AddChange(MethodModifiers.AsyncSealedOverride, MethodModifiers.AsyncNewAbstractVirtual, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.AsyncSealedOverride, MethodModifiers.AsyncNewStatic, SemVerChangeType.Breaking);
             AddChange(MethodModifiers.AsyncSealedOverride, MethodModifiers.AsyncNewVirtual, SemVerChangeType.Feature);
-            AddChange(MethodModifiers.AsyncSealedOverride, MethodModifiers.AsyncSealedOverride, SemVerChangeType.None);
             // @formatter:on — enable formatter after this line
         }
     }

@@ -9,15 +9,14 @@
     public class ChangeTableTests
     {
         [Fact]
-        public void CalculateChangeReturnsStoredChange()
+        public void AddingEqualValuesToChangeTableThrowsException()
         {
             var sut = new Wrapper();
 
-            sut.StoreChange(AccessModifiers.Public, AccessModifiers.Internal, SemVerChangeType.Breaking);
+            Action action = () =>
+                sut.StoreChange(AccessModifiers.Internal, AccessModifiers.Internal, SemVerChangeType.None);
 
-            var expected = sut.CalculateChange(AccessModifiers.Public, AccessModifiers.Internal);
-
-            expected.Should().Be(SemVerChangeType.Breaking);
+            action.Should().Throw<InvalidOperationException>();
         }
 
         [Fact]
@@ -28,6 +27,18 @@
             var expected = sut.CalculateChange(AccessModifiers.Public, AccessModifiers.Public);
 
             expected.Should().Be(SemVerChangeType.None);
+        }
+
+        [Fact]
+        public void CalculateChangeReturnsStoredChange()
+        {
+            var sut = new Wrapper();
+
+            sut.StoreChange(AccessModifiers.Public, AccessModifiers.Internal, SemVerChangeType.Breaking);
+
+            var expected = sut.CalculateChange(AccessModifiers.Public, AccessModifiers.Internal);
+
+            expected.Should().Be(SemVerChangeType.Breaking);
         }
 
         [Fact]
