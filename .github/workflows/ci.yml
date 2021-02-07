@@ -24,7 +24,7 @@ jobs:
         fetch-depth: 0
 
     - name: Install GitVersion
-      uses: gittools/actions/gitversion/setup@v0.9.7
+      uses: gittools/actions/gitversion/setup@v0.9.8
       with:
           versionSpec: '5.x'
     
@@ -69,7 +69,7 @@ jobs:
 
     - name: Generate coverage report
       # run: reportgenerator -reports:**/coverage.cobertura.xml -targetdir:Report -reporttypes:HtmlInline_AzurePipelines;Cobertura
-      uses: danielpalme/ReportGenerator-GitHub-Action@4.8.2
+      uses: danielpalme/ReportGenerator-GitHub-Action@4.8.5
       with:
         reports: "**/coverage*cobertura.xml"
         targetdir: "Report"

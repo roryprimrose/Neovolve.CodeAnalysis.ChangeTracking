@@ -33,12 +33,19 @@
             var propertyAccessorAccessModifiersChangeTable = new PropertyAccessorAccessModifiersChangeTable();
             var propertyAccessorAccessModifiersComparer = new PropertyAccessorAccessModifiersComparer(propertyAccessorAccessModifiersChangeTable);
             var propertyAccessorComparer = new PropertyAccessorComparer(propertyAccessorAccessModifiersComparer, attributeProcessor);
-            var propertyAccessorMatcher = new PropertyAccessorMatchEvaluator();
+            var propertyAccessorEvaluator = new PropertyAccessorMatchEvaluator();
             var propertyAccessorProcessor =
-                new PropertyAccessorMatchProcessor(propertyAccessorMatcher, propertyAccessorComparer, logger);
+                new PropertyAccessorMatchProcessor(propertyAccessorEvaluator, propertyAccessorComparer, logger);
             var propertyComparer = new PropertyComparer(accessModifiersComparer, memberModifiersComparer, propertyAccessorProcessor, attributeProcessor);
             var propertyMatcher = new PropertyMatchEvaluator();
             var propertyProcessor = new PropertyMatchProcessor(propertyMatcher, propertyComparer, logger);
+
+            var methodEvaluator = new MethodMatchEvaluator();
+            var methodModifiersChangeTable = new MethodModifiersChangeTable();
+            var parameterModifiersChangeTable = new ParameterModifierChangeTable();
+            var parameterComparer = new ParameterComparer(parameterModifiersChangeTable, attributeProcessor);
+            var methodComparer = new MethodComparer(methodModifiersChangeTable, parameterComparer, accessModifiersComparer, attributeProcessor);
+            var methodProcessor = new MethodMatchProcessor(methodEvaluator, methodComparer, logger);
 
             var classModifiersChangeTable = new ClassModifiersChangeTable();
             var classModifiersComparer = new ClassModifiersComparer(classModifiersChangeTable);
@@ -47,12 +54,14 @@
                 classModifiersComparer,
                 fieldProcessor,
                 propertyProcessor,
+                methodProcessor,
                 attributeProcessor);
 
             var interfaceComparer = new InterfaceComparer(
                 accessModifiersComparer,
                 fieldProcessor,
                 propertyProcessor,
+                methodProcessor,
                 attributeProcessor);
 
             var structModifiersChangeTable = new StructModifiersChangeTable();
@@ -62,6 +71,7 @@
                 structModifiersComparer,
                 fieldProcessor,
                 propertyProcessor,
+                methodProcessor,
                 attributeProcessor);
 
             var aggregateTypeComparer = new AggregateTypeComparer(classComparer, interfaceComparer, structComparer);

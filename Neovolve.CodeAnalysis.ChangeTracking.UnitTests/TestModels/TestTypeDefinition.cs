@@ -28,6 +28,7 @@
         public IReadOnlyCollection<string> ImplementedTypes { get; set; } = new List<string>();
         public bool IsVisible { get; set; } = true;
         public DefinitionLocation Location { get; set; } = new DefinitionLocation(string.Empty, 0, 0);
+        public IReadOnlyCollection<IMethodDefinition> Methods { get; set; } = new List<TestMethodDefinition>();
         public string Name { get; set; } = Guid.NewGuid().ToString();
         public string Namespace { get; set; } = Guid.NewGuid().ToString();
         public IReadOnlyCollection<IPropertyDefinition> Properties { get; set; } = new List<TestPropertyDefinition>();

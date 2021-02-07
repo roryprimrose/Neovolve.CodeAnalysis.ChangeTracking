@@ -12,10 +12,12 @@
             IStructModifiersComparer structModifiersComparer,
             IFieldMatchProcessor fieldProcessor,
             IPropertyMatchProcessor propertyProcessor,
+            IMethodMatchProcessor methodProcessor,
             IAttributeMatchProcessor attributeProcessor) : base(
             accessModifiersComparer,
             fieldProcessor,
             propertyProcessor,
+            methodProcessor,
             attributeProcessor)
         {
             _structModifiersComparer =

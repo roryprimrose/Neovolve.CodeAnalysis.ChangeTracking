@@ -10,16 +10,18 @@
         private readonly IFieldMatchProcessor _fieldProcessor;
         private readonly IPropertyMatchProcessor _propertyProcessor;
         private readonly IAccessModifiersComparer _accessModifiersComparer;
+        private readonly IMethodMatchProcessor _methodProcessor;
 
-        public TypeComparer(
-            IAccessModifiersComparer accessModifiersComparer,
+        public TypeComparer(IAccessModifiersComparer accessModifiersComparer,
             IFieldMatchProcessor fieldProcessor,
             IPropertyMatchProcessor propertyProcessor,
+            IMethodMatchProcessor methodProcessor,
             IAttributeMatchProcessor attributeProcessor) : base(attributeProcessor)
         {
             _accessModifiersComparer = accessModifiersComparer
                                        ?? throw new ArgumentNullException(nameof(accessModifiersComparer));
             _propertyProcessor = propertyProcessor ?? throw new ArgumentNullException(nameof(propertyProcessor));
+            _methodProcessor = methodProcessor ?? throw new ArgumentNullException(nameof(methodProcessor));
             _fieldProcessor = fieldProcessor ?? throw new ArgumentNullException(nameof(fieldProcessor));
         }
 
@@ -38,6 +40,7 @@
             RunComparisonStep(EvaluateImplementedTypeChanges, match, options, aggregator, true);
             RunComparisonStep(EvaluateFieldChanges, match, options, aggregator);
             RunComparisonStep(EvaluatePropertyChanges, match, options, aggregator);
+            RunComparisonStep(EvaluateMethodChanges, match, options, aggregator);
         }
 
         private static void CompareDefinitionType(
@@ -296,6 +299,19 @@
             var newProperties = match.NewItem.Properties;
 
             var results = _propertyProcessor.CalculateChanges(oldProperties, newProperties, options);
+
+            aggregator.AddResults(results);
+        }
+
+        private void EvaluateMethodChanges(
+            ItemMatch<T> match,
+            ComparerOptions options,
+            IChangeResultAggregator aggregator)
+        {
+            var oldMethods = match.OldItem.Methods;
+            var newMethods = match.NewItem.Methods;
+
+            var results = _methodProcessor.CalculateChanges(oldMethods, newMethods, options);
 
             aggregator.AddResults(results);
         }

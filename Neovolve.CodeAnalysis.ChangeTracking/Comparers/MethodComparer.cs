@@ -31,7 +31,7 @@
 
             RunComparisonStep(EvaluateMethodModifierChanges, match, options, aggregator);
             RunComparisonStep(EvaluateMethodNameChanges, match, options, aggregator);
-            RunComparisonStep(EvaluateGenericTypeDefinitionChanges, match, options, aggregator);
+            RunComparisonStep(EvaluateGenericTypeDefinitionChanges, match, options, aggregator, true);
             RunComparisonStep(EvaluateParameterChanges, match, options, aggregator);
         }
 

@@ -50,6 +50,11 @@
         IReadOnlyCollection<string> ImplementedTypes { get; }
 
         /// <summary>
+        ///     Gets the methods declared on the type.
+        /// </summary>
+        IReadOnlyCollection<IMethodDefinition> Methods { get; }
+
+        /// <summary>
         ///     Gets the namespace of the type.
         /// </summary>
         string Namespace { get; set; }
