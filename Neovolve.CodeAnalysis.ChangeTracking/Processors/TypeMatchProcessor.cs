@@ -7,28 +7,20 @@
     using Neovolve.CodeAnalysis.ChangeTracking.Evaluators;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
-    public class TypeMatchProcessor : MatchProcessor<ITypeDefinition>, ITypeMatchProcessor
+    public class TypeMatchProcessor : ElementMatchProcessor<ITypeDefinition>, ITypeMatchProcessor
     {
-        private readonly ITypeComparer _comparer;
-
-        public TypeMatchProcessor(ITypeComparer comparer, IMatchEvaluator evaluator, ILogger? logger) : base(evaluator, logger)
+        public TypeMatchProcessor(
+            IMatchEvaluator<ITypeDefinition> evaluator,
+            ITypeComparer<ITypeDefinition> comparer,
+            ILogger? logger) : base(evaluator, comparer, logger)
         {
-            _comparer = comparer ?? throw new ArgumentNullException(nameof(comparer));
         }
 
-        protected override bool IsItemMatch(ITypeDefinition oldItem, ITypeDefinition newItem)
+        protected override IEnumerable<ComparisonResult> EvaluateMatch(
+            ItemMatch<ITypeDefinition> match,
+            ComparerOptions options)
         {
-            return oldItem.IsMatch(newItem);
-        }
-
-        protected override bool IsVisible(ITypeDefinition item)
-        {
-            return item.IsVisible;
-        }
-
-        protected override IEnumerable<ComparisonResult> EvaluateMatch(ItemMatch<ITypeDefinition> match, ComparerOptions options)
-        {
-            var results = _comparer.CompareItems(match, options);
+            var results = base.EvaluateMatch(match, options);
 
             foreach (var result in results)
             {

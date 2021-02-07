@@ -4,13 +4,8 @@
     ///     The <see cref="IMemberDefinition" />
     ///     interface defines common properties for members.
     /// </summary>
-    public interface IMemberDefinition : IElementDefinition
+    public interface IMemberDefinition : IAccessModifiersElement<AccessModifiers>
     {
-        /// <summary>
-        ///     Gets the access modifier for the type.
-        /// </summary>
-        AccessModifier AccessModifier { get; }
-
         /// <summary>
         ///     Gets the type that declares the member.
         /// </summary>

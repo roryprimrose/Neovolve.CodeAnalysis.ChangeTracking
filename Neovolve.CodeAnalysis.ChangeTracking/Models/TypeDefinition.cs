@@ -28,7 +28,7 @@
 
             IsVisible = DetermineIsVisible(node, DeclaringType);
 
-            AccessModifier = DetermineAccessModifier(node, DeclaringType);
+            AccessModifiers = DetermineAccessModifier(node, DeclaringType);
             Name = name;
             RawName = rawName;
             FullRawName = Namespace + "." + rawName;
@@ -57,7 +57,7 @@
             var rawName = node.Identifier.Text;
 
             Namespace = DetermineNamespace(node);
-            AccessModifier = DetermineAccessModifier(node, DeclaringType);
+            AccessModifiers = DetermineAccessModifier(node, DeclaringType);
             Name = name;
             RawName = rawName;
             FullRawName = DeclaringType.FullRawName + "+" + rawName;
@@ -87,17 +87,17 @@
             return childTypes.AsReadOnly();
         }
 
-        private static AccessModifier DetermineAccessModifier(TypeDeclarationSyntax node,
+        private static AccessModifiers DetermineAccessModifier(TypeDeclarationSyntax node,
             ITypeDefinition? declaringType)
         {
             node = node ?? throw new ArgumentNullException(nameof(node));
 
             if (declaringType == null)
             {
-                return node.Modifiers.DetermineAccessModifier(AccessModifier.Internal);
+                return node.Modifiers.DetermineAccessModifier(AccessModifiers.Internal);
             }
 
-            return node.Modifiers.DetermineAccessModifier(AccessModifier.Private);
+            return node.Modifiers.DetermineAccessModifier(AccessModifiers.Private);
         }
 
         private static IReadOnlyCollection<ITypeDefinition> DetermineChildTypes(
@@ -170,7 +170,7 @@
             }
 
             // This is either a top level type or the parent type is visible
-            // Determine visibility based on the access modifier
+            // Determine visibility based on the access modifiers
             var accessModifier = DetermineAccessModifier(node, declaringType);
 
             return accessModifier.IsVisible();
@@ -255,7 +255,7 @@
         }
 
         /// <inheritdoc />
-        public AccessModifier AccessModifier { get; }
+        public AccessModifiers AccessModifiers { get; }
 
         /// <inheritdoc />
         public IReadOnlyCollection<IClassDefinition> ChildClasses { get; }

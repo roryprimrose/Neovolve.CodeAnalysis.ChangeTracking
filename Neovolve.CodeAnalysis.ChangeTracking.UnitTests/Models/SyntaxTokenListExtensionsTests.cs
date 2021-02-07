@@ -20,20 +20,20 @@ namespace MyNamespace
 ";
 
         [Theory]
-        [InlineData("", AccessModifier.Internal)]
-        [InlineData("private", AccessModifier.Private)]
-        [InlineData("internal", AccessModifier.Internal)]
-        [InlineData("protected", AccessModifier.Protected)]
-        [InlineData("private protected", AccessModifier.ProtectedPrivate)]
-        [InlineData("protected private", AccessModifier.ProtectedPrivate)]
-        [InlineData("protected internal", AccessModifier.ProtectedInternal)]
-        [InlineData("internal protected", AccessModifier.ProtectedInternal)]
-        [InlineData("public", AccessModifier.Public)]
+        [InlineData("", AccessModifiers.Internal)]
+        [InlineData("private", AccessModifiers.Private)]
+        [InlineData("internal", AccessModifiers.Internal)]
+        [InlineData("protected", AccessModifiers.Protected)]
+        [InlineData("private protected", AccessModifiers.ProtectedPrivate)]
+        [InlineData("protected private", AccessModifiers.ProtectedPrivate)]
+        [InlineData("protected internal", AccessModifiers.ProtectedInternal)]
+        [InlineData("internal protected", AccessModifiers.ProtectedInternal)]
+        [InlineData("public", AccessModifiers.Public)]
         public async Task AccessModifierReturnsValueBasedOnAccessModifiers(
             string accessModifiers,
-            AccessModifier expected)
+            AccessModifiers expected)
         {
-            var defaultValue = AccessModifier.Internal;
+            var defaultValue = AccessModifiers.Internal;
             var code = TypeDefinitionCode.BuildClassWithScope(accessModifiers);
 
             var node = await TestNode.FindNode<ClassDeclarationSyntax>(code).ConfigureAwait(false);
@@ -48,7 +48,7 @@ namespace MyNamespace
         [Fact]
         public void DetermineAccessModifierReturnsDefaultWhenNoModifierSpecified()
         {
-            var defaultValue = AccessModifier.Internal;
+            var defaultValue = AccessModifiers.Internal;
             var list = new SyntaxTokenList();
 
             var actual = list.DetermineAccessModifier(defaultValue);

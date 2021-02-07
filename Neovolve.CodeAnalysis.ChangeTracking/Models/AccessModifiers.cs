@@ -1,6 +1,6 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.Models
 {
-    public enum AccessModifier
+    public enum AccessModifiers
     {
         Internal,
         Private,

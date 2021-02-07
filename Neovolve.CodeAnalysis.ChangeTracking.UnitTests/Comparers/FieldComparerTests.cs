@@ -1,5 +1,6 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Comparers
 {
+    using System;
     using System.Linq;
     using FluentAssertions;
     using ModelBuilder;
@@ -9,9 +10,17 @@
     using Neovolve.CodeAnalysis.ChangeTracking.UnitTests.TestModels;
     using NSubstitute;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class FieldComparerTests
     {
+        private readonly ITestOutputHelper _output;
+
+        public FieldComparerTests(ITestOutputHelper output)
+        {
+            _output = output;
+        }
+
         [Theory]
         [InlineData(FieldModifiers.None, FieldModifiers.None, SemVerChangeType.None)]
         [InlineData(FieldModifiers.None, FieldModifiers.ReadOnly, SemVerChangeType.Breaking)]
@@ -57,10 +66,18 @@
             });
             var match = new ItemMatch<IFieldDefinition>(oldItem, newItem);
             var options = ComparerOptions.Default;
+            var result = new ComparisonResult(expected, oldItem, newItem, "Some message");
 
+            var accessModifiersComparer = Substitute.For<IAccessModifiersComparer>();
+            var modifiersComparer = Substitute.For<IFieldModifiersComparer>();
             var attributeProcessor = Substitute.For<IAttributeMatchProcessor>();
 
-            var sut = new FieldComparer(attributeProcessor);
+            if (expected != SemVerChangeType.None)
+            {
+                modifiersComparer.CompareItems(Arg.Is<ItemMatch<IModifiersElement<FieldModifiers>>>(x => x.OldItem == oldItem && x.NewItem == newItem), options).Returns(new[] { result });
+            }
+
+            var sut = new FieldComparer(accessModifiersComparer, modifiersComparer, attributeProcessor);
 
             var actual = sut.CompareItems(match, options).ToList();
 
@@ -84,9 +101,11 @@
             var match = new ItemMatch<IFieldDefinition>(field, field);
             var options = ComparerOptions.Default;
 
+            var accessModifiersComparer = Substitute.For<IAccessModifiersComparer>();
+            var modifiersComparer = Substitute.For<IFieldModifiersComparer>();
             var attributeProcessor = Substitute.For<IAttributeMatchProcessor>();
 
-            var sut = new FieldComparer(attributeProcessor);
+            var sut = new FieldComparer(accessModifiersComparer, modifiersComparer, attributeProcessor);
 
             var actual = sut.CompareItems(match, options).ToList();
 
@@ -96,19 +115,62 @@
         [Fact]
         public void CompareItemsRunsAdditionalChecksIfModifiersCheckFindsBreakingChange()
         {
-            var oldItem = new TestFieldDefinition().Set(x => x.Modifiers = FieldModifiers.ReadOnly);
-            var newItem = new TestFieldDefinition().Set(x => { x.Modifiers = FieldModifiers.Static; });
+            var oldItem = new TestFieldDefinition();
+            var newItem = new TestFieldDefinition();
             var match = new ItemMatch<IFieldDefinition>(oldItem, newItem);
             var options = ComparerOptions.Default;
+            var result = new ComparisonResult(SemVerChangeType.Breaking, oldItem, newItem, "Different modifier");
 
+            var accessModifiersComparer = Substitute.For<IAccessModifiersComparer>();
+            var modifiersComparer = Substitute.For<IFieldModifiersComparer>();
             var attributeProcessor = Substitute.For<IAttributeMatchProcessor>();
 
-            var sut = new FieldComparer(attributeProcessor);
+            modifiersComparer.CompareItems(Arg.Is<ItemMatch<IModifiersElement<FieldModifiers>>>(x => x.OldItem == oldItem && x.NewItem == newItem), options).Returns(new []{ result });
+
+            var sut = new FieldComparer(accessModifiersComparer, modifiersComparer, attributeProcessor);
 
             // This should find a change in return type as well as modifiers
             var actual = sut.CompareItems(match, options).ToList();
 
+            _output.WriteResults(actual);
+
             actual.Should().HaveCount(2);
+        }
+
+        [Fact]
+        public void ThrowsExceptionWhenCreatedWithNullAccessModifiersComparer()
+        {
+            var modifiersComparer = Substitute.For<IFieldModifiersComparer>();
+            var attributeProcessor = Substitute.For<IAttributeMatchProcessor>();
+
+            // ReSharper disable once ObjectCreationAsStatement
+            Action action = () => new FieldComparer(null!, modifiersComparer, attributeProcessor);
+
+            action.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
+        public void ThrowsExceptionWhenCreatedWithNullAttributeProcessor()
+        {
+            var accessModifiersComparer = Substitute.For<IAccessModifiersComparer>();
+            var modifiersComparer = Substitute.For<IFieldModifiersComparer>();
+
+            // ReSharper disable once ObjectCreationAsStatement
+            Action action = () => new FieldComparer(accessModifiersComparer, modifiersComparer, null!);
+
+            action.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
+        public void ThrowsExceptionWhenCreatedWithNullModifiersComparer()
+        {
+            var accessModifiersComparer = Substitute.For<IAccessModifiersComparer>();
+            var attributeProcessor = Substitute.For<IAttributeMatchProcessor>();
+
+            // ReSharper disable once ObjectCreationAsStatement
+            Action action = () => new FieldComparer(accessModifiersComparer, null!, attributeProcessor);
+
+            action.Should().Throw<ArgumentNullException>();
         }
     }
 }

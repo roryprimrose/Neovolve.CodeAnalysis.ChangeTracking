@@ -1,13 +1,24 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.ChangeTables
 {
+    using System;
     using FluentAssertions;
     using Neovolve.CodeAnalysis.ChangeTracking.ChangeTables;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
-    using NSubstitute;
     using Xunit;
 
-    public class ClassModifierChangeTableTests
+    public class ClassModifiersChangeTableTests
     {
+        [Theory]
+        [ClassData(typeof(EnumCombinationsDataSet<ClassModifiers>))]
+        public void CalculateChangeHandlesAllPossibleValues(ClassModifiers oldValue, ClassModifiers newValue)
+        {
+            var sut = new ClassModifiersChangeTable();
+
+            Action action = () => sut.CalculateChange(oldValue, newValue);
+
+            action.Should().NotThrow();
+        }
+
         [Theory]
         [InlineData(ClassModifiers.None, ClassModifiers.None, SemVerChangeType.None)]
         [InlineData(ClassModifiers.None, ClassModifiers.Abstract, SemVerChangeType.Breaking)]
@@ -73,19 +84,13 @@
         [InlineData(ClassModifiers.SealedPartial, ClassModifiers.AbstractPartial, SemVerChangeType.Breaking)]
         [InlineData(ClassModifiers.SealedPartial, ClassModifiers.StaticPartial, SemVerChangeType.Breaking)]
         [InlineData(ClassModifiers.SealedPartial, ClassModifiers.SealedPartial, SemVerChangeType.None)]
-        public void CalculateChangeReturnsExpectedValueForMemberDefinition(ClassModifiers oldValue,
+        public void CalculateChangeReturnsExpectedValue(ClassModifiers oldValue,
             ClassModifiers newValue,
             SemVerChangeType expected)
         {
-            var oldItem = Substitute.For<IClassDefinition>();
-            var newItem = Substitute.For<IClassDefinition>();
+            var sut = new ClassModifiersChangeTable();
 
-            oldItem.Modifiers.Returns(oldValue);
-            newItem.Modifiers.Returns(newValue);
-
-            var match = new ItemMatch<IClassDefinition>(oldItem, newItem);
-
-            var actual = ClassModifierChangeTable.CalculateChange(match);
+            var actual = sut.CalculateChange(oldValue, newValue);
 
             actual.Should().Be(expected);
         }

@@ -8,7 +8,7 @@
         protected MemberDefinition(MemberDeclarationSyntax node, ITypeDefinition declaringType) : base(node)
         {
             DeclaringType = declaringType ?? throw new ArgumentNullException(nameof(declaringType));
-            AccessModifier = DetermineAccessModifier(node, DeclaringType);
+            AccessModifiers = DetermineAccessModifier(node, DeclaringType);
 
             if (declaringType.IsVisible == false)
             {
@@ -16,12 +16,12 @@
             }
             else
             {
-                // Determine visibility based on the access modifier
-                IsVisible = AccessModifier.IsVisible();
+                // Determine visibility based on the access modifiers
+                IsVisible = AccessModifiers.IsVisible();
             }
         }
 
-        private static AccessModifier DetermineAccessModifier(MemberDeclarationSyntax node,
+        private static AccessModifiers DetermineAccessModifier(MemberDeclarationSyntax node,
             ITypeDefinition declaringType)
         {
             node = node ?? throw new ArgumentNullException(nameof(node));
@@ -30,17 +30,17 @@
             // See default values as identified at https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/accessibility-levels
             if (declaringType is IInterfaceDefinition)
             {
-                return node.Modifiers.DetermineAccessModifier(AccessModifier.Public);
+                return node.Modifiers.DetermineAccessModifier(AccessModifiers.Public);
             }
 
             if (declaringType is IClassDefinition)
             {
-                return node.Modifiers.DetermineAccessModifier(AccessModifier.Private);
+                return node.Modifiers.DetermineAccessModifier(AccessModifiers.Private);
             }
 
             if (declaringType is IStructDefinition)
             {
-                return node.Modifiers.DetermineAccessModifier(AccessModifier.Private);
+                return node.Modifiers.DetermineAccessModifier(AccessModifiers.Private);
             }
 
             // TODO: Fill these out when the types are supported
@@ -50,7 +50,7 @@
         }
 
         /// <inheritdoc />
-        public AccessModifier AccessModifier { get; }
+        public AccessModifiers AccessModifiers { get; }
 
         /// <inheritdoc />
         public ITypeDefinition DeclaringType { get; }

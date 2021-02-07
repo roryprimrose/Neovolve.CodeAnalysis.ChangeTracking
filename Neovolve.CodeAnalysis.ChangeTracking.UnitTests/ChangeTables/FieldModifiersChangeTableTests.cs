@@ -1,14 +1,24 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.ChangeTables
 {
+    using System;
     using FluentAssertions;
-    using ModelBuilder;
     using Neovolve.CodeAnalysis.ChangeTracking.ChangeTables;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
-    using Neovolve.CodeAnalysis.ChangeTracking.UnitTests.TestModels;
     using Xunit;
 
     public class FieldModifiersChangeTableTests
     {
+        [Theory]
+        [ClassData(typeof(EnumCombinationsDataSet<FieldModifiers>))]
+        public void CalculateChangeHandlesAllPossibleValues(FieldModifiers oldValue, FieldModifiers newValue)
+        {
+            var sut = new FieldModifiersChangeTable();
+
+            Action action = () => sut.CalculateChange(oldValue, newValue);
+
+            action.Should().NotThrow();
+        }
+
         [Theory]
         [InlineData(FieldModifiers.None, FieldModifiers.None, SemVerChangeType.None)]
         [InlineData(FieldModifiers.None, FieldModifiers.ReadOnly, SemVerChangeType.Breaking)]
@@ -26,15 +36,13 @@
         [InlineData(FieldModifiers.StaticReadOnly, FieldModifiers.ReadOnly, SemVerChangeType.Breaking)]
         [InlineData(FieldModifiers.StaticReadOnly, FieldModifiers.Static, SemVerChangeType.Breaking)]
         [InlineData(FieldModifiers.StaticReadOnly, FieldModifiers.StaticReadOnly, SemVerChangeType.None)]
-        public void CalculateChangeReturnsExpectedValue(FieldModifiers oldModifiers,
-            FieldModifiers newModifiers,
+        public void CalculateChangeReturnsExpectedValue(FieldModifiers oldValue,
+            FieldModifiers newValue,
             SemVerChangeType expected)
         {
-            var oldField = new TestFieldDefinition().Set(x => x.Modifiers = oldModifiers);
-            var newField = new TestFieldDefinition().Set(x => x.Modifiers = newModifiers);
-            var match = new ItemMatch<IFieldDefinition>(oldField, newField);
+            var sut = new FieldModifiersChangeTable();
 
-            var actual = FieldModifiersChangeTable.CalculateChange(match);
+            var actual = sut.CalculateChange(oldValue, newValue);
 
             actual.Should().Be(expected);
         }

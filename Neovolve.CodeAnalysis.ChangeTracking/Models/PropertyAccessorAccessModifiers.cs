@@ -1,6 +1,6 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.Models
 {
-    public enum PropertyAccessorAccessModifier
+    public enum PropertyAccessorAccessModifiers
     {
         None = 0,
         Private,
