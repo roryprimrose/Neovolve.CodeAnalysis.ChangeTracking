@@ -142,41 +142,6 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsBreakingWhenOrdinalArgumentChanged()
-        {
-            var oldArgument = Model.UsingModule<ConfigurationModule>().Create<TestArgumentDefinition>()
-                .Set(x => x.ArgumentType = ArgumentType.Ordinal);
-            var oldArguments = new[]
-            {
-                oldArgument
-            };
-            var oldAttribute = Model.UsingModule<ConfigurationModule>().Create<TestAttributeDefinition>()
-                .Set(x => x.Arguments = oldArguments);
-            var newArgument = Model.UsingModule<ConfigurationModule>().Create<TestArgumentDefinition>().Set(
-                x => { x.ArgumentType = ArgumentType.Ordinal; });
-            var newArguments = new[]
-            {
-                newArgument
-            };
-            var newAttribute = Model.UsingModule<ConfigurationModule>().Create<TestAttributeDefinition>()
-                .Set(x => x.Arguments = newArguments);
-            var match = new ItemMatch<IAttributeDefinition>(oldAttribute, newAttribute);
-            var options = OptionsFactory.BuildOptions();
-
-            var sut = new AttributeComparer();
-
-            var actual = sut.CompareItems(match, options).ToList();
-
-            actual.Should().HaveCount(1);
-
-            _output.WriteLine(actual[0].Message);
-
-            actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
-            actual[0].OldItem.Should().BeAssignableTo<IArgumentDefinition>();
-            actual[0].NewItem.Should().BeAssignableTo<IArgumentDefinition>();
-        }
-
-        [Fact]
         public void CompareItemsReturnsBreakingWhenOrdinalArgumentsAdded()
         {
             var oldArgument = Model.UsingModule<ConfigurationModule>().Create<TestArgumentDefinition>()
@@ -224,9 +189,14 @@
             {
                 oldArgument
             };
+            var newArgument = Model.UsingModule<ConfigurationModule>().Create<TestArgumentDefinition>()
+                .Set(x => x.ArgumentType = ArgumentType.Named);
+            var newArguments = new[]
+            {
+                newArgument
+            };
             var oldAttribute = Model.UsingModule<ConfigurationModule>().Create<TestAttributeDefinition>()
                 .Set(x => x.Arguments = oldArguments);
-            var newArguments = Array.Empty<IArgumentDefinition>();
             var newAttribute = Model.UsingModule<ConfigurationModule>().Create<TestAttributeDefinition>()
                 .Set(x => x.Arguments = newArguments);
             var match = new ItemMatch<IAttributeDefinition>(oldAttribute, newAttribute);
@@ -246,6 +216,41 @@
         }
 
         [Fact]
+        public void CompareItemsReturnsBreakingWhenOrdinalArgumentValueChanged()
+        {
+            var oldArgument = Model.UsingModule<ConfigurationModule>().Create<TestArgumentDefinition>()
+                .Set(x => x.ArgumentType = ArgumentType.Ordinal);
+            var oldArguments = new[]
+            {
+                oldArgument
+            };
+            var oldAttribute = Model.UsingModule<ConfigurationModule>().Create<TestAttributeDefinition>()
+                .Set(x => x.Arguments = oldArguments);
+            var newArgument = Model.UsingModule<ConfigurationModule>().Create<TestArgumentDefinition>().Set(
+                x => { x.ArgumentType = ArgumentType.Ordinal; });
+            var newArguments = new[]
+            {
+                newArgument
+            };
+            var newAttribute = Model.UsingModule<ConfigurationModule>().Create<TestAttributeDefinition>()
+                .Set(x => x.Arguments = newArguments);
+            var match = new ItemMatch<IAttributeDefinition>(oldAttribute, newAttribute);
+            var options = OptionsFactory.BuildOptions();
+
+            var sut = new AttributeComparer();
+
+            var actual = sut.CompareItems(match, options).ToList();
+
+            actual.Should().HaveCount(1);
+
+            _output.WriteLine(actual[0].Message);
+
+            actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
+            actual[0].OldItem.Should().BeAssignableTo<IArgumentDefinition>();
+            actual[0].NewItem.Should().BeAssignableTo<IArgumentDefinition>();
+        }
+
+        [Fact]
         public void CompareItemsReturnsEmptyChangesWhenAttributesDoNotHaveArguments()
         {
             var oldItem = Model.UsingModule<ConfigurationModule>().Ignoring<TestAttributeDefinition>(x => x.Arguments)
@@ -258,6 +263,30 @@
             var sut = new AttributeComparer();
 
             var actual = sut.CompareItems(match, options);
+
+            actual.Should().BeEmpty();
+        }
+
+        [Fact]
+        public void CompareItemsReturnsEmptyResultsWhenNoChangeFound()
+        {
+            var ordinalArgument = Model.UsingModule<ConfigurationModule>().Create<TestArgumentDefinition>()
+                .Set(x => x.ArgumentType = ArgumentType.Ordinal);
+            var namedArgument = Model.UsingModule<ConfigurationModule>().Create<TestArgumentDefinition>()
+                .Set(x => x.ArgumentType = ArgumentType.Named);
+            var oldArguments = new[]
+            {
+                ordinalArgument,
+                namedArgument
+            };
+            var attribute = Model.UsingModule<ConfigurationModule>().Create<TestAttributeDefinition>()
+                .Set(x => x.Arguments = oldArguments);
+            var match = new ItemMatch<IAttributeDefinition>(attribute, attribute);
+            var options = OptionsFactory.BuildOptions();
+
+            var sut = new AttributeComparer();
+
+            var actual = sut.CompareItems(match, options).ToList();
 
             actual.Should().BeEmpty();
         }

@@ -1,8 +1,18 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Comparers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using FluentAssertions;
+    using ModelBuilder;
+    using Neovolve.CodeAnalysis.ChangeTracking.Comparers;
+    using Neovolve.CodeAnalysis.ChangeTracking.Models;
+    using Neovolve.CodeAnalysis.ChangeTracking.UnitTests.TestModels;
+    using NSubstitute;
+    using Xunit;
     using Xunit.Abstractions;
 
-    public class MemberComparerTests
+    public class MemberComparerTests : Tests<MemberComparer<TestPropertyDefinition>>
     {
         private readonly ITestOutputHelper _output;
 
@@ -11,212 +21,185 @@
             _output = output;
         }
 
-        //[Fact]
-        //public void CompareReturnsFeatureWhenReturnTypeChangedWithPropertyChangedToPublic()
-        //{
-        //    var oldMember = Model.UsingModule<ConfigurationModule>()
-        //        .Create<OldMemberDefinition>()
-        //        .Set(x =>
-        //        {
-        //            x.IsVisible = false;
-        //            x.ReturnType = "string";
-        //        });
-        //    var newMember = oldMember.JsonClone()
-        //        .Set(x =>
-        //        {
-        //            x.IsVisible = true; // Feature
-        //            x.ReturnType = "DateTimeOffset"; // Breaking
-        //        });
-        //    var match = new DefinitionMatch(oldMember, newMember);
+        [Fact]
+        public void CompareItemsReturnsEmptyWhenNodesMatch()
+        {
+            var oldMember = new TestPropertyDefinition();
+            var newMember = oldMember.JsonClone();
+            var match = new ItemMatch<TestPropertyDefinition>(oldMember, newMember);
+            var options = ComparerOptions.Default;
 
-        //    var sut = new MemberComparer();
+            var actual = SUT.CompareItems(match, options).ToList();
 
-        //    var actual = sut.Compare(match);
+            OutputChanges(actual);
 
-        //    _output.WriteLine(actual.Message);
+            actual.Should().BeEmpty();
+        }
 
-        //    actual.ChangeType.Should().Be(SemVerChangeType.Feature);
-        //}
+        [Fact]
+        public void CompareReturnsBreakingWhenReturnTypeIsChangedAndParentTypesExist()
+        {
+            var oldGrandparent =
+                new TestClassDefinition().Set(x => x.GenericTypeParameters = new List<string> {"TOld"}.AsReadOnly());
+            var oldParent = new TestClassDefinition().Set(x => x.DeclaringType = oldGrandparent);
+            var oldMember = new TestPropertyDefinition().Set(x =>
+            {
+                x.DeclaringType = oldParent;
+                x.ReturnType = "string";
+            });
+            var newGrandparent =
+                new TestClassDefinition().Set(x => x.GenericTypeParameters = new List<string> {"TNew"}.AsReadOnly());
+            var newParent = new TestClassDefinition().Set(x => x.DeclaringType = newGrandparent);
+            var newMember = new TestPropertyDefinition().Set(x =>
+            {
+                x.DeclaringType = newParent;
+                x.ReturnType = "DateTime";
+            });
+            var match = new ItemMatch<TestPropertyDefinition>(oldMember, newMember);
+            var options = ComparerOptions.Default;
 
-        //[Fact]
-        //public void CompareReturnsNoneWhenNodesMatch()
-        //{
-        //    var oldMember = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>();
-        //    var newMember = oldMember.JsonClone();
-        //    var match = new DefinitionMatch(oldMember, newMember);
+            var actual = SUT.CompareItems(match, options).ToList();
 
-        //    var sut = new MemberComparer();
+            OutputChanges(actual);
 
-        //    var actual = sut.Compare(match);
+            actual.Should().NotBeEmpty();
+            actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
+        }
 
-        //    _output.WriteLine(actual.Message);
+        [Fact]
+        public void CompareReturnsEmptyWhenReturnTypeIsRenamedGenericTypeOnGrandparentType()
+        {
+            var oldParent =
+                new TestClassDefinition().Set(x => x.GenericTypeParameters = new List<string> {"TOld"}.AsReadOnly());
+            var oldMember = new TestPropertyDefinition().Set(x =>
+            {
+                x.DeclaringType = oldParent;
+                x.ReturnType = "TOld";
+            });
+            var newParent =
+                new TestClassDefinition().Set(x => x.GenericTypeParameters = new List<string> {"TNew"}.AsReadOnly());
+            var newMember = oldMember.JsonClone().Set(x =>
+            {
+                x.DeclaringType = newParent;
+                x.ReturnType = "TNew";
+            });
+            var match = new ItemMatch<TestPropertyDefinition>(oldMember, newMember);
+            var options = ComparerOptions.Default;
 
-        //    actual.ChangeType.Should().Be(SemVerChangeType.None);
-        //}
+            var actual = SUT.CompareItems(match, options).ToList();
 
-        //[Fact]
-        //public void CompareReturnsNoneWhenReturnTypeChangedWithPropertyNotPublic()
-        //{
-        //    var oldMember = Model.UsingModule<ConfigurationModule>()
-        //        .Create<OldMemberDefinition>()
-        //        .Set(x =>
-        //        {
-        //            x.IsVisible = false;
-        //            x.ReturnType = "string";
-        //        });
-        //    var newMember = oldMember.JsonClone().Set(x => { x.ReturnType = "DateTimeOffset"; });
-        //    var match = new DefinitionMatch(oldMember, newMember);
+            OutputChanges(actual);
 
-        //    var sut = new MemberComparer();
+            actual.Should().BeEmpty();
+        }
 
-        //    var actual = sut.Compare(match);
+        [Fact]
+        public void CompareReturnsEmptyWhenReturnTypeIsRenamedGenericTypeOnParentType()
+        {
+            var oldGrandparent =
+                new TestClassDefinition().Set(x => x.GenericTypeParameters = new List<string> {"TOld"}.AsReadOnly());
+            var oldParent = new TestClassDefinition().Set(x => x.DeclaringType = oldGrandparent);
+            var oldMember = new TestPropertyDefinition().Set(x =>
+            {
+                x.DeclaringType = oldParent;
+                x.ReturnType = "TOld";
+            });
+            var newGrandparent =
+                new TestClassDefinition().Set(x => x.GenericTypeParameters = new List<string> {"TNew"}.AsReadOnly());
+            var newParent = new TestClassDefinition().Set(x => x.DeclaringType = newGrandparent);
+            var newMember = new TestPropertyDefinition().Set(x =>
+            {
+                x.DeclaringType = newParent;
+                x.ReturnType = "TNew";
+            });
+            var match = new ItemMatch<TestPropertyDefinition>(oldMember, newMember);
+            var options = ComparerOptions.Default;
 
-        //    _output.WriteLine(actual.Message);
+            var actual = SUT.CompareItems(match, options).ToList();
 
-        //    actual.ChangeType.Should().Be(SemVerChangeType.None);
-        //}
+            OutputChanges(actual);
 
-        //[Theory]
-        //[InlineData(false, false, SemVerChangeType.None)]
-        //[InlineData(true, true, SemVerChangeType.None)]
-        //[InlineData(true, false, SemVerChangeType.Breaking)]
-        //[InlineData(false, true, SemVerChangeType.Feature)]
-        //public void CompareReturnsResultBasedOnIsVisible(bool oldValue, bool newValue, SemVerChangeType expected)
-        //{
-        //    var oldMember = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>()
-        //        .Set(x => x.IsVisible = oldValue);
-        //    var newMember = oldMember.JsonClone().Set(x => x.IsVisible = newValue);
-        //    var match = new DefinitionMatch(oldMember, newMember);
+            actual.Should().BeEmpty();
+        }
 
-        //    var sut = new MemberComparer();
+        [Theory]
+        [InlineData("string", "string", null)]
+        [InlineData("string", "DateTimeOffset", SemVerChangeType.Breaking)]
+        public void CompareReturnsResultBasedOnReturnType(string oldValue, string newValue, SemVerChangeType? expected)
+        {
+            var oldMember = new TestPropertyDefinition()
+                .Set(x => x.ReturnType = oldValue);
+            var newMember = oldMember.JsonClone().Set(x => x.ReturnType = newValue);
+            var match = new ItemMatch<TestPropertyDefinition>(oldMember, newMember);
+            var options = ComparerOptions.Default;
 
-        //    var actual = sut.Compare(match);
+            var actual = SUT.CompareItems(match, options).ToList();
 
-        //    _output.WriteLine(actual.Message);
+            OutputChanges(actual);
 
-        //    actual.ChangeType.Should().Be(expected);
-        //}
+            if (expected == null)
+            {
+                actual.Should().BeEmpty();
+            }
+            else
+            {
+                actual[0].ChangeType.Should().Be(expected);
+            }
+        }
 
-        //[Theory]
-        //[InlineData("string", "string", SemVerChangeType.None)]
-        //[InlineData("string", "DateTimeOffset", SemVerChangeType.Breaking)]
-        //public void CompareReturnsResultBasedOnReturnType(string oldValue, string newValue, SemVerChangeType expected)
-        //{
-        //    var oldMember = Model.UsingModule<ConfigurationModule>()
-        //        .Create<OldMemberDefinition>()
-        //        .Set(x => x.ReturnType = oldValue);
-        //    var newMember = oldMember.JsonClone().Set(x => x.ReturnType = newValue);
-        //    var match = new DefinitionMatch(oldMember, newMember);
+        [Fact]
+        public void CompareReturnsResultFromAccessModifierComparer()
+        {
+            var oldMember = new TestPropertyDefinition();
+            var newMember = oldMember.JsonClone();
+            var match = new ItemMatch<TestPropertyDefinition>(oldMember, newMember);
+            var options = ComparerOptions.Default;
+            var changeType = Model.Create<SemVerChangeType>();
+            var message = Guid.NewGuid().ToString();
+            var result = new ComparisonResult(changeType, oldMember, newMember, message);
+            var results = new[] {result};
 
-        //    var sut = new MemberComparer();
+            Service<IAccessModifiersComparer>()
+                .CompareItems(
+                    Arg.Is<ItemMatch<IAccessModifiersElement<AccessModifiers>>>(x =>
+                        x.OldItem == oldMember && x.NewItem == newMember), options).Returns(results);
 
-        //    var actual = sut.Compare(match);
+            var actual = SUT.CompareItems(match, options).ToList();
 
-        //    _output.WriteLine(actual.Message);
+            OutputChanges(actual);
 
-        //    actual.ChangeType.Should().Be(expected);
-        //}
+            actual.Should().HaveCount(1);
+            actual[0].Should().Be(result);
+        }
 
-        //[Theory]
-        //[InlineData(null, "NewValue")]
-        //[InlineData("", "NewValue")]
-        //[InlineData(" ", "NewValue")]
-        //[InlineData("OldValue", null)]
-        //[InlineData("OldValue", "")]
-        //[InlineData("OldValue", " ")]
-        //[InlineData("OldValue", "NewValue")]
-        //public void CompareThrowsExceptionWhenNameDoesNotMatch(string oldValue, string newValue)
-        //{
-        //    var oldMember = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>()
-        //        .Set(x => x.Name = oldValue);
-        //    var newMember = oldMember.JsonClone().Set(x => x.Name = newValue);
-        //    var match = new DefinitionMatch(oldMember, newMember);
+        [Fact]
+        public void CompareThrowsExceptionWithNullMatch()
+        {
+            var options = ComparerOptions.Default;
 
-        //    var sut = new MemberComparer();
+            Action action = () => SUT.CompareItems(null!, options);
 
-        //    Action action = () => sut.Compare(match);
+            action.Should().Throw<ArgumentNullException>();
+        }
 
-        //    action.Should().Throw<InvalidOperationException>();
-        //}
+        [Fact]
+        public void CompareThrowsExceptionWithNullOptions()
+        {
+            var oldMember = new TestPropertyDefinition();
+            var newMember = oldMember.JsonClone();
+            var match = new ItemMatch<TestPropertyDefinition>(oldMember, newMember);
 
-        //[Theory]
-        //[InlineData(null, "NewValue")]
-        //[InlineData("", "NewValue")]
-        //[InlineData(" ", "NewValue")]
-        //[InlineData("OldValue", null)]
-        //[InlineData("OldValue", "")]
-        //[InlineData("OldValue", " ")]
-        //[InlineData("OldValue", "NewValue")]
-        //public void CompareThrowsExceptionWhenNamespaceDoesNotMatch(string oldValue, string newValue)
-        //{
-        //    var oldMember = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>()
-        //        .Set(x => x.Namespace = oldValue);
-        //    var newMember = oldMember.JsonClone().Set(x => x.Namespace = newValue);
-        //    var match = new DefinitionMatch(oldMember, newMember);
+            Action action = () => SUT.CompareItems(match, null!);
 
-        //    var sut = new MemberComparer();
+            action.Should().Throw<ArgumentNullException>();
+        }
 
-        //    Action action = () => sut.Compare(match);
-
-        //    action.Should().Throw<InvalidOperationException>();
-        //}
-
-        //[Theory]
-        //[InlineData(null, "NewValue")]
-        //[InlineData("", "NewValue")]
-        //[InlineData(" ", "NewValue")]
-        //[InlineData("OldValue", null)]
-        //[InlineData("OldValue", "")]
-        //[InlineData("OldValue", " ")]
-        //[InlineData("OldValue", "NewValue")]
-        //public void CompareThrowsExceptionWhenOwningTypeDoesNotMatch(string oldValue, string newValue)
-        //{
-        //    var oldMember = Model.UsingModule<ConfigurationModule>()
-        //        .Create<OldMemberDefinition>()
-        //        .Set(x => x.OwningType = oldValue);
-        //    var newMember = oldMember.JsonClone().Set(x => x.OwningType = newValue);
-        //    var match = new DefinitionMatch(oldMember, newMember);
-
-        //    var sut = new MemberComparer();
-
-        //    Action action = () => sut.Compare(match);
-
-        //    action.Should().Throw<InvalidOperationException>();
-        //}
-
-        //[Fact]
-        //public void CompareThrowsExceptionWithNullMatch()
-        //{
-        //    var sut = new MemberComparer();
-
-        //    Action action = () => sut.Compare(null!);
-
-        //    action.Should().Throw<ArgumentNullException>();
-        //}
-
-        //[Theory]
-        //[InlineData(typeof(OldMemberDefinition), true)]
-        //[InlineData(typeof(OldPropertyDefinition), false)]
-        //[InlineData(typeof(OldAttributeDefinition), false)]
-        //public void IsSupportedReturnsTrueForExactTypeMatch(Type type, bool expected)
-        //{
-        //    var definition = (OldMemberDefinition) Model.UsingModule<ConfigurationModule>().Create(type);
-
-        //    var sut = new MemberComparer();
-
-        //    var actual = sut.IsSupported(definition);
-
-        //    actual.Should().Be(expected);
-        //}
-
-        //[Fact]
-        //public void IsSupportedThrowsExceptionWithNullNode()
-        //{
-        //    var sut = new MemberComparer();
-
-        //    Action action = () => sut.IsSupported(null!);
-
-        //    action.Should().Throw<ArgumentNullException>();
-        //}
+        private void OutputChanges(IEnumerable<ComparisonResult> results)
+        {
+            foreach (var result in results)
+            {
+                _output.WriteLine(result.Message);
+            }
+        }
     }
 }

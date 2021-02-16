@@ -13,10 +13,10 @@
         public IReadOnlyCollection<IInterfaceDefinition> ChildInterfaces { get; set; } =
             new List<TestInterfaceDefinition>();
 
-        public IReadOnlyCollection<IStructDefinition> ChildStructs { get; } = new List<TestStructDefinition>();
+        public IReadOnlyCollection<IStructDefinition> ChildStructs { get; set; } = new List<TestStructDefinition>();
 
         public IReadOnlyCollection<ITypeDefinition> ChildTypes { get; set; } = new List<TestClassDefinition>();
-        public string DeclaredModifiers { get; } = "public";
+        public string DeclaredModifiers { get; set; } = "public";
         public ITypeDefinition? DeclaringType { get; set; } = null;
         public string FullName { get; set; } = Guid.NewGuid().ToString();
         public string FullRawName { get; set; } = Guid.NewGuid().ToString();

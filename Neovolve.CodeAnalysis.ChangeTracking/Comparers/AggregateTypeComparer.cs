@@ -20,6 +20,9 @@
 
         public IEnumerable<ComparisonResult> CompareItems(ItemMatch<ITypeDefinition> match, ComparerOptions options)
         {
+            match = match ?? throw new ArgumentNullException(nameof(match));
+            options = options ?? throw new ArgumentNullException(nameof(options));
+
             // Check for a change in type
             if (match.OldItem.GetType() != match.NewItem.GetType())
             {

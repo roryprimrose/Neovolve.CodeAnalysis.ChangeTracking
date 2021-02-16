@@ -8,7 +8,7 @@
     {
         public PropertyAccessorAccessModifiers AccessModifiers { get; set; } = PropertyAccessorAccessModifiers.None;
         public IReadOnlyCollection<IAttributeDefinition> Attributes { get; set; } = new List<TestAttributeDefinition>();
-        public string DeclaredModifiers { get; } = string.Empty;
+        public string DeclaredModifiers { get; set; } = string.Empty;
         public string FullName { get; set; } = Guid.NewGuid().ToString();
         public string FullRawName { get; set; } = Guid.NewGuid().ToString();
         public bool IsVisible { get; set; } = true;

@@ -32,7 +32,7 @@
         {
             definition = definition ?? throw new ArgumentNullException(nameof(definition));
 
-            var accessModifiers = new List<string>(2);
+            var modifiers = new List<string>(2);
             var parts = definition.DeclaredModifiers.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries);
 
             foreach (var part in parts)
@@ -45,12 +45,12 @@
                     case "public":
                         break;
                     default:
-                        accessModifiers.Add(part);
+                        modifiers.Add(part);
                         break;
                 }
             }
 
-            return string.Join(" ", accessModifiers);
+            return string.Join(" ", modifiers);
         }
     }
 }
