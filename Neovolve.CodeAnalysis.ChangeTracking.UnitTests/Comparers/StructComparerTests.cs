@@ -12,29 +12,49 @@
     using Xunit;
     using Xunit.Abstractions;
 
-    public class ClassComparerTests : Tests<ClassComparer>
+    public class StructComparerTests : Tests<StructComparer>
     {
         private readonly ITestOutputHelper _output;
 
-        public ClassComparerTests(ITestOutputHelper output)
+        public StructComparerTests(ITestOutputHelper output)
         {
             _output = output;
         }
 
         [Fact]
-        public void CompareItemsReturnsClassModifierComparerResults()
+        public void CanCreateWithDependencies()
         {
-            var item = new TestClassDefinition();
-            var match = new ItemMatch<IClassDefinition>(item, item);
+            var accessModifiersComparer = Substitute.For<IAccessModifiersComparer>();
+            var structModifiersComparer = Substitute.For<IStructModifiersComparer>();
+            var genericTypeElementComparer = Substitute.For<IGenericTypeElementComparer>();
+            var fieldProcessor = Substitute.For<IFieldMatchProcessor>();
+            var propertyProcessor = Substitute.For<IPropertyMatchProcessor>();
+            var methodProcessor = Substitute.For<IMethodMatchProcessor>();
+            var attributeProcessor = Substitute.For<IAttributeMatchProcessor>();
+
+            // ReSharper disable once ObjectCreationAsStatement
+            Action action = () => new StructComparer(accessModifiersComparer, structModifiersComparer,
+                genericTypeElementComparer,
+                fieldProcessor, propertyProcessor,
+                methodProcessor, attributeProcessor);
+
+            action.Should().NotThrow();
+        }
+
+        [Fact]
+        public void CompareItemsReturnsResultFromStructModifierComparer()
+        {
+            var item = new TestStructDefinition();
+            var match = new ItemMatch<IStructDefinition>(item, item);
             var options = ComparerOptions.Default;
             var changeType = Model.Create<SemVerChangeType>();
             var message = Guid.NewGuid().ToString();
             var result = new ComparisonResult(changeType, item, item, message);
             var results = new[] {result};
 
-            Service<IClassModifiersComparer>()
+            Service<IStructModifiersComparer>()
                 .CompareItems(
-                    Arg.Is<ItemMatch<IModifiersElement<ClassModifiers>>>(x => x.OldItem == item && x.NewItem == item),
+                    Arg.Is<ItemMatch<IModifiersElement<StructModifiers>>>(x => x.OldItem == item && x.NewItem == item),
                     options).Returns(results);
 
             var actual = SUT.CompareItems(match, options).ToList();
@@ -46,7 +66,7 @@
         }
 
         [Fact]
-        public void ThrowsExceptionWhenCreatedWithNullClassModifiersComparer()
+        public void ThrowsExceptionWhenCreatedWithNullStructModifiersComparer()
         {
             var accessModifiersComparer = Substitute.For<IAccessModifiersComparer>();
             var genericTypeElementComparer = Substitute.For<IGenericTypeElementComparer>();
@@ -56,8 +76,9 @@
             var attributeProcessor = Substitute.For<IAttributeMatchProcessor>();
 
             // ReSharper disable once ObjectCreationAsStatement
-            Action action = () => new ClassComparer(accessModifiersComparer, null!, genericTypeElementComparer,
-                fieldProcessor, propertyProcessor, methodProcessor, attributeProcessor);
+            Action action = () => new StructComparer(accessModifiersComparer, null!, genericTypeElementComparer,
+                fieldProcessor, propertyProcessor,
+                methodProcessor, attributeProcessor);
 
             action.Should().Throw<ArgumentNullException>();
         }

@@ -24,6 +24,8 @@
             var memberModifiersChangeTable = new MemberModifiersChangeTable();
             var memberModifiersComparer = new MemberModifiersComparer(memberModifiersChangeTable);
 
+            var genericTypeElementComparer = new GenericTypeElementComparer();
+
             var fieldModifiersChangeTable = new FieldModifiersChangeTable();
             var fieldModifiersComparer = new FieldModifiersComparer(fieldModifiersChangeTable);
             var fieldComparer = new FieldComparer(accessModifiersComparer, fieldModifiersComparer, attributeProcessor);
@@ -42,9 +44,10 @@
 
             var methodEvaluator = new MethodMatchEvaluator();
             var methodModifiersChangeTable = new MethodModifiersChangeTable();
+            var methodModifiersComparer = new MethodModifiersComparer(methodModifiersChangeTable);
             var parameterModifiersChangeTable = new ParameterModifierChangeTable();
             var parameterComparer = new ParameterComparer(parameterModifiersChangeTable, attributeProcessor);
-            var methodComparer = new MethodComparer(methodModifiersChangeTable, parameterComparer, accessModifiersComparer, attributeProcessor);
+            var methodComparer = new MethodComparer(accessModifiersComparer, methodModifiersComparer, genericTypeElementComparer, parameterComparer, attributeProcessor);
             var methodProcessor = new MethodMatchProcessor(methodEvaluator, methodComparer, logger);
 
             var classModifiersChangeTable = new ClassModifiersChangeTable();
@@ -52,13 +55,14 @@
             var classComparer = new ClassComparer(
                 accessModifiersComparer,
                 classModifiersComparer,
+                genericTypeElementComparer,
                 fieldProcessor,
                 propertyProcessor,
-                methodProcessor,
-                attributeProcessor);
+                methodProcessor, attributeProcessor);
 
             var interfaceComparer = new InterfaceComparer(
                 accessModifiersComparer,
+                genericTypeElementComparer,
                 fieldProcessor,
                 propertyProcessor,
                 methodProcessor,
@@ -69,6 +73,7 @@
             var structComparer = new StructComparer(
                 accessModifiersComparer,
                 structModifiersComparer,
+                genericTypeElementComparer,
                 fieldProcessor,
                 propertyProcessor,
                 methodProcessor,

@@ -11,9 +11,17 @@
     using Neovolve.CodeAnalysis.ChangeTracking.UnitTests.TestModels;
     using NSubstitute;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class ElementComparerTests
     {
+        private readonly ITestOutputHelper _output;
+
+        public ElementComparerTests(ITestOutputHelper output)
+        {
+            _output = output;
+        }
+
         [Theory]
         [InlineData(false, false, SemVerChangeType.None, false)]
         [InlineData(true, false, SemVerChangeType.None, false)]
@@ -51,7 +59,9 @@
 
             var sut = new Wrapper<IClassDefinition>(attributeProcessor, itemResult);
 
-            var actual = sut.CompareItems(match, options);
+            var actual = sut.CompareItems(match, options).ToList();
+
+            _output.WriteResults(actual);
 
             if (attributesEvaluated)
             {
@@ -88,7 +98,9 @@
 
             var sut = new Wrapper<IClassDefinition>(attributeProcessor, result);
 
-            var actual = sut.CompareItems(match, options);
+            var actual = sut.CompareItems(match, options).ToList();
+
+            _output.WriteResults(actual);
 
             if (matchEvaluated)
             {
@@ -155,6 +167,8 @@
             var sut = new Wrapper<IClassDefinition>(attributeProcessor, null);
 
             var actual = sut.CompareItems(match, options).ToList();
+
+            _output.WriteResults(actual);
 
             if (changeType == null)
             {

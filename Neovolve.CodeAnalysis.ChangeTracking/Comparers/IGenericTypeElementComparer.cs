@@ -1,13 +1,12 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.Comparers
 {
-    using System;
     using System.Collections.Generic;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
-    
-    public interface IAccessModifiersElementComparer<T> where T : struct, Enum
+
+    public interface IGenericTypeElementComparer
     {
         IEnumerable<ComparisonResult> CompareItems(
-            ItemMatch<IAccessModifiersElement<T>> match,
+            ItemMatch<IGenericTypeElement> match,
             ComparerOptions options);
     }
 }

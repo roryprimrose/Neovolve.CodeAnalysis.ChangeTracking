@@ -31,7 +31,7 @@
 
             var actual = SUT.CompareItems(match, options).ToList();
 
-            OutputChanges(actual);
+            _output.WriteResults(actual);
 
             actual.Should().BeEmpty();
         }
@@ -60,7 +60,7 @@
 
             var actual = SUT.CompareItems(match, options).ToList();
 
-            OutputChanges(actual);
+            _output.WriteResults(actual);
 
             actual.Should().NotBeEmpty();
             actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
@@ -88,7 +88,7 @@
 
             var actual = SUT.CompareItems(match, options).ToList();
 
-            OutputChanges(actual);
+            _output.WriteResults(actual);
 
             actual.Should().BeEmpty();
         }
@@ -117,7 +117,7 @@
 
             var actual = SUT.CompareItems(match, options).ToList();
 
-            OutputChanges(actual);
+            _output.WriteResults(actual);
 
             actual.Should().BeEmpty();
         }
@@ -135,7 +135,7 @@
 
             var actual = SUT.CompareItems(match, options).ToList();
 
-            OutputChanges(actual);
+            _output.WriteResults(actual);
 
             if (expected == null)
             {
@@ -166,7 +166,7 @@
 
             var actual = SUT.CompareItems(match, options).ToList();
 
-            OutputChanges(actual);
+            _output.WriteResults(actual);
 
             actual.Should().HaveCount(1);
             actual[0].Should().Be(result);
@@ -192,14 +192,6 @@
             Action action = () => SUT.CompareItems(match, null!);
 
             action.Should().Throw<ArgumentNullException>();
-        }
-
-        private void OutputChanges(IEnumerable<ComparisonResult> results)
-        {
-            foreach (var result in results)
-            {
-                _output.WriteLine(result.Message);
-            }
         }
     }
 }

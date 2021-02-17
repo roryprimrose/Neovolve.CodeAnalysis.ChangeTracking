@@ -81,6 +81,8 @@
 
             var actual = sut.CompareItems(match, options).ToList();
 
+            _output.WriteResults(actual);
+
             if (expected == SemVerChangeType.None)
             {
                 actual.Should().BeEmpty();

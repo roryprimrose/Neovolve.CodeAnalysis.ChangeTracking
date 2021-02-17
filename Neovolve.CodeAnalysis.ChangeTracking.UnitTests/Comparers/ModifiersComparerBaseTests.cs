@@ -69,12 +69,12 @@
             var actual = sut.RunCompareItems(match, oldElement.AccessModifiers, newElement.AccessModifiers, options)
                 .ToList();
 
+            _output.WriteResults(actual);
+
             actual.Should().NotBeEmpty();
 
             var result = actual.Single();
-
-            _output.WriteLine(result.Message);
-
+            
             result.Message.Should().Contain("Property");
             result.Message.Should().Contain(fullName);
             result.Message.Should().Contain("has added");
@@ -115,12 +115,12 @@
             var actual = sut.RunCompareItems(match, oldElement.AccessModifiers, newElement.AccessModifiers, options)
                 .ToList();
 
+            _output.WriteResults(actual);
+
             actual.Should().NotBeEmpty();
 
             var result = actual.Single();
-
-            _output.WriteLine(result.Message);
-
+            
             result.Message.Should().Contain("Property");
             result.Message.Should().Contain(fullName);
             result.Message.Should().Contain("has changed");
@@ -158,12 +158,12 @@
             var actual = sut.RunCompareItems(match, oldElement.AccessModifiers, newElement.AccessModifiers, options)
                 .ToList();
 
+            _output.WriteResults(actual);
+
             actual.Should().NotBeEmpty();
 
             var result = actual.Single();
-
-            _output.WriteLine(result.Message);
-
+            
             result.Message.Should().Contain("Property");
             result.Message.Should().Contain(fullName);
             result.Message.Should().Contain("has removed");
@@ -200,12 +200,12 @@
             var actual = sut.RunCompareItems(match, oldElement.AccessModifiers, newElement.AccessModifiers, options)
                 .ToList();
 
+            _output.WriteResults(actual);
+
             actual.Should().NotBeEmpty();
 
             var result = actual.Single();
-
-            _output.WriteLine(result.Message);
-
+            
             result.ChangeType.Should().Be(expected);
             result.OldItem.Should().Be(oldElement);
             result.NewItem.Should().Be(newElement);
@@ -238,12 +238,12 @@
             var actual = sut.RunCompareItems(match, oldElement.AccessModifiers, newElement.AccessModifiers, options)
                 .ToList();
 
+            _output.WriteResults(actual);
+
             actual.Should().NotBeEmpty();
 
             var result = actual.Single();
-
-            _output.WriteLine(result.Message);
-
+            
             result.ChangeType.Should().Be(expected);
             result.OldItem.Should().Be(oldElement);
             result.NewItem.Should().Be(newElement);
@@ -276,12 +276,12 @@
             var actual = sut.RunCompareItems(match, oldElement.AccessModifiers, newElement.AccessModifiers, options)
                 .ToList();
 
+            _output.WriteResults(actual);
+
             actual.Should().NotBeEmpty();
 
             var result = actual.Single();
-
-            _output.WriteLine(result.Message);
-
+            
             result.ChangeType.Should().Be(expected);
             result.OldItem.Should().Be(oldElement);
             result.NewItem.Should().Be(newElement);
@@ -314,12 +314,12 @@
             var actual = sut.RunCompareItems(match, oldElement.AccessModifiers, newElement.AccessModifiers, options)
                 .ToList();
 
+            _output.WriteResults(actual);
+
             actual.Should().NotBeEmpty();
 
             var result = actual.Single();
-
-            _output.WriteLine(result.Message);
-
+            
             result.Message.Should().Contain("Property");
             result.Message.Should().Contain(fullName);
             result.Message.Should().Contain("has added");
@@ -357,11 +357,11 @@
             var actual = sut.RunCompareItems(match, oldElement.AccessModifiers, newElement.AccessModifiers, options)
                 .ToList();
 
+            _output.WriteResults(actual);
+
             actual.Should().NotBeEmpty();
 
             var result = actual.Single();
-
-            _output.WriteLine(result.Message);
 
             result.Message.Should().Contain("Property");
             result.Message.Should().Contain(fullName);
@@ -401,12 +401,12 @@
             var actual = sut.RunCompareItems(match, oldElement.AccessModifiers, newElement.AccessModifiers, options)
                 .ToList();
 
+            _output.WriteResults(actual);
+
             actual.Should().NotBeEmpty();
 
             var result = actual.Single();
-
-            _output.WriteLine(result.Message);
-
+            
             result.Message.Should().Contain("Property");
             result.Message.Should().Contain(fullName);
             result.Message.Should().Contain("has removed");

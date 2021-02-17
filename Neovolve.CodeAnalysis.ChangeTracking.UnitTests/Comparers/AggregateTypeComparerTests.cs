@@ -30,10 +30,10 @@
 
             var actual = SUT.CompareItems(match, options).ToList();
 
+            _output.WriteResults(actual);
+
             actual.Should().HaveCount(1);
-
-            _output.WriteLine(actual[0].Message);
-
+            
             actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
             actual[0].Message.Should().NotBeNullOrWhiteSpace();
         }
@@ -48,10 +48,10 @@
 
             var actual = SUT.CompareItems(match, options).ToList();
 
+            _output.WriteResults(actual);
+
             actual.Should().HaveCount(1);
-
-            _output.WriteLine(actual[0].Message);
-
+            
             actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
             actual[0].Message.Should().NotBeNullOrWhiteSpace();
         }
@@ -66,10 +66,10 @@
 
             var actual = SUT.CompareItems(match, options).ToList();
 
+            _output.WriteResults(actual);
+
             actual.Should().HaveCount(1);
-
-            _output.WriteLine(actual[0].Message);
-
+            
             actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
             actual[0].Message.Should().NotBeNullOrWhiteSpace();
         }
@@ -92,10 +92,10 @@
 
             var actual = SUT.CompareItems(match, options).ToList();
 
+            _output.WriteResults(actual);
+
             actual.Should().HaveCount(1);
-
-            _output.WriteLine(actual[0].Message);
-
+            
             actual[0].Should().Be(result);
         }
 
@@ -118,10 +118,10 @@
 
             var actual = SUT.CompareItems(match, options).ToList();
 
+            _output.WriteResults(actual);
+
             actual.Should().HaveCount(1);
-
-            _output.WriteLine(actual[0].Message);
-
+            
             actual[0].Should().Be(result);
         }
 
@@ -143,10 +143,10 @@
 
             var actual = SUT.CompareItems(match, options).ToList();
 
+            _output.WriteResults(actual);
+
             actual.Should().HaveCount(1);
-
-            _output.WriteLine(actual[0].Message);
-
+            
             actual[0].Should().Be(result);
         }
 

@@ -10,11 +10,13 @@
 
         public ClassComparer(IAccessModifiersComparer accessModifiersComparer,
             IClassModifiersComparer classModifiersComparer,
+            IGenericTypeElementComparer genericTypeElementComparer,
             IFieldMatchProcessor fieldProcessor,
             IPropertyMatchProcessor propertyProcessor,
             IMethodMatchProcessor methodProcessor,
             IAttributeMatchProcessor attributeProcessor) : base(
             accessModifiersComparer,
+            genericTypeElementComparer,
             fieldProcessor,
             propertyProcessor,
             methodProcessor,

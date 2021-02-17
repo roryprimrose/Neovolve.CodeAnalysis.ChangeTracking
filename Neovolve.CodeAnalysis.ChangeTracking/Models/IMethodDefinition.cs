@@ -2,23 +2,8 @@
 {
     using System.Collections.Generic;
 
-    public interface IMethodDefinition : IMemberDefinition
+    public interface IMethodDefinition : IMemberDefinition, IModifiersElement<MethodModifiers>, IGenericTypeElement
     {
-        /// <summary>
-        ///     Gets the generic constraints declared on the method.
-        /// </summary>
-        IReadOnlyCollection<IConstraintListDefinition> GenericConstraints { get; }
-
-        /// <summary>
-        ///     Gets the generic type parameters declared on the method.
-        /// </summary>
-        IReadOnlyCollection<string> GenericTypeParameters { get; }
-
-        /// <summary>
-        ///     Gets the modifiers of the method.
-        /// </summary>
-        MethodModifiers Modifiers { get; }
-
         /// <summary>
         ///     Gets the parameters declared on the method.
         /// </summary>

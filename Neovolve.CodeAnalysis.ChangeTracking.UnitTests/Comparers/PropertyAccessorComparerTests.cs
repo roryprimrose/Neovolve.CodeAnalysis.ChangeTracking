@@ -45,10 +45,10 @@
 
             var actual = SUT.CompareItems(match, options).ToList();
 
+            _output.WriteResults(actual);
+
             actual.Should().HaveCount(1);
-
-            _output.WriteLine(actual.First().Message);
-
+            
             actual.First().OldItem.Should().Be(oldItem);
             actual.First().NewItem.Should().Be(newItem);
             actual.First().Message.Should().Be(message);

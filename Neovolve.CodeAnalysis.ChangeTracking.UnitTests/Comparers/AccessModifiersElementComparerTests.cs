@@ -46,12 +46,12 @@
             var actual = sut.CompareItems(match, options)
                 .ToList();
 
+            _output.WriteResults(actual);
+
             actual.Should().NotBeEmpty();
 
             var result = actual.Single();
-
-            _output.WriteLine(result.Message);
-
+            
             result.Message.Should().Contain("protected internal");
             result.Message.Should().Contain("access modifiers");
             result.Message.Should().NotContain("sealed");

@@ -1,4 +1,4 @@
-﻿namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
+﻿namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Evaluators
 {
     using System;
     using System.Linq;

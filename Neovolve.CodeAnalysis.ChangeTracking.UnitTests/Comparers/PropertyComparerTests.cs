@@ -31,7 +31,7 @@
 
         //    var actual = sut.Compare(match);
 
-        //    _output.WriteLine(actual.Message);
+        //    _output.WriteResults(actual);
 
         //    actual.ChangeType.Should().Be(expected);
         //}
@@ -54,7 +54,7 @@
 
         //    var actual = sut.Compare(match);
 
-        //    _output.WriteLine(actual.Message);
+        //    _output.WriteResults(actual);
 
         //    actual.ChangeType.Should().Be(SemVerChangeType.Breaking);
         //}
@@ -77,7 +77,7 @@
 
         //    var actual = sut.Compare(match);
 
-        //    _output.WriteLine(actual.Message);
+        //    _output.WriteResults(actual);
 
         //    actual.ChangeType.Should().Be(SemVerChangeType.Feature);
         //}
@@ -99,7 +99,7 @@
 
         //    var actual = sut.Compare(match);
 
-        //    _output.WriteLine(actual.Message);
+        //    _output.WriteResults(actual);
 
         //    actual.ChangeType.Should().Be(SemVerChangeType.None);
         //}
@@ -115,7 +115,7 @@
 
         //    var actual = sut.Compare(match);
 
-        //    _output.WriteLine(actual.Message);
+        //    _output.WriteResults(actual);
 
         //    actual.ChangeType.Should().Be(SemVerChangeType.None);
         //}
@@ -140,7 +140,7 @@
 
         //    var actual = sut.Compare(match);
 
-        //    _output.WriteLine(actual.Message);
+        //    _output.WriteResults(actual);
 
         //    actual.ChangeType.Should().Be(expected);
         //}
@@ -165,7 +165,7 @@
 
         //    var actual = sut.Compare(match);
 
-        //    _output.WriteLine(actual.Message);
+        //    _output.WriteResults(actual);
 
         //    actual.ChangeType.Should().Be(expected);
         //}

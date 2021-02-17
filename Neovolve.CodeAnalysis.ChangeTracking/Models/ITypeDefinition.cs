@@ -6,7 +6,7 @@
     ///     The <see cref="ITypeDefinition" />
     ///     interface defines common properties for types.
     /// </summary>
-    public interface ITypeDefinition : IAccessModifiersElement<AccessModifiers>
+    public interface ITypeDefinition : IAccessModifiersElement<AccessModifiers>, IGenericTypeElement
     {
         /// <summary>
         ///     Gets the child classes defined on this type.
@@ -33,17 +33,7 @@
         ///     Gets the type that declares the member.
         /// </summary>
         public ITypeDefinition? DeclaringType { get; }
-
-        /// <summary>
-        ///     Gets the generic constraints declared on the type.
-        /// </summary>
-        IReadOnlyCollection<IConstraintListDefinition> GenericConstraints { get; }
-
-        /// <summary>
-        ///     Gets the generic type parameters declared on the type.
-        /// </summary>
-        IReadOnlyCollection<string> GenericTypeParameters { get; }
-
+        
         /// <summary>
         ///     Gets the types implemented/inherited by this type.
         /// </summary>

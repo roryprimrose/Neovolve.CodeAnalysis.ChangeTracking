@@ -10,11 +10,13 @@
 
         public StructComparer(IAccessModifiersComparer accessModifiersComparer,
             IStructModifiersComparer structModifiersComparer,
+            IGenericTypeElementComparer genericTypeElementComparer,
             IFieldMatchProcessor fieldProcessor,
             IPropertyMatchProcessor propertyProcessor,
             IMethodMatchProcessor methodProcessor,
             IAttributeMatchProcessor attributeProcessor) : base(
             accessModifiersComparer,
+            genericTypeElementComparer,
             fieldProcessor,
             propertyProcessor,
             methodProcessor,

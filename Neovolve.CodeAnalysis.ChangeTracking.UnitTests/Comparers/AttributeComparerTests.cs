@@ -32,10 +32,10 @@
 
             var actual = sut.CompareItems(match, options).ToList();
 
+            _output.WriteResults(actual);
+
             actual.Should().HaveCount(1);
-
-            _output.WriteLine(actual[0].Message);
-
+            
             actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
             actual[0].OldItem.Should().Be(oldItem);
             actual[0].NewItem.Should().Be(newItem);
@@ -54,10 +54,10 @@
 
             var actual = sut.CompareItems(match, options).ToList();
 
+            _output.WriteResults(actual);
+
             actual.Should().HaveCount(1);
-
-            _output.WriteLine(actual[0].Message);
-
+            
             actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
             actual[0].OldItem.Should().Be(oldItem);
             actual[0].NewItem.Should().Be(newItem);
@@ -93,10 +93,10 @@
 
             var actual = sut.CompareItems(match, options).ToList();
 
+            _output.WriteResults(actual);
+
             actual.Should().HaveCount(1);
-
-            _output.WriteLine(actual[0].Message);
-
+            
             actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
             actual[0].OldItem.Should().BeAssignableTo<IArgumentDefinition>();
             actual[0].NewItem.Should().BeNull();
@@ -132,10 +132,10 @@
 
             var actual = sut.CompareItems(match, options).ToList();
 
+            _output.WriteResults(actual);
+
             actual.Should().HaveCount(1);
-
-            _output.WriteLine(actual[0].Message);
-
+            
             actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
             actual[0].OldItem.Should().BeAssignableTo<IArgumentDefinition>();
             actual[0].NewItem.Should().BeAssignableTo<IArgumentDefinition>();
@@ -171,10 +171,10 @@
 
             var actual = sut.CompareItems(match, options).ToList();
 
+            _output.WriteResults(actual);
+
             actual.Should().HaveCount(1);
-
-            _output.WriteLine(actual[0].Message);
-
+            
             actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
             actual[0].OldItem.Should().Be(oldAttribute);
             actual[0].NewItem.Should().Be(newAttribute);
@@ -206,10 +206,10 @@
 
             var actual = sut.CompareItems(match, options).ToList();
 
+            _output.WriteResults(actual);
+
             actual.Should().HaveCount(1);
-
-            _output.WriteLine(actual[0].Message);
-
+            
             actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
             actual[0].OldItem.Should().Be(oldAttribute);
             actual[0].NewItem.Should().Be(newAttribute);
@@ -241,10 +241,10 @@
 
             var actual = sut.CompareItems(match, options).ToList();
 
+            _output.WriteResults(actual);
+
             actual.Should().HaveCount(1);
-
-            _output.WriteLine(actual[0].Message);
-
+            
             actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
             actual[0].OldItem.Should().BeAssignableTo<IArgumentDefinition>();
             actual[0].NewItem.Should().BeAssignableTo<IArgumentDefinition>();
