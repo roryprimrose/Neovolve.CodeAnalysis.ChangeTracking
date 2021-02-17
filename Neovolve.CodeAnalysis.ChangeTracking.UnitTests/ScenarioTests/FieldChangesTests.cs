@@ -29,11 +29,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(FieldOnTypeWithMultipleGenericTypeParameters)
+                new(FieldOnTypeWithMultipleGenericTypeParameters)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(
+                new(
                     FieldOnTypeWithMultipleGenericTypeParameters.Replace("TKey MyField", "TValue MyField"))
             };
 
@@ -56,11 +56,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleField.Replace("public string MyField", oldModifiers + " string MyField"))
+                new(SingleField.Replace("public string MyField", oldModifiers + " string MyField"))
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleField.Replace("public string MyField", newModifiers + " string MyField"))
+                new(SingleField.Replace("public string MyField", newModifiers + " string MyField"))
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -104,11 +104,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleField.Replace("string MyField", oldModifiers + " string MyField"))
+                new(SingleField.Replace("string MyField", oldModifiers + " string MyField"))
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleField.Replace("string MyField", newModifiers + " string MyField"))
+                new(SingleField.Replace("string MyField", newModifiers + " string MyField"))
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -126,11 +126,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(FieldOnTypeWithMultipleGenericTypeParameters)
+                new(FieldOnTypeWithMultipleGenericTypeParameters)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(FieldOnTypeWithMultipleGenericTypeParameters.Replace("TKey", "TMyKey"))
+                new(FieldOnTypeWithMultipleGenericTypeParameters.Replace("TKey", "TMyKey"))
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -148,11 +148,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleField)
+                new(SingleField)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleField.Replace("MyField", "MyNewField"))
+                new(SingleField.Replace("MyField", "MyNewField"))
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -170,7 +170,7 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleField)
+                new(SingleField)
             };
             var newCode = Array.Empty<CodeSource>();
 
@@ -189,11 +189,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleField)
+                new(SingleField)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleField.Replace("string MyField", "bool MyField"))
+                new(SingleField.Replace("string MyField", "bool MyField"))
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -212,7 +212,7 @@
             var oldCode = Array.Empty<CodeSource>();
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleField)
+                new(SingleField)
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -230,11 +230,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleField)
+                new(SingleField)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleField)
+                new(SingleField)
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -277,11 +277,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SimpleField)
+                new(SimpleField)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(
+                new(
                     SimpleField.Replace("[JsonPropertyName(\"item\")]", updatedValue))
             };
 

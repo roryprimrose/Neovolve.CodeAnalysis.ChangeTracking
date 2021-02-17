@@ -34,12 +34,12 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(
+                new(
                     SingleInterface.Replace("public interface MyInterface", oldModifiers + " interface MyInterface"))
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(
+                new(
                     SingleInterface.Replace("public interface MyInterface", newModifiers + " interface MyInterface"))
             };
 
@@ -58,11 +58,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleInterface)
+                new(SingleInterface)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleInterface.Replace("MyInterface", "MyNewInterface"))
+                new(SingleInterface.Replace("MyInterface", "MyNewInterface"))
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -80,11 +80,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleInterface)
+                new(SingleInterface)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleInterface.Replace("MyNamespace", "MyNewNamespace"))
+                new(SingleInterface.Replace("MyNamespace", "MyNewNamespace"))
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -102,7 +102,7 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleInterface)
+                new(SingleInterface)
             };
             var newCode = Array.Empty<CodeSource>();
 
@@ -122,7 +122,7 @@
             var oldCode = Array.Empty<CodeSource>();
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleInterface)
+                new(SingleInterface)
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -140,11 +140,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleInterface)
+                new(SingleInterface)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleInterface)
+                new(SingleInterface)
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -187,11 +187,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(TypeDefinitionCode.ChildInterfaceWithAttribute)
+                new(TypeDefinitionCode.ChildInterfaceWithAttribute)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(
+                new(
                     TypeDefinitionCode.ChildInterfaceWithAttribute.Replace("[JsonPropertyName(\"item\")]",
                         updatedValue))
             };
@@ -236,11 +236,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(TypeDefinitionCode.InterfaceWithAttribute)
+                new(TypeDefinitionCode.InterfaceWithAttribute)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(
+                new(
                     TypeDefinitionCode.InterfaceWithAttribute.Replace("[JsonPropertyName(\"item\")]",
                         updatedValue))
             };

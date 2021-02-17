@@ -10,7 +10,7 @@
     /// </summary>
     public class ChangeResultAggregator : IChangeResultAggregator
     {
-        private readonly List<ComparisonResult> _results = new List<ComparisonResult>();
+        private readonly List<ComparisonResult> _results = new();
 
         /// <inheritdoc />
         /// <exception cref="ArgumentNullException">The <paramref name="result" /> parameter if <c>null</c>.</exception>

@@ -118,7 +118,7 @@
         public void CompareItemsRunsAdditionalChecksIfModifiersCheckFindsBreakingChange()
         {
             var oldItem = new TestFieldDefinition();
-            var newItem = new TestFieldDefinition();
+            var newItem = new TestFieldDefinition().Set(x => x.AccessModifiers = AccessModifiers.Private);
             var match = new ItemMatch<IFieldDefinition>(oldItem, newItem);
             var options = ComparerOptions.Default;
             var result = new ComparisonResult(SemVerChangeType.Breaking, oldItem, newItem, "Different modifier");
@@ -128,10 +128,10 @@
             var attributeProcessor = Substitute.For<IAttributeMatchProcessor>();
 
             modifiersComparer.CompareItems(Arg.Is<ItemMatch<IModifiersElement<FieldModifiers>>>(x => x.OldItem == oldItem && x.NewItem == newItem), options).Returns(new []{ result });
+            accessModifiersComparer.CompareItems(Arg.Is<ItemMatch<IAccessModifiersElement<AccessModifiers>>>(x => x.OldItem == oldItem && x.NewItem == newItem), options).Returns(new[] { result });
 
             var sut = new FieldComparer(accessModifiersComparer, modifiersComparer, attributeProcessor);
 
-            // This should find a change in return type as well as modifiers
             var actual = sut.CompareItems(match, options).ToList();
 
             _output.WriteResults(actual);

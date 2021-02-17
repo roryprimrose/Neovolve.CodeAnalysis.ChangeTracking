@@ -20,8 +20,8 @@
             ComparerOptions options,
             IChangeResultAggregator aggregator)
         {
-            RunComparisonStep(EvaluateAccessModifierChanges, match, options, aggregator);
-            RunComparisonStep(EvaluateReturnTypeChanges, match, options, aggregator);
+            RunComparisonStep(EvaluateAccessModifierChanges, match, options, aggregator, true);
+            RunComparisonStep(EvaluateReturnTypeChanges, match, options, aggregator, true);
         }
 
         private void EvaluateAccessModifierChanges(

@@ -39,8 +39,8 @@
 
             RunComparisonStep(CompareDefinitionType, match, options, aggregator, true);
             RunComparisonStep(CompareNamespace, match, options, aggregator, true);
-            RunComparisonStep(EvaluateAccessModifierChanges, match, options, aggregator);
-            RunComparisonStep(EvaluateGenericTypeDefinitionChanges, match, options, aggregator);
+            RunComparisonStep(EvaluateAccessModifierChanges, match, options, aggregator, true);
+            RunComparisonStep(EvaluateGenericTypeDefinitionChanges, match, options, aggregator, true);
             RunComparisonStep(EvaluateImplementedTypeChanges, match, options, aggregator, true);
             RunComparisonStep(EvaluateFieldChanges, match, options, aggregator);
             RunComparisonStep(EvaluatePropertyChanges, match, options, aggregator);

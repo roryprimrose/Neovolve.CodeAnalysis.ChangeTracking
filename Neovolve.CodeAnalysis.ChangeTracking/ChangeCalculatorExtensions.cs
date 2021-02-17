@@ -102,7 +102,7 @@
 
         private static IList<ITypeDefinition> ResolveDeclaredTypes(SyntaxNode node)
         {
-            List<ITypeDefinition> resolvedTypes = new List<ITypeDefinition>();
+            List<ITypeDefinition> resolvedTypes = new();
 
             if (node is ClassDeclarationSyntax classNode)
             {

@@ -35,11 +35,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty.Replace("get;", string.Empty))
+                new(SingleProperty.Replace("get;", string.Empty))
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty.Replace("get;", modifiers + " get;"))
+                new(SingleProperty.Replace("get;", modifiers + " get;"))
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -64,11 +64,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty.Replace("set;", string.Empty))
+                new(SingleProperty.Replace("set;", string.Empty))
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty.Replace("set;", modifiers + " set;"))
+                new(SingleProperty.Replace("set;", modifiers + " set;"))
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -86,11 +86,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(PropertyOnTypeWithMultipleGenericTypeParameters)
+                new(PropertyOnTypeWithMultipleGenericTypeParameters)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(
+                new(
                     PropertyOnTypeWithMultipleGenericTypeParameters.Replace("TKey MyProperty", "TValue MyProperty"))
             };
 
@@ -109,11 +109,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty)
+                new(SingleProperty)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty.Replace("MyProperty", "MyNewProperty"))
+                new(SingleProperty.Replace("MyProperty", "MyNewProperty"))
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -131,11 +131,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty)
+                new(SingleProperty)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(NoProperty)
+                new(NoProperty)
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -153,11 +153,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty)
+                new(SingleProperty)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty.Replace("string MyProperty", "bool MyProperty"))
+                new(SingleProperty.Replace("string MyProperty", "bool MyProperty"))
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -179,11 +179,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty.Replace("public string MyProperty", oldModifiers + " string MyProperty"))
+                new(SingleProperty.Replace("public string MyProperty", oldModifiers + " string MyProperty"))
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty.Replace("public string MyProperty", newModifiers + " string MyProperty"))
+                new(SingleProperty.Replace("public string MyProperty", newModifiers + " string MyProperty"))
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -205,11 +205,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty.Replace("get;", oldModifiers + " get;"))
+                new(SingleProperty.Replace("get;", oldModifiers + " get;"))
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty.Replace("get;", newModifiers + " get;"))
+                new(SingleProperty.Replace("get;", newModifiers + " get;"))
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -229,11 +229,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty.Replace("string MyProperty", oldModifiers + " string MyProperty"))
+                new(SingleProperty.Replace("string MyProperty", oldModifiers + " string MyProperty"))
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty.Replace("string MyProperty", newModifiers + " string MyProperty"))
+                new(SingleProperty.Replace("string MyProperty", newModifiers + " string MyProperty"))
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -255,11 +255,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty.Replace("set;", oldModifiers + " set;"))
+                new(SingleProperty.Replace("set;", oldModifiers + " set;"))
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty.Replace("set;", newModifiers + " set;"))
+                new(SingleProperty.Replace("set;", newModifiers + " set;"))
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -314,11 +314,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty)
+                new(SingleProperty)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty.Replace("[PropertyAttribute(344, true, myName: \"on the property\")]",
+                new(SingleProperty.Replace("[PropertyAttribute(344, true, myName: \"on the property\")]",
                     updatedValue))
             };
 
@@ -337,11 +337,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(NoProperty)
+                new(NoProperty)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty)
+                new(SingleProperty)
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -359,11 +359,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty)
+                new(SingleProperty)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty)
+                new(SingleProperty)
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -381,11 +381,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(PropertyOnTypeWithMultipleGenericTypeParameters)
+                new(PropertyOnTypeWithMultipleGenericTypeParameters)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(PropertyOnTypeWithMultipleGenericTypeParameters.Replace("TKey", "TMyKey"))
+                new(PropertyOnTypeWithMultipleGenericTypeParameters.Replace("TKey", "TMyKey"))
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -410,11 +410,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty.Replace("get;", modifiers + " get;"))
+                new(SingleProperty.Replace("get;", modifiers + " get;"))
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty.Replace("get;", string.Empty))
+                new(SingleProperty.Replace("get;", string.Empty))
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -439,11 +439,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty.Replace("set;", modifiers + " set;"))
+                new(SingleProperty.Replace("set;", modifiers + " set;"))
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty.Replace("set;", string.Empty))
+                new(SingleProperty.Replace("set;", string.Empty))
             };
 
             var options = OptionsFactory.BuildOptions();

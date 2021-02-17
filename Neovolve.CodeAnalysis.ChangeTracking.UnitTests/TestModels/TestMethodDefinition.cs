@@ -18,7 +18,7 @@
 
         public IReadOnlyCollection<string> GenericTypeParameters { get; set; } = new List<string>();
         public bool IsVisible { get; set; } = true;
-        public DefinitionLocation Location { get; set; } = new DefinitionLocation(string.Empty, 0, 0);
+        public DefinitionLocation Location { get; set; } = new(string.Empty, 0, 0);
         public MethodModifiers Modifiers { get; set; } = MethodModifiers.None;
         public string Name { get; set; } = Guid.NewGuid().ToString();
         public IReadOnlyCollection<IParameterDefinition> Parameters { get; set; } = new List<TestParameterDefinition>();

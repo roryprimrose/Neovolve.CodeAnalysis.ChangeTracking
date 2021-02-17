@@ -34,11 +34,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleStruct.Replace("public struct MyStruct", oldModifiers + " struct MyStruct"))
+                new(SingleStruct.Replace("public struct MyStruct", oldModifiers + " struct MyStruct"))
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleStruct.Replace("public struct MyStruct", newModifiers + " struct MyStruct"))
+                new(SingleStruct.Replace("public struct MyStruct", newModifiers + " struct MyStruct"))
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -75,11 +75,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleStruct.Replace("struct MyStruct", oldModifiers + " struct MyStruct"))
+                new(SingleStruct.Replace("struct MyStruct", oldModifiers + " struct MyStruct"))
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleStruct.Replace("struct MyStruct", newModifiers + " struct MyStruct"))
+                new(SingleStruct.Replace("struct MyStruct", newModifiers + " struct MyStruct"))
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -97,11 +97,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleStruct)
+                new(SingleStruct)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleStruct.Replace("MyStruct", "MyNewStruct"))
+                new(SingleStruct.Replace("MyStruct", "MyNewStruct"))
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -119,11 +119,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleStruct)
+                new(SingleStruct)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleStruct.Replace("MyNamespace", "MyNewNamespace"))
+                new(SingleStruct.Replace("MyNamespace", "MyNewNamespace"))
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -141,7 +141,7 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleStruct)
+                new(SingleStruct)
             };
             var newCode = Array.Empty<CodeSource>();
 
@@ -161,7 +161,7 @@
             var oldCode = Array.Empty<CodeSource>();
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleStruct)
+                new(SingleStruct)
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -179,11 +179,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleStruct)
+                new(SingleStruct)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleStruct)
+                new(SingleStruct)
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -201,11 +201,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(TypeDefinitionCode.StructWithMultipleGenericConstraints)
+                new(TypeDefinitionCode.StructWithMultipleGenericConstraints)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(
+                new(
                     TypeDefinitionCode.StructWithMultipleGenericConstraints.Replace("TValue", "TUpdatedValue"))
             };
 
@@ -249,11 +249,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(StructSerializationAttribute)
+                new(StructSerializationAttribute)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(
+                new(
                     StructSerializationAttribute.Replace("[JsonPropertyName(\"item\")]", updatedValue))
             };
 

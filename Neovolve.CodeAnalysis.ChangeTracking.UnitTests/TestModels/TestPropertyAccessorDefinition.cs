@@ -12,7 +12,7 @@
         public string FullName { get; set; } = Guid.NewGuid().ToString();
         public string FullRawName { get; set; } = Guid.NewGuid().ToString();
         public bool IsVisible { get; set; } = true;
-        public DefinitionLocation Location { get; set; } = new DefinitionLocation(string.Empty, 0, 0);
+        public DefinitionLocation Location { get; set; } = new(string.Empty, 0, 0);
         public string Name { get; set; } = Guid.NewGuid().ToString();
         public string RawName { get; set; } = Guid.NewGuid().ToString();
     }

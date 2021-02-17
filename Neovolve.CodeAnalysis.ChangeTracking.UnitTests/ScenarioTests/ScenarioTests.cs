@@ -27,13 +27,13 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(TestNode.ClassProperty),
-                new CodeSource(TestNode.Field)
+                new(TestNode.ClassProperty),
+                new(TestNode.Field)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(TestNode.ClassProperty),
-                new CodeSource(TestNode.Field)
+                new(TestNode.ClassProperty),
+                new(TestNode.Field)
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -51,11 +51,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleClass)
+                new(SingleClass)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleClass.Replace("class", "interface"))
+                new(SingleClass.Replace("class", "interface"))
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -73,11 +73,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleClass)
+                new(SingleClass)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleClass.Replace("class", "struct"))
+                new(SingleClass.Replace("class", "struct"))
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -95,11 +95,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleClass)
+                new(SingleClass)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleInterface)
+                new(SingleInterface)
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -117,11 +117,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleInterface)
+                new(SingleInterface)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleInterface.Replace("interface", "class"))
+                new(SingleInterface.Replace("interface", "class"))
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -139,11 +139,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleInterface)
+                new(SingleInterface)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleInterface.Replace("interface", "struct"))
+                new(SingleInterface.Replace("interface", "struct"))
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -161,11 +161,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleStruct)
+                new(SingleStruct)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleStruct.Replace("struct", "class"))
+                new(SingleStruct.Replace("struct", "class"))
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -183,11 +183,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleStruct)
+                new(SingleStruct)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleStruct.Replace("struct", "interface"))
+                new(SingleStruct.Replace("struct", "interface"))
             };
 
             var options = OptionsFactory.BuildOptions();

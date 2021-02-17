@@ -32,8 +32,8 @@
             match = match ?? throw new ArgumentNullException(nameof(match));
             options = options ?? throw new ArgumentNullException(nameof(options));
 
-            RunComparisonStep(EvaluateMethodModifierChanges, match, options, aggregator);
-            RunComparisonStep(EvaluateMethodNameChanges, match, options, aggregator);
+            RunComparisonStep(EvaluateMethodModifierChanges, match, options, aggregator, true);
+            RunComparisonStep(EvaluateMethodNameChanges, match, options, aggregator, true);
             RunComparisonStep(EvaluateGenericTypeDefinitionChanges, match, options, aggregator, true);
             RunComparisonStep(EvaluateParameterChanges, match, options, aggregator);
         }
@@ -88,6 +88,12 @@
         {
             var oldParameters = match.OldItem.Parameters.FastToList();
             var newParameters = match.NewItem.Parameters.FastToList();
+
+            if (oldParameters.Count == 0
+                && newParameters.Count == 0)
+            {
+                return;
+            }
 
             var parameterShift = oldParameters.Count - newParameters.Count;
 

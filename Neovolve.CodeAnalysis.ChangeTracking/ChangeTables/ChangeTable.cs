@@ -5,7 +5,7 @@
 
     public abstract class ChangeTable<T> : IChangeTable<T> where T : struct, Enum
     {
-        private readonly Dictionary<T, Dictionary<T, SemVerChangeType>> _changes = new Dictionary<T, Dictionary<T, SemVerChangeType>>();
+        private readonly Dictionary<T, Dictionary<T, SemVerChangeType>> _changes = new();
         
         protected abstract void BuildChanges();
         

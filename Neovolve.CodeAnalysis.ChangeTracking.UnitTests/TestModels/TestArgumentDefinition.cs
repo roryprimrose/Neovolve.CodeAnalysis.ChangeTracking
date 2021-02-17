@@ -7,7 +7,7 @@
     {
         public ArgumentType ArgumentType { get; set; } = ArgumentType.Ordinal;
         public string Declaration { get; set; } = Guid.NewGuid().ToString();
-        public DefinitionLocation Location { get; set; } = new DefinitionLocation(string.Empty, 0, 0);
+        public DefinitionLocation Location { get; set; } = new(string.Empty, 0, 0);
         public string Name { get; set; } = Guid.NewGuid().ToString();
         public int? OrdinalIndex { get; set; } = null;
         public string ParameterName { get; set; } = Guid.NewGuid().ToString();

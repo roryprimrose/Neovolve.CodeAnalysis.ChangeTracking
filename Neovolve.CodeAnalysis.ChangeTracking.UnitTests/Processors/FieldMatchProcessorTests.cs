@@ -38,7 +38,7 @@
             var options = ComparerOptions.Default;
             var matchingItems = new List<ItemMatch<IFieldDefinition>>
             {
-                new ItemMatch<IFieldDefinition>(new TestFieldDefinition(), new TestFieldDefinition())
+                new(new TestFieldDefinition(), new TestFieldDefinition())
             };
             var itemsRemoved = new List<IFieldDefinition>
             {
