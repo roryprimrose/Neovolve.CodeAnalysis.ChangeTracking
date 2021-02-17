@@ -20,32 +20,32 @@
 
             Type = node.Type?.ToString() ?? string.Empty;
             DefaultValue = node.Default?.Value.ToString() ?? string.Empty;
-            Modifier = DetermineModifier(node);
+            Modifiers = DetermineModifier(node);
         }
 
-        private static ParameterModifier DetermineModifier(ParameterSyntax node)
+        private static ParameterModifiers DetermineModifier(ParameterSyntax node)
         {
             if (node.Modifiers.HasModifier(SyntaxKind.ThisKeyword))
             {
-                return ParameterModifier.This;
+                return ParameterModifiers.This;
             }
 
             if (node.Modifiers.HasModifier(SyntaxKind.RefKeyword))
             {
-                return ParameterModifier.Ref;
+                return ParameterModifiers.Ref;
             }
 
             if (node.Modifiers.HasModifier(SyntaxKind.OutKeyword))
             {
-                return ParameterModifier.Out;
+                return ParameterModifiers.Out;
             }
 
             if (node.Modifiers.HasModifier(SyntaxKind.ParamsKeyword))
             {
-                return ParameterModifier.Params;
+                return ParameterModifiers.Params;
             }
 
-            return ParameterModifier.None;
+            return ParameterModifiers.None;
         }
 
         public IMemberDefinition DeclaringMember { get; }
@@ -53,7 +53,7 @@
         public override string FullName { get; }
         public override string FullRawName { get; }
         public override bool IsVisible => DeclaringMember.IsVisible;
-        public ParameterModifier Modifier { get; }
+        public ParameterModifiers Modifiers { get; }
         public override string Name { get; }
         public override string RawName { get; }
         public string Type { get; }

@@ -2,7 +2,7 @@
 {
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
-    public interface IParameterModifiersChangeTable : IChangeTable<ParameterModifier>
+    public interface IParameterModifiersChangeTable : IChangeTable<ParameterModifiers>
     {
     }
 }

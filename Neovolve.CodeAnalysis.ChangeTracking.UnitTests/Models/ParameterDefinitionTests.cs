@@ -118,12 +118,12 @@
         }
 
         [Theory]
-        [InlineData("", ParameterModifier.None)]
-        [InlineData("ref", ParameterModifier.Ref)]
-        [InlineData("out", ParameterModifier.Out)]
-        [InlineData("params", ParameterModifier.Params)]
-        [InlineData("this", ParameterModifier.This)]
-        public async Task ModifiersReturnsDeclaredValues(string modifiers, ParameterModifier expected)
+        [InlineData("", ParameterModifiers.None)]
+        [InlineData("ref", ParameterModifiers.Ref)]
+        [InlineData("out", ParameterModifiers.Out)]
+        [InlineData("params", ParameterModifiers.Params)]
+        [InlineData("this", ParameterModifiers.This)]
+        public async Task ModifiersReturnsDeclaredValues(string modifiers, ParameterModifiers expected)
         {
             var declaringMember = Substitute.For<IMemberDefinition>();
 
@@ -135,7 +135,7 @@
             var sut = new ParameterDefinition(declaringMember, node);
 
             sut.DeclaredModifiers.Should().Be(modifiers);
-            sut.Modifier.Should().Be(expected);
+            sut.Modifiers.Should().Be(expected);
         }
 
         [Fact]

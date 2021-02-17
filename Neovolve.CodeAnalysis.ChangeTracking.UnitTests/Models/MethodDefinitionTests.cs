@@ -282,10 +282,10 @@
             sut.Parameters.Should().HaveCount(2);
             sut.Parameters.First().Type.Should().Be("V");
             sut.Parameters.First().Name.Should().Be("value");
-            sut.Parameters.First().Modifier.Should().Be(ParameterModifier.None);
+            sut.Parameters.First().Modifiers.Should().Be(ParameterModifiers.None);
             sut.Parameters.Skip(1).First().Type.Should().Be("object[]");
             sut.Parameters.Skip(1).First().Name.Should().Be("otherValues");
-            sut.Parameters.Skip(1).First().Modifier.Should().Be(ParameterModifier.Params);
+            sut.Parameters.Skip(1).First().Modifiers.Should().Be(ParameterModifiers.Params);
         }
 
         [Theory]

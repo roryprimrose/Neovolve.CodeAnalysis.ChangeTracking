@@ -45,8 +45,9 @@
             var methodEvaluator = new MethodMatchEvaluator();
             var methodModifiersChangeTable = new MethodModifiersChangeTable();
             var methodModifiersComparer = new MethodModifiersComparer(methodModifiersChangeTable);
-            var parameterModifiersChangeTable = new ParameterModifierChangeTable();
-            var parameterComparer = new ParameterComparer(parameterModifiersChangeTable, attributeProcessor);
+            var parameterModifiersChangeTable = new ParameterModifiersChangeTable();
+            var parameterModifiersComparer = new ParameterModifiersComparer(parameterModifiersChangeTable);
+            var parameterComparer = new ParameterComparer(parameterModifiersComparer, attributeProcessor);
             var methodComparer = new MethodComparer(accessModifiersComparer, methodModifiersComparer, genericTypeElementComparer, parameterComparer, attributeProcessor);
             var methodProcessor = new MethodMatchProcessor(methodEvaluator, methodComparer, logger);
 

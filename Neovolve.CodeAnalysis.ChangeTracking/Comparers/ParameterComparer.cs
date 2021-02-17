@@ -1,19 +1,18 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.Comparers
 {
     using System;
-    using Neovolve.CodeAnalysis.ChangeTracking.ChangeTables;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
     using Neovolve.CodeAnalysis.ChangeTracking.Processors;
 
     public class ParameterComparer : ElementComparer<IParameterDefinition>, IParameterComparer
     {
-        private readonly IParameterModifiersChangeTable _parameterModifiersChangeTable;
+        private readonly IParameterModifiersComparer _parameterModifiersComparer;
 
-        public ParameterComparer(IParameterModifiersChangeTable parameterModifiersChangeTable,
+        public ParameterComparer(IParameterModifiersComparer parameterModifiersComparer,
             IAttributeMatchProcessor attributeProcessor) : base(attributeProcessor)
         {
-            _parameterModifiersChangeTable = parameterModifiersChangeTable
-                                             ?? throw new ArgumentNullException(nameof(parameterModifiersChangeTable));
+            _parameterModifiersComparer = parameterModifiersComparer
+                                          ?? throw new ArgumentNullException(nameof(parameterModifiersComparer));
         }
 
         protected override void EvaluateMatch(
@@ -37,7 +36,7 @@
             if (string.IsNullOrWhiteSpace(oldItem.DefaultValue)
                 && string.IsNullOrWhiteSpace(newItem.DefaultValue) == false)
             {
-                // A default value has been provided, this is technically a feature because the consuming assembly can treat it like an overload
+                // A default value has been added, this is technically a feature because the consuming assembly can treat it like an overload
                 var args = new FormatArguments(
                     "{DefinitionType} {Identifier} has added the default value {NewValue}",
                     match.NewItem.FullName,
@@ -45,6 +44,20 @@
                     newItem.DefaultValue);
 
                 aggregator.AddElementChangedResult(SemVerChangeType.Feature, match, options.MessageFormatter, args);
+            }
+            else if (string.IsNullOrWhiteSpace(oldItem.DefaultValue) == false
+                && string.IsNullOrWhiteSpace(newItem.DefaultValue))
+            {
+                // A default value has been removed
+                // This will not be a breaking change for existing applications that happen to use a new binary without recompilation
+                // however it does cause a breaking change for compiling existing applications against this API
+                var args = new FormatArguments(
+                    "{DefinitionType} {Identifier} has removed the default value {OldValue}",
+                    match.NewItem.FullName,
+                    oldItem.DefaultValue,
+                    null);
+
+                aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
             }
         }
 
@@ -73,73 +86,11 @@
             ComparerOptions options,
             IChangeResultAggregator aggregator)
         {
-            var change = _parameterModifiersChangeTable.CalculateChange(match.OldItem.Modifier, match.NewItem.Modifier);
+            var convertedMatch = new ItemMatch<IModifiersElement<ParameterModifiers>>(match.OldItem, match.NewItem);
 
-            if (change == SemVerChangeType.None)
-            {
-                return;
-            }
+            var results = _parameterModifiersComparer.CompareItems(convertedMatch, options);
 
-            var newModifiers = match.NewItem.GetDeclaredModifiers();
-            var oldModifiers = match.OldItem.GetDeclaredModifiers();
-
-            if (string.IsNullOrWhiteSpace(oldModifiers))
-            {
-                // Modifiers have been added where there were previously none defined
-                var suffix = string.Empty;
-
-                if (newModifiers.Contains(" "))
-                {
-                    // There is more than one modifier
-                    suffix = "s";
-                }
-
-                var args = new FormatArguments(
-                    "{DefinitionType} {Identifier} has added the {NewValue} modifier" + suffix,
-                    match.NewItem.FullName,
-                    null,
-                    newModifiers);
-
-                aggregator.AddElementChangedResult(change, match, options.MessageFormatter, args);
-            }
-            else if (string.IsNullOrWhiteSpace(newModifiers))
-            {
-                // All previous modifiers have been removed
-                var suffix = string.Empty;
-
-                if (oldModifiers.Contains(" "))
-                {
-                    // There is more than one modifier
-                    suffix = "s";
-                }
-
-                var args = new FormatArguments(
-                    "{DefinitionType} {Identifier} has removed the {OldValue} modifier" + suffix,
-                    match.NewItem.FullName,
-                    oldModifiers,
-                    null);
-
-                aggregator.AddElementChangedResult(change, match, options.MessageFormatter, args);
-            }
-            else
-            {
-                // Modifiers have been changed
-                var suffix = string.Empty;
-
-                if (oldModifiers.Contains(" "))
-                {
-                    // There is more than one modifier
-                    suffix = "s";
-                }
-
-                var args = new FormatArguments(
-                    $"{{DefinitionType}} {{Identifier}} has changed the modifier{suffix} from {{OldValue}} to {{NewValue}}",
-                    match.NewItem.FullName,
-                    oldModifiers,
-                    newModifiers);
-
-                aggregator.AddElementChangedResult(change, match, options.MessageFormatter, args);
-            }
+            aggregator.AddResults(results);
         }
     }
 }

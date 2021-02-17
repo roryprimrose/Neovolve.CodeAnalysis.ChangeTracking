@@ -1,6 +1,6 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.Models
 {
-    public enum ParameterModifier
+    public enum ParameterModifiers
     {
         None = 0,
         Ref = 1,

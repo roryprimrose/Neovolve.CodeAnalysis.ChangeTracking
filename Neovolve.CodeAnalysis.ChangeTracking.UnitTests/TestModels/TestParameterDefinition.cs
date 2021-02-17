@@ -14,7 +14,7 @@
         public string FullRawName { get; set; } = Guid.NewGuid().ToString();
         public bool IsVisible { get; set; } = true;
         public DefinitionLocation Location { get; set; } = new(string.Empty, 0, 0);
-        public ParameterModifier Modifier { get; set; } = ParameterModifier.None;
+        public ParameterModifiers Modifiers { get; set; } = ParameterModifiers.None;
         public string Name { get; set; } = Guid.NewGuid().ToString();
         public string RawName { get; set; } = Guid.NewGuid().ToString();
         public string Type { get; set; } = Guid.NewGuid().ToString();
