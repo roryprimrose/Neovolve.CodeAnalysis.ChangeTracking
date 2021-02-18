@@ -13,7 +13,7 @@
         [Fact]
         public async Task AccessModifierReturnsPrivateWhenEmptyModifierDefinedWithClassParent()
         {
-            var code = FieldDefinitionCode.BuildFieldWithModifiers(string.Empty);
+            var code = FieldDefinitionCode.BuildClassFieldWithModifiers(string.Empty);
 
             var declaringType = Substitute.For<IClassDefinition>();
 
@@ -25,13 +25,27 @@
         }
 
         [Fact]
+        public async Task AccessModifierReturnsPrivateWhenEmptyModifierDefinedWithStructParent()
+        {
+            var code = FieldDefinitionCode.BuildStructFieldWithModifiers(string.Empty);
+
+            var declaringType = Substitute.For<IStructDefinition>();
+
+            var node = await TestNode.FindNode<FieldDeclarationSyntax>(code).ConfigureAwait(false);
+
+            var sut = new Wrapper(declaringType, node);
+
+            sut.AccessModifiers.Should().Be(AccessModifiers.Private);
+        }
+
+        [Fact]
         public async Task AccessModifierReturnsPublicWhenEmptyModifierDefinedWithInterfaceParent()
         {
-            var code = FieldDefinitionCode.BuildFieldWithModifiers(string.Empty);
+            var code = PropertyDefinitionCode.BuildInterfacePropertyWithModifiers(string.Empty);
 
             var declaringType = Substitute.For<IInterfaceDefinition>();
 
-            var node = await TestNode.FindNode<FieldDeclarationSyntax>(code).ConfigureAwait(false);
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code).ConfigureAwait(false);
 
             var sut = new Wrapper(declaringType, node);
 
@@ -51,7 +65,7 @@
             string accessModifiers,
             AccessModifiers expected)
         {
-            var code = FieldDefinitionCode.BuildFieldWithModifiers(accessModifiers);
+            var code = FieldDefinitionCode.BuildClassFieldWithModifiers(accessModifiers);
 
             var declaringType = Substitute.For<IClassDefinition>();
 
@@ -95,7 +109,7 @@
         public async Task IsVisibleReturnsWhetherParentAndAccessModifierAreVisible(bool parentIsVisible,
             string accessModifiers, bool expected)
         {
-            var code = FieldDefinitionCode.BuildFieldWithModifiers(accessModifiers);
+            var code = FieldDefinitionCode.BuildClassFieldWithModifiers(accessModifiers);
 
             var declaringType = Substitute.For<IClassDefinition>();
 
@@ -111,7 +125,7 @@
         [Fact]
         public async Task ThrowsExceptionWhenDeclaringTypeIsNotSupported()
         {
-            var code = FieldDefinitionCode.BuildFieldWithModifiers(string.Empty);
+            var code = FieldDefinitionCode.BuildClassFieldWithModifiers(string.Empty);
 
             var declaringType = Substitute.For<ITypeDefinition>();
 

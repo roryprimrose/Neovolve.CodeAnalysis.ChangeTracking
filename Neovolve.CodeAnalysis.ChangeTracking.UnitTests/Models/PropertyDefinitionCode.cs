@@ -22,18 +22,6 @@ namespace MyNamespace
 }
 ";
 
-        public const string PropertyWithMultipleAttributesInMultipleLists = @"
-namespace MyNamespace 
-{
-    public class MyClass
-    {
-        [First, Second(123)]
-        [Third, Fourth(true, named: ""stuff""]
-        public string Value { get; set; }
-    }   
-}
-";
-
         public const string PropertyAccessorWithMultipleAttributesInMultipleLists = @"
 namespace MyNamespace 
 {
@@ -46,6 +34,18 @@ namespace MyNamespace
             get; 
             set; 
         }
+    }   
+}
+";
+
+        public const string PropertyWithMultipleAttributesInMultipleLists = @"
+namespace MyNamespace 
+{
+    public class MyClass
+    {
+        [First, Second(123)]
+        [Third, Fourth(true, named: ""stuff""]
+        public string Value { get; set; }
     }   
 }
 ";
@@ -70,6 +70,32 @@ namespace MyNamespace
 }
 ";
 
+        public static string BuildClassPropertyWithModifiers(string modifiers)
+        {
+            return @$"
+namespace MyNamespace 
+{{
+    public class MyClass
+    {{
+        {modifiers} string Value {{ get; set; }}
+    }}  
+}}
+";
+        }
+
+        public static string BuildInterfacePropertyWithModifiers(string modifiers)
+        {
+            return @$"
+namespace MyNamespace 
+{{
+    public interface MyClass
+    {{
+        {modifiers} string Value {{ get; set; }}
+    }}  
+}}
+";
+        }
+
         public static string BuildPropertyAndGetAccessorWithScope(string propertyScope, string accessorScope)
         {
             return @$"
@@ -91,19 +117,6 @@ namespace MyNamespace
     public class MyClass
     {{
         {propertyScope} string Value {{ get; {accessorScope} set; }}
-    }}  
-}}
-";
-        }
-
-        public static string BuildPropertyWithModifiers(string modifiers)
-        {
-            return @$"
-namespace MyNamespace 
-{{
-    public class MyClass
-    {{
-        {modifiers} string Value {{ get; set; }}
     }}  
 }}
 ";

@@ -1,9 +1,14 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.Models
 {
+    using System;
+
     public static class TypeDefinitionExtensions
     {
         public static bool IsMatch(this ITypeDefinition oldType, ITypeDefinition newType)
         {
+            oldType = oldType ?? throw new ArgumentNullException(nameof(oldType));
+            newType = newType ?? throw new ArgumentNullException(nameof(newType));
+
             if (oldType.Namespace != newType.Namespace)
             {
                 // Early exit if the namespace is different

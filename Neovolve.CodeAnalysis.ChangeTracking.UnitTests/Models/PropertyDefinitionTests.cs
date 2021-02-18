@@ -100,7 +100,7 @@
             var declaringType = Substitute.For<IClassDefinition>();
 
             var node = await TestNode
-                .FindNode<PropertyDeclarationSyntax>(PropertyDefinitionCode.BuildPropertyWithModifiers(modifiers))
+                .FindNode<PropertyDeclarationSyntax>(PropertyDefinitionCode.BuildClassPropertyWithModifiers(modifiers))
                 .ConfigureAwait(false);
 
             var sut = new PropertyDefinition(declaringType, node);

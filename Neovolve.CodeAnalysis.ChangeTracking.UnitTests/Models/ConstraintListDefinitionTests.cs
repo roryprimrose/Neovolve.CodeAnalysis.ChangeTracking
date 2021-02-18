@@ -1,4 +1,4 @@
-﻿namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
+﻿namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Models
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
@@ -7,7 +7,6 @@
     using FluentAssertions;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
-    using Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Models;
     using Xunit;
 
     public class ConstraintListDefinitionTests

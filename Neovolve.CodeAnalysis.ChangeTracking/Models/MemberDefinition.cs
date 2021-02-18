@@ -2,7 +2,7 @@
 {
     using System;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
-
+    
     public abstract class MemberDefinition : ElementDefinition, IMemberDefinition
     {
         protected MemberDefinition(MemberDeclarationSyntax node, ITypeDefinition declaringType) : base(node)
