@@ -6,6 +6,7 @@
 
     public class StructComparer : TypeComparer<IStructDefinition>, IStructComparer
     {
+        private readonly IFieldMatchProcessor _fieldProcessor;
         private readonly IStructModifiersComparer _structModifiersComparer;
 
         public StructComparer(IAccessModifiersComparer accessModifiersComparer,
@@ -17,13 +18,13 @@
             IAttributeMatchProcessor attributeProcessor) : base(
             accessModifiersComparer,
             genericTypeElementComparer,
-            fieldProcessor,
             propertyProcessor,
             methodProcessor,
             attributeProcessor)
         {
             _structModifiersComparer =
                 structModifiersComparer ?? throw new ArgumentNullException(nameof(structModifiersComparer));
+            _fieldProcessor = fieldProcessor ?? throw new ArgumentNullException(nameof(fieldProcessor));
         }
 
         protected override void EvaluateMatch(ItemMatch<IStructDefinition> match, ComparerOptions options,
@@ -32,6 +33,17 @@
             base.EvaluateMatch(match, options, aggregator);
 
             RunComparisonStep(EvaluateStructModifierChanges, match, options, aggregator);
+            RunComparisonStep(EvaluateFieldChanges, match, options, aggregator);
+        }
+
+        private void EvaluateFieldChanges(
+            ItemMatch<IStructDefinition> match,
+            ComparerOptions options,
+            IChangeResultAggregator aggregator)
+        {
+            var changes = _fieldProcessor.CalculateChanges(match.OldItem.Fields, match.NewItem.Fields, options);
+
+            aggregator.AddResults(changes);
         }
 
         private void EvaluateStructModifierChanges(

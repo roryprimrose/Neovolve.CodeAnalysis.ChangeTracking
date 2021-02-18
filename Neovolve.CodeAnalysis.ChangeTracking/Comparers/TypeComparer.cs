@@ -8,14 +8,12 @@
     public class TypeComparer<T> : ElementComparer<T>, ITypeComparer<T> where T : ITypeDefinition
     {
         private readonly IGenericTypeElementComparer _genericTypeElementComparer;
-        private readonly IFieldMatchProcessor _fieldProcessor;
         private readonly IPropertyMatchProcessor _propertyProcessor;
         private readonly IAccessModifiersComparer _accessModifiersComparer;
         private readonly IMethodMatchProcessor _methodProcessor;
 
         public TypeComparer(IAccessModifiersComparer accessModifiersComparer,
             IGenericTypeElementComparer genericTypeElementComparer,
-            IFieldMatchProcessor fieldProcessor,
             IPropertyMatchProcessor propertyProcessor,
             IMethodMatchProcessor methodProcessor,
             IAttributeMatchProcessor attributeProcessor) : base(attributeProcessor)
@@ -26,7 +24,6 @@
                                           ?? throw new ArgumentNullException(nameof(genericTypeElementComparer));
             _propertyProcessor = propertyProcessor ?? throw new ArgumentNullException(nameof(propertyProcessor));
             _methodProcessor = methodProcessor ?? throw new ArgumentNullException(nameof(methodProcessor));
-            _fieldProcessor = fieldProcessor ?? throw new ArgumentNullException(nameof(fieldProcessor));
         }
 
         protected override void EvaluateMatch(
@@ -41,7 +38,6 @@
             RunComparisonStep(EvaluateAccessModifierChanges, match, options, aggregator, true);
             RunComparisonStep(EvaluateGenericTypeDefinitionChanges, match, options, aggregator, true);
             RunComparisonStep(EvaluateImplementedTypeChanges, match, options, aggregator, true);
-            RunComparisonStep(EvaluateFieldChanges, match, options, aggregator);
             RunComparisonStep(EvaluatePropertyChanges, match, options, aggregator);
             RunComparisonStep(EvaluateMethodChanges, match, options, aggregator);
         }
@@ -61,27 +57,7 @@
                 aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
             }
         }
-
-        private static string DetermineTypeChangeDescription(T item)
-        {
-            if (item is IClassDefinition)
-            {
-                return "class";
-            }
-
-            if (item is IStructDefinition)
-            {
-                return "struct";
-            }
-
-            if (item is IInterfaceDefinition)
-            {
-                return "interface";
-            }
-
-            throw new NotSupportedException("Unknown type provided");
-        }
-
+        
         private void EvaluateAccessModifierChanges(
             ItemMatch<T> match,
             ComparerOptions options,
@@ -135,26 +111,7 @@
                 aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
             }
         }
-
-        private void EvaluateFieldChanges(
-            ItemMatch<T> match,
-            ComparerOptions options,
-            IChangeResultAggregator aggregator)
-        {
-            var oldClass = match.OldItem as IClassDefinition;
-
-            if (oldClass == null)
-            {
-                return;
-            }
-
-            var newClass = (IClassDefinition) match.NewItem;
-
-            var changes = _fieldProcessor.CalculateChanges(oldClass.Fields, newClass.Fields, options);
-
-            aggregator.AddResults(changes);
-        }
-
+        
         private void EvaluatePropertyChanges(
             ItemMatch<T> match,
             ComparerOptions options,

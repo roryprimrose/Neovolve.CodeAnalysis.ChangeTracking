@@ -14,14 +14,13 @@
         {
             var accessModifiersComparer = Substitute.For<IAccessModifiersComparer>();
             var genericTypeElementComparer = Substitute.For<IGenericTypeElementComparer>();
-            var fieldProcessor = Substitute.For<IFieldMatchProcessor>();
             var propertyProcessor = Substitute.For<IPropertyMatchProcessor>();
             var methodProcessor = Substitute.For<IMethodMatchProcessor>();
             var attributeProcessor = Substitute.For<IAttributeMatchProcessor>();
 
             // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new InterfaceComparer(accessModifiersComparer, genericTypeElementComparer,
-                fieldProcessor, propertyProcessor,
+                propertyProcessor,
                 methodProcessor, attributeProcessor);
 
             action.Should().NotThrow();

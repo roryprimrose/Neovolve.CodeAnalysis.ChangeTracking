@@ -7,10 +7,9 @@
     {
         public InterfaceComparer(IAccessModifiersComparer accessModifiersComparer,
             IGenericTypeElementComparer genericTypeElementComparer,
-            IFieldMatchProcessor fieldProcessor,
             IPropertyMatchProcessor propertyProcessor, IMethodMatchProcessor methodProcessor,
             IAttributeMatchProcessor attributeProcessor)
-            : base(accessModifiersComparer, genericTypeElementComparer, fieldProcessor, propertyProcessor,
+            : base(accessModifiersComparer, genericTypeElementComparer, propertyProcessor,
                 methodProcessor, attributeProcessor)
         {
         }

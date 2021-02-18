@@ -64,7 +64,6 @@
             var interfaceComparer = new InterfaceComparer(
                 accessModifiersComparer,
                 genericTypeElementComparer,
-                fieldProcessor,
                 propertyProcessor,
                 methodProcessor,
                 attributeProcessor);

@@ -42,6 +42,31 @@
         }
 
         [Fact]
+        public void CompareItemsReturnsResultFromFieldMatchProcessor()
+        {
+            var oldItem = new TestStructDefinition();
+            var newItem = oldItem.JsonClone();
+            var match = new ItemMatch<IStructDefinition>(oldItem, newItem);
+            var options = ComparerOptions.Default;
+            var changeType = Model.Create<SemVerChangeType>();
+            var message = Guid.NewGuid().ToString();
+            var result = new ComparisonResult(changeType, oldItem, newItem, message);
+            var results = new[] {result};
+
+            Service<IFieldMatchProcessor>()
+                .CalculateChanges(oldItem.Fields,
+                    newItem.Fields,
+                    options).Returns(results);
+
+            var actual = SUT.CompareItems(match, options).ToList();
+
+            _output.WriteResults(actual);
+
+            actual.Should().HaveCount(1);
+            actual[0].Should().BeEquivalentTo(result);
+        }
+
+        [Fact]
         public void CompareItemsReturnsResultFromStructModifierComparer()
         {
             var item = new TestStructDefinition();
@@ -63,6 +88,24 @@
 
             actual.Should().HaveCount(1);
             actual[0].Should().BeEquivalentTo(result);
+        }
+
+        [Fact]
+        public void ThrowsExceptionWhenCreatedWithNullFieldMatchProcessor()
+        {
+            var accessModifiersComparer = Substitute.For<IAccessModifiersComparer>();
+            var structModifiersComparer = Substitute.For<IStructModifiersComparer>();
+            var genericTypeElementComparer = Substitute.For<IGenericTypeElementComparer>();
+            var propertyProcessor = Substitute.For<IPropertyMatchProcessor>();
+            var methodProcessor = Substitute.For<IMethodMatchProcessor>();
+            var attributeProcessor = Substitute.For<IAttributeMatchProcessor>();
+
+            // ReSharper disable once ObjectCreationAsStatement
+            Action action = () => new StructComparer(accessModifiersComparer, structModifiersComparer,
+                genericTypeElementComparer,
+                null!, propertyProcessor, methodProcessor, attributeProcessor);
+
+            action.Should().Throw<ArgumentNullException>();
         }
 
         [Fact]

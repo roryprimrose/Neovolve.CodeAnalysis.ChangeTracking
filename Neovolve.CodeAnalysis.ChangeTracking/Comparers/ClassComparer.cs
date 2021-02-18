@@ -7,6 +7,7 @@
     public class ClassComparer : TypeComparer<IClassDefinition>, IClassComparer
     {
         private readonly IClassModifiersComparer _classModifiersComparer;
+        private readonly IFieldMatchProcessor _fieldProcessor;
 
         public ClassComparer(IAccessModifiersComparer accessModifiersComparer,
             IClassModifiersComparer classModifiersComparer,
@@ -17,13 +18,13 @@
             IAttributeMatchProcessor attributeProcessor) : base(
             accessModifiersComparer,
             genericTypeElementComparer,
-            fieldProcessor,
             propertyProcessor,
             methodProcessor,
             attributeProcessor)
         {
             _classModifiersComparer =
                 classModifiersComparer ?? throw new ArgumentNullException(nameof(classModifiersComparer));
+            _fieldProcessor = fieldProcessor ?? throw new ArgumentNullException(nameof(fieldProcessor));
         }
 
         protected override void EvaluateMatch(ItemMatch<IClassDefinition> match, ComparerOptions options,
@@ -32,6 +33,7 @@
             base.EvaluateMatch(match, options, aggregator);
 
             RunComparisonStep(EvaluateClassModifierChanges, match, options, aggregator);
+            RunComparisonStep(EvaluateFieldChanges, match, options, aggregator);
         }
 
         private void EvaluateClassModifierChanges(
@@ -45,6 +47,16 @@
             var results = _classModifiersComparer.CompareItems(convertedMatch, options);
 
             aggregator.AddResults(results);
+        }
+
+        private void EvaluateFieldChanges(
+            ItemMatch<IClassDefinition> match,
+            ComparerOptions options,
+            IChangeResultAggregator aggregator)
+        {
+            var changes = _fieldProcessor.CalculateChanges(match.OldItem.Fields, match.NewItem.Fields, options);
+
+            aggregator.AddResults(changes);
         }
     }
 }
