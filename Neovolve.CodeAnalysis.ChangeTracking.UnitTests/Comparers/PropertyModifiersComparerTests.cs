@@ -7,15 +7,15 @@
     using NSubstitute;
     using Xunit;
 
-    public class MemberModifiersComparerTests
+    public class PropertyModifiersComparerTests
     {
         [Fact]
         public void CanCreateWithChangeTable()
         {
-            var changeTable = Substitute.For<IMemberModifiersChangeTable>();
+            var changeTable = Substitute.For<IPropertyModifiersChangeTable>();
 
             // ReSharper disable once ObjectCreationAsStatement
-            Action action = () => new MemberModifiersComparer(changeTable);
+            Action action = () => new PropertyModifiersComparer(changeTable);
 
             action.Should().NotThrow();
         }

@@ -8,15 +8,15 @@
     public class PropertyComparer : MemberComparer<IPropertyDefinition>, IPropertyComparer
     {
         private readonly IPropertyAccessorMatchProcessor _accessorProcessor;
-        private readonly IMemberModifiersComparer _memberModifiersComparer;
+        private readonly IPropertyModifiersComparer _propertyModifiersComparer;
 
         public PropertyComparer(
-            IAccessModifiersComparer accessModifiersComparer, IMemberModifiersComparer memberModifiersComparer,
+            IAccessModifiersComparer accessModifiersComparer, IPropertyModifiersComparer propertyModifiersComparer,
             IPropertyAccessorMatchProcessor accessorProcessor,
             IAttributeMatchProcessor attributeProcessor) : base(accessModifiersComparer, attributeProcessor)
         {
-            _memberModifiersComparer = memberModifiersComparer
-                                       ?? throw new ArgumentNullException(nameof(memberModifiersComparer));
+            _propertyModifiersComparer = propertyModifiersComparer
+                                         ?? throw new ArgumentNullException(nameof(propertyModifiersComparer));
             _accessorProcessor = accessorProcessor ?? throw new ArgumentNullException(nameof(accessorProcessor));
         }
 
@@ -32,19 +32,15 @@
 
         private static IEnumerable<IPropertyAccessorDefinition> GetAccessorList(IPropertyDefinition definition)
         {
-            var accessors = new List<IPropertyAccessorDefinition>();
-
             if (definition.GetAccessor != null)
             {
-                accessors.Add(definition.GetAccessor);
+                yield return definition.GetAccessor;
             }
 
             if (definition.SetAccessor != null)
             {
-                accessors.Add(definition.SetAccessor);
+                yield return definition.SetAccessor;
             }
-
-            return accessors;
         }
 
         private void EvaluateModifierChanges(
@@ -53,9 +49,9 @@
             IChangeResultAggregator aggregator)
         {
             var convertedMatch =
-                new ItemMatch<IModifiersElement<MemberModifiers>>(match.OldItem, match.NewItem);
+                new ItemMatch<IModifiersElement<PropertyModifiers>>(match.OldItem, match.NewItem);
 
-            var results = _memberModifiersComparer.CompareItems(convertedMatch, options);
+            var results = _propertyModifiersComparer.CompareItems(convertedMatch, options);
 
             aggregator.AddResults(results);
         }

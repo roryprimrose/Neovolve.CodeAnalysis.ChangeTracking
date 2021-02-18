@@ -223,7 +223,7 @@
         }
 
         [Theory]
-        [ClassData(typeof(MemberModifiersDataSet))]
+        [ClassData(typeof(PropertyModifiersDataSet))]
         public async Task EvaluatesChangeOfModifiers(string oldModifiers, string newModifiers,
             SemVerChangeType expected)
         {

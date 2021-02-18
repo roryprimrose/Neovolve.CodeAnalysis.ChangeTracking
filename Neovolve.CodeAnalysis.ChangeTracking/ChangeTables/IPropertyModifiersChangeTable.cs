@@ -2,7 +2,7 @@
 {
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
-    public interface IMemberModifiersChangeTable : IChangeTable<MemberModifiers>
+    public interface IPropertyModifiersChangeTable : IChangeTable<PropertyModifiers>
     {
     }
 }

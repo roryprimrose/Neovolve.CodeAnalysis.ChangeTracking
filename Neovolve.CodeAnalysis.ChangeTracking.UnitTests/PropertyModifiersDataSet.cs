@@ -3,7 +3,7 @@
     using System.Collections;
     using System.Collections.Generic;
 
-    public class MemberModifiersDataSet : IEnumerable<object[]>
+    public class PropertyModifiersDataSet : IEnumerable<object[]>
     {
         public IEnumerator<object[]> GetEnumerator()
         {

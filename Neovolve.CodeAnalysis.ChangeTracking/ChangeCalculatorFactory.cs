@@ -21,8 +21,8 @@
 
             var accessModifierChangeTable = new AccessModifiersChangeTable();
             var accessModifiersComparer = new AccessModifiersComparer(accessModifierChangeTable);
-            var memberModifiersChangeTable = new MemberModifiersChangeTable();
-            var memberModifiersComparer = new MemberModifiersComparer(memberModifiersChangeTable);
+            var memberModifiersChangeTable = new PropertyModifiersChangeTable();
+            var memberModifiersComparer = new PropertyModifiersComparer(memberModifiersChangeTable);
 
             var genericTypeElementComparer = new GenericTypeElementComparer();
 

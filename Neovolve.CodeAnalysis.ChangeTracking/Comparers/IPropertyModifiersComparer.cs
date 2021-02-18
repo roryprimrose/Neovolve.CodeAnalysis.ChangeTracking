@@ -2,7 +2,7 @@
 {
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
-    public interface IMemberModifiersComparer : IModifiersElementComparer<MemberModifiers>
+    public interface IPropertyModifiersComparer : IModifiersElementComparer<PropertyModifiers>
     {
 
     }

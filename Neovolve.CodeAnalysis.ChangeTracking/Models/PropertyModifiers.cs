@@ -3,7 +3,7 @@
     using System;
 
     [Flags]
-    public enum MemberModifiers
+    public enum PropertyModifiers
     {
         None = 0,
         Abstract = 1,
