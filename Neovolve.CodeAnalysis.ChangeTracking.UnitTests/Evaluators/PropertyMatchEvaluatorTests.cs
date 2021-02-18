@@ -3,7 +3,6 @@
     using System;
     using System.Linq;
     using FluentAssertions;
-    using ModelBuilder;
     using Neovolve.CodeAnalysis.ChangeTracking.Evaluators;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
     using Neovolve.CodeAnalysis.ChangeTracking.UnitTests.TestModels;
@@ -14,18 +13,14 @@
         [Fact]
         public void MatchItemsIdentifiesPropertiesNotMatching()
         {
-            var executeStrategy = Model.UsingModule<ConfigurationModule>()
-                .Ignoring<TestPropertyDefinition>(x => x.Attributes)
-                .Ignoring<TestPropertyDefinition>(x => x.DeclaringType);
-            var oldProperty = executeStrategy.Create<TestPropertyDefinition>();
-            var newProperty = executeStrategy.Create<TestPropertyDefinition>();
-            var oldMatchingProperty = executeStrategy.Create<TestPropertyDefinition>();
+            var oldProperty = new TestPropertyDefinition();
+            var newProperty = new TestPropertyDefinition();
+            var oldMatchingProperty = new TestPropertyDefinition();
             var oldProperties = new[]
             {
                 oldProperty, oldMatchingProperty
             };
-            var newMatchingProperty = executeStrategy.Create<TestPropertyDefinition>()
-                .Set(x => x.Name = oldMatchingProperty.Name);
+            var newMatchingProperty = oldMatchingProperty.JsonClone();
             var newProperties = new[]
             {
                 newMatchingProperty, newProperty
@@ -47,16 +42,12 @@
         [Fact]
         public void MatchItemsReturnsSinglePropertyMatchingByName()
         {
-            var executeStrategy = Model.UsingModule<ConfigurationModule>()
-                .Ignoring<TestPropertyDefinition>(x => x.Attributes)
-                .Ignoring<TestPropertyDefinition>(x => x.DeclaringType);
-            var oldProperty = executeStrategy.Create<TestPropertyDefinition>();
+            var oldProperty = new TestPropertyDefinition();
             var oldProperties = new[]
             {
                 oldProperty
             };
-            var newProperty = executeStrategy.Create<TestPropertyDefinition>()
-                .Set(x => x.Name = oldProperty.Name);
+            var newProperty = oldProperty.JsonClone();
             var newProperties = new[]
             {
                 newProperty

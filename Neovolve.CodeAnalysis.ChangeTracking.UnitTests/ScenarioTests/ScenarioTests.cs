@@ -11,12 +11,9 @@
     public class ScenarioTests
     {
         private readonly IChangeCalculator _calculator;
-        private readonly ITestOutputHelper _output;
 
         public ScenarioTests(ITestOutputHelper output)
         {
-            _output = output;
-
             var logger = output.BuildLogger(LogLevel.Information);
 
             _calculator = ChangeCalculatorFactory.BuildCalculator(logger);
@@ -41,8 +38,6 @@
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
 
-            OutputResult(result);
-
             result.ChangeType.Should().Be(SemVerChangeType.None);
         }
 
@@ -62,8 +57,6 @@
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(SemVerChangeType.Breaking);
         }
@@ -85,8 +78,6 @@
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
 
-            OutputResult(result);
-
             result.ChangeType.Should().Be(SemVerChangeType.Breaking);
         }
 
@@ -106,8 +97,6 @@
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(SemVerChangeType.Breaking);
         }
@@ -129,8 +118,6 @@
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
 
-            OutputResult(result);
-
             result.ChangeType.Should().Be(SemVerChangeType.Breaking);
         }
 
@@ -150,8 +137,6 @@
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(SemVerChangeType.Breaking);
         }
@@ -173,8 +158,6 @@
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
 
-            OutputResult(result);
-
             result.ChangeType.Should().Be(SemVerChangeType.Breaking);
         }
 
@@ -195,22 +178,9 @@
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
 
-            OutputResult(result);
-
             result.ChangeType.Should().Be(SemVerChangeType.Breaking);
         }
-
-        private void OutputResult(ChangeCalculatorResult result)
-        {
-            _output.WriteLine($"Overall result: {result.ChangeType}");
-            _output.WriteLine(string.Empty);
-
-            foreach (var comparisonResult in result.ComparisonResults)
-            {
-                _output.WriteLine(comparisonResult.ChangeType + ": " + comparisonResult.Message);
-            }
-        }
-
+        
         public string SingleClass => @"
 namespace MyNamespace 
 {

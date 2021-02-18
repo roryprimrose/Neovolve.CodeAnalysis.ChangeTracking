@@ -132,6 +132,39 @@
         }
 
         [Fact]
+        public void CompareItemsReturnsResultFromPropertyAccessorMatchProcessorWithNoAccessors()
+        {
+            // This doesn't make sense but it could be a scenario that is forced upon the class
+            var oldItem = new TestPropertyDefinition().Set(x =>
+            {
+                x.GetAccessor = null;
+                x.SetAccessor = null;
+            });
+            var newItem = oldItem.JsonClone();
+            var match = new ItemMatch<IPropertyDefinition>(oldItem, newItem);
+            var options = ComparerOptions.Default;
+            var changeType = Model.Create<SemVerChangeType>();
+            var message = Guid.NewGuid().ToString();
+            var result = new ComparisonResult(changeType, oldItem, newItem, message);
+            var results = new[] {result};
+
+            Service<IPropertyAccessorMatchProcessor>()
+                .CalculateChanges(
+                    Arg.Is<IEnumerable<IPropertyAccessorDefinition>>(
+                        x => !x.Any()),
+                    Arg.Is<IEnumerable<IPropertyAccessorDefinition>>(
+                        x => !x.Any()),
+                    options).Returns(results);
+
+            var actual = SUT.CompareItems(match, options).ToList();
+
+            _output.WriteResults(actual);
+
+            actual.Should().HaveCount(1);
+            actual[0].Should().BeEquivalentTo(result);
+        }
+
+        [Fact]
         public void CompareItemsReturnsResultFromPropertyAccessorMatchProcessorWithSetAccessor()
         {
             var oldItem = new TestPropertyDefinition().Set(x => x.GetAccessor = null);

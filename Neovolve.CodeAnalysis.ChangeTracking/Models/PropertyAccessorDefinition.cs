@@ -76,7 +76,7 @@
 
             return false;
         }
-
+        
         public PropertyAccessorAccessModifiers AccessModifiers { get; }
         public override string FullName { get; }
         public override string FullRawName { get; }

@@ -22,10 +22,10 @@
         }
 
         [Theory]
-        [InlineData(SemVerChangeType.Breaking)]
-        [InlineData(SemVerChangeType.Feature)]
-        [InlineData(SemVerChangeType.None)]
-        public void CalculateChangesReturnsChangeTypeFromSingleResult(SemVerChangeType changeType)
+        [InlineData(SemVerChangeType.Breaking, 1)]
+        [InlineData(SemVerChangeType.Feature, 1)]
+        [InlineData(SemVerChangeType.None, 0)]
+        public void CalculateChangesReturnsChangeTypeFromSingleResult(SemVerChangeType changeType, int expected)
         {
             var options = Model.UsingModule<ConfigurationModule>().Create<ComparerOptions>();
             var oldTypes = Array.Empty<TestClassDefinition>();
@@ -42,22 +42,26 @@
             var actual = sut.CalculateChanges(oldTypes, newTypes, options);
 
             actual.ChangeType.Should().Be(changeType);
-            actual.ComparisonResults.Should().HaveCount(1);
-            actual.ComparisonResults.Should().Contain(result);
+            actual.ComparisonResults.Should().HaveCount(expected);
+
+            if (expected > 0)
+            {
+                actual.ComparisonResults.Should().Contain(result);
+            }
         }
 
         [Theory]
-        [InlineData(SemVerChangeType.None, SemVerChangeType.None, SemVerChangeType.None)]
-        [InlineData(SemVerChangeType.None, SemVerChangeType.Feature, SemVerChangeType.Feature)]
-        [InlineData(SemVerChangeType.None, SemVerChangeType.Breaking, SemVerChangeType.Breaking)]
-        [InlineData(SemVerChangeType.Feature, SemVerChangeType.None, SemVerChangeType.Feature)]
-        [InlineData(SemVerChangeType.Feature, SemVerChangeType.Feature, SemVerChangeType.Feature)]
-        [InlineData(SemVerChangeType.Feature, SemVerChangeType.Breaking, SemVerChangeType.Breaking)]
-        [InlineData(SemVerChangeType.Breaking, SemVerChangeType.None, SemVerChangeType.Breaking)]
-        [InlineData(SemVerChangeType.Breaking, SemVerChangeType.Feature, SemVerChangeType.Breaking)]
-        [InlineData(SemVerChangeType.Breaking, SemVerChangeType.Breaking, SemVerChangeType.Breaking)]
+        [InlineData(SemVerChangeType.None, SemVerChangeType.None, SemVerChangeType.None, 0)]
+        [InlineData(SemVerChangeType.None, SemVerChangeType.Feature, SemVerChangeType.Feature, 1)]
+        [InlineData(SemVerChangeType.None, SemVerChangeType.Breaking, SemVerChangeType.Breaking, 1)]
+        [InlineData(SemVerChangeType.Feature, SemVerChangeType.None, SemVerChangeType.Feature, 1)]
+        [InlineData(SemVerChangeType.Feature, SemVerChangeType.Feature, SemVerChangeType.Feature, 2)]
+        [InlineData(SemVerChangeType.Feature, SemVerChangeType.Breaking, SemVerChangeType.Breaking, 2)]
+        [InlineData(SemVerChangeType.Breaking, SemVerChangeType.None, SemVerChangeType.Breaking, 1)]
+        [InlineData(SemVerChangeType.Breaking, SemVerChangeType.Feature, SemVerChangeType.Breaking, 2)]
+        [InlineData(SemVerChangeType.Breaking, SemVerChangeType.Breaking, SemVerChangeType.Breaking, 2)]
         public void CalculateChangesReturnsGreatestChangeTypeFromMultipleResult(SemVerChangeType firstChangeType,
-            SemVerChangeType secondChangeType, SemVerChangeType expected)
+            SemVerChangeType secondChangeType, SemVerChangeType expected, int resultCount)
         {
             var options = Model.UsingModule<ConfigurationModule>().Create<ComparerOptions>();
             var oldTypes = Array.Empty<TestClassDefinition>();
@@ -75,9 +79,17 @@
             var actual = sut.CalculateChanges(oldTypes, newTypes, options);
 
             actual.ChangeType.Should().Be(expected);
-            actual.ComparisonResults.Should().HaveCount(2);
-            actual.ComparisonResults.Should().Contain(firstResult);
-            actual.ComparisonResults.Should().Contain(secondResult);
+            actual.ComparisonResults.Should().HaveCount(resultCount);
+
+            if (firstChangeType != SemVerChangeType.None)
+            {
+                actual.ComparisonResults.Should().Contain(firstResult);
+            }
+
+            if (secondChangeType != SemVerChangeType.None)
+            {
+                actual.ComparisonResults.Should().Contain(secondResult);
+            }
         }
 
         [Fact]

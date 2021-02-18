@@ -36,8 +36,7 @@
         {
             match = match ?? throw new ArgumentNullException(nameof(match));
             options = options ?? throw new ArgumentNullException(nameof(options));
-
-            RunComparisonStep(CompareDefinitionType, match, options, aggregator, true);
+            
             RunComparisonStep(CompareNamespace, match, options, aggregator, true);
             RunComparisonStep(EvaluateAccessModifierChanges, match, options, aggregator, true);
             RunComparisonStep(EvaluateGenericTypeDefinitionChanges, match, options, aggregator, true);
@@ -46,24 +45,7 @@
             RunComparisonStep(EvaluatePropertyChanges, match, options, aggregator);
             RunComparisonStep(EvaluateMethodChanges, match, options, aggregator);
         }
-
-        private static void CompareDefinitionType(
-            ItemMatch<T> match,
-            ComparerOptions options,
-            IChangeResultAggregator aggregator)
-        {
-            // Check for a change in type
-            if (match.OldItem.GetType() != match.NewItem.GetType())
-            {
-                var newType = DetermineTypeChangeDescription(match.NewItem);
-
-                var args = new FormatArguments("{DefinitionType} {Identifier} has changed to {NewValue}",
-                    match.OldItem.FullName, null, newType);
-
-                aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
-            }
-        }
-
+        
         private static void CompareNamespace(
             ItemMatch<T> match,
             ComparerOptions options,
