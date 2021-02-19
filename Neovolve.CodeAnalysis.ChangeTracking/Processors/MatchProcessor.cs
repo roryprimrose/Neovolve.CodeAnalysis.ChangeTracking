@@ -10,10 +10,10 @@
     public abstract class MatchProcessor<T> : IMatchProcessor<T> where T : IItemDefinition
     {
         private readonly IItemComparer<T> _comparer;
-        private readonly IMatchEvaluator<T> _evaluator;
+        private readonly IEvaluator<T> _evaluator;
         private readonly ILogger? _logger;
 
-        protected MatchProcessor(IMatchEvaluator<T> evaluator, IItemComparer<T> comparer, ILogger? logger)
+        protected MatchProcessor(IEvaluator<T> evaluator, IItemComparer<T> comparer, ILogger? logger)
         {
             _evaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             _comparer = comparer ?? throw new ArgumentNullException(nameof(comparer));

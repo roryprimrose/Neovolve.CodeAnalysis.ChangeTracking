@@ -8,7 +8,7 @@
     using Neovolve.CodeAnalysis.ChangeTracking.UnitTests.TestModels;
     using Xunit;
 
-    public class PropertyMatchEvaluatorTests
+    public class PropertyEvaluatorTests
     {
         [Fact]
         public void FindMatchesIdentifiesPropertiesNotMatching()
@@ -26,7 +26,7 @@
                 newMatchingProperty, newProperty
             };
 
-            var sut = new PropertyMatchEvaluator();
+            var sut = new PropertyEvaluator();
 
             var results = sut.FindMatches(oldProperties, newProperties);
 
@@ -53,7 +53,7 @@
                 newProperty
             };
 
-            var sut = new PropertyMatchEvaluator();
+            var sut = new PropertyEvaluator();
 
             var results = sut.FindMatches(oldProperties, newProperties);
 
@@ -69,7 +69,7 @@
         {
             var oldItems = Array.Empty<PropertyDefinition>();
 
-            var sut = new PropertyMatchEvaluator();
+            var sut = new PropertyEvaluator();
 
             Action action = () => sut.FindMatches(oldItems, null!);
 
@@ -81,7 +81,7 @@
         {
             var newItems = Array.Empty<PropertyDefinition>();
 
-            var sut = new PropertyMatchEvaluator();
+            var sut = new PropertyEvaluator();
 
             Action action = () => sut.FindMatches(null!, newItems);
 

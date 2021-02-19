@@ -2,7 +2,7 @@
 {
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
-    public interface IFieldMatchEvaluator : IMatchEvaluator<IFieldDefinition>
+    public interface IPropertyAccessorEvaluator : IEvaluator<IPropertyAccessorDefinition>
     {
 
     }

@@ -8,7 +8,7 @@
     public class FieldMatchProcessor : ElementMatchProcessor<IFieldDefinition>, IFieldMatchProcessor
     {
         public FieldMatchProcessor(
-            IFieldMatchEvaluator evaluator,
+            IFieldEvaluator evaluator,
             IFieldComparer comparer,
             ILogger? logger) : base(evaluator, comparer, logger)
         {

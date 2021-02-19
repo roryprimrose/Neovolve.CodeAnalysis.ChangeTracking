@@ -8,7 +8,7 @@
     public class MethodMatchProcessor : ElementMatchProcessor<IMethodDefinition>, IMethodMatchProcessor
     {
         public MethodMatchProcessor(
-            IMethodMatchEvaluator evaluator,
+            IMethodEvaluator evaluator,
             IMethodComparer comparer,
             ILogger? logger) : base(evaluator, comparer, logger)
         {

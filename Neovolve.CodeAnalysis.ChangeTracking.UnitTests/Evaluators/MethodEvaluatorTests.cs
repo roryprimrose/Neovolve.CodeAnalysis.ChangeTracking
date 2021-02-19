@@ -10,7 +10,7 @@
     using Neovolve.CodeAnalysis.ChangeTracking.UnitTests.TestModels;
     using Xunit;
 
-    public class MethodMatchEvaluatorTests
+    public class MethodEvaluatorTests
     {
         [Fact]
         public void
@@ -60,7 +60,7 @@
                 newMethod
             };
 
-            var sut = new MethodMatchEvaluator();
+            var sut = new MethodEvaluator();
 
             var actual = sut.FindMatches(oldItems, newItems);
 
@@ -120,7 +120,7 @@
                 otherNewMethod
             };
 
-            var sut = new MethodMatchEvaluator();
+            var sut = new MethodEvaluator();
 
             var actual = sut.FindMatches(oldItems, newItems);
 
@@ -144,7 +144,7 @@
             };
             var newItems = new List<IMethodDefinition>(oldItems);
 
-            var sut = new MethodMatchEvaluator();
+            var sut = new MethodEvaluator();
 
             var actual = sut.FindMatches(oldItems, newItems);
 
@@ -160,7 +160,7 @@
             var oldItems = Array.Empty<IMethodDefinition>();
             var newItems = Array.Empty<IMethodDefinition>();
 
-            var sut = new MethodMatchEvaluator();
+            var sut = new MethodEvaluator();
 
             var actual = sut.FindMatches(oldItems, newItems);
 
@@ -206,7 +206,7 @@
                 method
             };
 
-            var sut = new MethodMatchEvaluator();
+            var sut = new MethodEvaluator();
 
             var actual = sut.FindMatches(oldItems, newItems);
 
@@ -278,7 +278,7 @@
                 newMethod
             };
 
-            var sut = new MethodMatchEvaluator();
+            var sut = new MethodEvaluator();
 
             var actual = sut.FindMatches(oldItems, newItems);
 
@@ -331,7 +331,7 @@
                 newMethod
             };
 
-            var sut = new MethodMatchEvaluator();
+            var sut = new MethodEvaluator();
 
             var actual = sut.FindMatches(oldItems, newItems);
 
@@ -361,7 +361,7 @@
                 method
             };
 
-            var sut = new MethodMatchEvaluator();
+            var sut = new MethodEvaluator();
 
             var actual = sut.FindMatches(oldItems, newItems);
 
@@ -430,7 +430,7 @@
                 newMethod
             };
 
-            var sut = new MethodMatchEvaluator();
+            var sut = new MethodEvaluator();
 
             var actual = sut.FindMatches(oldItems, newItems);
 
@@ -503,7 +503,7 @@
                 newMethod
             };
 
-            var sut = new MethodMatchEvaluator();
+            var sut = new MethodEvaluator();
 
             var actual = sut.FindMatches(oldItems, newItems);
 
@@ -556,7 +556,7 @@
                 newMethod
             };
 
-            var sut = new MethodMatchEvaluator();
+            var sut = new MethodEvaluator();
 
             var actual = sut.FindMatches(oldItems, newItems);
 
@@ -619,7 +619,7 @@
                 matchingOverload
             };
 
-            var sut = new MethodMatchEvaluator();
+            var sut = new MethodEvaluator();
 
             var actual = sut.FindMatches(oldItems, newItems);
 
@@ -683,7 +683,7 @@
                 matchingOverload
             };
 
-            var sut = new MethodMatchEvaluator();
+            var sut = new MethodEvaluator();
 
             var actual = sut.FindMatches(oldItems, newItems);
 

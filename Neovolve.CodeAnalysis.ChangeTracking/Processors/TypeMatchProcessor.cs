@@ -9,7 +9,7 @@
     public class TypeMatchProcessor : ElementMatchProcessor<ITypeDefinition>, ITypeMatchProcessor
     {
         public TypeMatchProcessor(
-            ITypeMatchEvaluator evaluator,
+            ITypeEvaluator evaluator,
             ITypeComparer comparer,
             ILogger? logger) : base(evaluator, comparer, logger)
         {

@@ -23,14 +23,14 @@
         }
 
         [Fact]
-        public void CalculateChangesReturnsEmptyWhenMatchEvaluatorReturnsEmptyMatchResults()
+        public void CalculateChangesReturnsEmptyWhenEvaluatorReturnsEmptyMatchResults()
         {
             var oldItems = Array.Empty<IClassDefinition>();
             var newItems = Array.Empty<IClassDefinition>();
             var options = ComparerOptions.Default;
             var matches = new MatchResults<IClassDefinition>(oldItems, newItems);
 
-            Service<IMatchEvaluator<IClassDefinition>>().FindMatches(oldItems, newItems).Returns(matches);
+            Service<IEvaluator<IClassDefinition>>().FindMatches(oldItems, newItems).Returns(matches);
 
             var actual = SUT.CalculateChanges(oldItems, newItems, options);
 
@@ -62,7 +62,7 @@
             var result = new ComparisonResult(changeType, oldItem, newItem, message);
             var results = new List<ComparisonResult> {result};
 
-            Service<IMatchEvaluator<IClassDefinition>>().FindMatches(oldItems, newItems).Returns(matchResults);
+            Service<IEvaluator<IClassDefinition>>().FindMatches(oldItems, newItems).Returns(matchResults);
             Service<IItemComparer<IClassDefinition>>().CompareMatch(match, options).Returns(results);
 
             var actual = SUT.CalculateChanges(oldItems, newItems, options);
@@ -92,7 +92,7 @@
             var matchResults = new MatchResults<IClassDefinition>(Array.Empty<IClassDefinition>(),
                 newItems);
 
-            Service<IMatchEvaluator<IClassDefinition>>().FindMatches(oldItems, newItems).Returns(matchResults);
+            Service<IEvaluator<IClassDefinition>>().FindMatches(oldItems, newItems).Returns(matchResults);
 
             var actual = SUT.CalculateChanges(oldItems, newItems, options).ToList();
 
@@ -122,7 +122,7 @@
             var matchResults = new MatchResults<IClassDefinition>(oldItems,
                 Array.Empty<IClassDefinition>());
 
-            Service<IMatchEvaluator<IClassDefinition>>().FindMatches(oldItems, newItems).Returns(matchResults);
+            Service<IEvaluator<IClassDefinition>>().FindMatches(oldItems, newItems).Returns(matchResults);
 
             var actual = SUT.CalculateChanges(oldItems, newItems, options).ToList();
 
@@ -173,7 +173,7 @@
         [Fact]
         public void ThrowsExceptionWhenCreatedWithNullComparer()
         {
-            var evaluator = Substitute.For<IMatchEvaluator<IClassDefinition>>();
+            var evaluator = Substitute.For<IEvaluator<IClassDefinition>>();
             var logger = Substitute.For<ILogger>();
 
             // ReSharper disable once ObjectCreationAsStatement
@@ -202,7 +202,7 @@
 
         private class Wrapper : MatchProcessor<IClassDefinition>
         {
-            public Wrapper(IMatchEvaluator<IClassDefinition> evaluator, IItemComparer<IClassDefinition> comparer,
+            public Wrapper(IEvaluator<IClassDefinition> evaluator, IItemComparer<IClassDefinition> comparer,
                 ILogger? logger) : base(evaluator, comparer, logger)
             {
             }

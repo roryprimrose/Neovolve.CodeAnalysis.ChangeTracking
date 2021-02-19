@@ -10,7 +10,7 @@
     using Neovolve.CodeAnalysis.ChangeTracking.UnitTests.TestModels;
     using Xunit;
 
-    public class TypeMatchEvaluatorTests
+    public class TypeEvaluatorTests
     {
         [Fact]
         public void FindMatchesCalculatesMatchBetweenItemsIdentifiedAsChangedNamespace()
@@ -26,7 +26,7 @@
                 newItem
             };
 
-            var sut = new TypeMatchEvaluator();
+            var sut = new TypeEvaluator();
 
             var actual = sut.FindMatches(oldItems, newItems);
 
@@ -54,7 +54,7 @@
                 newItem
             };
 
-            var sut = new TypeMatchEvaluator();
+            var sut = new TypeEvaluator();
 
             var actual = sut.FindMatches(oldItems, newItems);
 
@@ -77,7 +77,7 @@
                 newItem
             };
 
-            var sut = new TypeMatchEvaluator();
+            var sut = new TypeEvaluator();
 
             var actual = sut.FindMatches(oldItems, newItems);
 
@@ -104,7 +104,7 @@
                 newItem
             };
 
-            var sut = new TypeMatchEvaluator();
+            var sut = new TypeEvaluator();
 
             var actual = sut.FindMatches(oldItems, newItems);
 
@@ -129,7 +129,7 @@
                 otherNewItem
             };
 
-            var sut = new TypeMatchEvaluator();
+            var sut = new TypeEvaluator();
 
             var actual = sut.FindMatches(oldItems, newItems);
 
@@ -154,7 +154,7 @@
                 newItem
             };
 
-            var sut = new TypeMatchEvaluator();
+            var sut = new TypeEvaluator();
 
             var actual = sut.FindMatches(oldItems, newItems);
 
@@ -169,7 +169,7 @@
             var oldItems = Array.Empty<ITypeDefinition>();
             var newItems = Array.Empty<ITypeDefinition>();
 
-            var sut = new TypeMatchEvaluator();
+            var sut = new TypeEvaluator();
 
             var actual = sut.FindMatches(oldItems, newItems);
 

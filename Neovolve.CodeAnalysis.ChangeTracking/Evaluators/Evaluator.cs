@@ -4,7 +4,7 @@
     using System.Collections.Generic;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
     
-    public abstract class MatchEvaluator<T> : IMatchEvaluator<T> where T : IItemDefinition
+    public abstract class Evaluator<T> : IEvaluator<T> where T : IItemDefinition
     {
         protected virtual IMatchResults<T> FindMatches(IMatchResults<T> results, Func<T, T, bool> evaluator)
         {

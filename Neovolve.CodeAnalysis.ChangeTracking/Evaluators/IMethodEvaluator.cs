@@ -2,7 +2,7 @@
 {
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
-    public interface IMethodMatchEvaluator : IMatchEvaluator<IMethodDefinition>
+    public interface IMethodEvaluator : IEvaluator<IMethodDefinition>
     {
 
     }

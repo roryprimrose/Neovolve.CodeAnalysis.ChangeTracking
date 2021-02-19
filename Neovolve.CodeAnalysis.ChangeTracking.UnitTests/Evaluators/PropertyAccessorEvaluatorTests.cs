@@ -9,7 +9,7 @@
     using Neovolve.CodeAnalysis.ChangeTracking.UnitTests.TestModels;
     using Xunit;
 
-    public class PropertyAccessorMatchEvaluatorTests
+    public class PropertyAccessorEvaluatorTests
     {
         [Fact]
         public void FindMatchesIdentifiesPropertyAccessorsNotMatching()
@@ -30,7 +30,7 @@
                 newMatchingPropertyAccessor, newPropertyAccessor
             };
 
-            var sut = new PropertyAccessorMatchEvaluator();
+            var sut = new PropertyAccessorEvaluator();
 
             var results = sut.FindMatches(oldPropertyAccessors, newPropertyAccessors);
 
@@ -60,7 +60,7 @@
                 newPropertyAccessor
             };
 
-            var sut = new PropertyAccessorMatchEvaluator();
+            var sut = new PropertyAccessorEvaluator();
 
             var results = sut.FindMatches(oldPropertyAccessors, newPropertyAccessors);
 
@@ -76,7 +76,7 @@
         {
             var oldItems = Array.Empty<PropertyAccessorDefinition>();
 
-            var sut = new PropertyAccessorMatchEvaluator();
+            var sut = new PropertyAccessorEvaluator();
 
             Action action = () => sut.FindMatches(oldItems, null!);
 
@@ -88,7 +88,7 @@
         {
             var newItems = Array.Empty<PropertyAccessorDefinition>();
 
-            var sut = new PropertyAccessorMatchEvaluator();
+            var sut = new PropertyAccessorEvaluator();
 
             Action action = () => sut.FindMatches(null!, newItems);
 

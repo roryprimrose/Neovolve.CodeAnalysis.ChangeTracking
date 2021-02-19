@@ -23,7 +23,7 @@
         public void CanCreateClass()
         {
             var comparer = Substitute.For<IPropertyAccessorComparer>();
-            var evaluator = Substitute.For<IPropertyAccessorMatchEvaluator>();
+            var evaluator = Substitute.For<IPropertyAccessorEvaluator>();
 
             // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new PropertyAccessorMatchProcessor(evaluator, comparer, _logger);

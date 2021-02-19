@@ -12,7 +12,7 @@
     public class AttributeMatchProcessor : MatchProcessor<IAttributeDefinition>, IAttributeMatchProcessor
     {
         public AttributeMatchProcessor(
-            IAttributeMatchEvaluator evaluator,
+            IAttributeEvaluator evaluator,
             IAttributeComparer comparer,
             ILogger? logger) : base(evaluator, comparer, logger)
         {

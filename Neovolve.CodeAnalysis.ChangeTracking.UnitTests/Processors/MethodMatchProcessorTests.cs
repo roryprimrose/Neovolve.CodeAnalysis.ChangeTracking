@@ -23,7 +23,7 @@
         public void CanCreateClass()
         {
             var comparer = Substitute.For<IMethodComparer>();
-            var evaluator = Substitute.For<IMethodMatchEvaluator>();
+            var evaluator = Substitute.For<IMethodEvaluator>();
 
             // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new MethodMatchProcessor(evaluator, comparer, _logger);

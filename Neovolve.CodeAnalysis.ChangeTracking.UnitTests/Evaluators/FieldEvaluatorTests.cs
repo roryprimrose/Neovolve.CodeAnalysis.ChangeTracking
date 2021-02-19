@@ -9,7 +9,7 @@
     using Neovolve.CodeAnalysis.ChangeTracking.UnitTests.TestModels;
     using Xunit;
 
-    public class FieldMatchEvaluatorTests
+    public class FieldEvaluatorTests
     {
         [Fact]
         public void FindMatchesIdentifiesFieldsNotMatching()
@@ -30,7 +30,7 @@
                 newMatchingField, newField
             };
 
-            var sut = new FieldMatchEvaluator();
+            var sut = new FieldEvaluator();
 
             var results = sut.FindMatches(oldFields, newFields);
 
@@ -62,7 +62,7 @@
                 newField
             };
 
-            var sut = new FieldMatchEvaluator();
+            var sut = new FieldEvaluator();
 
             var results = sut.FindMatches(oldFields, newFields);
 
@@ -85,7 +85,7 @@
         {
             var oldItems = Array.Empty<FieldDefinition>();
 
-            var sut = new FieldMatchEvaluator();
+            var sut = new FieldEvaluator();
 
             Action action = () => sut.FindMatches(oldItems, null!);
 
@@ -97,7 +97,7 @@
         {
             var newItems = Array.Empty<FieldDefinition>();
 
-            var sut = new FieldMatchEvaluator();
+            var sut = new FieldEvaluator();
 
             Action action = () => sut.FindMatches(null!, newItems);
 

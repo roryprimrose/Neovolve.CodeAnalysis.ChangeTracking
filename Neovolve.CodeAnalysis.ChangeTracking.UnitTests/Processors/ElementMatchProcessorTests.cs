@@ -32,7 +32,7 @@
             var matchResults = new MatchResults<IClassDefinition>(Array.Empty<IClassDefinition>(),
                 newItems);
 
-            Service<IMatchEvaluator<IClassDefinition>>().FindMatches(oldItems, newItems).Returns(matchResults);
+            Service<IEvaluator<IClassDefinition>>().FindMatches(oldItems, newItems).Returns(matchResults);
 
             var actual = SUT.CalculateChanges(oldItems, newItems, options).ToList();
 
@@ -56,7 +56,7 @@
 
         private class Wrapper : ElementMatchProcessor<IClassDefinition>
         {
-            public Wrapper(IMatchEvaluator<IClassDefinition> evaluator, IItemComparer<IClassDefinition> comparer,
+            public Wrapper(IEvaluator<IClassDefinition> evaluator, IItemComparer<IClassDefinition> comparer,
                 ILogger? logger) : base(evaluator, comparer, logger)
             {
             }

@@ -68,9 +68,9 @@
             var parentResults = new List<ComparisonResult> { parentResult};
             var options = ComparerOptions.Default;
 
-            Service<ITypeMatchEvaluator>().FindMatches(oldParentItems, newParentItems).Returns(parentMatchResults);
+            Service<ITypeEvaluator>().FindMatches(oldParentItems, newParentItems).Returns(parentMatchResults);
             Service<ITypeComparer>().CompareMatch(parentMatch, options).Returns(parentResults);
-            Service<ITypeMatchEvaluator>().FindMatches(oldChildItems, newChildItems).Returns(childMatchResults);
+            Service<ITypeEvaluator>().FindMatches(oldChildItems, newChildItems).Returns(childMatchResults);
             Service<ITypeComparer>().CompareMatch(childMatch, options).Returns(childResults);
 
             var actual = SUT.CalculateChanges(oldParentItems, newParentItems, options).ToList();

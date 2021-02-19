@@ -9,7 +9,7 @@
         IPropertyAccessorMatchProcessor
     {
         public PropertyAccessorMatchProcessor(
-            IPropertyAccessorMatchEvaluator evaluator,
+            IPropertyAccessorEvaluator evaluator,
             IPropertyAccessorComparer comparer,
             ILogger? logger) : base(evaluator, comparer, logger)
         {

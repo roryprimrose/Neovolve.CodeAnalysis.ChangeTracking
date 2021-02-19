@@ -24,7 +24,7 @@
         public void CanCreateClass()
         {
             var comparer = Substitute.For<IFieldComparer>();
-            var evaluator = Substitute.For<IFieldMatchEvaluator>();
+            var evaluator = Substitute.For<IFieldEvaluator>();
 
             // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new FieldMatchProcessor(evaluator, comparer, _logger);

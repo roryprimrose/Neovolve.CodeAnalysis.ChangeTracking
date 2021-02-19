@@ -6,11 +6,11 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Evaluators
     using Microsoft.Extensions.Logging;
     using Xunit.Abstractions;
 
-    public class MatchEvaluatorTests
+    public class EvaluatorTests
     {
         private readonly ILogger _logger;
 
-        public MatchEvaluatorTests(ITestOutputHelper output)
+        public EvaluatorTests(ITestOutputHelper output)
         {
             _logger = output.BuildLogger();
         }
@@ -24,7 +24,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Evaluators
         //    var oldNodes = new List<SyntaxNode>();
         //    var newNodes = new List<SyntaxNode>();
 
-        //    var sut = new MatchEvaluator(scanner, matches, _logger);
+        //    var sut = new Evaluator(scanner, matches, _logger);
 
         //    var actual = sut.FindMatches(oldNodes, newNodes);
 
@@ -58,7 +58,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Evaluators
         //    matcher.IsSupported(member).Returns(true);
         //    matcher.GetMatch(member, member).Returns(match);
 
-        //    var sut = new MatchEvaluator(scanner, matches, _logger);
+        //    var sut = new Evaluator(scanner, matches, _logger);
 
         //    var actual = sut.FindMatches(oldNodes, newNodes);
 
@@ -93,7 +93,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Evaluators
         //    matcher.IsSupported(Arg.Any<OldMemberDefinition>()).Returns(true);
         //    matcher.GetMatch(member, member).Returns(match);
 
-        //    var sut = new MatchEvaluator(scanner, matches, _logger);
+        //    var sut = new Evaluator(scanner, matches, _logger);
 
         //    var actual = sut.FindMatches(oldNodes, newNodes);
 
@@ -129,7 +129,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Evaluators
         //    matcher.IsSupported(Arg.Any<OldMemberDefinition>()).Returns(true);
         //    matcher.GetMatch(member, member).Returns(match);
 
-        //    var sut = new MatchEvaluator(scanner, matches, _logger);
+        //    var sut = new Evaluator(scanner, matches, _logger);
 
         //    var actual = sut.FindMatches(oldNodes, newNodes);
 
@@ -165,7 +165,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Evaluators
         //    matcher.IsSupported(member).Returns(true);
         //    matcher.GetMatch(member, member).Returns(match);
 
-        //    var sut = new MatchEvaluator(scanner, matches, _logger);
+        //    var sut = new Evaluator(scanner, matches, _logger);
 
         //    var actual = sut.FindMatches(oldNodes, newNodes);
 
@@ -200,7 +200,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Evaluators
         //    matcher.IsSupported(member).Returns(true);
         //    matcher.GetMatch(member, member).Returns(match);
 
-        //    var sut = new MatchEvaluator(scanner, matches, null);
+        //    var sut = new Evaluator(scanner, matches, null);
 
         //    var actual = sut.FindMatches(oldNodes, newNodes);
 
@@ -232,7 +232,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Evaluators
         //    scanner.FindDefinitions(oldNodes).Returns(oldMembers);
         //    scanner.FindDefinitions(newNodes).Returns(newMembers);
 
-        //    var sut = new MatchEvaluator(scanner, matches, _logger);
+        //    var sut = new Evaluator(scanner, matches, _logger);
 
         //    Action action = () => sut.FindMatches(oldNodes, newNodes);
 
@@ -250,7 +250,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Evaluators
         //        await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
         //    };
 
-        //    var sut = new MatchEvaluator(scanner, matches, _logger);
+        //    var sut = new Evaluator(scanner, matches, _logger);
 
         //    Action action = () => sut.FindMatches(oldNodes, null!);
 
@@ -268,7 +268,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Evaluators
         //        await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
         //    };
 
-        //    var sut = new MatchEvaluator(scanner, matches, _logger);
+        //    var sut = new Evaluator(scanner, matches, _logger);
 
         //    Action action = () => sut.FindMatches(null!, newNodes);
 
@@ -284,7 +284,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Evaluators
 
         //    var matches = new List<IMemberMatcher>();
 
-        //    Action action = () => new MatchEvaluator(scanner, matches, _logger);
+        //    Action action = () => new Evaluator(scanner, matches, _logger);
 
         //    action.Should().Throw<ArgumentException>();
         //}
@@ -296,7 +296,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Evaluators
         //{
         //    var scanner = Substitute.For<INodeScanner>();
 
-        //    Action action = () => new MatchEvaluator(scanner, null!, _logger);
+        //    Action action = () => new Evaluator(scanner, null!, _logger);
 
         //    action.Should().Throw<ArgumentNullException>();
         //}
@@ -309,7 +309,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Evaluators
         //    var matcher = Substitute.For<IMemberMatcher>();
         //    var matches = new List<IMemberMatcher> {matcher};
 
-        //    Action action = () => new MatchEvaluator(null!, matches, _logger);
+        //    Action action = () => new Evaluator(null!, matches, _logger);
 
         //    action.Should().Throw<ArgumentNullException>();
         //}

@@ -9,7 +9,7 @@
     using Neovolve.CodeAnalysis.ChangeTracking.UnitTests.TestModels;
     using Xunit;
 
-    public class AttributeMatchEvaluatorTests
+    public class AttributeEvaluatorTests
     {
         [Fact]
         public void FindMatchesIdentifiesAttributesNotMatching()
@@ -28,7 +28,7 @@
                 newMatchingAttribute, newAttribute
             };
 
-            var sut = new AttributeMatchEvaluator();
+            var sut = new AttributeEvaluator();
 
             var results = sut.FindMatches(oldAttributes, newAttributes);
 
@@ -63,7 +63,7 @@
                 newAttribute
             };
 
-            var sut = new AttributeMatchEvaluator();
+            var sut = new AttributeEvaluator();
 
             var results = sut.FindMatches(oldAttributes, newAttributes);
 
@@ -97,7 +97,7 @@
                 newAttribute
             };
 
-            var sut = new AttributeMatchEvaluator();
+            var sut = new AttributeEvaluator();
 
             var results = sut.FindMatches(oldAttributes, newAttributes);
 
@@ -113,7 +113,7 @@
         {
             var oldItems = Array.Empty<AttributeDefinition>();
 
-            var sut = new AttributeMatchEvaluator();
+            var sut = new AttributeEvaluator();
 
             Action action = () => sut.FindMatches(oldItems, null!);
 
@@ -125,7 +125,7 @@
         {
             var newItems = Array.Empty<AttributeDefinition>();
 
-            var sut = new AttributeMatchEvaluator();
+            var sut = new AttributeEvaluator();
 
             Action action = () => sut.FindMatches(null!, newItems);
 

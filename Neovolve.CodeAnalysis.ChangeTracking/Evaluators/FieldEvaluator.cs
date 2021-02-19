@@ -4,16 +4,16 @@
     using System.Collections.Generic;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
-    public class PropertyAccessorMatchEvaluator : MatchEvaluator<IPropertyAccessorDefinition>, IPropertyAccessorMatchEvaluator
+    public class FieldEvaluator : Evaluator<IFieldDefinition>, IFieldEvaluator
     {
-        public override IMatchResults<IPropertyAccessorDefinition> FindMatches(
-            IEnumerable<IPropertyAccessorDefinition> oldItems,
-            IEnumerable<IPropertyAccessorDefinition> newItems)
+        public override IMatchResults<IFieldDefinition> FindMatches(
+            IEnumerable<IFieldDefinition> oldItems,
+            IEnumerable<IFieldDefinition> newItems)
         {
             oldItems = oldItems ?? throw new ArgumentNullException(nameof(oldItems));
             newItems = newItems ?? throw new ArgumentNullException(nameof(newItems));
 
-            var results = new MatchResults<IPropertyAccessorDefinition>(oldItems, newItems);
+            var results = new MatchResults<IFieldDefinition>(oldItems, newItems);
 
             return FindMatches(results, (x, y) => x.Name == y.Name);
         }
