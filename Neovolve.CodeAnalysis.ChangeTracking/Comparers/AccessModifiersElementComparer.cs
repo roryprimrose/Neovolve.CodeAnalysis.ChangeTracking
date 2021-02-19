@@ -5,10 +5,10 @@
     using Neovolve.CodeAnalysis.ChangeTracking.ChangeTables;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
-    public class AccessModifiersElementComparer<T> : ModifiersComparerBase<T>, IAccessModifiersElementComparer<T>
+    public abstract class AccessModifiersElementComparer<T> : ModifiersComparerBase<T>, IAccessModifiersElementComparer<T>
         where T : struct, Enum
     {
-        public AccessModifiersElementComparer(IChangeTable<T> changeTable) : base(changeTable)
+        protected AccessModifiersElementComparer(IChangeTable<T> changeTable) : base(changeTable)
         {
         }
 

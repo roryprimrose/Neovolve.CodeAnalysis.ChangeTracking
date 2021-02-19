@@ -5,14 +5,14 @@
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
     using Neovolve.CodeAnalysis.ChangeTracking.Processors;
 
-    public class TypeComparer<T> : ElementComparer<T>, ITypeComparer<T> where T : ITypeDefinition
+    public abstract class TypeComparer<T> : ElementComparer<T>, ITypeComparer<T> where T : ITypeDefinition
     {
         private readonly IGenericTypeElementComparer _genericTypeElementComparer;
         private readonly IPropertyMatchProcessor _propertyProcessor;
         private readonly IAccessModifiersComparer _accessModifiersComparer;
         private readonly IMethodMatchProcessor _methodProcessor;
 
-        public TypeComparer(IAccessModifiersComparer accessModifiersComparer,
+        protected TypeComparer(IAccessModifiersComparer accessModifiersComparer,
             IGenericTypeElementComparer genericTypeElementComparer,
             IPropertyMatchProcessor propertyProcessor,
             IMethodMatchProcessor methodProcessor,

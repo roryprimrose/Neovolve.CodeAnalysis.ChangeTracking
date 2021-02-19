@@ -4,7 +4,7 @@
     using System.Collections.Generic;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
-    public class AggregateTypeComparer : ITypeComparer<ITypeDefinition>
+    public class AggregateTypeComparer : ITypeComparer
     {
         private readonly IClassComparer _classComparer;
         private readonly IInterfaceComparer _interfaceComparer;

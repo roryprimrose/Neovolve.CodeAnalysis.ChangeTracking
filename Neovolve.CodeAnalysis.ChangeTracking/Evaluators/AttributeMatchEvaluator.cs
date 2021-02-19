@@ -4,7 +4,7 @@
     using System.Collections.Generic;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
-    public class AttributeMatchEvaluator : MatchEvaluator<IAttributeDefinition>
+    public class AttributeMatchEvaluator : MatchEvaluator<IAttributeDefinition>, IAttributeMatchEvaluator
     {
         public override IMatchResults<IAttributeDefinition> MatchItems(
             IEnumerable<IAttributeDefinition> oldItems,

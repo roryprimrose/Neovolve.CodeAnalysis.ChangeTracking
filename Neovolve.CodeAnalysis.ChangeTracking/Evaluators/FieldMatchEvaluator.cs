@@ -4,7 +4,7 @@
     using System.Collections.Generic;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
-    public class FieldMatchEvaluator : MatchEvaluator<IFieldDefinition>
+    public class FieldMatchEvaluator : MatchEvaluator<IFieldDefinition>, IFieldMatchEvaluator
     {
         public override IMatchResults<IFieldDefinition> MatchItems(
             IEnumerable<IFieldDefinition> oldItems,

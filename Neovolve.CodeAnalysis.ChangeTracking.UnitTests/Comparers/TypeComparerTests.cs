@@ -89,7 +89,7 @@
             var changeType = Model.Create<SemVerChangeType>();
             var message = Guid.NewGuid().ToString();
             var result = new ComparisonResult(changeType, oldItem, newItem, message);
-            var results = new[] { result };
+            var results = new[] {result};
 
             Service<IAccessModifiersComparer>()
                 .CompareItems(
@@ -115,7 +115,7 @@
             var changeType = Model.Create<SemVerChangeType>();
             var message = Guid.NewGuid().ToString();
             var result = new ComparisonResult(changeType, oldItem, newItem, message);
-            var results = new[] { result };
+            var results = new[] {result};
 
             Service<IGenericTypeElementComparer>()
                 .CompareItems(
@@ -141,7 +141,7 @@
             var changeType = Model.Create<SemVerChangeType>();
             var message = Guid.NewGuid().ToString();
             var result = new ComparisonResult(changeType, oldItem, newItem, message);
-            var results = new[] { result };
+            var results = new[] {result};
 
             Service<IMethodMatchProcessor>()
                 .CalculateChanges(oldItem.Methods,
@@ -166,7 +166,7 @@
             var changeType = Model.Create<SemVerChangeType>();
             var message = Guid.NewGuid().ToString();
             var result = new ComparisonResult(changeType, oldItem, newItem, message);
-            var results = new[] { result };
+            var results = new[] {result};
 
             Service<IPropertyMatchProcessor>()
                 .CalculateChanges(oldItem.Properties,
@@ -190,12 +190,12 @@
             var attributeProcessor = Substitute.For<IAttributeMatchProcessor>();
 
             // ReSharper disable once ObjectCreationAsStatement
-            Action action = () => new TypeComparer<IClassDefinition>(null!, genericTypeElementComparer,
+            Action action = () => new Wrapper(null!, genericTypeElementComparer,
                 propertyProcessor, methodProcessor, attributeProcessor);
 
             action.Should().Throw<ArgumentNullException>();
         }
-        
+
         [Fact]
         public void ThrowsExceptionWhenCreatedWithNullGenericTypeElementComparer()
         {
@@ -205,7 +205,7 @@
             var attributeProcessor = Substitute.For<IAttributeMatchProcessor>();
 
             // ReSharper disable once ObjectCreationAsStatement
-            Action action = () => new TypeComparer<IClassDefinition>(accessModifiersComparer, null!,
+            Action action = () => new Wrapper(accessModifiersComparer, null!,
                 propertyProcessor, methodProcessor, attributeProcessor);
 
             action.Should().Throw<ArgumentNullException>();
@@ -220,7 +220,7 @@
             var attributeProcessor = Substitute.For<IAttributeMatchProcessor>();
 
             // ReSharper disable once ObjectCreationAsStatement
-            Action action = () => new TypeComparer<IClassDefinition>(accessModifiersComparer,
+            Action action = () => new Wrapper(accessModifiersComparer,
                 genericTypeElementComparer, propertyProcessor, null!, attributeProcessor);
 
             action.Should().Throw<ArgumentNullException>();
@@ -235,10 +235,21 @@
             var attributeProcessor = Substitute.For<IAttributeMatchProcessor>();
 
             // ReSharper disable once ObjectCreationAsStatement
-            Action action = () => new TypeComparer<IClassDefinition>(accessModifiersComparer,
+            Action action = () => new Wrapper(accessModifiersComparer,
                 genericTypeElementComparer, null!, methodProcessor, attributeProcessor);
 
             action.Should().Throw<ArgumentNullException>();
+        }
+
+        private class Wrapper : TypeComparer<IClassDefinition>
+        {
+            public Wrapper(IAccessModifiersComparer accessModifiersComparer,
+                IGenericTypeElementComparer genericTypeElementComparer, IPropertyMatchProcessor propertyProcessor,
+                IMethodMatchProcessor methodProcessor, IAttributeMatchProcessor attributeProcessor) : base(
+                accessModifiersComparer, genericTypeElementComparer, propertyProcessor, methodProcessor,
+                attributeProcessor)
+            {
+            }
         }
     }
 }
