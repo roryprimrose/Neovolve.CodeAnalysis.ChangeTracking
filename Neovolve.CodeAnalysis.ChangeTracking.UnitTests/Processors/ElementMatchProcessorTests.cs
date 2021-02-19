@@ -32,7 +32,7 @@
             var matchResults = new MatchResults<IClassDefinition>(Array.Empty<IClassDefinition>(),
                 newItems);
 
-            Service<IMatchEvaluator<IClassDefinition>>().MatchItems(oldItems, newItems).Returns(matchResults);
+            Service<IMatchEvaluator<IClassDefinition>>().FindMatches(oldItems, newItems).Returns(matchResults);
 
             var actual = SUT.CalculateChanges(oldItems, newItems, options).ToList();
 

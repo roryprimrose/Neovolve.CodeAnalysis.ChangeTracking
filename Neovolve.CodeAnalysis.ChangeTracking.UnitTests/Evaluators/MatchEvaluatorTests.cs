@@ -26,7 +26,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Evaluators
 
         //    var sut = new MatchEvaluator(scanner, matches, _logger);
 
-        //    var actual = sut.MatchItems(oldNodes, newNodes);
+        //    var actual = sut.FindMatches(oldNodes, newNodes);
 
         //    actual.MatchingItems.Should().BeEmpty();
         //    actual.NewMembersNotMatched.Should().BeEmpty();
@@ -60,7 +60,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Evaluators
 
         //    var sut = new MatchEvaluator(scanner, matches, _logger);
 
-        //    var actual = sut.MatchItems(oldNodes, newNodes);
+        //    var actual = sut.FindMatches(oldNodes, newNodes);
 
         //    actual.MatchingItems.Should().HaveCount(1);
         //    actual.NewMembersNotMatched.Should().BeEmpty();
@@ -95,7 +95,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Evaluators
 
         //    var sut = new MatchEvaluator(scanner, matches, _logger);
 
-        //    var actual = sut.MatchItems(oldNodes, newNodes);
+        //    var actual = sut.FindMatches(oldNodes, newNodes);
 
         //    actual.MatchingItems.Should().HaveCount(1);
         //    actual.NewMembersNotMatched.Should().HaveCount(1);
@@ -131,7 +131,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Evaluators
 
         //    var sut = new MatchEvaluator(scanner, matches, _logger);
 
-        //    var actual = sut.MatchItems(oldNodes, newNodes);
+        //    var actual = sut.FindMatches(oldNodes, newNodes);
 
         //    actual.MatchingItems.Should().HaveCount(1);
         //    actual.NewMembersNotMatched.Should().BeEmpty();
@@ -167,7 +167,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Evaluators
 
         //    var sut = new MatchEvaluator(scanner, matches, _logger);
 
-        //    var actual = sut.MatchItems(oldNodes, newNodes);
+        //    var actual = sut.FindMatches(oldNodes, newNodes);
 
         //    actual.MatchingItems.Should().HaveCount(1);
         //    actual.NewMembersNotMatched.Should().HaveCount(1);
@@ -202,7 +202,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Evaluators
 
         //    var sut = new MatchEvaluator(scanner, matches, null);
 
-        //    var actual = sut.MatchItems(oldNodes, newNodes);
+        //    var actual = sut.FindMatches(oldNodes, newNodes);
 
         //    actual.MatchingItems.Should().HaveCount(1);
         //    actual.NewMembersNotMatched.Should().BeEmpty();
@@ -234,7 +234,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Evaluators
 
         //    var sut = new MatchEvaluator(scanner, matches, _logger);
 
-        //    Action action = () => sut.MatchItems(oldNodes, newNodes);
+        //    Action action = () => sut.FindMatches(oldNodes, newNodes);
 
         //    action.Should().Throw<InvalidOperationException>();
         //}
@@ -252,7 +252,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Evaluators
 
         //    var sut = new MatchEvaluator(scanner, matches, _logger);
 
-        //    Action action = () => sut.MatchItems(oldNodes, null!);
+        //    Action action = () => sut.FindMatches(oldNodes, null!);
 
         //    action.Should().Throw<ArgumentNullException>();
         //}
@@ -270,7 +270,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Evaluators
 
         //    var sut = new MatchEvaluator(scanner, matches, _logger);
 
-        //    Action action = () => sut.MatchItems(null!, newNodes);
+        //    Action action = () => sut.FindMatches(null!, newNodes);
 
         //    action.Should().Throw<ArgumentNullException>();
         //}

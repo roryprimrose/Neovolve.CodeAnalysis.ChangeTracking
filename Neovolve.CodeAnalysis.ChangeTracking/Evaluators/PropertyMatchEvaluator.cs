@@ -6,7 +6,7 @@
 
     public class PropertyMatchEvaluator : MatchEvaluator<IPropertyDefinition>, IPropertyMatchEvaluator
     {
-        public override IMatchResults<IPropertyDefinition> MatchItems(
+        public override IMatchResults<IPropertyDefinition> FindMatches(
             IEnumerable<IPropertyDefinition> oldItems,
             IEnumerable<IPropertyDefinition> newItems)
         {

@@ -46,6 +46,6 @@
             return new MatchResults<T>(matches, oldDefinitions, newDefinitions);
         }
 
-        public abstract IMatchResults<T> MatchItems(IEnumerable<T> oldItems, IEnumerable<T> newItems);
+        public abstract IMatchResults<T> FindMatches(IEnumerable<T> oldItems, IEnumerable<T> newItems);
     }
 }

@@ -12,7 +12,7 @@
     public class FieldMatchEvaluatorTests
     {
         [Fact]
-        public void MatchItemsIdentifiesFieldsNotMatching()
+        public void FindMatchesIdentifiesFieldsNotMatching()
         {
             var executeStrategy = Model.UsingModule<ConfigurationModule>()
                 .Ignoring<TestFieldDefinition>(x => x.DeclaringType).Ignoring<TestFieldDefinition>(x => x.Attributes);
@@ -32,7 +32,7 @@
 
             var sut = new FieldMatchEvaluator();
 
-            var results = sut.MatchItems(oldFields, newFields);
+            var results = sut.FindMatches(oldFields, newFields);
 
             results.MatchingItems.Should().HaveCount(1);
             results.MatchingItems.First().OldItem.Should().Be(oldMatchingField);
@@ -47,7 +47,7 @@
         [InlineData("MyName", "MyName", true)]
         [InlineData("MyName", "myname", false)]
         [InlineData("MyName", "SomeOtherName", false)]
-        public void MatchItemsReturnsSingleFieldMatchingByName(string firstName, string secondName, bool expected)
+        public void FindMatchesReturnsSingleFieldMatchingByName(string firstName, string secondName, bool expected)
         {
             var executeStrategy = Model.UsingModule<ConfigurationModule>()
                 .Ignoring<TestFieldDefinition>(x => x.DeclaringType).Ignoring<TestFieldDefinition>(x => x.Attributes);
@@ -64,7 +64,7 @@
 
             var sut = new FieldMatchEvaluator();
 
-            var results = sut.MatchItems(oldFields, newFields);
+            var results = sut.FindMatches(oldFields, newFields);
 
             if (expected)
             {
@@ -81,25 +81,25 @@
         }
 
         [Fact]
-        public void MatchItemsThrowsExceptionWithNullNewItems()
+        public void FindMatchesThrowsExceptionWithNullNewItems()
         {
             var oldItems = Array.Empty<FieldDefinition>();
 
             var sut = new FieldMatchEvaluator();
 
-            Action action = () => sut.MatchItems(oldItems, null!);
+            Action action = () => sut.FindMatches(oldItems, null!);
 
             action.Should().Throw<ArgumentNullException>();
         }
 
         [Fact]
-        public void MatchItemsThrowsExceptionWithNullOldItems()
+        public void FindMatchesThrowsExceptionWithNullOldItems()
         {
             var newItems = Array.Empty<FieldDefinition>();
 
             var sut = new FieldMatchEvaluator();
 
-            Action action = () => sut.MatchItems(null!, newItems);
+            Action action = () => sut.FindMatches(null!, newItems);
 
             action.Should().Throw<ArgumentNullException>();
         }

@@ -11,7 +11,7 @@
     public class PropertyMatchEvaluatorTests
     {
         [Fact]
-        public void MatchItemsIdentifiesPropertiesNotMatching()
+        public void FindMatchesIdentifiesPropertiesNotMatching()
         {
             var oldProperty = new TestPropertyDefinition();
             var newProperty = new TestPropertyDefinition();
@@ -28,7 +28,7 @@
 
             var sut = new PropertyMatchEvaluator();
 
-            var results = sut.MatchItems(oldProperties, newProperties);
+            var results = sut.FindMatches(oldProperties, newProperties);
 
             results.MatchingItems.Should().HaveCount(1);
             results.MatchingItems.First().OldItem.Should().Be(oldMatchingProperty);
@@ -40,7 +40,7 @@
         }
 
         [Fact]
-        public void MatchItemsReturnsSinglePropertyMatchingByName()
+        public void FindMatchesReturnsSinglePropertyMatchingByName()
         {
             var oldProperty = new TestPropertyDefinition();
             var oldProperties = new[]
@@ -55,7 +55,7 @@
 
             var sut = new PropertyMatchEvaluator();
 
-            var results = sut.MatchItems(oldProperties, newProperties);
+            var results = sut.FindMatches(oldProperties, newProperties);
 
             results.MatchingItems.Should().HaveCount(1);
             results.MatchingItems.First().OldItem.Should().Be(oldProperty);
@@ -65,25 +65,25 @@
         }
 
         [Fact]
-        public void MatchItemsThrowsExceptionWithNullNewItems()
+        public void FindMatchesThrowsExceptionWithNullNewItems()
         {
             var oldItems = Array.Empty<PropertyDefinition>();
 
             var sut = new PropertyMatchEvaluator();
 
-            Action action = () => sut.MatchItems(oldItems, null!);
+            Action action = () => sut.FindMatches(oldItems, null!);
 
             action.Should().Throw<ArgumentNullException>();
         }
 
         [Fact]
-        public void MatchItemsThrowsExceptionWithNullOldItems()
+        public void FindMatchesThrowsExceptionWithNullOldItems()
         {
             var newItems = Array.Empty<PropertyDefinition>();
 
             var sut = new PropertyMatchEvaluator();
 
-            Action action = () => sut.MatchItems(null!, newItems);
+            Action action = () => sut.FindMatches(null!, newItems);
 
             action.Should().Throw<ArgumentNullException>();
         }

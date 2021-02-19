@@ -6,7 +6,7 @@
 
     public class FieldMatchEvaluator : MatchEvaluator<IFieldDefinition>, IFieldMatchEvaluator
     {
-        public override IMatchResults<IFieldDefinition> MatchItems(
+        public override IMatchResults<IFieldDefinition> FindMatches(
             IEnumerable<IFieldDefinition> oldItems,
             IEnumerable<IFieldDefinition> newItems)
         {

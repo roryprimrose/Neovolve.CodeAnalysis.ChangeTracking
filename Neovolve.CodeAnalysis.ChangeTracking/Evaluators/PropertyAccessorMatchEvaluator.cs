@@ -6,7 +6,7 @@
 
     public class PropertyAccessorMatchEvaluator : MatchEvaluator<IPropertyAccessorDefinition>, IPropertyAccessorMatchEvaluator
     {
-        public override IMatchResults<IPropertyAccessorDefinition> MatchItems(
+        public override IMatchResults<IPropertyAccessorDefinition> FindMatches(
             IEnumerable<IPropertyAccessorDefinition> oldItems,
             IEnumerable<IPropertyAccessorDefinition> newItems)
         {

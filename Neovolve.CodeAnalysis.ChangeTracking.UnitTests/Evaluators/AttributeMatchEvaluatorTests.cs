@@ -12,7 +12,7 @@
     public class AttributeMatchEvaluatorTests
     {
         [Fact]
-        public void MatchItemsIdentifiesAttributesNotMatching()
+        public void FindMatchesIdentifiesAttributesNotMatching()
         {
             var oldAttribute = Model.UsingModule<ConfigurationModule>().Create<IAttributeDefinition>();
             var newAttribute = Model.UsingModule<ConfigurationModule>().Create<IAttributeDefinition>();
@@ -30,7 +30,7 @@
 
             var sut = new AttributeMatchEvaluator();
 
-            var results = sut.MatchItems(oldAttributes, newAttributes);
+            var results = sut.FindMatches(oldAttributes, newAttributes);
 
             results.MatchingItems.Should().HaveCount(1);
             results.MatchingItems.First().OldItem.Should().Be(oldMatchingAttribute);
@@ -48,7 +48,7 @@
         [InlineData("MyName", "MyNameAttribute", true)]
         [InlineData("MyName", "myname", false)]
         [InlineData("MyName", "SomeOtherName", false)]
-        public void MatchItemsReturnsSingleAttributeMatchingByName(string firstName, string secondName, bool expected)
+        public void FindMatchesReturnsSingleAttributeMatchingByName(string firstName, string secondName, bool expected)
         {
             var oldAttribute = Model.UsingModule<ConfigurationModule>().Create<TestAttributeDefinition>()
                 .Set(x => x.Name = firstName);
@@ -65,7 +65,7 @@
 
             var sut = new AttributeMatchEvaluator();
 
-            var results = sut.MatchItems(oldAttributes, newAttributes);
+            var results = sut.FindMatches(oldAttributes, newAttributes);
 
             if (expected)
             {
@@ -82,7 +82,7 @@
         }
 
         [Fact]
-        public void MatchItemsReturnsSingleAttributeMatchingByNameIgnoringAttributeSuffix()
+        public void FindMatchesReturnsSingleAttributeMatchingByNameIgnoringAttributeSuffix()
         {
             var oldAttribute = Model.UsingModule<ConfigurationModule>().Create<TestAttributeDefinition>()
                 .Set(x => x.Name = "SomethingAttribute");
@@ -99,7 +99,7 @@
 
             var sut = new AttributeMatchEvaluator();
 
-            var results = sut.MatchItems(oldAttributes, newAttributes);
+            var results = sut.FindMatches(oldAttributes, newAttributes);
 
             results.MatchingItems.Should().HaveCount(1);
             results.MatchingItems.First().OldItem.Should().Be(oldAttribute);
@@ -109,25 +109,25 @@
         }
 
         [Fact]
-        public void MatchItemsThrowsExceptionWithNullNewItems()
+        public void FindMatchesThrowsExceptionWithNullNewItems()
         {
             var oldItems = Array.Empty<AttributeDefinition>();
 
             var sut = new AttributeMatchEvaluator();
 
-            Action action = () => sut.MatchItems(oldItems, null!);
+            Action action = () => sut.FindMatches(oldItems, null!);
 
             action.Should().Throw<ArgumentNullException>();
         }
 
         [Fact]
-        public void MatchItemsThrowsExceptionWithNullOldItems()
+        public void FindMatchesThrowsExceptionWithNullOldItems()
         {
             var newItems = Array.Empty<AttributeDefinition>();
 
             var sut = new AttributeMatchEvaluator();
 
-            Action action = () => sut.MatchItems(null!, newItems);
+            Action action = () => sut.FindMatches(null!, newItems);
 
             action.Should().Throw<ArgumentNullException>();
         }

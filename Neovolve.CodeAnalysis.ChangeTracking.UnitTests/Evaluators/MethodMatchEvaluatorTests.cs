@@ -14,7 +14,7 @@
     {
         [Fact]
         public void
-            MatchItemsDoesNotReturnsMatchOnRenamedMethodWhenMultipleSourceOptionsAvailable()
+            FindMatchesDoesNotReturnsMatchOnRenamedMethodWhenMultipleSourceOptionsAvailable()
         {
             var oldMethod = new TestMethodDefinition
             {
@@ -62,7 +62,7 @@
 
             var sut = new MethodMatchEvaluator();
 
-            var actual = sut.MatchItems(oldItems, newItems);
+            var actual = sut.FindMatches(oldItems, newItems);
 
             actual.ItemsAdded.Should().HaveCount(1);
             actual.ItemsAdded.First().Should().BeEquivalentTo(newMethod);
@@ -74,7 +74,7 @@
 
         [Fact]
         public void
-            MatchItemsDoesNotReturnsMatchOnRenamedMethodWhenMultipleTargetOptionsAvailable()
+            FindMatchesDoesNotReturnsMatchOnRenamedMethodWhenMultipleTargetOptionsAvailable()
         {
             var oldMethod = new TestMethodDefinition
             {
@@ -122,7 +122,7 @@
 
             var sut = new MethodMatchEvaluator();
 
-            var actual = sut.MatchItems(oldItems, newItems);
+            var actual = sut.FindMatches(oldItems, newItems);
 
             actual.ItemsAdded.Should().HaveCount(2);
             actual.ItemsAdded.First().Should().BeEquivalentTo(newMethod);
@@ -133,7 +133,7 @@
         }
 
         [Fact]
-        public void MatchItemsReturnsAllMethodsAsMatchesWhenNoChangesMade()
+        public void FindMatchesReturnsAllMethodsAsMatchesWhenNoChangesMade()
         {
             var oldItems = new List<IMethodDefinition>
             {
@@ -146,7 +146,7 @@
 
             var sut = new MethodMatchEvaluator();
 
-            var actual = sut.MatchItems(oldItems, newItems);
+            var actual = sut.FindMatches(oldItems, newItems);
 
             actual.ItemsAdded.Should().BeEmpty();
             actual.ItemsRemoved.Should().BeEmpty();
@@ -155,14 +155,14 @@
         }
 
         [Fact]
-        public void MatchItemsReturnsEmptyWhenNoMethodsProvided()
+        public void FindMatchesReturnsEmptyWhenNoMethodsProvided()
         {
             var oldItems = Array.Empty<IMethodDefinition>();
             var newItems = Array.Empty<IMethodDefinition>();
 
             var sut = new MethodMatchEvaluator();
 
-            var actual = sut.MatchItems(oldItems, newItems);
+            var actual = sut.FindMatches(oldItems, newItems);
 
             actual.ItemsAdded.Should().BeEmpty();
             actual.ItemsRemoved.Should().BeEmpty();
@@ -171,7 +171,7 @@
 
         [Fact]
         public void
-            MatchItemsReturnsMatchOnMethodWithGenericTypeConstraints()
+            FindMatchesReturnsMatchOnMethodWithGenericTypeConstraints()
         {
             var method = new TestMethodDefinition
             {
@@ -208,7 +208,7 @@
 
             var sut = new MethodMatchEvaluator();
 
-            var actual = sut.MatchItems(oldItems, newItems);
+            var actual = sut.FindMatches(oldItems, newItems);
 
             actual.ItemsAdded.Should().BeEmpty();
             actual.ItemsRemoved.Should().BeEmpty();
@@ -219,7 +219,7 @@
 
         [Fact]
         public void
-            MatchItemsReturnsMatchOnMethodWithGenericTypeConstraintsChanged()
+            FindMatchesReturnsMatchOnMethodWithGenericTypeConstraintsChanged()
         {
             var oldMethod = new TestMethodDefinition
             {
@@ -280,7 +280,7 @@
 
             var sut = new MethodMatchEvaluator();
 
-            var actual = sut.MatchItems(oldItems, newItems);
+            var actual = sut.FindMatches(oldItems, newItems);
 
             actual.ItemsAdded.Should().BeEmpty();
             actual.ItemsRemoved.Should().BeEmpty();
@@ -291,7 +291,7 @@
 
         [Fact]
         public void
-            MatchItemsReturnsMatchOnMethodWithGenericTypeParameterAndParameterCountChange()
+            FindMatchesReturnsMatchOnMethodWithGenericTypeParameterAndParameterCountChange()
         {
             var oldMethod = new TestMethodDefinition
             {
@@ -333,7 +333,7 @@
 
             var sut = new MethodMatchEvaluator();
 
-            var actual = sut.MatchItems(oldItems, newItems);
+            var actual = sut.FindMatches(oldItems, newItems);
 
             actual.ItemsAdded.Should().BeEmpty();
             actual.ItemsRemoved.Should().BeEmpty();
@@ -344,7 +344,7 @@
 
         [Fact]
         public void
-            MatchItemsReturnsMatchOnMethodWithoutGenericTypeConstraintsOrParameters()
+            FindMatchesReturnsMatchOnMethodWithoutGenericTypeConstraintsOrParameters()
         {
             var method = new TestMethodDefinition
             {
@@ -363,7 +363,7 @@
 
             var sut = new MethodMatchEvaluator();
 
-            var actual = sut.MatchItems(oldItems, newItems);
+            var actual = sut.FindMatches(oldItems, newItems);
 
             actual.ItemsAdded.Should().BeEmpty();
             actual.ItemsRemoved.Should().BeEmpty();
@@ -374,7 +374,7 @@
 
         [Fact]
         public void
-            MatchItemsReturnsMatchOnMethodWithParameterCountChange()
+            FindMatchesReturnsMatchOnMethodWithParameterCountChange()
         {
             var oldMethod = new TestMethodDefinition
             {
@@ -432,7 +432,7 @@
 
             var sut = new MethodMatchEvaluator();
 
-            var actual = sut.MatchItems(oldItems, newItems);
+            var actual = sut.FindMatches(oldItems, newItems);
 
             actual.ItemsAdded.Should().BeEmpty();
             actual.ItemsRemoved.Should().BeEmpty();
@@ -443,7 +443,7 @@
 
         [Fact]
         public void
-            MatchItemsReturnsMatchOnMethodWithParameterTypeChange()
+            FindMatchesReturnsMatchOnMethodWithParameterTypeChange()
         {
             var oldMethod = new TestMethodDefinition
             {
@@ -505,7 +505,7 @@
 
             var sut = new MethodMatchEvaluator();
 
-            var actual = sut.MatchItems(oldItems, newItems);
+            var actual = sut.FindMatches(oldItems, newItems);
 
             actual.ItemsAdded.Should().BeEmpty();
             actual.ItemsRemoved.Should().BeEmpty();
@@ -516,7 +516,7 @@
 
         [Fact]
         public void
-            MatchItemsReturnsMatchOnRenamedMethod()
+            FindMatchesReturnsMatchOnRenamedMethod()
         {
             var oldMethod = new TestMethodDefinition
             {
@@ -558,7 +558,7 @@
 
             var sut = new MethodMatchEvaluator();
 
-            var actual = sut.MatchItems(oldItems, newItems);
+            var actual = sut.FindMatches(oldItems, newItems);
 
             actual.ItemsAdded.Should().BeEmpty();
             actual.ItemsRemoved.Should().BeEmpty();
@@ -569,7 +569,7 @@
 
         [Fact]
         public void
-            MatchItemsReturnsOverloadMethodAsMatchesWhenParametersMatchWithOtherOverloadAdded()
+            FindMatchesReturnsOverloadMethodAsMatchesWhenParametersMatchWithOtherOverloadAdded()
         {
             var matchingOverload = new TestMethodDefinition
             {
@@ -621,7 +621,7 @@
 
             var sut = new MethodMatchEvaluator();
 
-            var actual = sut.MatchItems(oldItems, newItems);
+            var actual = sut.FindMatches(oldItems, newItems);
 
             actual.ItemsAdded.Should().HaveCount(1);
             actual.ItemsAdded.First().Should().BeEquivalentTo(otherOverload);
@@ -633,7 +633,7 @@
 
         [Fact]
         public void
-            MatchItemsReturnsOverloadMethodAsMatchesWhenParametersMatchWithOtherOverloadRemoved()
+            FindMatchesReturnsOverloadMethodAsMatchesWhenParametersMatchWithOtherOverloadRemoved()
         {
             var matchingOverload = new TestMethodDefinition
             {
@@ -685,7 +685,7 @@
 
             var sut = new MethodMatchEvaluator();
 
-            var actual = sut.MatchItems(oldItems, newItems);
+            var actual = sut.FindMatches(oldItems, newItems);
 
             actual.ItemsAdded.Should().BeEmpty();
             actual.ItemsRemoved.Should().HaveCount(1);

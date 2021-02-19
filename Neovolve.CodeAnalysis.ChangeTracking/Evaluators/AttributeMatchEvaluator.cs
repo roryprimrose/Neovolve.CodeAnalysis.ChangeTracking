@@ -6,7 +6,7 @@
 
     public class AttributeMatchEvaluator : MatchEvaluator<IAttributeDefinition>, IAttributeMatchEvaluator
     {
-        public override IMatchResults<IAttributeDefinition> MatchItems(
+        public override IMatchResults<IAttributeDefinition> FindMatches(
             IEnumerable<IAttributeDefinition> oldItems,
             IEnumerable<IAttributeDefinition> newItems)
         {

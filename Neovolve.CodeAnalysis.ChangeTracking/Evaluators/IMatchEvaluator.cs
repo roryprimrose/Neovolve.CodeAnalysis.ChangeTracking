@@ -5,6 +5,6 @@
 
     public interface IMatchEvaluator<T> where T : IItemDefinition
     {
-        IMatchResults<T> MatchItems(IEnumerable<T> oldItems, IEnumerable<T> newItems);
+        IMatchResults<T> FindMatches(IEnumerable<T> oldItems, IEnumerable<T> newItems);
     }
 }

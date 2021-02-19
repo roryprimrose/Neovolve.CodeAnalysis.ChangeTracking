@@ -62,7 +62,7 @@
             var comparer = Substitute.For<IAttributeComparer>();
             var evaluator = Substitute.For<IAttributeMatchEvaluator>();
 
-            evaluator.MatchItems(oldItems, newItems)
+            evaluator.FindMatches(oldItems, newItems)
                 .Returns(matchResults);
 
             var sut = new AttributeMatchProcessor(evaluator, comparer, _logger);
@@ -94,7 +94,7 @@
             var comparer = Substitute.For<IAttributeComparer>();
             var evaluator = Substitute.For<IAttributeMatchEvaluator>();
 
-            evaluator.MatchItems(
+            evaluator.FindMatches(
                     Arg.Is<IEnumerable<IAttributeDefinition>>(x => x.Single() == oldItems[3]),
                     Arg.Is<IEnumerable<IAttributeDefinition>>(x => x.Single() == newItems[5]))
                 .Returns(matchResults);

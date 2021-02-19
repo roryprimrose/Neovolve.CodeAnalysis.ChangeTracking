@@ -29,7 +29,7 @@
             newItems = newItems ?? throw new ArgumentNullException(nameof(newItems));
             options = options ?? throw new ArgumentNullException(nameof(options));
 
-            IMatchResults<T> matchingNodes = _evaluator.MatchItems(oldItems, newItems);
+            IMatchResults<T> matchingNodes = _evaluator.FindMatches(oldItems, newItems);
 
             // Record any visible items that have been added
             // Items added which are not publicly visible are ignored

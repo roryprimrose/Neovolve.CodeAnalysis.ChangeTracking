@@ -12,7 +12,7 @@
     public class PropertyAccessorMatchEvaluatorTests
     {
         [Fact]
-        public void MatchItemsIdentifiesPropertyAccessorsNotMatching()
+        public void FindMatchesIdentifiesPropertyAccessorsNotMatching()
         {
             var executeStrategy = Model.UsingModule<ConfigurationModule>()
                 .Ignoring<TestPropertyAccessorDefinition>(x => x.Attributes);
@@ -32,7 +32,7 @@
 
             var sut = new PropertyAccessorMatchEvaluator();
 
-            var results = sut.MatchItems(oldPropertyAccessors, newPropertyAccessors);
+            var results = sut.FindMatches(oldPropertyAccessors, newPropertyAccessors);
 
             results.MatchingItems.Should().HaveCount(1);
             results.MatchingItems.First().OldItem.Should().Be(oldMatchingPropertyAccessor);
@@ -44,7 +44,7 @@
         }
 
         [Fact]
-        public void MatchItemsReturnsSinglePropertyAccessorMatchingByName()
+        public void FindMatchesReturnsSinglePropertyAccessorMatchingByName()
         {
             var executeStrategy = Model.UsingModule<ConfigurationModule>()
                 .Ignoring<TestPropertyAccessorDefinition>(x => x.Attributes);
@@ -62,7 +62,7 @@
 
             var sut = new PropertyAccessorMatchEvaluator();
 
-            var results = sut.MatchItems(oldPropertyAccessors, newPropertyAccessors);
+            var results = sut.FindMatches(oldPropertyAccessors, newPropertyAccessors);
 
             results.MatchingItems.Should().HaveCount(1);
             results.MatchingItems.First().OldItem.Should().Be(oldPropertyAccessor);
@@ -72,25 +72,25 @@
         }
 
         [Fact]
-        public void MatchItemsThrowsExceptionWithNullNewItems()
+        public void FindMatchesThrowsExceptionWithNullNewItems()
         {
             var oldItems = Array.Empty<PropertyAccessorDefinition>();
 
             var sut = new PropertyAccessorMatchEvaluator();
 
-            Action action = () => sut.MatchItems(oldItems, null!);
+            Action action = () => sut.FindMatches(oldItems, null!);
 
             action.Should().Throw<ArgumentNullException>();
         }
 
         [Fact]
-        public void MatchItemsThrowsExceptionWithNullOldItems()
+        public void FindMatchesThrowsExceptionWithNullOldItems()
         {
             var newItems = Array.Empty<PropertyAccessorDefinition>();
 
             var sut = new PropertyAccessorMatchEvaluator();
 
-            Action action = () => sut.MatchItems(null!, newItems);
+            Action action = () => sut.FindMatches(null!, newItems);
 
             action.Should().Throw<ArgumentNullException>();
         }

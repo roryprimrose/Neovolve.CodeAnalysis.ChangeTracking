@@ -13,7 +13,7 @@
     public class TypeMatchEvaluatorTests
     {
         [Fact]
-        public void MatchItemsCalculatesMatchBetweenItemsIdentifiedAsChangedNamespace()
+        public void FindMatchesCalculatesMatchBetweenItemsIdentifiedAsChangedNamespace()
         {
             var oldItem = new TestClassDefinition();
             var newItem = new TestClassDefinition().Set(x => { x.Name = oldItem.Name; });
@@ -28,7 +28,7 @@
 
             var sut = new TypeMatchEvaluator();
 
-            var actual = sut.MatchItems(oldItems, newItems);
+            var actual = sut.FindMatches(oldItems, newItems);
 
             actual.ItemsRemoved.Should().BeEmpty();
             actual.ItemsAdded.Should().BeEmpty();
@@ -41,7 +41,7 @@
         }
 
         [Fact]
-        public void MatchItemsReturnsComparerResultWhenChangedItemsAreDifferentName()
+        public void FindMatchesReturnsComparerResultWhenChangedItemsAreDifferentName()
         {
             var oldItem = new TestClassDefinition();
             var newItem = new TestClassDefinition();
@@ -56,7 +56,7 @@
 
             var sut = new TypeMatchEvaluator();
 
-            var actual = sut.MatchItems(oldItems, newItems);
+            var actual = sut.FindMatches(oldItems, newItems);
 
             actual.ItemsRemoved.Should().BeEquivalentTo(oldItems);
             actual.ItemsAdded.Should().BeEquivalentTo(newItems);
@@ -64,7 +64,7 @@
         }
 
         [Fact]
-        public void MatchItemsReturnsComparerResultWhenChangedItemsAreDifferentTypes()
+        public void FindMatchesReturnsComparerResultWhenChangedItemsAreDifferentTypes()
         {
             var oldItem = new TestInterfaceDefinition();
             var newItem = new TestClassDefinition().Set(x => { x.Name = oldItem.Name; });
@@ -79,7 +79,7 @@
 
             var sut = new TypeMatchEvaluator();
 
-            var actual = sut.MatchItems(oldItems, newItems);
+            var actual = sut.FindMatches(oldItems, newItems);
 
             actual.ItemsRemoved.Should().BeEquivalentTo(oldItems);
             actual.ItemsAdded.Should().BeEquivalentTo(newItems);
@@ -87,7 +87,7 @@
         }
 
         [Fact]
-        public void MatchItemsReturnsComparerResultWhenChangedItemsAreSameNamespace()
+        public void FindMatchesReturnsComparerResultWhenChangedItemsAreSameNamespace()
         {
             var oldItem = new TestClassDefinition();
             var newItem = new TestClassDefinition().Set(x =>
@@ -106,7 +106,7 @@
 
             var sut = new TypeMatchEvaluator();
 
-            var actual = sut.MatchItems(oldItems, newItems);
+            var actual = sut.FindMatches(oldItems, newItems);
 
             actual.ItemsRemoved.Should().BeEquivalentTo(oldItems);
             actual.ItemsAdded.Should().BeEquivalentTo(newItems);
@@ -114,7 +114,7 @@
         }
 
         [Fact]
-        public void MatchItemsReturnsComparerResultWhenMultipleNewItemsHaveSameNameAndType()
+        public void FindMatchesReturnsComparerResultWhenMultipleNewItemsHaveSameNameAndType()
         {
             var oldItem = new TestClassDefinition();
             var newItem = new TestClassDefinition().Set(x => { x.Name = oldItem.Name; });
@@ -131,7 +131,7 @@
 
             var sut = new TypeMatchEvaluator();
 
-            var actual = sut.MatchItems(oldItems, newItems);
+            var actual = sut.FindMatches(oldItems, newItems);
 
             actual.ItemsRemoved.Should().BeEquivalentTo(oldItems);
             actual.ItemsAdded.Should().BeEquivalentTo(newItems);
@@ -139,7 +139,7 @@
         }
 
         [Fact]
-        public void MatchItemsReturnsComparerResultWhenMultipleOldItemsHaveSameNameAndType()
+        public void FindMatchesReturnsComparerResultWhenMultipleOldItemsHaveSameNameAndType()
         {
             var oldItem = new TestClassDefinition();
             var otherOldItem = new TestClassDefinition().Set(x => { x.Name = oldItem.Name; });
@@ -156,7 +156,7 @@
 
             var sut = new TypeMatchEvaluator();
 
-            var actual = sut.MatchItems(oldItems, newItems);
+            var actual = sut.FindMatches(oldItems, newItems);
 
             actual.ItemsRemoved.Should().BeEquivalentTo(oldItems);
             actual.ItemsAdded.Should().BeEquivalentTo(newItems);
@@ -164,14 +164,14 @@
         }
 
         [Fact]
-        public void MatchItemsReturnsComparerResultWhenNoItemsAddedOrRemoved()
+        public void FindMatchesReturnsComparerResultWhenNoItemsAddedOrRemoved()
         {
             var oldItems = Array.Empty<ITypeDefinition>();
             var newItems = Array.Empty<ITypeDefinition>();
 
             var sut = new TypeMatchEvaluator();
 
-            var actual = sut.MatchItems(oldItems, newItems);
+            var actual = sut.FindMatches(oldItems, newItems);
 
             actual.ItemsRemoved.Should().BeEmpty();
             actual.ItemsAdded.Should().BeEmpty();

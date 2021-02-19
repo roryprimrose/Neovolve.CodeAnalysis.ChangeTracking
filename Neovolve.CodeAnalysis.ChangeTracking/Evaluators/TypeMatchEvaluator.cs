@@ -7,7 +7,7 @@
 
     public class TypeMatchEvaluator : MatchEvaluator<ITypeDefinition>, ITypeMatchEvaluator
     {
-        public override IMatchResults<ITypeDefinition> MatchItems(
+        public override IMatchResults<ITypeDefinition> FindMatches(
             IEnumerable<ITypeDefinition> oldItems,
             IEnumerable<ITypeDefinition> newItems)
         {

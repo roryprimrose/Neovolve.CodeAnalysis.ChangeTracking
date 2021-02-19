@@ -7,7 +7,7 @@
 
     public class MethodMatchEvaluator : MatchEvaluator<IMethodDefinition>, IMethodMatchEvaluator
     {
-        public override IMatchResults<IMethodDefinition> MatchItems(
+        public override IMatchResults<IMethodDefinition> FindMatches(
             IEnumerable<IMethodDefinition> oldItems,
             IEnumerable<IMethodDefinition> newItems)
         {
