@@ -4,7 +4,7 @@
     using System.Collections.Generic;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
-    public class PropertyAccessorMatchEvaluator : MatchEvaluator<IPropertyAccessorDefinition>
+    public class PropertyAccessorMatchEvaluator : MatchEvaluator<IPropertyAccessorDefinition>, IPropertyAccessorMatchEvaluator
     {
         public override IMatchResults<IPropertyAccessorDefinition> MatchItems(
             IEnumerable<IPropertyAccessorDefinition> oldItems,

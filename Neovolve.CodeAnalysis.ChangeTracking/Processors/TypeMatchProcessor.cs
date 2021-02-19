@@ -1,6 +1,5 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.Processors
 {
-    using System;
     using System.Collections.Generic;
     using Microsoft.Extensions.Logging;
     using Neovolve.CodeAnalysis.ChangeTracking.Comparers;

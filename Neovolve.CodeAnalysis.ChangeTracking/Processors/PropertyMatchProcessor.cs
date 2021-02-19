@@ -8,7 +8,7 @@
     public class PropertyMatchProcessor : ElementMatchProcessor<IPropertyDefinition>, IPropertyMatchProcessor
     {
         public PropertyMatchProcessor(
-            IMatchEvaluator<IPropertyDefinition> evaluator,
+            IPropertyMatchEvaluator evaluator,
             IPropertyComparer comparer,
             ILogger? logger) : base(evaluator, comparer, logger)
         {

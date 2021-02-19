@@ -1,57 +1,166 @@
-﻿// ReSharper disable ObjectCreationAsStatement
-
-namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
+﻿namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
+    using FluentAssertions;
+    using Neovolve.CodeAnalysis.ChangeTracking.Models;
+    using Neovolve.CodeAnalysis.ChangeTracking.UnitTests.TestModels;
+    using Xunit;
+
     public class MatchResultsTests
     {
-        //[Fact]
-        //[SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification = "The constructor is the target of the test")]
-        //public void ThrowsExceptionWhenCreatedWithNullMatches()
-        //{
-        //    var oldMembersNotMatched = Model.UsingModule<ConfigurationModule>().Create<IEnumerable<OldMemberDefinition>>();
-        //    var newMembersNotMatched = Model.UsingModule<ConfigurationModule>().Create<IEnumerable<OldMemberDefinition>>();
+        [Fact]
+        public void CanCreateWithMatches()
+        {
+            var oldItem = new TestClassDefinition();
+            var newItem = new TestClassDefinition();
+            var matchingItem = new ItemMatch<IClassDefinition>(oldItem, newItem);
+            var matchingItems = new List<ItemMatch<IClassDefinition>>
+            {
+                matchingItem
+            };
+            var removedItem = new TestClassDefinition();
+            var removedItems = new List<IClassDefinition>
+            {
+                removedItem
+            };
+            var addedItem = new TestClassDefinition();
+            var addedItems = new List<IClassDefinition>
+            {
+                addedItem
+            };
 
-        //    Action action = () => new MatchResults(null!, oldMembersNotMatched, newMembersNotMatched);
+            var sut = new MatchResults<IClassDefinition>(matchingItems, removedItems, addedItems);
 
-        //    action.Should().Throw<ArgumentNullException>();
-        //}
+            sut.MatchingItems.Should().BeEquivalentTo(matchingItems);
+            sut.ItemsRemoved.Should().BeEquivalentTo(removedItems);
+            sut.ItemsAdded.Should().BeEquivalentTo(addedItems);
+        }
 
-        //[Fact]
-        //[SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification = "The constructor is the target of the test")]
-        //public void ThrowsExceptionWhenCreatedWithNullOldMembersNotMatched()
-        //{
-        //    var matches = Model.UsingModule<ConfigurationModule>().Create<IEnumerable<DefinitionMatch>>();
-        //    var newMembersNotMatched = Model.UsingModule<ConfigurationModule>().Create<IEnumerable<OldMemberDefinition>>();
+        [Fact]
+        public void CanCreateWithoutMatches()
+        {
+            var removedItem = new TestClassDefinition();
+            var removedItems = new List<IClassDefinition>
+            {
+                removedItem
+            };
+            var addedItem = new TestClassDefinition();
+            var addedItems = new List<IClassDefinition>
+            {
+                addedItem
+            };
 
-        //    Action action = () => new MatchResults(matches, null!, newMembersNotMatched);
+            var sut = new MatchResults<IClassDefinition>(removedItems, addedItems);
 
-        //    action.Should().Throw<ArgumentNullException>();
-        //}
+            sut.MatchingItems.Should().BeEmpty();
+            sut.ItemsRemoved.Should().BeEquivalentTo(removedItems);
+            sut.ItemsAdded.Should().BeEquivalentTo(addedItems);
+        }
 
-        //[Fact]
-        //[SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification = "The constructor is the target of the test")]
-        //public void ThrowsExceptionWhenCreatedWithNullNewMembersNotMatched()
-        //{
-        //    var matches = Model.UsingModule<ConfigurationModule>().Create<IEnumerable<DefinitionMatch>>();
-        //    var oldMembersNotMatched = Model.UsingModule<ConfigurationModule>().Create<IEnumerable<OldMemberDefinition>>();
+        [Fact]
+        [SuppressMessage("Usage", "CA1806:Do not ignore method results",
+            Justification = "The constructor is the target of the test")]
+        public void ThrowsExceptionWhenCreatedWithNullAddedMembersWithMatches()
+        {
+            var oldItem = new TestClassDefinition();
+            var newItem = new TestClassDefinition();
+            var matchingItem = new ItemMatch<IClassDefinition>(oldItem, newItem);
+            var matchingItems = new List<ItemMatch<IClassDefinition>>
+            {
+                matchingItem
+            };
+            var removedItem = new TestClassDefinition();
+            var removedItems = new List<IClassDefinition>
+            {
+                removedItem
+            };
 
-        //    Action action = () => new MatchResults(matches, oldMembersNotMatched, null!);
+            // ReSharper disable once ObjectCreationAsStatement
+            Action action = () => new MatchResults<IClassDefinition>(matchingItems, removedItems, null!);
 
-        //    action.Should().Throw<ArgumentNullException>();
-        //}
+            action.Should().Throw<ArgumentNullException>();
+        }
 
-        //[Fact]
-        //public void CanCreateWithRequiredValues()
-        //{
-        //    var matches = Model.UsingModule<ConfigurationModule>().Create<IList<DefinitionMatch>>();
-        //    var oldMembersNotMatched = Model.UsingModule<ConfigurationModule>().Create<IList<OldMemberDefinition>>();
-        //    var newMembersNotMatched = Model.UsingModule<ConfigurationModule>().Create<IList<OldMemberDefinition>>();
+        [Fact]
+        [SuppressMessage("Usage", "CA1806:Do not ignore method results",
+            Justification = "The constructor is the target of the test")]
+        public void ThrowsExceptionWhenCreatedWithNullAddedMembersWithoutMatches()
+        {
+            var removedItem = new TestClassDefinition();
+            var removedItems = new List<IClassDefinition>
+            {
+                removedItem
+            };
 
-        //    var sut = new MatchResults(matches, oldMembersNotMatched, newMembersNotMatched);
+            // ReSharper disable once ObjectCreationAsStatement
+            Action action = () => new MatchResults<IClassDefinition>(removedItems, null!);
 
-        //    sut.MatchingItems.Should().BeEquivalentTo(matches);
-        //    sut.ItemsRemoved.Should().BeEquivalentTo(oldMembersNotMatched);
-        //    sut.ItemsAdded.Should().BeEquivalentTo(newMembersNotMatched);
-        //}
+            action.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
+        [SuppressMessage("Usage", "CA1806:Do not ignore method results",
+            Justification = "The constructor is the target of the test")]
+        public void ThrowsExceptionWhenCreatedWithNullMatches()
+        {
+            var removedItem = new TestClassDefinition();
+            var removedItems = new List<IClassDefinition>
+            {
+                removedItem
+            };
+            var addedItem = new TestClassDefinition();
+            var addedItems = new List<IClassDefinition>
+            {
+                addedItem
+            };
+
+            // ReSharper disable once ObjectCreationAsStatement
+            Action action = () => new MatchResults<IClassDefinition>(null!, removedItems, addedItems);
+
+            action.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
+        [SuppressMessage("Usage", "CA1806:Do not ignore method results",
+            Justification = "The constructor is the target of the test")]
+        public void ThrowsExceptionWhenCreatedWithNullRemovedMembersWithMatches()
+        {
+            var oldItem = new TestClassDefinition();
+            var newItem = new TestClassDefinition();
+            var matchingItem = new ItemMatch<IClassDefinition>(oldItem, newItem);
+            var matchingItems = new List<ItemMatch<IClassDefinition>>
+            {
+                matchingItem
+            };
+            var addedItem = new TestClassDefinition();
+            var addedItems = new List<IClassDefinition>
+            {
+                addedItem
+            };
+
+            // ReSharper disable once ObjectCreationAsStatement
+            Action action = () => new MatchResults<IClassDefinition>(matchingItems, null!, addedItems);
+
+            action.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
+        [SuppressMessage("Usage", "CA1806:Do not ignore method results",
+            Justification = "The constructor is the target of the test")]
+        public void ThrowsExceptionWhenCreatedWithNullRemovedMembersWithoutMatches()
+        {
+            var addedItem = new TestClassDefinition();
+            var addedItems = new List<IClassDefinition>
+            {
+                addedItem
+            };
+
+            // ReSharper disable once ObjectCreationAsStatement
+            Action action = () => new MatchResults<IClassDefinition>(null!, addedItems);
+
+            action.Should().Throw<ArgumentNullException>();
+        }
     }
 }
