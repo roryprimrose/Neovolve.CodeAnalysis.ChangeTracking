@@ -31,7 +31,7 @@
         {
             var convertedMatch = new ItemMatch<IAccessModifiersElement<AccessModifiers>>(match.OldItem, match.NewItem);
 
-            var results = _accessModifiersComparer.CompareItems(convertedMatch, options);
+            var results = _accessModifiersComparer.CompareMatch(convertedMatch, options);
 
             aggregator.AddResults(results);
         }

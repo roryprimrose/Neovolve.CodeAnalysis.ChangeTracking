@@ -7,7 +7,7 @@
 
     public class GenericTypeElementComparer : IGenericTypeElementComparer
     {
-        public IEnumerable<ComparisonResult> CompareItems(ItemMatch<IGenericTypeElement> match, ComparerOptions options)
+        public IEnumerable<ComparisonResult> CompareMatch(ItemMatch<IGenericTypeElement> match, ComparerOptions options)
         {
             match = match ?? throw new ArgumentNullException(nameof(match));
             options = options ?? throw new ArgumentNullException(nameof(options));

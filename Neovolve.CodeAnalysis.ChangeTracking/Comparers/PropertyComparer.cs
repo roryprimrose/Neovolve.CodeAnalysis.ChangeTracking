@@ -51,7 +51,7 @@
             var convertedMatch =
                 new ItemMatch<IModifiersElement<PropertyModifiers>>(match.OldItem, match.NewItem);
 
-            var results = _propertyModifiersComparer.CompareItems(convertedMatch, options);
+            var results = _propertyModifiersComparer.CompareMatch(convertedMatch, options);
 
             aggregator.AddResults(results);
         }

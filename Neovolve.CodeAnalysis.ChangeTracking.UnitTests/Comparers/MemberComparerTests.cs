@@ -22,14 +22,14 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsEmptyWhenNodesMatch()
+        public void CompareMatchReturnsEmptyWhenNodesMatch()
         {
             var oldMember = new TestPropertyDefinition();
             var newMember = oldMember.JsonClone();
             var match = new ItemMatch<TestPropertyDefinition>(oldMember, newMember);
             var options = ComparerOptions.Default;
 
-            var actual = SUT.CompareItems(match, options).ToList();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -58,7 +58,7 @@
             var match = new ItemMatch<TestPropertyDefinition>(oldMember, newMember);
             var options = ComparerOptions.Default;
 
-            var actual = SUT.CompareItems(match, options).ToList();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -86,7 +86,7 @@
             var match = new ItemMatch<TestPropertyDefinition>(oldMember, newMember);
             var options = ComparerOptions.Default;
 
-            var actual = SUT.CompareItems(match, options).ToList();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -115,7 +115,7 @@
             var match = new ItemMatch<TestPropertyDefinition>(oldMember, newMember);
             var options = ComparerOptions.Default;
 
-            var actual = SUT.CompareItems(match, options).ToList();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -133,7 +133,7 @@
             var match = new ItemMatch<TestPropertyDefinition>(oldMember, newMember);
             var options = ComparerOptions.Default;
 
-            var actual = SUT.CompareItems(match, options).ToList();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -160,11 +160,11 @@
             var results = new[] {result};
 
             Service<IAccessModifiersComparer>()
-                .CompareItems(
+                .CompareMatch(
                     Arg.Is<ItemMatch<IAccessModifiersElement<AccessModifiers>>>(x =>
                         x.OldItem == oldMember && x.NewItem == newMember), options).Returns(results);
 
-            var actual = SUT.CompareItems(match, options).ToList();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -177,7 +177,7 @@
         {
             var options = ComparerOptions.Default;
 
-            Action action = () => SUT.CompareItems(null!, options);
+            Action action = () => SUT.CompareMatch(null!, options);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -189,7 +189,7 @@
             var newMember = oldMember.JsonClone();
             var match = new ItemMatch<TestPropertyDefinition>(oldMember, newMember);
 
-            Action action = () => SUT.CompareItems(match, null!);
+            Action action = () => SUT.CompareMatch(match, null!);
 
             action.Should().Throw<ArgumentNullException>();
         }

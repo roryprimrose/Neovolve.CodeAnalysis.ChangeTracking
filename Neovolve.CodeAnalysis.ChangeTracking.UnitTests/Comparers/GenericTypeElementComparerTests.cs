@@ -22,7 +22,7 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsBreakingWhenGenericConstraintsAdded()
+        public void CompareMatchReturnsBreakingWhenGenericConstraintsAdded()
         {
             var parameters = new List<string> {"T"}.AsReadOnly();
             var newConstraintList = new TestConstraintListDefinition
@@ -40,7 +40,7 @@
             var match = new ItemMatch<IGenericTypeElement>(oldItem, newItem);
             var options = ComparerOptions.Default;
 
-            var actual = SUT.CompareItems(match, options).ToList();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -50,7 +50,7 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsBreakingWhenGenericTypeParameterAdded()
+        public void CompareMatchReturnsBreakingWhenGenericTypeParameterAdded()
         {
             var parameters = new List<string> {"TKey", "TValue"}.AsReadOnly();
             var oldItem = new TestClassDefinition();
@@ -58,7 +58,7 @@
             var match = new ItemMatch<IGenericTypeElement>(oldItem, newItem);
             var options = ComparerOptions.Default;
 
-            var actual = SUT.CompareItems(match, options).ToList();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -68,7 +68,7 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsBreakingWhenGenericTypeParameterAddedWithGenericConstraints()
+        public void CompareMatchReturnsBreakingWhenGenericTypeParameterAddedWithGenericConstraints()
         {
             var parameters = new List<string> {"T"}.AsReadOnly();
             var constraintList = new TestConstraintListDefinition
@@ -86,7 +86,7 @@
             var match = new ItemMatch<IGenericTypeElement>(oldItem, newItem);
             var options = ComparerOptions.Default;
 
-            var actual = SUT.CompareItems(match, options).ToList();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -96,7 +96,7 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsBreakingWhenGenericTypeParameterRemoved()
+        public void CompareMatchReturnsBreakingWhenGenericTypeParameterRemoved()
         {
             var parameters = new List<string> {"T"}.AsReadOnly();
             var oldItem = new TestClassDefinition().Set(x => x.GenericTypeParameters = parameters);
@@ -104,7 +104,7 @@
             var match = new ItemMatch<IGenericTypeElement>(oldItem, newItem);
             var options = ComparerOptions.Default;
 
-            var actual = SUT.CompareItems(match, options).ToList();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -114,7 +114,7 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsBreakingWhenGenericTypeParameterRemovedWithGenericConstraints()
+        public void CompareMatchReturnsBreakingWhenGenericTypeParameterRemovedWithGenericConstraints()
         {
             var parameters = new List<string> {"T"}.AsReadOnly();
             var constraintList = new TestConstraintListDefinition
@@ -132,7 +132,7 @@
             var match = new ItemMatch<IGenericTypeElement>(oldItem, newItem);
             var options = ComparerOptions.Default;
 
-            var actual = SUT.CompareItems(match, options).ToList();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -142,7 +142,7 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsBreakingWhenSomeGenericConstraintsAdded()
+        public void CompareMatchReturnsBreakingWhenSomeGenericConstraintsAdded()
         {
             var oldParameters = new List<string> {"T"}.AsReadOnly();
             var newParameters = new List<string> {"T"}.AsReadOnly();
@@ -171,7 +171,7 @@
             var match = new ItemMatch<IGenericTypeElement>(oldItem, newItem);
             var options = ComparerOptions.Default;
 
-            var actual = SUT.CompareItems(match, options).ToList();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -181,20 +181,20 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsEmptyWhenElementIsNotGenericType()
+        public void CompareMatchReturnsEmptyWhenElementIsNotGenericType()
         {
             var oldItem = new TestClassDefinition();
             var newItem = new TestClassDefinition();
             var match = new ItemMatch<IGenericTypeElement>(oldItem, newItem);
             var options = ComparerOptions.Default;
 
-            var actual = SUT.CompareItems(match, options).ToList();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
             actual.Should().BeEmpty();
         }
 
         [Fact]
-        public void CompareItemsReturnsEmptyWhenGenericTypeConstraintsMatch()
+        public void CompareMatchReturnsEmptyWhenGenericTypeConstraintsMatch()
         {
             var parameters = new List<string> {"T"}.AsReadOnly();
             var constraintList = new TestConstraintListDefinition
@@ -216,7 +216,7 @@
             var match = new ItemMatch<IGenericTypeElement>(oldItem, newItem);
             var options = ComparerOptions.Default;
 
-            var actual = SUT.CompareItems(match, options).ToList();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -224,7 +224,7 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsEmptyWhenGenericTypeParametersHaveNoConstraints()
+        public void CompareMatchReturnsEmptyWhenGenericTypeParametersHaveNoConstraints()
         {
             var parameters = new List<string> {"T"}.AsReadOnly();
             var oldItem = new TestClassDefinition().Set(x => x.GenericTypeParameters = parameters);
@@ -232,13 +232,13 @@
             var match = new ItemMatch<IGenericTypeElement>(oldItem, newItem);
             var options = ComparerOptions.Default;
 
-            var actual = SUT.CompareItems(match, options).ToList();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
             actual.Should().BeEmpty();
         }
 
         [Fact]
-        public void CompareItemsReturnsEmptyWhenRenamedGenericTypeConstraintsMatch()
+        public void CompareMatchReturnsEmptyWhenRenamedGenericTypeConstraintsMatch()
         {
             var oldParameters = new List<string> {"TOld"}.AsReadOnly();
             var newParameters = new List<string> {"TNew"}.AsReadOnly();
@@ -267,7 +267,7 @@
             var match = new ItemMatch<IGenericTypeElement>(oldItem, newItem);
             var options = ComparerOptions.Default;
 
-            var actual = SUT.CompareItems(match, options).ToList();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -275,7 +275,7 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsFeatureWhenGenericConstraintsRemoved()
+        public void CompareMatchReturnsFeatureWhenGenericConstraintsRemoved()
         {
             var parameters = new List<string> {"T"}.AsReadOnly();
             var oldConstraintList = new TestConstraintListDefinition
@@ -293,7 +293,7 @@
             var match = new ItemMatch<IGenericTypeElement>(oldItem, newItem);
             var options = ComparerOptions.Default;
 
-            var actual = SUT.CompareItems(match, options).ToList();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -303,7 +303,7 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsFeatureWhenSomeGenericConstraintsRemoved()
+        public void CompareMatchReturnsFeatureWhenSomeGenericConstraintsRemoved()
         {
             var oldParameters = new List<string> {"T"}.AsReadOnly();
             var newParameters = new List<string> {"T"}.AsReadOnly();
@@ -332,7 +332,7 @@
             var match = new ItemMatch<IGenericTypeElement>(oldItem, newItem);
             var options = ComparerOptions.Default;
 
-            var actual = SUT.CompareItems(match, options).ToList();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -342,23 +342,23 @@
         }
 
         [Fact]
-        public void CompareItemsThrowsExceptionWithNullMatch()
+        public void CompareMatchThrowsExceptionWithNullMatch()
         {
             var options = ComparerOptions.Default;
 
-            Action action = () => SUT.CompareItems(null!, options);
+            Action action = () => SUT.CompareMatch(null!, options);
 
             action.Should().Throw<ArgumentNullException>();
         }
 
         [Fact]
-        public void CompareItemsThrowsExceptionWithNullOptions()
+        public void CompareMatchThrowsExceptionWithNullOptions()
         {
             var oldItem = new TestClassDefinition();
             var newItem = new TestClassDefinition();
             var match = new ItemMatch<IGenericTypeElement>(oldItem, newItem);
 
-            Action action = () => SUT.CompareItems(match, null!);
+            Action action = () => SUT.CompareMatch(match, null!);
 
             action.Should().Throw<ArgumentNullException>();
         }

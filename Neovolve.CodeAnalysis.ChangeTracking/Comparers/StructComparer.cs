@@ -54,7 +54,7 @@
             var convertedMatch =
                 new ItemMatch<IModifiersElement<StructModifiers>>(match.OldItem, match.NewItem);
 
-            var results = _structModifiersComparer.CompareItems(convertedMatch, options);
+            var results = _structModifiersComparer.CompareMatch(convertedMatch, options);
 
             aggregator.AddResults(results);
         }

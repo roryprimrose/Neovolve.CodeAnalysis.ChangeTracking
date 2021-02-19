@@ -21,14 +21,14 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsBreakingChangeWhenTypeChangedToClass()
+        public void CompareMatchReturnsBreakingChangeWhenTypeChangedToClass()
         {
             var oldItem = new TestStructDefinition();
             var newItem = new TestClassDefinition();
             var match = new ItemMatch<ITypeDefinition>(oldItem, newItem);
             var options = Model.Create<ComparerOptions>();
 
-            var actual = SUT.CompareItems(match, options).ToList();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -39,14 +39,14 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsBreakingChangeWhenTypeChangedToInterface()
+        public void CompareMatchReturnsBreakingChangeWhenTypeChangedToInterface()
         {
             var oldItem = new TestClassDefinition();
             var newItem = new TestInterfaceDefinition();
             var match = new ItemMatch<ITypeDefinition>(oldItem, newItem);
             var options = Model.Create<ComparerOptions>();
 
-            var actual = SUT.CompareItems(match, options).ToList();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -57,14 +57,14 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsBreakingChangeWhenTypeChangedToStruct()
+        public void CompareMatchReturnsBreakingChangeWhenTypeChangedToStruct()
         {
             var oldItem = new TestClassDefinition();
             var newItem = new TestStructDefinition();
             var match = new ItemMatch<ITypeDefinition>(oldItem, newItem);
             var options = Model.Create<ComparerOptions>();
 
-            var actual = SUT.CompareItems(match, options).ToList();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -75,7 +75,7 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsClassComparerResult()
+        public void CompareMatchReturnsClassComparerResult()
         {
             var oldItem = new TestClassDefinition();
             var newItem = new TestClassDefinition();
@@ -87,10 +87,10 @@
             var results = new[] {result};
 
             Service<IClassComparer>()
-                .CompareItems(Arg.Is<ItemMatch<IClassDefinition>>(x => x.OldItem == oldItem && x.NewItem == newItem),
+                .CompareMatch(Arg.Is<ItemMatch<IClassDefinition>>(x => x.OldItem == oldItem && x.NewItem == newItem),
                     options).Returns(results);
 
-            var actual = SUT.CompareItems(match, options).ToList();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -100,7 +100,7 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsInterfaceComparerResult()
+        public void CompareMatchReturnsInterfaceComparerResult()
         {
             var oldItem = new TestInterfaceDefinition();
             var newItem = new TestInterfaceDefinition();
@@ -112,11 +112,11 @@
             var results = new[] {result};
 
             Service<IInterfaceComparer>()
-                .CompareItems(
+                .CompareMatch(
                     Arg.Is<ItemMatch<IInterfaceDefinition>>(x => x.OldItem == oldItem && x.NewItem == newItem), options)
                 .Returns(results);
 
-            var actual = SUT.CompareItems(match, options).ToList();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -126,7 +126,7 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsStructComparerResult()
+        public void CompareMatchReturnsStructComparerResult()
         {
             var oldItem = new TestStructDefinition();
             var newItem = new TestStructDefinition();
@@ -138,10 +138,10 @@
             var results = new[] {result};
 
             Service<IStructComparer>()
-                .CompareItems(Arg.Is<ItemMatch<IStructDefinition>>(x => x.OldItem == oldItem && x.NewItem == newItem),
+                .CompareMatch(Arg.Is<ItemMatch<IStructDefinition>>(x => x.OldItem == oldItem && x.NewItem == newItem),
                     options).Returns(results);
 
-            var actual = SUT.CompareItems(match, options).ToList();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -151,49 +151,49 @@
         }
 
         [Fact]
-        public void CompareItemsThrowsExceptionWhenTypedChangedToUnsupportedType()
+        public void CompareMatchThrowsExceptionWhenTypedChangedToUnsupportedType()
         {
             var oldItem = new TestStructDefinition();
             var newItem = Substitute.For<ITypeDefinition>();
             var match = new ItemMatch<ITypeDefinition>(oldItem, newItem);
             var options = Model.Create<ComparerOptions>();
 
-            Action action = () => SUT.CompareItems(match, options);
+            Action action = () => SUT.CompareMatch(match, options);
 
             action.Should().Throw<NotSupportedException>();
         }
 
         [Fact]
-        public void CompareItemsThrowsExceptionWithNullCompareOptions()
+        public void CompareMatchThrowsExceptionWithNullCompareOptions()
         {
             var oldItem = new TestClassDefinition();
             var newItem = new TestClassDefinition();
             var match = new ItemMatch<ITypeDefinition>(oldItem, newItem);
 
-            Action action = () => SUT.CompareItems(match, null!);
+            Action action = () => SUT.CompareMatch(match, null!);
 
             action.Should().Throw<ArgumentNullException>();
         }
 
         [Fact]
-        public void CompareItemsThrowsExceptionWithNullMatch()
+        public void CompareMatchThrowsExceptionWithNullMatch()
         {
             var options = Model.Create<ComparerOptions>();
 
-            Action action = () => SUT.CompareItems(null!, options);
+            Action action = () => SUT.CompareMatch(null!, options);
 
             action.Should().Throw<ArgumentNullException>();
         }
 
         [Fact]
-        public void CompareItemsThrowsExceptionWithUnsupportedTypeDefinitions()
+        public void CompareMatchThrowsExceptionWithUnsupportedTypeDefinitions()
         {
             var oldItem = Substitute.For<ITypeDefinition>();
             var newItem = Substitute.For<ITypeDefinition>();
             var match = new ItemMatch<ITypeDefinition>(oldItem, newItem);
             var options = Model.Create<ComparerOptions>();
 
-            Action action = () => SUT.CompareItems(match, options);
+            Action action = () => SUT.CompareMatch(match, options);
 
             action.Should().Throw<NotSupportedException>();
         }

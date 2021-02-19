@@ -34,7 +34,7 @@
             var convertedMatch =
                 new ItemMatch<IModifiersElement<FieldModifiers>>(match.OldItem, match.NewItem);
 
-            var results = _fieldModifiersComparer.CompareItems(convertedMatch, options);
+            var results = _fieldModifiersComparer.CompareMatch(convertedMatch, options);
 
             aggregator.AddResults(results);
         }

@@ -116,7 +116,7 @@
             match = match ?? throw new ArgumentNullException(nameof(match));
             options = options ?? throw new ArgumentNullException(nameof(options));
 
-            return _comparer.CompareItems(match, options);
+            return _comparer.CompareMatch(match, options);
         }
 
         protected abstract bool IsVisible(T item);

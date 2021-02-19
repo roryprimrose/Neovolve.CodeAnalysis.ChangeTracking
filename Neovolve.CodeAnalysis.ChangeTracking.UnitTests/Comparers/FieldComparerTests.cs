@@ -38,7 +38,7 @@
         [InlineData(FieldModifiers.StaticReadOnly, FieldModifiers.ReadOnly, SemVerChangeType.Breaking)]
         [InlineData(FieldModifiers.StaticReadOnly, FieldModifiers.Static, SemVerChangeType.Feature)]
         [InlineData(FieldModifiers.StaticReadOnly, FieldModifiers.StaticReadOnly, SemVerChangeType.None)]
-        public void CompareItemsReturnsExpectedResultBasedOnFieldModifiers(FieldModifiers oldModifiers,
+        public void CompareMatchReturnsExpectedResultBasedOnFieldModifiers(FieldModifiers oldModifiers,
             FieldModifiers newModifiers,
             SemVerChangeType expected)
         {
@@ -74,12 +74,12 @@
 
             if (expected != SemVerChangeType.None)
             {
-                modifiersComparer.CompareItems(Arg.Is<ItemMatch<IModifiersElement<FieldModifiers>>>(x => x.OldItem == oldItem && x.NewItem == newItem), options).Returns(new[] { result });
+                modifiersComparer.CompareMatch(Arg.Is<ItemMatch<IModifiersElement<FieldModifiers>>>(x => x.OldItem == oldItem && x.NewItem == newItem), options).Returns(new[] { result });
             }
 
             var sut = new FieldComparer(accessModifiersComparer, modifiersComparer, attributeProcessor);
 
-            var actual = sut.CompareItems(match, options).ToList();
+            var actual = sut.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -97,7 +97,7 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsNoChangeWhenFieldsMatch()
+        public void CompareMatchReturnsNoChangeWhenFieldsMatch()
         {
             var field = new TestFieldDefinition();
             var match = new ItemMatch<IFieldDefinition>(field, field);
@@ -109,13 +109,13 @@
 
             var sut = new FieldComparer(accessModifiersComparer, modifiersComparer, attributeProcessor);
 
-            var actual = sut.CompareItems(match, options).ToList();
+            var actual = sut.CompareMatch(match, options).ToList();
 
             actual.Should().BeEmpty();
         }
 
         [Fact]
-        public void CompareItemsRunsAdditionalChecksIfModifiersCheckFindsBreakingChange()
+        public void CompareMatchRunsAdditionalChecksIfModifiersCheckFindsBreakingChange()
         {
             var oldItem = new TestFieldDefinition();
             var newItem = new TestFieldDefinition().Set(x => x.AccessModifiers = AccessModifiers.Private);
@@ -127,12 +127,12 @@
             var modifiersComparer = Substitute.For<IFieldModifiersComparer>();
             var attributeProcessor = Substitute.For<IAttributeMatchProcessor>();
 
-            modifiersComparer.CompareItems(Arg.Is<ItemMatch<IModifiersElement<FieldModifiers>>>(x => x.OldItem == oldItem && x.NewItem == newItem), options).Returns(new []{ result });
-            accessModifiersComparer.CompareItems(Arg.Is<ItemMatch<IAccessModifiersElement<AccessModifiers>>>(x => x.OldItem == oldItem && x.NewItem == newItem), options).Returns(new[] { result });
+            modifiersComparer.CompareMatch(Arg.Is<ItemMatch<IModifiersElement<FieldModifiers>>>(x => x.OldItem == oldItem && x.NewItem == newItem), options).Returns(new []{ result });
+            accessModifiersComparer.CompareMatch(Arg.Is<ItemMatch<IAccessModifiersElement<AccessModifiers>>>(x => x.OldItem == oldItem && x.NewItem == newItem), options).Returns(new[] { result });
 
             var sut = new FieldComparer(accessModifiersComparer, modifiersComparer, attributeProcessor);
 
-            var actual = sut.CompareItems(match, options).ToList();
+            var actual = sut.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 

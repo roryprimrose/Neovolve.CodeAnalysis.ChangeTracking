@@ -39,11 +39,11 @@
             var results = new List<ComparisonResult> {result};
 
             Service<IPropertyAccessorAccessModifiersComparer>()
-                .CompareItems(
+                .CompareMatch(
                     Arg.Is<ItemMatch<IAccessModifiersElement<PropertyAccessorAccessModifiers>>>(x =>
                         x.OldItem == oldItem && x.NewItem == newItem), options).Returns(results);
 
-            var actual = SUT.CompareItems(match, options).ToList();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 

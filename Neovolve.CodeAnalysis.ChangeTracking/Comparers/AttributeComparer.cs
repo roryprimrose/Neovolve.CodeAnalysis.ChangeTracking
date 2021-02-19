@@ -7,7 +7,7 @@
     
     public class AttributeComparer : IAttributeComparer
     {
-        public IEnumerable<ComparisonResult> CompareItems(ItemMatch<IAttributeDefinition> match,
+        public IEnumerable<ComparisonResult> CompareMatch(ItemMatch<IAttributeDefinition> match,
             ComparerOptions options)
         {
             match = match ?? throw new ArgumentNullException(nameof(match));

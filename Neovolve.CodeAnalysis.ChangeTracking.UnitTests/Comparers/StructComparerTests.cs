@@ -42,7 +42,7 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsResultFromFieldMatchProcessor()
+        public void CompareMatchReturnsResultFromFieldMatchProcessor()
         {
             var oldItem = new TestStructDefinition();
             var newItem = oldItem.JsonClone();
@@ -58,7 +58,7 @@
                     newItem.Fields,
                     options).Returns(results);
 
-            var actual = SUT.CompareItems(match, options).ToList();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -67,7 +67,7 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsResultFromStructModifierComparer()
+        public void CompareMatchReturnsResultFromStructModifierComparer()
         {
             var item = new TestStructDefinition();
             var match = new ItemMatch<IStructDefinition>(item, item);
@@ -78,11 +78,11 @@
             var results = new[] {result};
 
             Service<IStructModifiersComparer>()
-                .CompareItems(
+                .CompareMatch(
                     Arg.Is<ItemMatch<IModifiersElement<StructModifiers>>>(x => x.OldItem == item && x.NewItem == item),
                     options).Returns(results);
 
-            var actual = SUT.CompareItems(match, options).ToList();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 

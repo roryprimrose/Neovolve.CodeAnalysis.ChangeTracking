@@ -22,7 +22,7 @@
         }
 
         [Fact]
-        public void CompareItemsEvaluatesChildTypes()
+        public void CompareMatchEvaluatesChildTypes()
         {
             var oldChildItem = new TestClassDefinition().Set(x => x.Name = "OldChild");
             var oldChildItems = new []
@@ -69,9 +69,9 @@
             var options = ComparerOptions.Default;
 
             Service<ITypeMatchEvaluator>().MatchItems(oldParentItems, newParentItems).Returns(parentMatchResults);
-            Service<ITypeComparer>().CompareItems(parentMatch, options).Returns(parentResults);
+            Service<ITypeComparer>().CompareMatch(parentMatch, options).Returns(parentResults);
             Service<ITypeMatchEvaluator>().MatchItems(oldChildItems, newChildItems).Returns(childMatchResults);
-            Service<ITypeComparer>().CompareItems(childMatch, options).Returns(childResults);
+            Service<ITypeComparer>().CompareMatch(childMatch, options).Returns(childResults);
 
             var actual = SUT.CalculateChanges(oldParentItems, newParentItems, options).ToList();
             

@@ -63,7 +63,7 @@
             var results = new List<ComparisonResult> {result};
 
             Service<IMatchEvaluator<IClassDefinition>>().MatchItems(oldItems, newItems).Returns(matchResults);
-            Service<IItemComparer<IClassDefinition>>().CompareItems(match, options).Returns(results);
+            Service<IItemComparer<IClassDefinition>>().CompareMatch(match, options).Returns(results);
 
             var actual = SUT.CalculateChanges(oldItems, newItems, options);
 

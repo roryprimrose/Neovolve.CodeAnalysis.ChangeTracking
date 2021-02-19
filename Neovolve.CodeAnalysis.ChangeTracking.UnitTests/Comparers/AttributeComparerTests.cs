@@ -20,7 +20,7 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsBreakingWhenArgumentsAdded()
+        public void CompareMatchReturnsBreakingWhenArgumentsAdded()
         {
             var oldItem = Model.UsingModule<ConfigurationModule>().Ignoring<TestAttributeDefinition>(x => x.Arguments)
                 .Create<TestAttributeDefinition>();
@@ -30,7 +30,7 @@
 
             var sut = new AttributeComparer();
 
-            var actual = sut.CompareItems(match, options).ToList();
+            var actual = sut.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -42,7 +42,7 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsBreakingWhenArgumentsRemoved()
+        public void CompareMatchReturnsBreakingWhenArgumentsRemoved()
         {
             var oldItem = Model.UsingModule<ConfigurationModule>().Create<TestAttributeDefinition>();
             var newItem = Model.UsingModule<ConfigurationModule>().Ignoring<TestAttributeDefinition>(x => x.Arguments)
@@ -52,7 +52,7 @@
 
             var sut = new AttributeComparer();
 
-            var actual = sut.CompareItems(match, options).ToList();
+            var actual = sut.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -64,7 +64,7 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsBreakingWhenNamedArgumentParameterNameChanged()
+        public void CompareMatchReturnsBreakingWhenNamedArgumentParameterNameChanged()
         {
             var oldArgument = Model.UsingModule<ConfigurationModule>().Create<TestArgumentDefinition>()
                 .Set(x => x.ArgumentType = ArgumentType.Named);
@@ -91,7 +91,7 @@
 
             var sut = new AttributeComparer();
 
-            var actual = sut.CompareItems(match, options).ToList();
+            var actual = sut.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -103,7 +103,7 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsBreakingWhenNamedArgumentValueChanged()
+        public void CompareMatchReturnsBreakingWhenNamedArgumentValueChanged()
         {
             var oldArgument = Model.UsingModule<ConfigurationModule>().Create<TestArgumentDefinition>()
                 .Set(x => x.ArgumentType = ArgumentType.Named);
@@ -130,7 +130,7 @@
 
             var sut = new AttributeComparer();
 
-            var actual = sut.CompareItems(match, options).ToList();
+            var actual = sut.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -142,7 +142,7 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsBreakingWhenOrdinalArgumentsAdded()
+        public void CompareMatchReturnsBreakingWhenOrdinalArgumentsAdded()
         {
             var oldArgument = Model.UsingModule<ConfigurationModule>().Create<TestArgumentDefinition>()
                 .Set(x => x.ArgumentType = ArgumentType.Named);
@@ -169,7 +169,7 @@
 
             var sut = new AttributeComparer();
 
-            var actual = sut.CompareItems(match, options).ToList();
+            var actual = sut.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -181,7 +181,7 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsBreakingWhenOrdinalArgumentsRemoved()
+        public void CompareMatchReturnsBreakingWhenOrdinalArgumentsRemoved()
         {
             var oldArgument = Model.UsingModule<ConfigurationModule>().Create<TestArgumentDefinition>()
                 .Set(x => x.ArgumentType = ArgumentType.Ordinal);
@@ -204,7 +204,7 @@
 
             var sut = new AttributeComparer();
 
-            var actual = sut.CompareItems(match, options).ToList();
+            var actual = sut.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -216,7 +216,7 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsBreakingWhenOrdinalArgumentValueChanged()
+        public void CompareMatchReturnsBreakingWhenOrdinalArgumentValueChanged()
         {
             var oldArgument = Model.UsingModule<ConfigurationModule>().Create<TestArgumentDefinition>()
                 .Set(x => x.ArgumentType = ArgumentType.Ordinal);
@@ -239,7 +239,7 @@
 
             var sut = new AttributeComparer();
 
-            var actual = sut.CompareItems(match, options).ToList();
+            var actual = sut.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -251,7 +251,7 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsEmptyChangesWhenAttributesDoNotHaveArguments()
+        public void CompareMatchReturnsEmptyChangesWhenAttributesDoNotHaveArguments()
         {
             var oldItem = Model.UsingModule<ConfigurationModule>().Ignoring<TestAttributeDefinition>(x => x.Arguments)
                 .Create<TestAttributeDefinition>();
@@ -262,13 +262,13 @@
 
             var sut = new AttributeComparer();
 
-            var actual = sut.CompareItems(match, options);
+            var actual = sut.CompareMatch(match, options);
 
             actual.Should().BeEmpty();
         }
 
         [Fact]
-        public void CompareItemsReturnsEmptyResultsWhenNoChangeFound()
+        public void CompareMatchReturnsEmptyResultsWhenNoChangeFound()
         {
             var ordinalArgument = Model.UsingModule<ConfigurationModule>().Create<TestArgumentDefinition>()
                 .Set(x => x.ArgumentType = ArgumentType.Ordinal);
@@ -286,25 +286,25 @@
 
             var sut = new AttributeComparer();
 
-            var actual = sut.CompareItems(match, options).ToList();
+            var actual = sut.CompareMatch(match, options).ToList();
 
             actual.Should().BeEmpty();
         }
 
         [Fact]
-        public void CompareItemsThrowsExceptionWithNullMatch()
+        public void CompareMatchThrowsExceptionWithNullMatch()
         {
             var options = OptionsFactory.BuildOptions();
 
             var sut = new AttributeComparer();
 
-            Action action = () => sut.CompareItems(null!, options);
+            Action action = () => sut.CompareMatch(null!, options);
 
             action.Should().Throw<ArgumentNullException>();
         }
 
         [Fact]
-        public void CompareItemsThrowsExceptionWithNullOptions()
+        public void CompareMatchThrowsExceptionWithNullOptions()
         {
             var oldItem = new TestAttributeDefinition();
             var newItem = new TestAttributeDefinition();
@@ -312,7 +312,7 @@
 
             var sut = new AttributeComparer();
 
-            Action action = () => sut.CompareItems(match, null!);
+            Action action = () => sut.CompareMatch(match, null!);
 
             action.Should().Throw<ArgumentNullException>();
         }

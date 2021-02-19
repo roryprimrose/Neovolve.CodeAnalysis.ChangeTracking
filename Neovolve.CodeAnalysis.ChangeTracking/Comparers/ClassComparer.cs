@@ -44,7 +44,7 @@
             var convertedMatch =
                 new ItemMatch<IModifiersElement<ClassModifiers>>(match.OldItem, match.NewItem);
 
-            var results = _classModifiersComparer.CompareItems(convertedMatch, options);
+            var results = _classModifiersComparer.CompareMatch(convertedMatch, options);
 
             aggregator.AddResults(results);
         }

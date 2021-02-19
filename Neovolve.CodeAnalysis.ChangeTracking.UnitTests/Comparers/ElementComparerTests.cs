@@ -35,7 +35,7 @@
         [InlineData(true, false, SemVerChangeType.Breaking, false)]
         [InlineData(false, true, SemVerChangeType.Breaking, false)]
         [InlineData(true, true, SemVerChangeType.Breaking, false)]
-        public void CompareItemsEvaluatesAttributeMatchesWhenBothItemsVisibleAndItemMatchIsNotBreaking(
+        public void CompareMatchEvaluatesAttributeMatchesWhenBothItemsVisibleAndItemMatchIsNotBreaking(
             bool firstItemVisible,
             bool secondItemVisible, SemVerChangeType changeType, bool attributesEvaluated)
         {
@@ -59,7 +59,7 @@
 
             var sut = new Wrapper<IClassDefinition>(attributeProcessor, itemResult);
 
-            var actual = sut.CompareItems(match, options).ToList();
+            var actual = sut.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -81,7 +81,7 @@
         [InlineData(true, false, false)]
         [InlineData(false, true, false)]
         [InlineData(true, true, true)]
-        public void CompareItemsEvaluatesMatchWhenBothItemsVisible(bool firstItemVisible,
+        public void CompareMatchEvaluatesMatchWhenBothItemsVisible(bool firstItemVisible,
             bool secondItemVisible, bool matchEvaluated)
         {
             var firstItem = Substitute.For<IClassDefinition>();
@@ -98,7 +98,7 @@
 
             var sut = new Wrapper<IClassDefinition>(attributeProcessor, result);
 
-            var actual = sut.CompareItems(match, options).ToList();
+            var actual = sut.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -113,7 +113,7 @@
         }
 
         [Fact]
-        public void CompareItemsThrowsExceptionWithNullMatch()
+        public void CompareMatchThrowsExceptionWithNullMatch()
         {
             var firstItem = Substitute.For<IClassDefinition>();
             var secondItem = Substitute.For<IClassDefinition>();
@@ -125,13 +125,13 @@
 
             var sut = new Wrapper<IClassDefinition>(attributeProcessor, result);
 
-            Action action = () => sut.CompareItems(null!, options);
+            Action action = () => sut.CompareMatch(null!, options);
 
             action.Should().Throw<ArgumentNullException>();
         }
 
         [Fact]
-        public void CompareItemsThrowsExceptionWithNullOptions()
+        public void CompareMatchThrowsExceptionWithNullOptions()
         {
             var firstItem = Substitute.For<IClassDefinition>();
             var secondItem = Substitute.For<IClassDefinition>();
@@ -143,7 +143,7 @@
 
             var sut = new Wrapper<IClassDefinition>(attributeProcessor, result);
 
-            Action action = () => sut.CompareItems(match, null!);
+            Action action = () => sut.CompareMatch(match, null!);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -166,7 +166,7 @@
 
             var sut = new Wrapper<IClassDefinition>(attributeProcessor, null);
 
-            var actual = sut.CompareItems(match, options).ToList();
+            var actual = sut.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 

@@ -22,14 +22,14 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsBreakingWhenNamespaceChanged()
+        public void CompareMatchReturnsBreakingWhenNamespaceChanged()
         {
             var oldItem = new TestClassDefinition();
             var newItem = oldItem.JsonClone().Set(x => x.Namespace = Guid.NewGuid().ToString());
             var match = new ItemMatch<IClassDefinition>(oldItem, newItem);
             var options = ComparerOptions.Default;
 
-            var actual = SUT.CompareItems(match, options).ToList();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -40,13 +40,13 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsEmptyWhenTypesAreEqual()
+        public void CompareMatchReturnsEmptyWhenTypesAreEqual()
         {
             var item = new TestClassDefinition();
             var match = new ItemMatch<IClassDefinition>(item, item);
             var options = ComparerOptions.Default;
 
-            var actual = SUT.CompareItems(match, options);
+            var actual = SUT.CompareMatch(match, options);
 
             actual.Should().BeEmpty();
         }
@@ -61,7 +61,7 @@
         [InlineData("", "ThisType,ThatType", 2)]
         [InlineData("ThisType,ThatType", "", 2)]
         [InlineData("ThisType,ThatType", "ThisType", 1)]
-        public void CompareItemsReturnsResultBasedOnImplementedTypeChanges(string oldTypes, string newTypes,
+        public void CompareMatchReturnsResultBasedOnImplementedTypeChanges(string oldTypes, string newTypes,
             int expected)
         {
             var oldImplementedTypes = oldTypes.Split(',', StringSplitOptions.RemoveEmptyEntries);
@@ -71,7 +71,7 @@
             var match = new ItemMatch<IClassDefinition>(oldItem, newItem);
             var options = ComparerOptions.Default;
 
-            var actual = SUT.CompareItems(match, options).ToList();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -80,7 +80,7 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsResultFromAccessModifiersComparer()
+        public void CompareMatchReturnsResultFromAccessModifiersComparer()
         {
             var oldItem = new TestClassDefinition();
             var newItem = oldItem.JsonClone();
@@ -92,12 +92,12 @@
             var results = new[] {result};
 
             Service<IAccessModifiersComparer>()
-                .CompareItems(
+                .CompareMatch(
                     Arg.Is<ItemMatch<IAccessModifiersElement<AccessModifiers>>>(
                         x => x.OldItem == oldItem && x.NewItem == newItem),
                     options).Returns(results);
 
-            var actual = SUT.CompareItems(match, options).ToList();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -106,7 +106,7 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsResultFromGenericTypeElementComparer()
+        public void CompareMatchReturnsResultFromGenericTypeElementComparer()
         {
             var oldItem = new TestClassDefinition();
             var newItem = oldItem.JsonClone();
@@ -118,12 +118,12 @@
             var results = new[] {result};
 
             Service<IGenericTypeElementComparer>()
-                .CompareItems(
+                .CompareMatch(
                     Arg.Is<ItemMatch<IGenericTypeElement>>(
                         x => x.OldItem == oldItem && x.NewItem == newItem),
                     options).Returns(results);
 
-            var actual = SUT.CompareItems(match, options).ToList();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -132,7 +132,7 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsResultFromMethodMatchProcessor()
+        public void CompareMatchReturnsResultFromMethodMatchProcessor()
         {
             var oldItem = new TestClassDefinition();
             var newItem = oldItem.JsonClone();
@@ -148,7 +148,7 @@
                     newItem.Methods,
                     options).Returns(results);
 
-            var actual = SUT.CompareItems(match, options).ToList();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -157,7 +157,7 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsResultFromPropertyMatchProcessor()
+        public void CompareMatchReturnsResultFromPropertyMatchProcessor()
         {
             var oldItem = new TestClassDefinition();
             var newItem = oldItem.JsonClone();
@@ -173,7 +173,7 @@
                     newItem.Properties,
                     options).Returns(results);
 
-            var actual = SUT.CompareItems(match, options).ToList();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 

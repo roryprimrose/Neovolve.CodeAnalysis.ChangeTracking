@@ -12,13 +12,13 @@
         {
         }
 
-        public IEnumerable<ComparisonResult> CompareItems(
+        public IEnumerable<ComparisonResult> CompareMatch(
             ItemMatch<IAccessModifiersElement<T>> match,
             ComparerOptions options)
         {
             var convertedMatch = new ItemMatch<IElementDefinition>(match.OldItem, match.NewItem);
 
-            return CompareItems(convertedMatch, match.OldItem.AccessModifiers, match.NewItem.AccessModifiers, options);
+            return CompareMatch(convertedMatch, match.OldItem.AccessModifiers, match.NewItem.AccessModifiers, options);
         }
 
         protected override string GetDeclaredModifiers(IElementDefinition element)

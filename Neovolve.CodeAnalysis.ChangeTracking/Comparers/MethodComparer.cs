@@ -64,7 +64,7 @@
         {
             var convertedMatch = new ItemMatch<IGenericTypeElement>(match.OldItem, match.NewItem);
 
-            var results = _genericTypeElementComparer.CompareItems(convertedMatch, options);
+            var results = _genericTypeElementComparer.CompareMatch(convertedMatch, options);
 
             aggregator.AddResults(results);
         }
@@ -76,7 +76,7 @@
         {
             var convertedMatch = new ItemMatch<IModifiersElement<MethodModifiers>>(match.OldItem, match.NewItem);
 
-            var results = _methodModifiersComparer.CompareItems(convertedMatch, options);
+            var results = _methodModifiersComparer.CompareMatch(convertedMatch, options);
 
             aggregator.AddResults(results);
         }
@@ -123,7 +123,7 @@
                 var newParameter = newParameters[index];
                 var parameterMatch = new ItemMatch<IParameterDefinition>(oldParameter, newParameter);
 
-                var parameterChanges = _parameterComparer.CompareItems(parameterMatch, options);
+                var parameterChanges = _parameterComparer.CompareMatch(parameterMatch, options);
 
                 aggregator.AddResults(parameterChanges);
             }

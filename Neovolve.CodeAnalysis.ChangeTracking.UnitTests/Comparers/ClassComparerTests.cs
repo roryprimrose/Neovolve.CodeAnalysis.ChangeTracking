@@ -22,7 +22,7 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsClassModifierComparerResults()
+        public void CompareMatchReturnsClassModifierComparerResults()
         {
             var item = new TestClassDefinition();
             var match = new ItemMatch<IClassDefinition>(item, item);
@@ -33,11 +33,11 @@
             var results = new[] {result};
 
             Service<IClassModifiersComparer>()
-                .CompareItems(
+                .CompareMatch(
                     Arg.Is<ItemMatch<IModifiersElement<ClassModifiers>>>(x => x.OldItem == item && x.NewItem == item),
                     options).Returns(results);
 
-            var actual = SUT.CompareItems(match, options).ToList();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -46,7 +46,7 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsResultFromFieldMatchProcessor()
+        public void CompareMatchReturnsResultFromFieldMatchProcessor()
         {
             var oldItem = new TestClassDefinition();
             var newItem = oldItem.JsonClone();
@@ -62,7 +62,7 @@
                     newItem.Fields,
                     options).Returns(results);
 
-            var actual = SUT.CompareItems(match, options).ToList();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 

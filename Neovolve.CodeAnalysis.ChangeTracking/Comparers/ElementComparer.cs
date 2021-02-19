@@ -14,7 +14,7 @@
             _attributeProcessor = attributeProcessor ?? throw new ArgumentNullException(nameof(attributeProcessor));
         }
 
-        public IEnumerable<ComparisonResult> CompareItems(ItemMatch<T> match, ComparerOptions options)
+        public IEnumerable<ComparisonResult> CompareMatch(ItemMatch<T> match, ComparerOptions options)
         {
             match = match ?? throw new ArgumentNullException(nameof(match));
             options = options ?? throw new ArgumentNullException(nameof(options));

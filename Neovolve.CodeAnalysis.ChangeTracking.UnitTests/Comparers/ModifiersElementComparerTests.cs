@@ -20,7 +20,7 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsResultForChangedModifiers()
+        public void CompareMatchReturnsResultForChangedModifiers()
         {
             var options = new ComparerOptions();
             var fullName = Guid.NewGuid().ToString();
@@ -42,7 +42,7 @@
 
             var sut = new Wrapper(changeTable);
 
-            var actual = sut.CompareItems(match, options)
+            var actual = sut.CompareMatch(match, options)
                 .ToList();
 
             _output.WriteResults(actual);

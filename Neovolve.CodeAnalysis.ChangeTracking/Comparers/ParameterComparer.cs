@@ -88,7 +88,7 @@
         {
             var convertedMatch = new ItemMatch<IModifiersElement<ParameterModifiers>>(match.OldItem, match.NewItem);
 
-            var results = _parameterModifiersComparer.CompareItems(convertedMatch, options);
+            var results = _parameterModifiersComparer.CompareMatch(convertedMatch, options);
 
             aggregator.AddResults(results);
         }

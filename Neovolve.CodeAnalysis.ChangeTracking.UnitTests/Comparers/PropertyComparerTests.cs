@@ -24,14 +24,14 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsEmptyWhenPropertiesMatch()
+        public void CompareMatchReturnsEmptyWhenPropertiesMatch()
         {
             var oldMember = new TestPropertyDefinition();
             var newMember = oldMember.JsonClone();
             var match = new ItemMatch<IPropertyDefinition>(oldMember, newMember);
             var options = ComparerOptions.Default;
 
-            var actual = SUT.CompareItems(match, options).ToList();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -39,7 +39,7 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsResultFromPropertyAccessorMatchProcessorWithGetAccessor()
+        public void CompareMatchReturnsResultFromPropertyAccessorMatchProcessorWithGetAccessor()
         {
             var oldItem = new TestPropertyDefinition().Set(x => x.SetAccessor = null);
             var newItem = oldItem.JsonClone();
@@ -58,7 +58,7 @@
                         x => x.Contains(newItem.GetAccessor)),
                     options).Returns(results);
 
-            var actual = SUT.CompareItems(match, options).ToList();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -68,7 +68,7 @@
 
         [Fact]
         [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
-        public void CompareItemsReturnsResultFromPropertyAccessorMatchProcessorWithGetAndSetAccessors()
+        public void CompareMatchReturnsResultFromPropertyAccessorMatchProcessorWithGetAndSetAccessors()
         {
             var oldItem = new TestPropertyDefinition();
             var newItem = oldItem.JsonClone();
@@ -87,7 +87,7 @@
                         x => x.Contains(newItem.GetAccessor) && x.Contains(newItem.SetAccessor)),
                     options).Returns(results);
 
-            var actual = SUT.CompareItems(match, options).ToList();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -96,7 +96,7 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsResultFromPropertyAccessorMatchProcessorWithMixedAccessors()
+        public void CompareMatchReturnsResultFromPropertyAccessorMatchProcessorWithMixedAccessors()
         {
             var oldItem = new TestPropertyDefinition().Set(x =>
             {
@@ -123,7 +123,7 @@
                         x => x.Contains(newItem.SetAccessor)),
                     options).Returns(results);
 
-            var actual = SUT.CompareItems(match, options).ToList();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -132,7 +132,7 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsResultFromPropertyAccessorMatchProcessorWithNoAccessors()
+        public void CompareMatchReturnsResultFromPropertyAccessorMatchProcessorWithNoAccessors()
         {
             // This doesn't make sense but it could be a scenario that is forced upon the class
             var oldItem = new TestPropertyDefinition().Set(x =>
@@ -156,7 +156,7 @@
                         x => !x.Any()),
                     options).Returns(results);
 
-            var actual = SUT.CompareItems(match, options).ToList();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -165,7 +165,7 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsResultFromPropertyAccessorMatchProcessorWithSetAccessor()
+        public void CompareMatchReturnsResultFromPropertyAccessorMatchProcessorWithSetAccessor()
         {
             var oldItem = new TestPropertyDefinition().Set(x => x.GetAccessor = null);
             var newItem = oldItem.JsonClone();
@@ -184,7 +184,7 @@
                         x => x.Contains(newItem.SetAccessor)),
                     options).Returns(results);
 
-            var actual = SUT.CompareItems(match, options).ToList();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -193,7 +193,7 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsResultFromPropertyModifierComparer()
+        public void CompareMatchReturnsResultFromPropertyModifierComparer()
         {
             var item = new TestPropertyDefinition();
             var match = new ItemMatch<IPropertyDefinition>(item, item);
@@ -204,12 +204,12 @@
             var results = new[] {result};
 
             Service<IPropertyModifiersComparer>()
-                .CompareItems(
+                .CompareMatch(
                     Arg.Is<ItemMatch<IModifiersElement<PropertyModifiers>>>(
                         x => x.OldItem == item && x.NewItem == item),
                     options).Returns(results);
 
-            var actual = SUT.CompareItems(match, options).ToList();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 

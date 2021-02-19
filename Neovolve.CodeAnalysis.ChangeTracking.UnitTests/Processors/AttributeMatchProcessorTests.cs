@@ -172,7 +172,7 @@
             var comparer = Substitute.For<IAttributeComparer>();
             var evaluator = Substitute.For<IAttributeMatchEvaluator>();
 
-            comparer.CompareItems(match, options).Returns(expected);
+            comparer.CompareMatch(match, options).Returns(expected);
 
             var sut = new Wrapper(comparer, evaluator, _logger);
 

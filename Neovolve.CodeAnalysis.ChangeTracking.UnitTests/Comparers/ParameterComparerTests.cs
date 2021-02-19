@@ -22,14 +22,14 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsBreakingWhenTypeChanged()
+        public void CompareMatchReturnsBreakingWhenTypeChanged()
         {
             var oldItem = new TestParameterDefinition();
             var newItem = oldItem.JsonClone().Set(x => x.Type = "NewType");
             var match = new ItemMatch<IParameterDefinition>(oldItem, newItem);
             var options = ComparerOptions.Default;
 
-            var actual = SUT.CompareItems(match, options).ToList();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -38,14 +38,14 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsEmptyWhenNoChangesFound()
+        public void CompareMatchReturnsEmptyWhenNoChangesFound()
         {
             var oldItem = new TestParameterDefinition();
             var newItem = oldItem.JsonClone();
             var match = new ItemMatch<IParameterDefinition>(oldItem, newItem);
             var options = ComparerOptions.Default;
 
-            var actual = SUT.CompareItems(match, options).ToList();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -64,7 +64,7 @@
         [InlineData("old", null, SemVerChangeType.Breaking)]
         [InlineData("old", "", SemVerChangeType.Breaking)]
         [InlineData("old", "  ", SemVerChangeType.Breaking)]
-        public void CompareItemsReturnsResultBasedOnDefaultValueChanges(string oldValue, string newValue,
+        public void CompareMatchReturnsResultBasedOnDefaultValueChanges(string oldValue, string newValue,
             SemVerChangeType? expected)
         {
             var oldItem = new TestParameterDefinition().Set(x => x.DefaultValue = oldValue);
@@ -72,7 +72,7 @@
             var match = new ItemMatch<IParameterDefinition>(oldItem, newItem);
             var options = ComparerOptions.Default;
 
-            var actual = SUT.CompareItems(match, options).ToList();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 
@@ -88,7 +88,7 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsResultFromParameterModifierComparer()
+        public void CompareMatchReturnsResultFromParameterModifierComparer()
         {
             var item = new TestParameterDefinition();
             var match = new ItemMatch<IParameterDefinition>(item, item);
@@ -99,12 +99,12 @@
             var results = new[] {result};
 
             Service<IParameterModifiersComparer>()
-                .CompareItems(
+                .CompareMatch(
                     Arg.Is<ItemMatch<IModifiersElement<ParameterModifiers>>>(
                         x => x.OldItem == item && x.NewItem == item),
                     options).Returns(results);
 
-            var actual = SUT.CompareItems(match, options).ToList();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
 

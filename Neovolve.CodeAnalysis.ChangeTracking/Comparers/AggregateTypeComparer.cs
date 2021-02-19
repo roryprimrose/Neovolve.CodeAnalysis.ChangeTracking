@@ -18,7 +18,7 @@
             _structComparer = structComparer ?? throw new ArgumentNullException(nameof(structComparer));
         }
 
-        public IEnumerable<ComparisonResult> CompareItems(ItemMatch<ITypeDefinition> match, ComparerOptions options)
+        public IEnumerable<ComparisonResult> CompareMatch(ItemMatch<ITypeDefinition> match, ComparerOptions options)
         {
             match = match ?? throw new ArgumentNullException(nameof(match));
             options = options ?? throw new ArgumentNullException(nameof(options));
@@ -53,7 +53,7 @@
             {
                 var itemMatch = new ItemMatch<IClassDefinition>(oldClass, newClass);
 
-                return _classComparer.CompareItems(itemMatch, options);
+                return _classComparer.CompareMatch(itemMatch, options);
             }
 
             if (match.OldItem is IStructDefinition oldStruct
@@ -61,7 +61,7 @@
             {
                 var itemMatch = new ItemMatch<IStructDefinition>(oldStruct, newStruct);
 
-                return _structComparer.CompareItems(itemMatch, options);
+                return _structComparer.CompareMatch(itemMatch, options);
             }
 
             if (match.OldItem is IInterfaceDefinition oldInterface
@@ -69,7 +69,7 @@
             {
                 var itemMatch = new ItemMatch<IInterfaceDefinition>(oldInterface, newInterface);
 
-                return _interfaceComparer.CompareItems(itemMatch, options);
+                return _interfaceComparer.CompareMatch(itemMatch, options);
             }
 
             throw new NotSupportedException(
