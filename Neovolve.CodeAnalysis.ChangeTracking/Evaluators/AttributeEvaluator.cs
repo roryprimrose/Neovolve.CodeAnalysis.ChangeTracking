@@ -1,21 +1,17 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.Evaluators
 {
-    using System;
-    using System.Collections.Generic;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
     public class AttributeEvaluator : Evaluator<IAttributeDefinition>, IAttributeEvaluator
     {
-        public override IMatchResults<IAttributeDefinition> FindMatches(
-            IEnumerable<IAttributeDefinition> oldItems,
-            IEnumerable<IAttributeDefinition> newItems)
+        protected override void FindMatches(IMatchAgent<IAttributeDefinition> agent)
         {
-            oldItems = oldItems ?? throw new ArgumentNullException(nameof(oldItems));
-            newItems = newItems ?? throw new ArgumentNullException(nameof(newItems));
+            agent.MatchOn(SameName);
+        }
 
-            var results = new MatchResults<IAttributeDefinition>(oldItems, newItems);
-
-            return FindMatches(results, (x, y) => x.GetRawName() == y.GetRawName());
+        private static bool SameName(IAttributeDefinition oldItem, IAttributeDefinition newItem)
+        {
+            return oldItem.GetRawName() == newItem.GetRawName();
         }
     }
 }

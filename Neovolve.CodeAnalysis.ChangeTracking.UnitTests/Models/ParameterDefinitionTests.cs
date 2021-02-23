@@ -14,14 +14,14 @@
         [Fact]
         public async Task AttributesReturnsDeclaredValues()
         {
-            var declaringMember = Substitute.For<IMemberDefinition>();
+            var declaringMethod = Substitute.For<IMethodDefinition>();
 
             var node = await TestNode
                 .FindNode<ParameterSyntax>(ParameterDefinitionCode.SingleParameter.Replace("string value",
                     "[Tagger(123, true, \"abc\")]string value"))
                 .ConfigureAwait(false);
 
-            var sut = new ParameterDefinition(declaringMember, node);
+            var sut = new ParameterDefinition(declaringMethod, node);
 
             sut.Attributes.Should().HaveCount(1);
             sut.Attributes.First().Name.Should().Be("Tagger");
@@ -31,14 +31,14 @@
         [Fact]
         public async Task DeclaringMemberReturnsProvidedValue()
         {
-            var declaringMember = Substitute.For<IMemberDefinition>();
+            var declaringMethod = Substitute.For<IMethodDefinition>();
 
             var node = await TestNode.FindNode<ParameterSyntax>(ParameterDefinitionCode.SingleParameter)
                 .ConfigureAwait(false);
 
-            var sut = new ParameterDefinition(declaringMember, node);
+            var sut = new ParameterDefinition(declaringMethod, node);
 
-            sut.DeclaringMember.Should().Be(declaringMember);
+            sut.DeclaringMethod.Should().Be(declaringMethod);
         }
 
         [Theory]
@@ -48,7 +48,7 @@
         [InlineData("true")]
         public async Task DefaultValueReturnsDeclaredValue(string defaultValue)
         {
-            var declaringMember = Substitute.For<IMemberDefinition>();
+            var declaringMethod = Substitute.For<IMethodDefinition>();
 
             var code = ParameterDefinitionCode.SingleParameter;
 
@@ -61,7 +61,7 @@
                 .FindNode<ParameterSyntax>(code)
                 .ConfigureAwait(false);
 
-            var sut = new ParameterDefinition(declaringMember, node);
+            var sut = new ParameterDefinition(declaringMethod, node);
 
             sut.DefaultValue.Should().Be(defaultValue);
         }
@@ -71,14 +71,14 @@
         {
             string fullName = Guid.NewGuid().ToString();
 
-            var declaringMember = Substitute.For<IMemberDefinition>();
+            var declaringMethod = Substitute.For<IMethodDefinition>();
 
-            declaringMember.FullName.Returns(fullName);
+            declaringMethod.FullName.Returns(fullName);
 
             var node = await TestNode.FindNode<ParameterSyntax>(ParameterDefinitionCode.SingleParameter)
                 .ConfigureAwait(false);
 
-            var sut = new ParameterDefinition(declaringMember, node);
+            var sut = new ParameterDefinition(declaringMethod, node);
 
             sut.FullName.Should().Be(fullName + "_value");
         }
@@ -88,14 +88,14 @@
         {
             string fullRawName = Guid.NewGuid().ToString();
 
-            var declaringMember = Substitute.For<IMemberDefinition>();
+            var declaringMethod = Substitute.For<IMethodDefinition>();
 
-            declaringMember.FullRawName.Returns(fullRawName);
+            declaringMethod.FullRawName.Returns(fullRawName);
 
             var node = await TestNode.FindNode<ParameterSyntax>(ParameterDefinitionCode.SingleParameter)
                 .ConfigureAwait(false);
 
-            var sut = new ParameterDefinition(declaringMember, node);
+            var sut = new ParameterDefinition(declaringMethod, node);
 
             sut.FullRawName.Should().Be(fullRawName + "_value");
         }
@@ -105,14 +105,14 @@
         [InlineData(false)]
         public async Task IsVisibleReturnsDeclaringMemberIsVisible(bool value)
         {
-            var declaringMember = Substitute.For<IMemberDefinition>();
+            var declaringMethod = Substitute.For<IMethodDefinition>();
 
-            declaringMember.IsVisible.Returns(value);
+            declaringMethod.IsVisible.Returns(value);
 
             var node = await TestNode.FindNode<ParameterSyntax>(ParameterDefinitionCode.SingleParameter)
                 .ConfigureAwait(false);
 
-            var sut = new ParameterDefinition(declaringMember, node);
+            var sut = new ParameterDefinition(declaringMethod, node);
 
             sut.IsVisible.Should().Be(value);
         }
@@ -125,14 +125,14 @@
         [InlineData("this", ParameterModifiers.This)]
         public async Task ModifiersReturnsDeclaredValues(string modifiers, ParameterModifiers expected)
         {
-            var declaringMember = Substitute.For<IMemberDefinition>();
+            var declaringMethod = Substitute.For<IMethodDefinition>();
 
             var node = await TestNode
                 .FindNode<ParameterSyntax>(
                     ParameterDefinitionCode.SingleParameter.Replace("string value", modifiers + " string value"))
                 .ConfigureAwait(false);
 
-            var sut = new ParameterDefinition(declaringMember, node);
+            var sut = new ParameterDefinition(declaringMethod, node);
 
             sut.DeclaredModifiers.Should().Be(modifiers);
             sut.Modifiers.Should().Be(expected);
@@ -141,12 +141,12 @@
         [Fact]
         public async Task NameReturnsDeclaredValue()
         {
-            var declaringMember = Substitute.For<IMemberDefinition>();
+            var declaringMethod = Substitute.For<IMethodDefinition>();
 
             var node = await TestNode.FindNode<ParameterSyntax>(ParameterDefinitionCode.SingleParameter)
                 .ConfigureAwait(false);
 
-            var sut = new ParameterDefinition(declaringMember, node);
+            var sut = new ParameterDefinition(declaringMethod, node);
 
             sut.Name.Should().Be("value");
         }
@@ -154,12 +154,12 @@
         [Fact]
         public async Task RawNameReturnsDeclaredValue()
         {
-            var declaringMember = Substitute.For<IMemberDefinition>();
+            var declaringMethod = Substitute.For<IMethodDefinition>();
 
             var node = await TestNode.FindNode<ParameterSyntax>(ParameterDefinitionCode.SingleParameter)
                 .ConfigureAwait(false);
 
-            var sut = new ParameterDefinition(declaringMember, node);
+            var sut = new ParameterDefinition(declaringMethod, node);
 
             sut.RawName.Should().Be("value");
         }
@@ -179,10 +179,10 @@
         [Fact]
         public void ThrowsExceptionWithNullNode()
         {
-            var declaringMember = Substitute.For<IMemberDefinition>();
+            var declaringMethod = Substitute.For<IMethodDefinition>();
 
             // ReSharper disable once ObjectCreationAsStatement
-            Action action = () => new ParameterDefinition(declaringMember, null!);
+            Action action = () => new ParameterDefinition(declaringMethod, null!);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -195,13 +195,13 @@
         [InlineData("dynamic")]
         public async Task TypeReturnsParameterType(string typeName)
         {
-            var declaringMember = Substitute.For<IMemberDefinition>();
+            var declaringMethod = Substitute.For<IMethodDefinition>();
 
             var node = await TestNode
                 .FindNode<ParameterSyntax>(ParameterDefinitionCode.SingleParameter.Replace("string", typeName))
                 .ConfigureAwait(false);
 
-            var sut = new ParameterDefinition(declaringMember, node);
+            var sut = new ParameterDefinition(declaringMethod, node);
 
             sut.Type.Should().Be(typeName);
         }

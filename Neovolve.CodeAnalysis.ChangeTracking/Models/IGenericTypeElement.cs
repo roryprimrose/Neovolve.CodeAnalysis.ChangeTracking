@@ -1,7 +1,7 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.Models
 {
     using System.Collections.Generic;
-
+    
     /// <summary>
     ///     The <see cref="IGenericTypeElement" />
     ///     interface defines an element that exposes generic type parameters and constraints.

@@ -1,21 +1,22 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.Evaluators
 {
-    using System;
-    using System.Collections.Generic;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
     public class FieldEvaluator : Evaluator<IFieldDefinition>, IFieldEvaluator
     {
-        public override IMatchResults<IFieldDefinition> FindMatches(
-            IEnumerable<IFieldDefinition> oldItems,
-            IEnumerable<IFieldDefinition> newItems)
+        protected override void FindMatches(IMatchAgent<IFieldDefinition> agent)
         {
-            oldItems = oldItems ?? throw new ArgumentNullException(nameof(oldItems));
-            newItems = newItems ?? throw new ArgumentNullException(nameof(newItems));
+            agent.MatchOn(FieldName);
+        }
 
-            var results = new MatchResults<IFieldDefinition>(oldItems, newItems);
+        private static bool FieldName(IFieldDefinition oldItem, IFieldDefinition newItem)
+        {
+            if (oldItem.Name != newItem.Name)
+            {
+                return false;
+            }
 
-            return FindMatches(results, (x, y) => x.Name == y.Name);
+            return true;
         }
     }
 }

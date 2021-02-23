@@ -39,70 +39,20 @@
         private static void EvaluateReturnTypeChanges(ItemMatch<T> match, ComparerOptions options,
             IChangeResultAggregator aggregator)
         {
-            if (match.OldItem.ReturnType != match.NewItem.ReturnType)
+            var oldType = match.OldItem.ReturnType;
+            var newType = match.NewItem.ReturnType;
+
+            var oldMappedType =
+                match.OldItem.DeclaringType.GetMatchingGenericType(oldType, match.NewItem.DeclaringType);
+            
+            if (oldMappedType != newType)
             {
-                var genericTypeMatch = MapGenericTypeName(match);
+                var args = new FormatArguments(
+                    "{DefinitionType} {Identifier} return type has changed from {OldValue} to {NewValue}",
+                    match.NewItem.FullName, match.OldItem.ReturnType, match.NewItem.ReturnType);
 
-                if (genericTypeMatch != match.NewItem.ReturnType)
-                {
-                    var args = new FormatArguments(
-                        "{DefinitionType} {Identifier} return type has changed from {OldValue} to {NewValue}",
-                        match.NewItem.FullName, match.OldItem.ReturnType, match.NewItem.ReturnType);
-
-                    aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
-                }
+                aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
             }
-        }
-
-        private static string MapGenericTypeName(ItemMatch<T> match)
-        {
-            var typeName = match.OldItem.ReturnType;
-
-            // We need to determine all the generic type parameters from the complete parent hierarchy not just the parent type
-
-            var oldDeclaringType = match.OldItem.DeclaringType;
-            var newDeclaringType = match.NewItem.DeclaringType;
-
-            return ResolveRenamedGenericTypeParameter(typeName, oldDeclaringType, newDeclaringType);
-        }
-
-        private static string ResolveRenamedGenericTypeParameter(
-            string originalTypeName,
-            ITypeDefinition oldDeclaringType,
-            ITypeDefinition newDeclaringType)
-        {
-            if (oldDeclaringType.DeclaringType != null
-                && newDeclaringType.DeclaringType != null)
-            {
-                // Search the parents
-                var mappedTypeName = ResolveRenamedGenericTypeParameter(
-                    originalTypeName,
-                    oldDeclaringType.DeclaringType,
-                    newDeclaringType.DeclaringType);
-
-                if (mappedTypeName != originalTypeName)
-                {
-                    // We have found the generic type parameter that has been renamed somewhere in the parent type hierarchy
-                    return mappedTypeName;
-                }
-            }
-
-            var oldGenericTypes = oldDeclaringType.GenericTypeParameters.FastToList();
-
-            if (oldGenericTypes.Count == 0)
-            {
-                return originalTypeName;
-            }
-
-            var newGenericTypes = newDeclaringType.GenericTypeParameters.FastToList();
-            var typeIndex = oldGenericTypes.IndexOf(originalTypeName);
-
-            if (typeIndex == -1)
-            {
-                return originalTypeName;
-            }
-
-            return newGenericTypes[typeIndex];
         }
     }
 }

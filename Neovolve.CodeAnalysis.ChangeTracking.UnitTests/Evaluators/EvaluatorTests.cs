@@ -1,9 +1,17 @@
-﻿// ReSharper disable CollectionNeverUpdated.Local
-// ReSharper disable ObjectCreationAsStatement
-
-namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Evaluators
+﻿namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Evaluators
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Threading.Tasks;
+    using FluentAssertions;
+    using Microsoft.CodeAnalysis;
     using Microsoft.Extensions.Logging;
+    using ModelBuilder;
+    using Neovolve.CodeAnalysis.ChangeTracking.Evaluators;
+    using Neovolve.CodeAnalysis.ChangeTracking.Models;
+    using NSubstitute;
+    using Xunit;
     using Xunit.Abstractions;
 
     public class EvaluatorTests
@@ -15,22 +23,32 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Evaluators
             _logger = output.BuildLogger();
         }
 
+        //private class Wrapper<T> : Evaluator<T> where T : IItemDefinition
+        //{
+        //    public IMatchResults<T> RunFindMatches(IMatchResults<T> results, Func<T, T, bool> evaluator)
+        //    {
+        //        return FindMatches(results, evaluator);
+        //    }
+
+        //    public override IMatchResults<T> FindMatches(IEnumerable<T> oldItems, IEnumerable<T> newItems)
+        //    {
+        //        return null!;
+        //    }
+        //}
+
         //[Fact]
         //public void CompareNodesReturnsEmptyResultsWhenNoNodesToEvaluate()
         //{
-        //    var scanner = Substitute.For<INodeScanner>();
-        //    var matcher = Substitute.For<IMemberMatcher>();
-        //    var matches = new List<IMemberMatcher> {matcher};
         //    var oldNodes = new List<SyntaxNode>();
         //    var newNodes = new List<SyntaxNode>();
 
-        //    var sut = new Evaluator(scanner, matches, _logger);
+        //    var sut = new Wrapper<IClassDefinition>();
 
-        //    var actual = sut.FindMatches(oldNodes, newNodes);
+        //    var actual = sut.RunFindMatches(oldNodes, newNodes);
 
         //    actual.MatchingItems.Should().BeEmpty();
-        //    actual.NewMembersNotMatched.Should().BeEmpty();
-        //    actual.OldMembersNotMatched.Should().BeEmpty();
+        //    actual.ItemsAdded.Should().BeEmpty();
+        //    actual.ItemsRemoved.Should().BeEmpty();
         //}
 
         //[Fact]
@@ -40,9 +58,9 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Evaluators
         //    var matcher = Substitute.For<IMemberMatcher>();
 
         //    var member = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
-        //    var oldMembers = new List<OldMemberDefinition> {member};
-        //    var newMembers = new List<OldMemberDefinition> {member};
-        //    var matches = new List<IMemberMatcher> {matcher};
+        //    var oldMembers = new List<OldMemberDefinition> { member };
+        //    var newMembers = new List<OldMemberDefinition> { member };
+        //    var matches = new List<IMemberMatcher> { matcher };
         //    var match = new ItemMatch<>(member, member);
         //    var oldNodes = new List<SyntaxNode>
         //    {
@@ -63,8 +81,8 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Evaluators
         //    var actual = sut.FindMatches(oldNodes, newNodes);
 
         //    actual.MatchingItems.Should().HaveCount(1);
-        //    actual.NewMembersNotMatched.Should().BeEmpty();
-        //    actual.OldMembersNotMatched.Should().BeEmpty();
+        //    actual.ItemsAdded.Should().BeEmpty();
+        //    actual.ItemsRemoved.Should().BeEmpty();
         //}
 
         //[Fact]
@@ -75,9 +93,9 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Evaluators
 
         //    var member = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
         //    var memberNotMatched = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>();
-        //    var oldMembers = new List<OldMemberDefinition> {member};
-        //    var newMembers = new List<OldMemberDefinition> {member, memberNotMatched};
-        //    var matches = new List<IMemberMatcher> {matcher};
+        //    var oldMembers = new List<OldMemberDefinition> { member };
+        //    var newMembers = new List<OldMemberDefinition> { member, memberNotMatched };
+        //    var matches = new List<IMemberMatcher> { matcher };
         //    var match = new ItemMatch<>(member, member);
         //    var oldNodes = new List<SyntaxNode>
         //    {
@@ -98,9 +116,9 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Evaluators
         //    var actual = sut.FindMatches(oldNodes, newNodes);
 
         //    actual.MatchingItems.Should().HaveCount(1);
-        //    actual.NewMembersNotMatched.Should().HaveCount(1);
-        //    actual.NewMembersNotMatched.Should().Contain(memberNotMatched);
-        //    actual.OldMembersNotMatched.Should().BeEmpty();
+        //    actual.ItemsAdded.Should().HaveCount(1);
+        //    actual.ItemsAdded.Should().Contain(memberNotMatched);
+        //    actual.ItemsRemoved.Should().BeEmpty();
         //}
 
         //[Fact]
@@ -111,9 +129,9 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Evaluators
 
         //    var member = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
         //    var memberNotMatched = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>();
-        //    var oldMembers = new List<OldMemberDefinition> {member, memberNotMatched};
-        //    var newMembers = new List<OldMemberDefinition> {member};
-        //    var matches = new List<IMemberMatcher> {matcher};
+        //    var oldMembers = new List<OldMemberDefinition> { member, memberNotMatched };
+        //    var newMembers = new List<OldMemberDefinition> { member };
+        //    var matches = new List<IMemberMatcher> { matcher };
         //    var match = new ItemMatch<>(member, member);
         //    var oldNodes = new List<SyntaxNode>
         //    {
@@ -134,9 +152,9 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Evaluators
         //    var actual = sut.FindMatches(oldNodes, newNodes);
 
         //    actual.MatchingItems.Should().HaveCount(1);
-        //    actual.NewMembersNotMatched.Should().BeEmpty();
-        //    actual.OldMembersNotMatched.Should().HaveCount(1);
-        //    actual.OldMembersNotMatched.Should().Contain(memberNotMatched);
+        //    actual.ItemsAdded.Should().BeEmpty();
+        //    actual.ItemsRemoved.Should().HaveCount(1);
+        //    actual.ItemsRemoved.Should().Contain(memberNotMatched);
         //}
 
         //[Fact]
@@ -147,9 +165,9 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Evaluators
 
         //    var member = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
         //    var memberNotMatched = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>();
-        //    var oldMembers = new List<OldMemberDefinition> {member};
-        //    var newMembers = new List<OldMemberDefinition> {member, memberNotMatched};
-        //    var matches = new List<IMemberMatcher> {matcher};
+        //    var oldMembers = new List<OldMemberDefinition> { member };
+        //    var newMembers = new List<OldMemberDefinition> { member, memberNotMatched };
+        //    var matches = new List<IMemberMatcher> { matcher };
         //    var match = new ItemMatch<>(member, member);
         //    var oldNodes = new List<SyntaxNode>
         //    {
@@ -170,9 +188,9 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Evaluators
         //    var actual = sut.FindMatches(oldNodes, newNodes);
 
         //    actual.MatchingItems.Should().HaveCount(1);
-        //    actual.NewMembersNotMatched.Should().HaveCount(1);
-        //    actual.NewMembersNotMatched.Should().Contain(memberNotMatched);
-        //    actual.OldMembersNotMatched.Should().BeEmpty();
+        //    actual.ItemsAdded.Should().HaveCount(1);
+        //    actual.ItemsAdded.Should().Contain(memberNotMatched);
+        //    actual.ItemsRemoved.Should().BeEmpty();
         //}
 
         //[Fact]
@@ -182,9 +200,9 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Evaluators
         //    var matcher = Substitute.For<IMemberMatcher>();
 
         //    var member = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
-        //    var oldMembers = new List<OldMemberDefinition> {member};
-        //    var newMembers = new List<OldMemberDefinition> {member};
-        //    var matches = new List<IMemberMatcher> {matcher};
+        //    var oldMembers = new List<OldMemberDefinition> { member };
+        //    var newMembers = new List<OldMemberDefinition> { member };
+        //    var matches = new List<IMemberMatcher> { matcher };
         //    var match = new ItemMatch<>(member, member);
         //    var oldNodes = new List<SyntaxNode>
         //    {
@@ -205,8 +223,8 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Evaluators
         //    var actual = sut.FindMatches(oldNodes, newNodes);
 
         //    actual.MatchingItems.Should().HaveCount(1);
-        //    actual.NewMembersNotMatched.Should().BeEmpty();
-        //    actual.OldMembersNotMatched.Should().BeEmpty();
+        //    actual.ItemsAdded.Should().BeEmpty();
+        //    actual.ItemsRemoved.Should().BeEmpty();
         //}
 
         //[Fact]
@@ -217,9 +235,9 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Evaluators
 
         //    var member = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
         //    var memberNotMatched = Model.UsingModule<ConfigurationModule>().Create<OldMemberDefinition>();
-        //    var oldMembers = new List<OldMemberDefinition> {member, memberNotMatched};
-        //    var newMembers = new List<OldMemberDefinition> {member};
-        //    var matches = new List<IMemberMatcher> {matcher};
+        //    var oldMembers = new List<OldMemberDefinition> { member, memberNotMatched };
+        //    var newMembers = new List<OldMemberDefinition> { member };
+        //    var matches = new List<IMemberMatcher> { matcher };
         //    var oldNodes = new List<SyntaxNode>
         //    {
         //        await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
@@ -244,7 +262,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Evaluators
         //{
         //    var scanner = Substitute.For<INodeScanner>();
         //    var matcher = Substitute.For<IMemberMatcher>();
-        //    var matches = new List<IMemberMatcher> {matcher};
+        //    var matches = new List<IMemberMatcher> { matcher };
         //    var oldNodes = new List<SyntaxNode>
         //    {
         //        await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
@@ -262,7 +280,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Evaluators
         //{
         //    var scanner = Substitute.For<INodeScanner>();
         //    var matcher = Substitute.For<IMemberMatcher>();
-        //    var matches = new List<IMemberMatcher> {matcher};
+        //    var matches = new List<IMemberMatcher> { matcher };
         //    var newNodes = new List<SyntaxNode>
         //    {
         //        await TestNode.Parse(TestNode.ClassProperty).ConfigureAwait(false)
@@ -307,7 +325,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Evaluators
         //public void ThrowsExceptionWhenCreatedWithNullScanner()
         //{
         //    var matcher = Substitute.For<IMemberMatcher>();
-        //    var matches = new List<IMemberMatcher> {matcher};
+        //    var matches = new List<IMemberMatcher> { matcher };
 
         //    Action action = () => new Evaluator(null!, matches, _logger);
 

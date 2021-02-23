@@ -1,21 +1,22 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.Evaluators
 {
-    using System;
-    using System.Collections.Generic;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
     public class PropertyAccessorEvaluator : Evaluator<IPropertyAccessorDefinition>, IPropertyAccessorEvaluator
     {
-        public override IMatchResults<IPropertyAccessorDefinition> FindMatches(
-            IEnumerable<IPropertyAccessorDefinition> oldItems,
-            IEnumerable<IPropertyAccessorDefinition> newItems)
+        protected override void FindMatches(IMatchAgent<IPropertyAccessorDefinition> agent)
         {
-            oldItems = oldItems ?? throw new ArgumentNullException(nameof(oldItems));
-            newItems = newItems ?? throw new ArgumentNullException(nameof(newItems));
+            agent.MatchOn(PropertyAccessorName);
+        }
 
-            var results = new MatchResults<IPropertyAccessorDefinition>(oldItems, newItems);
+        private static bool PropertyAccessorName(IPropertyAccessorDefinition oldItem, IPropertyAccessorDefinition newItem)
+        {
+            if (oldItem.Name != newItem.Name)
+            {
+                return false;
+            }
 
-            return FindMatches(results, (x, y) => x.Name == y.Name);
+            return true;
         }
     }
 }

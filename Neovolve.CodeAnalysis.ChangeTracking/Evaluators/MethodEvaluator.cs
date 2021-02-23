@@ -1,95 +1,156 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.Evaluators
 {
-    using System;
-    using System.Collections.Generic;
     using System.Linq;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
     public class MethodEvaluator : Evaluator<IMethodDefinition>, IMethodEvaluator
     {
-        public override IMatchResults<IMethodDefinition> FindMatches(
-            IEnumerable<IMethodDefinition> oldItems,
-            IEnumerable<IMethodDefinition> newItems)
+        protected override void FindMatches(IMatchAgent<IMethodDefinition> agent)
         {
-            oldItems = oldItems ?? throw new ArgumentNullException(nameof(oldItems));
-            newItems = newItems ?? throw new ArgumentNullException(nameof(newItems));
-
-            var tracker = new MatchTracker(oldItems, newItems);
-
-            // Find all the members that match by name, generic type parameter count and parameter set
-            // This is finding direct matches on method signatures
-            IdentifyMatches(tracker, (source, target) =>
-                target.RawName == source.RawName
-                && target.GenericTypeParameters.Count == source.GenericTypeParameters.Count
-                && ParameterListMatches(source, target));
-
-            // Find all members that match on name, generic type parameter count and parameter count
-            // This is finding methods that have changed their parameter types
-            IdentifyMatches(tracker, (source, target) =>
-                target.RawName == source.RawName
-                && target.GenericTypeParameters.Count == source.GenericTypeParameters.Count
-                && target.Parameters.Count == source.Parameters.Count);
-
-            // Find all members that match on name and parameter count but generic type parameter count has changed
-            // This is finding methods that have changed their generic type parameters
-            IdentifyMatches(tracker, (source, target) =>
-                target.RawName == source.RawName
-                && target.Parameters.Count == source.Parameters.Count);
-
-            // Find members with the same name and generic type parameter count but different parameters
-            // In this case it is a member that has changed the parameters
-            IdentifyMatches(tracker, (source, target) =>
-                target.RawName == source.RawName
-                && target.GenericTypeParameters.Count == source.GenericTypeParameters.Count);
-
-            // Find members with the same name where there is only one remaining match by name
-            // In this case it is a member that has changed the parameters
-            IdentifyMatches(tracker, (source, target) =>
-                target.RawName == source.RawName);
-
-            // Find members that have been renamed where there is only one where the parameter set is the same but with a different name
-            IdentifyMatches(tracker, (source, target) =>
-                target.GenericTypeParameters.Count == source.GenericTypeParameters.Count
-                && ParameterListMatches(source, target));
+            agent.MatchOn(ExactSignature);
+            agent.MatchOn(ChangedReturnType);
+            agent.MatchOn(ChangedName);
+            agent.MatchOn(ChangedParameterTypes);
+            agent.MatchOn(ChangedParameterCount);
+            agent.MatchOn(ChangeGenericTypeParametersCount);
 
             // At this point we have matched as many related methods between the old code and the new code
-            return tracker.Results;
         }
 
-        private static void IdentifyMatches(MatchTracker tracker,
-            Func<IMethodDefinition, IMethodDefinition, bool> matcher)
+        private static bool ChangedName(IMethodDefinition newItem, IMethodDefinition oldItem)
         {
-            // Loop in reverse so that the items in the loop can be removed safely by the tracker
-            for (var index = tracker.OldItems.Count - 1; index >= 0; index--)
+            // Find members that have been renamed where there is only one where the parameter set is the same but with a different name
+            if (oldItem.ReturnType != newItem.ReturnType)
             {
-                var oldMethod = tracker.OldItems[index];
-
-                // Get the old methods that match the predicate
-                var matchingOldMethods = tracker.OldItems.Count(x => matcher(oldMethod, x));
-
-                if (matchingOldMethods > 1)
-                {
-                    // There is more than one old method matching the predicate
-                    // We can't match old methods to new methods in this case because there are multiple that could match
-                    continue;
-                }
-
-                // Get the new methods that also match the predicate
-                var matchingMethods = tracker.NewItems.Where(x => matcher(oldMethod, x)).ToList();
-
-                if (matchingMethods.Count != 1)
-                {
-                    // There are either no new methods matching the predicate or there are more than one
-                    // In either case we can't match the old method to a new method because there are multiple that could match
-                    continue;
-                }
-
-                var matchingMethod = matchingMethods[0];
-
-                // There is only one old and new method that match the predicate
-                // The assumption here is that these two methods are a match
-                tracker.MatchFound(oldMethod, matchingMethod);
+                return false;
             }
+
+            if (newItem.GenericTypeParameters.Count != oldItem.GenericTypeParameters.Count)
+            {
+                return false;
+            }
+
+            if (ParameterListMatches(oldItem, newItem) == false)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private static bool ChangedParameterCount(IMethodDefinition newItem, IMethodDefinition oldItem)
+        {
+            // Find members with the same name and generic type parameter count but different parameters
+            // In this case it is a member that has changed the parameters
+            if (newItem.RawName != oldItem.RawName)
+            {
+                return false;
+            }
+
+            if (oldItem.ReturnType != newItem.ReturnType)
+            {
+                return false;
+            }
+
+            if (newItem.GenericTypeParameters.Count != oldItem.GenericTypeParameters.Count)
+            {
+                return false;
+            }
+
+            // The methods have the same name and generic type parameters
+            return true;
+        }
+        
+        private static bool ChangedParameterTypes(IMethodDefinition newItem, IMethodDefinition oldItem)
+        {
+            // Find all members that match on name, generic type parameter count and parameter count
+            // This is finding methods that have changed their parameter types
+            if (newItem.RawName != oldItem.RawName)
+            {
+                return false;
+            }
+
+            if (newItem.GenericTypeParameters.Count != oldItem.GenericTypeParameters.Count)
+            {
+                return false;
+            }
+
+            if (newItem.Parameters.Count != oldItem.Parameters.Count)
+            {
+                return false;
+            }
+
+            // The methods have the same name, generic type parameter count and parameter count
+            return true;
+        }
+
+        private static bool ChangedReturnType(IMethodDefinition newItem, IMethodDefinition oldItem)
+        {
+            // Find all the members that match by name, generic type parameter count and parameter set
+            // This is finding direct matches on method signatures
+            if (newItem.RawName != oldItem.RawName)
+            {
+                return false;
+            }
+
+            if (newItem.GenericTypeParameters.Count != oldItem.GenericTypeParameters.Count)
+            {
+                return false;
+            }
+
+            if (ParameterListMatches(oldItem, newItem) == false)
+            {
+                return false;
+            }
+
+            // The methods have the same name, generic type parameter count, parameter count and parameter types
+            return true;
+        }
+
+        private static bool ChangeGenericTypeParametersCount(IMethodDefinition newItem, IMethodDefinition oldItem)
+        {
+            // Find all members that match on name and parameter count but generic type parameter count has changed
+            // This is finding methods that have changed their generic type parameters
+            if (newItem.RawName != oldItem.RawName)
+            {
+                return false;
+            }
+
+            if (newItem.Parameters.Count != oldItem.Parameters.Count)
+            {
+                return false;
+            }
+
+            // The methods have the same name and parameter count
+            return true;
+        }
+
+        private static bool ExactSignature(IMethodDefinition newItem, IMethodDefinition oldItem)
+        {
+            // Find all the members that match by name, return type, generic type parameter count and parameter set
+            // This is finding direct matches on method signatures
+            if (newItem.RawName != oldItem.RawName)
+            {
+                return false;
+            }
+
+            if (oldItem.ReturnType != newItem.ReturnType)
+            {
+                return false;
+            }
+
+            if (newItem.GenericTypeParameters.Count != oldItem.GenericTypeParameters.Count)
+            {
+                return false;
+            }
+
+            if (ParameterListMatches(oldItem, newItem) == false)
+            {
+                return false;
+            }
+
+            // The methods have the same name, return type, generic type parameter count, parameter count and parameter types
+            return true;
         }
 
         private static bool ParameterListMatches(IMethodDefinition oldMethod, IMethodDefinition newMethod)
@@ -106,44 +167,19 @@
             {
                 var oldParameter = oldParameters[index];
                 var newParameter = newParameters[index];
+                var oldType = oldParameter.Type;
+                var newType = newParameter.Type;
 
-                if (oldParameter.Type != newParameter.Type)
+                var oldMappedType =
+                    oldMethod.GetMatchingGenericType(oldType, newMethod);
+                
+                if (oldMappedType != newType)
                 {
                     return false;
                 }
             }
 
             return true;
-        }
-
-        private class MatchTracker
-        {
-            private readonly List<ItemMatch<IMethodDefinition>> _matches;
-            private readonly List<IMethodDefinition> _newItems;
-            private readonly List<IMethodDefinition> _oldItems;
-
-            public MatchTracker(IEnumerable<IMethodDefinition> oldItems, IEnumerable<IMethodDefinition> newItems)
-            {
-                _oldItems = oldItems.ToList();
-                _newItems = newItems.ToList();
-                _matches = new List<ItemMatch<IMethodDefinition>>();
-            }
-
-            public void MatchFound(IMethodDefinition oldItem, IMethodDefinition newItem)
-            {
-                var match = new ItemMatch<IMethodDefinition>(oldItem, newItem);
-
-                _matches.Add(match);
-                _oldItems.Remove(oldItem);
-                _newItems.Remove(newItem);
-            }
-
-            public IReadOnlyList<IMethodDefinition> NewItems => _newItems;
-
-            public IReadOnlyList<IMethodDefinition> OldItems => _oldItems;
-
-            public IMatchResults<IMethodDefinition> Results =>
-                new MatchResults<IMethodDefinition>(_matches, _oldItems, _newItems);
         }
     }
 }

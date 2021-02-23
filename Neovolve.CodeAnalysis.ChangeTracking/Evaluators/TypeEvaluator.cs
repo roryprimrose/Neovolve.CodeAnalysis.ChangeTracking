@@ -1,36 +1,69 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.Evaluators
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
     public class TypeEvaluator : Evaluator<ITypeDefinition>, ITypeEvaluator
     {
-        public override IMatchResults<ITypeDefinition> FindMatches(
-            IEnumerable<ITypeDefinition> oldItems,
-            IEnumerable<ITypeDefinition> newItems)
+        protected override void FindMatches(IMatchAgent<ITypeDefinition> agent)
         {
-            oldItems = oldItems ?? throw new ArgumentNullException(nameof(oldItems));
-            newItems = newItems ?? throw new ArgumentNullException(nameof(newItems));
-
-            IMatchResults<ITypeDefinition>? results = new MatchResults<ITypeDefinition>(oldItems, newItems);
-
-            results = FindMatches(results, (x, y) => x.IsMatch(y));
-
-            var currentItemsRemoved = results.ItemsRemoved;
-            var currentItemsAdded = results.ItemsAdded;
-
-            results = FindMatches(results, (x, y) => IsMovedType(x, y, currentItemsRemoved, currentItemsAdded));
-
-            return results;
+            agent.MatchOn(ExactSignature);
+            agent.MatchOn((ITypeDefinition oldItem, ITypeDefinition newItem) => MovedType(agent, oldItem, newItem));
         }
 
-        private static bool IsMovedType(
-            ITypeDefinition oldType,
-            ITypeDefinition newType,
-            IEnumerable<ITypeDefinition> itemsRemoved,
-            IEnumerable<ITypeDefinition> itemsAdded)
+        private static bool ExactSignature(ITypeDefinition oldType, ITypeDefinition newType)
+        {
+            oldType = oldType ?? throw new ArgumentNullException(nameof(oldType));
+            newType = newType ?? throw new ArgumentNullException(nameof(newType));
+
+            if (oldType.Namespace != newType.Namespace)
+            {
+                // Early exit if the namespace is different
+                // No point running recursion to check if parent types match if the namespace is different
+                return false;
+            }
+
+            if (oldType.DeclaringType != null
+                && newType.DeclaringType == null)
+            {
+                // The old type has a parent type but the new one doesn't, no match
+                return false;
+            }
+
+            if (oldType.DeclaringType == null
+                && newType.DeclaringType != null)
+            {
+                // The new type has a parent type but the old one doesn't, no match
+                return false;
+            }
+
+            // Check the parent types
+            if (oldType.DeclaringType != null
+                && newType.DeclaringType != null)
+            {
+                if (ExactSignature(oldType.DeclaringType, newType.DeclaringType) == false)
+                {
+                    // The parent types don't match
+                    return false;
+                }
+            }
+
+            // At this point we either don't have parent types or the parent types match
+
+            // Types are the same if they have the same name with the same number of generic type parameters
+            // Check the number of generic type parameters first because if the number is different then it doesn't matter about the name
+            // If it is a generic type then we need to parse the type parameters out to validate the name
+            if (oldType.GenericTypeParameters.Count != newType.GenericTypeParameters.Count)
+            {
+                return false;
+            }
+
+            return oldType.RawName == newType.RawName;
+        }
+
+        private static bool MovedType(IMatchAgent<ITypeDefinition> agent, ITypeDefinition oldType,
+            ITypeDefinition newType)
         {
             if (oldType.Name != newType.Name)
             {
@@ -52,7 +85,7 @@
             }
 
             var possibleMatchesRemoved =
-                itemsRemoved.Count(x => x.Name == oldType.Name);
+                agent.OldItems.Count(x => x.Name == oldType.Name);
 
             if (possibleMatchesRemoved > 1)
             {
@@ -62,7 +95,7 @@
             }
 
             var possibleMatchesAdded =
-                itemsAdded.Count(x => x.Name == oldType.Name);
+                agent.NewItems.Count(x => x.Name == oldType.Name);
 
             if (possibleMatchesAdded > 1)
             {

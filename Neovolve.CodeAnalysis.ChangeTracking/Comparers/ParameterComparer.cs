@@ -69,7 +69,10 @@
             var oldType = match.OldItem.Type;
             var newType = match.NewItem.Type;
 
-            if (oldType != newType)
+            var oldMappedType =
+                match.OldItem.DeclaringMethod.GetMatchingGenericType(oldType, match.NewItem.DeclaringMethod);
+            
+            if (oldMappedType != newType)
             {
                 var args = new FormatArguments(
                     "{DefinitionType} {Identifier} has change type from {OldValue} to {NewValue}",

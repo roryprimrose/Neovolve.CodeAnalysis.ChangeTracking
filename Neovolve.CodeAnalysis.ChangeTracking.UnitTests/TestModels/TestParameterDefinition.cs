@@ -8,7 +8,7 @@
     {
         public IReadOnlyCollection<IAttributeDefinition> Attributes { get; set; } = new List<TestAttributeDefinition>();
         public string DeclaredModifiers { get; set; } = Guid.NewGuid().ToString();
-        public IMemberDefinition DeclaringMember { get; set; } = new TestMethodDefinition();
+        public IMethodDefinition DeclaringMethod { get; set; } = new TestMethodDefinition();
         public string DefaultValue { get; set; } = Guid.NewGuid().ToString();
         public string FullName { get; set; } = Guid.NewGuid().ToString();
         public string FullRawName { get; set; } = Guid.NewGuid().ToString();
