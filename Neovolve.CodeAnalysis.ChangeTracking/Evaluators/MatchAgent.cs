@@ -25,6 +25,17 @@
         {
             condition = condition ?? throw new ArgumentNullException(nameof(condition));
 
+            // Exit early if it is not possible to make any further matches
+            if (_oldItems.Count == 0)
+            {
+                return;
+            }
+
+            if (_newItems.Count == 0)
+            {
+                return;
+            }
+
             // Loop in reverse so that the items in the loop can be removed safely by the agent
             for (var index = _oldItems.Count - 1; index >= 0; index--)
             {

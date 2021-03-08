@@ -138,6 +138,9 @@
             actual.MatchingItems.First().NewItem.Should().Be(newItems[0]);
             actual.ItemsRemoved.Should().BeEmpty();
             actual.ItemsAdded.Should().BeEmpty();
+
+            sut.NewItems.Should().BeEmpty();
+            sut.OldItems.Should().BeEmpty();
         }
 
         [Fact]
@@ -201,6 +204,68 @@
             actual.MatchingItems.First().NewItem.Should().Be(newItems[1]);
             actual.ItemsRemoved.Should().BeEquivalentTo(oldItems.Where(x => x != oldItems[2]));
             actual.ItemsAdded.Should().BeEquivalentTo(newItems.Where(x => x != newItems[1]));
+        }
+
+        [Fact]
+        public void MatchOnSkipsProcessingWhenNoMoreNewItemsFound()
+        {
+            var oldItems = new List<IClassDefinition>
+            {
+                new TestClassDefinition(),
+                new TestClassDefinition()
+            };
+            var newItems = new List<IClassDefinition>
+            {
+                new TestClassDefinition()
+            };
+
+            var sut = new MatchAgent<IClassDefinition>(oldItems, newItems);
+
+            sut.MatchOn((oldItem, newItem) => oldItem == oldItems[1] && newItem == newItems[0]);
+            sut.MatchOn((_, _) => true);
+
+            var actual = sut.Results;
+
+            actual.MatchingItems.Should().HaveCount(1);
+            actual.MatchingItems.First().OldItem.Should().Be(oldItems[1]);
+            actual.MatchingItems.First().NewItem.Should().Be(newItems[0]);
+            actual.ItemsRemoved.Should().BeEquivalentTo(oldItems.Where(x => x == oldItems[0]));
+            actual.ItemsAdded.Should().BeEmpty();
+
+            sut.OldItems.Should().HaveCount(1);
+            sut.OldItems.Single().Should().Be(oldItems[0]);
+            sut.NewItems.Should().BeEmpty();
+        }
+
+        [Fact]
+        public void MatchOnSkipsProcessingWhenNoMoreOldItemsFound()
+        {
+            var oldItems = new List<IClassDefinition>
+            {
+                new TestClassDefinition()
+            };
+            var newItems = new List<IClassDefinition>
+            {
+                new TestClassDefinition(),
+                new TestClassDefinition()
+            };
+
+            var sut = new MatchAgent<IClassDefinition>(oldItems, newItems);
+
+            sut.MatchOn((oldItem, newItem) => oldItem == oldItems[0] && newItem == newItems[1]);
+            sut.MatchOn((_, _) => true);
+
+            var actual = sut.Results;
+
+            actual.MatchingItems.Should().HaveCount(1);
+            actual.MatchingItems.First().OldItem.Should().Be(oldItems[0]);
+            actual.MatchingItems.First().NewItem.Should().Be(newItems[1]);
+            actual.ItemsRemoved.Should().BeEmpty();
+            actual.ItemsAdded.Should().BeEquivalentTo(newItems.Where(x => x == newItems[0]));
+
+            sut.OldItems.Should().BeEmpty();
+            sut.NewItems.Should().HaveCount(1);
+            sut.NewItems.Single().Should().Be(newItems[0]);
         }
 
         [Fact]

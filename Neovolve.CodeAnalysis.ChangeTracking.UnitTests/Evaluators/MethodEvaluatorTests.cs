@@ -171,7 +171,210 @@
 
         [Fact]
         public void
-            FindMatchesReturnsMatchOnMethodWithGenericTypeConstraints()
+            FindMatchesReturnsMatchOnMethodWhenOnlyNameMatches()
+        {
+            var oldMethod = new TestMethodDefinition
+            {
+                GenericTypeParameters = new List<string>
+                {
+                    "TKey",
+                    "TValue"
+                },
+                Parameters = new List<IParameterDefinition>
+                {
+                    new TestParameterDefinition
+                    {
+                        Type = "string"
+                    },
+                    new TestParameterDefinition
+                    {
+                        Type = "Guid"
+                    },
+                    new TestParameterDefinition
+                    {
+                        Type = "CancellationToken"
+                    }
+                }
+            };
+
+            var newMethod = new TestMethodDefinition
+            {
+                RawName = oldMethod.RawName,
+                ReturnType = "TKey",
+                GenericTypeParameters = new List<string>
+                {
+                    "TKey"
+                },
+                Parameters = new List<IParameterDefinition>
+                {
+                    new TestParameterDefinition
+                    {
+                        Type = "DateTime"
+                    },
+                    new TestParameterDefinition
+                    {
+                        Type = "CancellationToken"
+                    }
+                }
+            };
+
+            var oldItems = new List<IMethodDefinition>
+            {
+                oldMethod
+            };
+            var newItems = new List<IMethodDefinition>
+            {
+                newMethod
+            };
+
+            var sut = new MethodEvaluator();
+
+            var actual = sut.FindMatches(oldItems, newItems);
+
+            actual.ItemsAdded.Should().BeEmpty();
+            actual.ItemsRemoved.Should().BeEmpty();
+            actual.MatchingItems.Should().HaveCount(1);
+            actual.MatchingItems.First().OldItem.Should().BeEquivalentTo(oldMethod);
+            actual.MatchingItems.First().NewItem.Should().BeEquivalentTo(newMethod);
+        }
+
+        [Fact]
+        public void
+            FindMatchesReturnsMatchOnMethodWhenParameterCountAndReturnTypeChanged()
+        {
+            var oldMethod = new TestMethodDefinition
+            {
+                GenericTypeParameters = new List<string>
+                {
+                    "TKey",
+                    "TValue"
+                },
+                Parameters = new List<IParameterDefinition>
+                {
+                    new TestParameterDefinition
+                    {
+                        Type = "string"
+                    },
+                    new TestParameterDefinition
+                    {
+                        Type = "Guid"
+                    },
+                    new TestParameterDefinition
+                    {
+                        Type = "CancellationToken"
+                    }
+                }
+            };
+
+            var newMethod = new TestMethodDefinition
+            {
+                RawName = oldMethod.RawName,
+                GenericTypeParameters = oldMethod.GenericTypeParameters,
+                Parameters = new List<IParameterDefinition>
+                {
+                    new TestParameterDefinition
+                    {
+                        Type = "Guid"
+                    },
+                    new TestParameterDefinition
+                    {
+                        Type = "CancellationToken"
+                    }
+                }
+            };
+
+            var oldItems = new List<IMethodDefinition>
+            {
+                oldMethod
+            };
+            var newItems = new List<IMethodDefinition>
+            {
+                newMethod
+            };
+
+            var sut = new MethodEvaluator();
+
+            var actual = sut.FindMatches(oldItems, newItems);
+
+            actual.ItemsAdded.Should().BeEmpty();
+            actual.ItemsRemoved.Should().BeEmpty();
+            actual.MatchingItems.Should().HaveCount(1);
+            actual.MatchingItems.First().OldItem.Should().BeEquivalentTo(oldMethod);
+            actual.MatchingItems.First().NewItem.Should().BeEquivalentTo(newMethod);
+        }
+
+        [Fact]
+        public void
+            FindMatchesReturnsMatchOnMethodWhenParameterTypeAndReturnTypeChanged()
+        {
+            var oldMethod = new TestMethodDefinition
+            {
+                GenericTypeParameters = new List<string>
+                {
+                    "TKey",
+                    "TValue"
+                },
+                Parameters = new List<IParameterDefinition>
+                {
+                    new TestParameterDefinition
+                    {
+                        Type = "string"
+                    },
+                    new TestParameterDefinition
+                    {
+                        Type = "Guid"
+                    },
+                    new TestParameterDefinition
+                    {
+                        Type = "CancellationToken"
+                    }
+                }
+            };
+
+            var newMethod = new TestMethodDefinition
+            {
+                RawName = oldMethod.RawName,
+                GenericTypeParameters = oldMethod.GenericTypeParameters,
+                Parameters = new List<IParameterDefinition>
+                {
+                    new TestParameterDefinition
+                    {
+                        Type = "DateTime"
+                    },
+                    new TestParameterDefinition
+                    {
+                        Type = "Guid"
+                    },
+                    new TestParameterDefinition
+                    {
+                        Type = "CancellationToken"
+                    }
+                }
+            };
+
+            var oldItems = new List<IMethodDefinition>
+            {
+                oldMethod
+            };
+            var newItems = new List<IMethodDefinition>
+            {
+                newMethod
+            };
+
+            var sut = new MethodEvaluator();
+
+            var actual = sut.FindMatches(oldItems, newItems);
+
+            actual.ItemsAdded.Should().BeEmpty();
+            actual.ItemsRemoved.Should().BeEmpty();
+            actual.MatchingItems.Should().HaveCount(1);
+            actual.MatchingItems.First().OldItem.Should().BeEquivalentTo(oldMethod);
+            actual.MatchingItems.First().NewItem.Should().BeEquivalentTo(newMethod);
+        }
+
+        [Fact]
+        public void
+            FindMatchesReturnsMatchOnMethodWithGenericTypeConstraintsAndParameters()
         {
             var method = new TestMethodDefinition
             {
@@ -219,7 +422,7 @@
 
         [Fact]
         public void
-            FindMatchesReturnsMatchOnMethodWithGenericTypeConstraintsChanged()
+            FindMatchesReturnsMatchOnMethodWithGenericTypeCountChanged()
         {
             var oldMethod = new TestMethodDefinition
             {
@@ -247,26 +450,13 @@
             var newMethod = new TestMethodDefinition
             {
                 RawName = oldMethod.RawName,
+                ReturnType = oldMethod.ReturnType,
                 GenericTypeParameters = new List<string>
                 {
                     "TKey",
                     "TValue"
                 },
-                Parameters = new List<IParameterDefinition>
-                {
-                    new TestParameterDefinition
-                    {
-                        Type = "string"
-                    },
-                    new TestParameterDefinition
-                    {
-                        Type = "Guid"
-                    },
-                    new TestParameterDefinition
-                    {
-                        Type = "CancellationToken"
-                    }
-                }
+                Parameters = oldMethod.Parameters
             };
 
             var oldItems = new List<IMethodDefinition>
@@ -319,7 +509,8 @@
 
             var newMethod = new TestMethodDefinition
             {
-                RawName = oldMethod.RawName
+                RawName = oldMethod.RawName,
+                ReturnType = oldMethod.ReturnType
             };
 
             var oldItems = new List<IMethodDefinition>
@@ -403,6 +594,7 @@
             var newMethod = new TestMethodDefinition
             {
                 RawName = oldMethod.RawName,
+                ReturnType = oldMethod.ReturnType,
                 GenericTypeParameters = new List<string>
                 {
                     "TKey",
@@ -472,6 +664,7 @@
             var newMethod = new TestMethodDefinition
             {
                 RawName = oldMethod.RawName,
+                ReturnType = oldMethod.ReturnType,
                 GenericTypeParameters = new List<string>
                 {
                     "TKey",
@@ -486,6 +679,79 @@
                     new TestParameterDefinition
                     {
                         Type = "int"
+                    },
+                    new TestParameterDefinition
+                    {
+                        Type = "CancellationToken"
+                    }
+                }
+            };
+
+            var oldItems = new List<IMethodDefinition>
+            {
+                oldMethod
+            };
+            var newItems = new List<IMethodDefinition>
+            {
+                newMethod
+            };
+
+            var sut = new MethodEvaluator();
+
+            var actual = sut.FindMatches(oldItems, newItems);
+
+            actual.ItemsAdded.Should().BeEmpty();
+            actual.ItemsRemoved.Should().BeEmpty();
+            actual.MatchingItems.Should().HaveCount(1);
+            actual.MatchingItems.First().OldItem.Should().BeEquivalentTo(oldMethod);
+            actual.MatchingItems.First().NewItem.Should().BeEquivalentTo(newMethod);
+        }
+
+        [Fact]
+        public void
+            FindMatchesReturnsMatchOnRenamedGenericType()
+        {
+            var oldMethod = new TestMethodDefinition
+            {
+                ReturnType = "TKey",
+                GenericTypeParameters = new List<string>
+                {
+                    "TKey"
+                },
+                Parameters = new List<IParameterDefinition>
+                {
+                    new TestParameterDefinition
+                    {
+                        Type = "string"
+                    },
+                    new TestParameterDefinition
+                    {
+                        Type = "TKey"
+                    },
+                    new TestParameterDefinition
+                    {
+                        Type = "CancellationToken"
+                    }
+                }
+            };
+
+            var newMethod = new TestMethodDefinition
+            {
+                RawName = oldMethod.RawName,
+                ReturnType = "TNew",
+                GenericTypeParameters = new List<string>
+                {
+                    "TNew"
+                },
+                Parameters = new List<IParameterDefinition>
+                {
+                    new TestParameterDefinition
+                    {
+                        Type = "string"
+                    },
+                    new TestParameterDefinition
+                    {
+                        Type = "TNew"
                     },
                     new TestParameterDefinition
                     {
@@ -543,6 +809,7 @@
             };
             var newMethod = new TestMethodDefinition().Set(x =>
             {
+                x.ReturnType = oldMethod.ReturnType;
                 x.GenericTypeParameters = oldMethod.GenericTypeParameters;
                 x.Parameters = oldMethod.Parameters;
             });
