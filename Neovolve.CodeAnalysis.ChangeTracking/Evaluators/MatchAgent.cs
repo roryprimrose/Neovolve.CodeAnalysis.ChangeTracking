@@ -39,33 +39,33 @@
             // Loop in reverse so that the items in the loop can be removed safely by the agent
             for (var index = _oldItems.Count - 1; index >= 0; index--)
             {
-                var oldMethod = _oldItems[index];
+                var oldItem = _oldItems[index];
 
-                // Get the old methods that match the predicate
-                var matchingOldMethods = _oldItems.Count(x => condition(oldMethod, x));
+                // Get the old items that match the predicate
+                var matchingOldItems = _oldItems.Count(x => condition(oldItem, x));
 
-                if (matchingOldMethods > 1)
+                if (matchingOldItems > 1)
                 {
-                    // There is more than one old method matching the predicate
-                    // We can't match old methods to new methods in this case because there are multiple that could match
+                    // There is more than one old item matching the predicate
+                    // We can't match old items to new items in this case because there are multiple that could match
                     continue;
                 }
 
-                // Get the new methods that also match the predicate
-                var matchingMethods = _newItems.Where(x => condition(oldMethod, x)).ToList();
+                // Get the new items that also match the predicate
+                var matchingItems = _newItems.Where(x => condition(oldItem, x)).ToList();
 
-                if (matchingMethods.Count != 1)
+                if (matchingItems.Count != 1)
                 {
-                    // There are either no new methods matching the predicate or there are more than one
-                    // In either case we can't match the old method to a new method because there are multiple that could match
+                    // There are either no new items matching the predicate or there are more than one
+                    // In either case we can't match the old item to a new item because there are multiple that could match
                     continue;
                 }
 
-                var matchingMethod = matchingMethods[0];
+                var newItem = matchingItems[0];
 
-                // There is only one old and new method that match the predicate
-                // The assumption here is that these two methods are a match
-                MatchFound(oldMethod, matchingMethod);
+                // There is only one old and new item that match the predicate
+                // The assumption here is that these two items are a match
+                MatchFound(oldItem, newItem);
             }
         }
 

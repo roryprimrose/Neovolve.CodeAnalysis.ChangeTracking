@@ -94,7 +94,7 @@
             actual.Should().HaveCount(1);
             actual[0].Should().BeEquivalentTo(result);
         }
-
+        
         [Fact]
         public void CompareMatchReturnsResultFromPropertyAccessorMatchProcessorWithMixedAccessors()
         {
