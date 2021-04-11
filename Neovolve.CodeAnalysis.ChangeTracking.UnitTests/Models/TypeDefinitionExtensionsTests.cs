@@ -1,13 +1,5 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Models
 {
-    using System;
-    using FluentAssertions;
-    using ModelBuilder;
-    using Neovolve.CodeAnalysis.ChangeTracking.Models;
-    using Neovolve.CodeAnalysis.ChangeTracking.UnitTests.TestModels;
-    using NSubstitute;
-    using Xunit;
-
     public class TypeDefinitionExtensionsTests
     {
         //[Fact]

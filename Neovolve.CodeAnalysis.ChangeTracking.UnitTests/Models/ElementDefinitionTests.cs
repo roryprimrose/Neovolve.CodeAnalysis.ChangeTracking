@@ -24,6 +24,17 @@
         }
 
         [Fact]
+        public async Task AttributesReturnsEmptyWhenNoAttributesDeclaredOnParameter()
+        {
+            var node = await TestNode.FindNode<ParameterSyntax>(ParameterDefinitionCode.SingleParameter)
+                .ConfigureAwait(false);
+
+            var sut = new Wrapper(node);
+
+            sut.Attributes.Should().BeEmpty();
+        }
+
+        [Fact]
         public async Task AttributesReturnsMultipleAttributes()
         {
             var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithMultipleAttributes)
@@ -153,13 +164,22 @@
         public void ThrowsExceptionWhenCreatedWithNullNode()
         {
             // ReSharper disable once ObjectCreationAsStatement
-            Action action = () => new Wrapper(null!);
+            Action action = () => new Wrapper((MemberDeclarationSyntax) null!);
 
             action.Should().Throw<ArgumentNullException>();
         }
 
         private class Wrapper : ElementDefinition
         {
+            public Wrapper(ParameterSyntax node) : base(node)
+            {
+                Name = Guid.NewGuid().ToString();
+                RawName = Guid.NewGuid().ToString();
+                FullName = Guid.NewGuid().ToString();
+                FullRawName = Guid.NewGuid().ToString();
+                IsVisible = true;
+            }
+
             public Wrapper(MemberDeclarationSyntax node) : base(node)
             {
                 Name = Guid.NewGuid().ToString();

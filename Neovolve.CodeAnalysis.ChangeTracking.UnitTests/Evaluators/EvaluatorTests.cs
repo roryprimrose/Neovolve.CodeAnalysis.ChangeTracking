@@ -1,17 +1,6 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Evaluators
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
-    using System.Threading.Tasks;
-    using FluentAssertions;
-    using Microsoft.CodeAnalysis;
     using Microsoft.Extensions.Logging;
-    using ModelBuilder;
-    using Neovolve.CodeAnalysis.ChangeTracking.Evaluators;
-    using Neovolve.CodeAnalysis.ChangeTracking.Models;
-    using NSubstitute;
-    using Xunit;
     using Xunit.Abstractions;
 
     public class EvaluatorTests

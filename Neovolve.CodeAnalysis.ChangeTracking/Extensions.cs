@@ -1,9 +1,7 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
     internal static class Extensions
     {

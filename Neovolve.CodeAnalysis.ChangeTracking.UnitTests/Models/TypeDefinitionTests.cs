@@ -622,6 +622,51 @@
         }
 
         [Fact]
+        public async Task MethodsOnClassReturnsDeclaredMethod()
+        {
+            const string? code = TypeDefinitionCode.ClassWithMethod;
+
+            var node = await TestNode.FindNode<ClassDeclarationSyntax>(code).ConfigureAwait(false);
+
+            var sut = new ClassDefinition(node);
+
+            var method = sut.Methods.Single();
+
+            method.Name.Should().Be("GetValue");
+            method.Parameters.Count.Should().Be(3);
+        }
+
+        [Fact]
+        public async Task MethodsOnInterfaceReturnsDeclaredMethod()
+        {
+            const string? code = TypeDefinitionCode.InterfaceWithMethod;
+
+            var node = await TestNode.FindNode<InterfaceDeclarationSyntax>(code).ConfigureAwait(false);
+
+            var sut = new InterfaceDefinition(node);
+
+            var method = sut.Methods.Single();
+
+            method.Name.Should().Be("GetValue");
+            method.Parameters.Count.Should().Be(3);
+        }
+
+        [Fact]
+        public async Task MethodsOnStructReturnsDeclaredMethod()
+        {
+            const string? code = TypeDefinitionCode.StructWithMethod;
+
+            var node = await TestNode.FindNode<StructDeclarationSyntax>(code).ConfigureAwait(false);
+
+            var sut = new StructDefinition(node);
+
+            var method = sut.Methods.Single();
+
+            method.Name.Should().Be("GetValue");
+            method.Parameters.Count.Should().Be(3);
+        }
+
+        [Fact]
         public async Task NameReturnsMultipleGenericTypeDefinitions()
         {
             var node = await TestNode
