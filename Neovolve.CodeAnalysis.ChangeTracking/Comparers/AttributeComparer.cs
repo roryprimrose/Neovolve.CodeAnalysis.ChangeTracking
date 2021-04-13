@@ -4,10 +4,10 @@
     using System.Collections.Generic;
     using System.Linq;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
-
+    
     public class AttributeComparer : IAttributeComparer
     {
-        public IEnumerable<ComparisonResult> CompareItems(ItemMatch<IAttributeDefinition> match,
+        public IEnumerable<ComparisonResult> CompareMatch(ItemMatch<IAttributeDefinition> match,
             ComparerOptions options)
         {
             match = match ?? throw new ArgumentNullException(nameof(match));
@@ -36,27 +36,15 @@
 
             var argumentShift = oldArguments - newArguments;
 
-            if (argumentShift > 0)
+            if (argumentShift != 0)
             {
-                // One or more arguments have been removed
-                var suffix = argumentShift == 1 ? "" : "s";
+                // One or more arguments have been added or removed
+                var changeLabel = argumentShift > 0 ? "removed" : "added";
+                var shiftAmount = Math.Abs(argumentShift);
+
+                var suffix = shiftAmount == 1 ? "" : "s";
                 var args = new FormatArguments(
-                    $"{{DefinitionType}} {{Identifier}} has removed {argumentShift} argument{suffix}",
-                    match.NewItem.Name, null, null);
-
-                aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
-
-                // No need to look into how the attribute has changed
-                return true;
-            }
-
-            if (argumentShift < 0)
-            {
-                // One or more arguments have been added
-                var shift = Math.Abs(argumentShift);
-                var suffix = shift == 1 ? "" : "s";
-                var args = new FormatArguments(
-                    $"{{DefinitionType}} {{Identifier}} has added {shift} argument{suffix}",
+                    $"{{DefinitionType}} {{Identifier}} has {changeLabel} {shiftAmount} argument{suffix}",
                     match.NewItem.Name, null, null);
 
                 aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
@@ -183,26 +171,15 @@
 
             var argumentShift = oldArguments - newArguments;
 
-            if (argumentShift > 0)
+            if (argumentShift != 0)
             {
-                // One or more arguments have been removed
-                var suffix = argumentShift == 1 ? "" : "s";
+                var changeLabel = argumentShift > 0 ? "removed" : "added";
+                var shiftAmount = Math.Abs(argumentShift);
+
+                // One or more arguments have been added or removed
+                var suffix = shiftAmount == 1 ? "" : "s";
                 var args = new FormatArguments(
-                    $"{{DefinitionType}} {{Identifier}} has removed {argumentShift} ordinal argument{suffix}",
-                    match.NewItem.Name, null, null);
-
-                aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
-
-                return true;
-            }
-
-            if (argumentShift < 0)
-            {
-                // One or more arguments have been added
-                var shift = Math.Abs(argumentShift);
-                var suffix = shift == 1 ? "" : "s";
-                var args = new FormatArguments(
-                    $"{{DefinitionType}} {{Identifier}} has added {shift} ordinal argument{suffix}",
+                    $"{{DefinitionType}} {{Identifier}} has {changeLabel} {shiftAmount} ordinal argument{suffix}",
                     match.NewItem.Name, null, null);
 
                 aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);

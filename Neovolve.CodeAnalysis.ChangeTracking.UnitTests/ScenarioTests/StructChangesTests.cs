@@ -14,12 +14,9 @@
     public class StructChangesTests
     {
         private readonly IChangeCalculator _calculator;
-        private readonly ITestOutputHelper _output;
 
         public StructChangesTests(ITestOutputHelper output)
         {
-            _output = output;
-
             var logger = output.BuildLogger(LogLevel.Information);
 
             _calculator = ChangeCalculatorFactory.BuildCalculator(logger);
@@ -34,19 +31,17 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleStruct.Replace("public struct MyStruct", oldModifiers + " struct MyStruct"))
+                new(SingleStruct.Replace("public struct MyStruct", oldModifiers + " struct MyStruct"))
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleStruct.Replace("public struct MyStruct", newModifiers + " struct MyStruct"))
+                new(SingleStruct.Replace("public struct MyStruct", newModifiers + " struct MyStruct"))
             };
 
             var options = OptionsFactory.BuildOptions();
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(expected);
         }
@@ -75,19 +70,17 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleStruct.Replace("struct MyStruct", oldModifiers + " struct MyStruct"))
+                new(SingleStruct.Replace("struct MyStruct", oldModifiers + " struct MyStruct"))
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleStruct.Replace("struct MyStruct", newModifiers + " struct MyStruct"))
+                new(SingleStruct.Replace("struct MyStruct", newModifiers + " struct MyStruct"))
             };
 
             var options = OptionsFactory.BuildOptions();
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(expected);
         }
@@ -97,19 +90,17 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleStruct)
+                new(SingleStruct)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleStruct.Replace("MyStruct", "MyNewStruct"))
+                new(SingleStruct.Replace("MyStruct", "MyNewStruct"))
             };
 
             var options = OptionsFactory.BuildOptions();
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(SemVerChangeType.Breaking);
         }
@@ -119,19 +110,17 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleStruct)
+                new(SingleStruct)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleStruct.Replace("MyNamespace", "MyNewNamespace"))
+                new(SingleStruct.Replace("MyNamespace", "MyNewNamespace"))
             };
 
             var options = OptionsFactory.BuildOptions();
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(SemVerChangeType.Breaking);
         }
@@ -141,7 +130,7 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleStruct)
+                new(SingleStruct)
             };
             var newCode = Array.Empty<CodeSource>();
 
@@ -149,8 +138,6 @@
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(SemVerChangeType.Breaking);
         }
@@ -161,15 +148,13 @@
             var oldCode = Array.Empty<CodeSource>();
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleStruct)
+                new(SingleStruct)
             };
 
             var options = OptionsFactory.BuildOptions();
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(SemVerChangeType.Feature);
         }
@@ -179,19 +164,17 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleStruct)
+                new(SingleStruct)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleStruct)
+                new(SingleStruct)
             };
 
             var options = OptionsFactory.BuildOptions();
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(SemVerChangeType.None);
         }
@@ -201,11 +184,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(TypeDefinitionCode.StructWithMultipleGenericConstraints)
+                new(TypeDefinitionCode.StructWithMultipleGenericConstraints)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(
+                new(
                     TypeDefinitionCode.StructWithMultipleGenericConstraints.Replace("TValue", "TUpdatedValue"))
             };
 
@@ -213,8 +196,6 @@
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(SemVerChangeType.None);
         }
@@ -249,11 +230,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(StructSerializationAttribute)
+                new(StructSerializationAttribute)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(
+                new(
                     StructSerializationAttribute.Replace("[JsonPropertyName(\"item\")]", updatedValue))
             };
 
@@ -261,8 +242,6 @@
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(expected);
         }
@@ -276,18 +255,7 @@
         public void TestGenericTypes()
         {
         }
-
-        private void OutputResult(ChangeCalculatorResult result)
-        {
-            _output.WriteLine($"Overall result: {result.ChangeType}");
-            _output.WriteLine(string.Empty);
-
-            foreach (var comparisonResult in result.ComparisonResults)
-            {
-                _output.WriteLine(comparisonResult.ChangeType + ": " + comparisonResult.Message);
-            }
-        }
-
+        
         public string StructSerializationAttribute =>
             @"
 namespace MyNamespace 

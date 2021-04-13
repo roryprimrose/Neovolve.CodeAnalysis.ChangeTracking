@@ -16,8 +16,7 @@
         [InlineData(AttributeDefinitionCode.SimpleAttributeWithBrackets)]
         public async Task ArgumentsReturnsEmptyWhenNoParametersDefined(string code)
         {
-            var node = await TestNode.FindNode<AttributeSyntax>(code)
-                .ConfigureAwait(false);
+            var node = await TestNode.FindNode<AttributeSyntax>(code).ConfigureAwait(false);
 
             var sut = new AttributeDefinition(node);
 
@@ -135,15 +134,18 @@
             thirdArgument.ArgumentType.Should().Be(ArgumentType.Ordinal);
         }
 
-        [Fact]
-        public async Task NameReturnsNameFromAttribute()
+        [Theory]
+        [InlineData("SimpleAttribute", "Simple")]
+        [InlineData("Simple", "Simple")]
+        public async Task NameReturnsNameFromAttribute(string name, string expected)
         {
-            var node = await TestNode.FindNode<AttributeSyntax>(AttributeDefinitionCode.SimpleAttribute)
+            var node = await TestNode
+                .FindNode<AttributeSyntax>(AttributeDefinitionCode.SimpleAttribute.Replace("SimpleAttribute", name))
                 .ConfigureAwait(false);
 
             var sut = new AttributeDefinition(node);
 
-            sut.Name.Should().Be("SimpleAttribute");
+            sut.Name.Should().Be(expected);
         }
 
         [Fact]
@@ -155,7 +157,7 @@
 
             var sut = new AttributeDefinition(node);
 
-            sut.Name.Should().Be("SimpleAttribute");
+            sut.Name.Should().Be("Simple");
         }
 
         [Fact]
@@ -166,12 +168,14 @@
 
             var sut = new AttributeDefinition(node);
 
-            sut.Name.Should().Be("SimpleAttribute");
+            sut.Name.Should().Be("Simple");
         }
 
         [Fact]
-        [SuppressMessage("Usage", "CA1806:Do not ignore method results", Justification =
-            "The constructor is the target of the test")]
+        [SuppressMessage(
+            "Usage",
+            "CA1806:Do not ignore method results",
+            Justification = "The constructor is the target of the test")]
         public void ThrowsExceptionWhenCreatedWithNullNode()
         {
             // ReSharper disable once ObjectCreationAsStatement

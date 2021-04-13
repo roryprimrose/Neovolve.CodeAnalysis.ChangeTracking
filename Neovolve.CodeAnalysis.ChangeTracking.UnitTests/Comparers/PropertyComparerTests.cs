@@ -1,8 +1,20 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Comparers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
+    using FluentAssertions;
+    using ModelBuilder;
+    using Neovolve.CodeAnalysis.ChangeTracking.Comparers;
+    using Neovolve.CodeAnalysis.ChangeTracking.Models;
+    using Neovolve.CodeAnalysis.ChangeTracking.Processors;
+    using Neovolve.CodeAnalysis.ChangeTracking.UnitTests.TestModels;
+    using NSubstitute;
+    using Xunit;
     using Xunit.Abstractions;
 
-    public class PropertyComparerTests
+    public class PropertyComparerTests : Tests<PropertyComparer>
     {
         private readonly ITestOutputHelper _output;
 
@@ -11,198 +23,198 @@
             _output = output;
         }
 
-        //[Theory]
-        //[InlineData(false, false, SemVerChangeType.None)]
-        //[InlineData(true, true, SemVerChangeType.None)]
-        //[InlineData(true, false, SemVerChangeType.Breaking)]
-        //[InlineData(false, true, SemVerChangeType.Feature)]
-        //public void CompareReturnsBaseResultWhenPropertyAccessorsHaveSameVisibility(
-        //    bool oldValue,
-        //    bool newValue,
-        //    SemVerChangeType expected)
-        //{
-        //    var oldMember = Model.UsingModule<ConfigurationModule>()
-        //        .Create<OldPropertyDefinition>()
-        //        .Set(x => x.IsVisible = oldValue);
-        //    var newMember = oldMember.JsonClone().Set(x => x.IsVisible = newValue);
-        //    var match = new DefinitionMatch(oldMember, newMember);
+        [Fact]
+        public void CompareMatchReturnsEmptyWhenPropertiesMatch()
+        {
+            var oldMember = new TestPropertyDefinition();
+            var newMember = oldMember.JsonClone();
+            var match = new ItemMatch<IPropertyDefinition>(oldMember, newMember);
+            var options = ComparerOptions.Default;
 
-        //    var sut = new PropertyComparer();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
-        //    var actual = sut.Compare(match);
+            _output.WriteResults(actual);
 
-        //    _output.WriteLine(actual.Message);
+            actual.Should().BeEmpty();
+        }
 
-        //    actual.ChangeType.Should().Be(expected);
-        //}
+        [Fact]
+        public void CompareMatchReturnsResultFromPropertyAccessorMatchProcessorWithGetAccessor()
+        {
+            var oldItem = new TestPropertyDefinition().Set(x => x.SetAccessor = null);
+            var newItem = oldItem.JsonClone();
+            var match = new ItemMatch<IPropertyDefinition>(oldItem, newItem);
+            var options = ComparerOptions.Default;
+            var changeType = Model.Create<SemVerChangeType>();
+            var message = Guid.NewGuid().ToString();
+            var result = new ComparisonResult(changeType, oldItem, newItem, message);
+            var results = new[] {result};
 
-        //[Fact]
-        //public void CompareReturnsBreakingWhenFeatureAlsoIndicated()
-        //{
-        //    var oldMember = Model.UsingModule<ConfigurationModule>()
-        //        .Create<OldPropertyDefinition>()
-        //        .Set(x => { x.CanWrite = false; });
-        //    var newMember = oldMember.JsonClone()
-        //        .Set(x =>
-        //        {
-        //            x.ReturnType = Guid.NewGuid().ToString(); // Breaking
-        //            x.CanWrite = true; // Feature
-        //        });
-        //    var match = new DefinitionMatch(oldMember, newMember);
+            Service<IPropertyAccessorMatchProcessor>()
+                .CalculateChanges(
+                    Arg.Is<IEnumerable<IPropertyAccessorDefinition>>(
+                        x => x.Contains(oldItem.GetAccessor)),
+                    Arg.Is<IEnumerable<IPropertyAccessorDefinition>>(
+                        x => x.Contains(newItem.GetAccessor)),
+                    options).Returns(results);
 
-        //    var sut = new PropertyComparer();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
-        //    var actual = sut.Compare(match);
+            _output.WriteResults(actual);
 
-        //    _output.WriteLine(actual.Message);
+            actual.Should().HaveCount(1);
+            actual[0].Should().BeEquivalentTo(result);
+        }
 
-        //    actual.ChangeType.Should().Be(SemVerChangeType.Breaking);
-        //}
+        [Fact]
+        [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
+        public void CompareMatchReturnsResultFromPropertyAccessorMatchProcessorWithGetAndSetAccessors()
+        {
+            var oldItem = new TestPropertyDefinition();
+            var newItem = oldItem.JsonClone();
+            var match = new ItemMatch<IPropertyDefinition>(oldItem, newItem);
+            var options = ComparerOptions.Default;
+            var changeType = Model.Create<SemVerChangeType>();
+            var message = Guid.NewGuid().ToString();
+            var result = new ComparisonResult(changeType, oldItem, newItem, message);
+            var results = new[] {result};
 
-        //[Fact]
-        //public void CompareReturnsFeatureWhenBreakingChangeOnAccessorsAndPropertyNowVisible()
-        //{
-        //    var oldMember = Model.UsingModule<ConfigurationModule>()
-        //        .Create<OldPropertyDefinition>()
-        //        .Set(x => { x.IsVisible = false; });
-        //    var newMember = oldMember.JsonClone()
-        //        .Set(x =>
-        //        {
-        //            x.IsVisible = true;
-        //            x.CanWrite = false;
-        //        });
-        //    var match = new DefinitionMatch(oldMember, newMember);
+            Service<IPropertyAccessorMatchProcessor>()
+                .CalculateChanges(
+                    Arg.Is<IEnumerable<IPropertyAccessorDefinition>>(
+                        x => x.Contains(oldItem.GetAccessor) && x.Contains(oldItem.SetAccessor)),
+                    Arg.Is<IEnumerable<IPropertyAccessorDefinition>>(
+                        x => x.Contains(newItem.GetAccessor) && x.Contains(newItem.SetAccessor)),
+                    options).Returns(results);
 
-        //    var sut = new PropertyComparer();
+            var actual = SUT.CompareMatch(match, options).ToList();
 
-        //    var actual = sut.Compare(match);
+            _output.WriteResults(actual);
 
-        //    _output.WriteLine(actual.Message);
+            actual.Should().HaveCount(1);
+            actual[0].Should().BeEquivalentTo(result);
+        }
+        
+        [Fact]
+        public void CompareMatchReturnsResultFromPropertyAccessorMatchProcessorWithMixedAccessors()
+        {
+            var oldItem = new TestPropertyDefinition().Set(x =>
+            {
+                x.GetAccessor = new TestPropertyAccessorDefinition();
+                x.SetAccessor = null;
+            });
+            var newItem = oldItem.JsonClone().Set(x =>
+            {
+                x.GetAccessor = null;
+                x.SetAccessor = new TestPropertyAccessorDefinition();
+            });
+            var match = new ItemMatch<IPropertyDefinition>(oldItem, newItem);
+            var options = ComparerOptions.Default;
+            var changeType = Model.Create<SemVerChangeType>();
+            var message = Guid.NewGuid().ToString();
+            var result = new ComparisonResult(changeType, oldItem, newItem, message);
+            var results = new[] {result};
 
-        //    actual.ChangeType.Should().Be(SemVerChangeType.Feature);
-        //}
+            Service<IPropertyAccessorMatchProcessor>()
+                .CalculateChanges(
+                    Arg.Is<IEnumerable<IPropertyAccessorDefinition>>(
+                        x => x.Contains(oldItem.GetAccessor)),
+                    Arg.Is<IEnumerable<IPropertyAccessorDefinition>>(
+                        x => x.Contains(newItem.SetAccessor)),
+                    options).Returns(results);
 
-        //[Fact]
-        //public void CompareReturnsNoneWhenAccessorLessVisibleButPropertiesNotPublic()
-        //{
-        //    var oldMember = Model.UsingModule<ConfigurationModule>()
-        //        .Create<OldPropertyDefinition>()
-        //        .Set(x =>
-        //        {
-        //            x.IsVisible = false;
-        //            x.CanWrite = true;
-        //        });
-        //    var newMember = oldMember.JsonClone().Set(x => { x.CanWrite = false; });
-        //    var match = new DefinitionMatch(oldMember, newMember);
+            var actual = SUT.CompareMatch(match, options).ToList();
 
-        //    var sut = new PropertyComparer();
+            _output.WriteResults(actual);
 
-        //    var actual = sut.Compare(match);
+            actual.Should().HaveCount(1);
+            actual[0].Should().BeEquivalentTo(result);
+        }
 
-        //    _output.WriteLine(actual.Message);
+        [Fact]
+        public void CompareMatchReturnsResultFromPropertyAccessorMatchProcessorWithNoAccessors()
+        {
+            // This doesn't make sense but it could be a scenario that is forced upon the class
+            var oldItem = new TestPropertyDefinition().Set(x =>
+            {
+                x.GetAccessor = null;
+                x.SetAccessor = null;
+            });
+            var newItem = oldItem.JsonClone();
+            var match = new ItemMatch<IPropertyDefinition>(oldItem, newItem);
+            var options = ComparerOptions.Default;
+            var changeType = Model.Create<SemVerChangeType>();
+            var message = Guid.NewGuid().ToString();
+            var result = new ComparisonResult(changeType, oldItem, newItem, message);
+            var results = new[] {result};
 
-        //    actual.ChangeType.Should().Be(SemVerChangeType.None);
-        //}
+            Service<IPropertyAccessorMatchProcessor>()
+                .CalculateChanges(
+                    Arg.Is<IEnumerable<IPropertyAccessorDefinition>>(
+                        x => !x.Any()),
+                    Arg.Is<IEnumerable<IPropertyAccessorDefinition>>(
+                        x => !x.Any()),
+                    options).Returns(results);
 
-        //[Fact]
-        //public void CompareReturnsNoneWhenNodesMatch()
-        //{
-        //    var oldMember = Model.UsingModule<ConfigurationModule>().Create<OldPropertyDefinition>();
-        //    var newMember = oldMember.JsonClone();
-        //    var match = new DefinitionMatch(oldMember, newMember);
+            var actual = SUT.CompareMatch(match, options).ToList();
 
-        //    var sut = new PropertyComparer();
+            _output.WriteResults(actual);
 
-        //    var actual = sut.Compare(match);
+            actual.Should().HaveCount(1);
+            actual[0].Should().BeEquivalentTo(result);
+        }
 
-        //    _output.WriteLine(actual.Message);
+        [Fact]
+        public void CompareMatchReturnsResultFromPropertyAccessorMatchProcessorWithSetAccessor()
+        {
+            var oldItem = new TestPropertyDefinition().Set(x => x.GetAccessor = null);
+            var newItem = oldItem.JsonClone();
+            var match = new ItemMatch<IPropertyDefinition>(oldItem, newItem);
+            var options = ComparerOptions.Default;
+            var changeType = Model.Create<SemVerChangeType>();
+            var message = Guid.NewGuid().ToString();
+            var result = new ComparisonResult(changeType, oldItem, newItem, message);
+            var results = new[] {result};
 
-        //    actual.ChangeType.Should().Be(SemVerChangeType.None);
-        //}
+            Service<IPropertyAccessorMatchProcessor>()
+                .CalculateChanges(
+                    Arg.Is<IEnumerable<IPropertyAccessorDefinition>>(
+                        x => x.Contains(oldItem.SetAccessor)),
+                    Arg.Is<IEnumerable<IPropertyAccessorDefinition>>(
+                        x => x.Contains(newItem.SetAccessor)),
+                    options).Returns(results);
 
-        //[Theory]
-        //[InlineData(false, false, SemVerChangeType.None)]
-        //[InlineData(true, true, SemVerChangeType.None)]
-        //[InlineData(false, true, SemVerChangeType.Feature)]
-        //[InlineData(true, false, SemVerChangeType.Breaking)]
-        //public void CompareReturnsResultOnChangesToGetAccessorVisibility(
-        //    bool oldValue,
-        //    bool newValue,
-        //    SemVerChangeType expected)
-        //{
-        //    var oldMember = Model.UsingModule<ConfigurationModule>()
-        //        .Create<OldPropertyDefinition>()
-        //        .Set(x => x.CanRead = oldValue);
-        //    var newMember = oldMember.JsonClone().Set(x => x.CanRead = newValue);
-        //    var match = new DefinitionMatch(oldMember, newMember);
+            var actual = SUT.CompareMatch(match, options).ToList();
 
-        //    var sut = new PropertyComparer();
+            _output.WriteResults(actual);
 
-        //    var actual = sut.Compare(match);
+            actual.Should().HaveCount(1);
+            actual[0].Should().BeEquivalentTo(result);
+        }
 
-        //    _output.WriteLine(actual.Message);
+        [Fact]
+        public void CompareMatchReturnsResultFromPropertyModifierComparer()
+        {
+            var item = new TestPropertyDefinition();
+            var match = new ItemMatch<IPropertyDefinition>(item, item);
+            var options = ComparerOptions.Default;
+            var changeType = Model.Create<SemVerChangeType>();
+            var message = Guid.NewGuid().ToString();
+            var result = new ComparisonResult(changeType, item, item, message);
+            var results = new[] {result};
 
-        //    actual.ChangeType.Should().Be(expected);
-        //}
+            Service<IPropertyModifiersComparer>()
+                .CompareMatch(
+                    Arg.Is<ItemMatch<IModifiersElement<PropertyModifiers>>>(
+                        x => x.OldItem == item && x.NewItem == item),
+                    options).Returns(results);
 
-        //[Theory]
-        //[InlineData(false, false, SemVerChangeType.None)]
-        //[InlineData(true, true, SemVerChangeType.None)]
-        //[InlineData(false, true, SemVerChangeType.Feature)]
-        //[InlineData(true, false, SemVerChangeType.Breaking)]
-        //public void CompareReturnsResultOnChangesToSetAccessorVisibility(
-        //    bool oldValue,
-        //    bool newValue,
-        //    SemVerChangeType expected)
-        //{
-        //    var oldMember = Model.UsingModule<ConfigurationModule>()
-        //        .Create<OldPropertyDefinition>()
-        //        .Set(x => x.CanWrite = oldValue);
-        //    var newMember = oldMember.JsonClone().Set(x => x.CanWrite = newValue);
-        //    var match = new DefinitionMatch(oldMember, newMember);
+            var actual = SUT.CompareMatch(match, options).ToList();
 
-        //    var sut = new PropertyComparer();
+            _output.WriteResults(actual);
 
-        //    var actual = sut.Compare(match);
-
-        //    _output.WriteLine(actual.Message);
-
-        //    actual.ChangeType.Should().Be(expected);
-        //}
-
-        //[Fact]
-        //public void CompareThrowsExceptionWithNullMatch()
-        //{
-        //    var sut = new PropertyComparer();
-
-        //    Action action = () => sut.Compare(null!);
-
-        //    action.Should().Throw<ArgumentNullException>();
-        //}
-
-        //[Theory]
-        //[InlineData(typeof(OldPropertyDefinition), true)]
-        //[InlineData(typeof(OldMemberDefinition), false)]
-        //[InlineData(typeof(OldAttributeDefinition), false)]
-        //public void IsSupportedReturnsTrueForExactTypeMatch(Type type, bool expected)
-        //{
-        //    var definition = (OldMemberDefinition) Model.UsingModule<ConfigurationModule>().Create(type);
-
-        //    var sut = new PropertyComparer();
-
-        //    var actual = sut.IsSupported(definition);
-
-        //    actual.Should().Be(expected);
-        //}
-
-        //[Fact]
-        //public void IsSupportedThrowsExceptionWithNullNode()
-        //{
-        //    var sut = new PropertyComparer();
-
-        //    Action action = () => sut.IsSupported(null!);
-
-        //    action.Should().Throw<ArgumentNullException>();
-        //}
+            actual.Should().HaveCount(1);
+            actual[0].Should().BeEquivalentTo(result);
+        }
     }
 }

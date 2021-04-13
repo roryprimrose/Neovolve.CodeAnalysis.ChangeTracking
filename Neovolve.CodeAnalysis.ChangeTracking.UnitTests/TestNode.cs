@@ -11,7 +11,7 @@
         public const string ClassProperty = @"
 namespace MyNamespace 
 {
-    public class MyClass
+    public class ClassWithProperty
     {
         public string MyProperty
         {
@@ -64,7 +64,7 @@ namespace MyNamespace
         public const string Field = @"
 namespace MyNamespace 
 {
-    public class MyClass
+    public class ClassWithField
     {
         public string MyField;
     }   
@@ -74,7 +74,7 @@ namespace MyNamespace
         public const string InterfaceProperty = @"
 namespace MyNamespace 
 {
-    public interface MyInterface
+    public interface InterfaceWithProperty
     {
         string MyProperty
         {

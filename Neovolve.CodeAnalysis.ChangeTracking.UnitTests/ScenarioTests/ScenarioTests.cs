@@ -11,12 +11,9 @@
     public class ScenarioTests
     {
         private readonly IChangeCalculator _calculator;
-        private readonly ITestOutputHelper _output;
 
         public ScenarioTests(ITestOutputHelper output)
         {
-            _output = output;
-
             var logger = output.BuildLogger(LogLevel.Information);
 
             _calculator = ChangeCalculatorFactory.BuildCalculator(logger);
@@ -27,21 +24,19 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(TestNode.ClassProperty),
-                new CodeSource(TestNode.Field)
+                new(TestNode.ClassProperty),
+                new(TestNode.Field)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(TestNode.ClassProperty),
-                new CodeSource(TestNode.Field)
+                new(TestNode.ClassProperty),
+                new(TestNode.Field)
             };
 
             var options = OptionsFactory.BuildOptions();
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(SemVerChangeType.None);
         }
@@ -51,19 +46,17 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleClass)
+                new(SingleClass)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleClass.Replace("class", "interface"))
+                new(SingleClass.Replace("class", "interface"))
             };
 
             var options = OptionsFactory.BuildOptions();
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(SemVerChangeType.Breaking);
         }
@@ -73,19 +66,17 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleClass)
+                new(SingleClass)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleClass.Replace("class", "struct"))
+                new(SingleClass.Replace("class", "struct"))
             };
 
             var options = OptionsFactory.BuildOptions();
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(SemVerChangeType.Breaking);
         }
@@ -95,19 +86,17 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleClass)
+                new(SingleClass)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleInterface)
+                new(SingleInterface)
             };
 
             var options = OptionsFactory.BuildOptions();
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(SemVerChangeType.Breaking);
         }
@@ -117,19 +106,17 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleInterface)
+                new(SingleInterface)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleInterface.Replace("interface", "class"))
+                new(SingleInterface.Replace("interface", "class"))
             };
 
             var options = OptionsFactory.BuildOptions();
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(SemVerChangeType.Breaking);
         }
@@ -139,19 +126,17 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleInterface)
+                new(SingleInterface)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleInterface.Replace("interface", "struct"))
+                new(SingleInterface.Replace("interface", "struct"))
             };
 
             var options = OptionsFactory.BuildOptions();
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(SemVerChangeType.Breaking);
         }
@@ -161,19 +146,17 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleStruct)
+                new(SingleStruct)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleStruct.Replace("struct", "class"))
+                new(SingleStruct.Replace("struct", "class"))
             };
 
             var options = OptionsFactory.BuildOptions();
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(SemVerChangeType.Breaking);
         }
@@ -183,11 +166,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleStruct)
+                new(SingleStruct)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleStruct.Replace("struct", "interface"))
+                new(SingleStruct.Replace("struct", "interface"))
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -195,22 +178,9 @@
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
 
-            OutputResult(result);
-
             result.ChangeType.Should().Be(SemVerChangeType.Breaking);
         }
-
-        private void OutputResult(ChangeCalculatorResult result)
-        {
-            _output.WriteLine($"Overall result: {result.ChangeType}");
-            _output.WriteLine(string.Empty);
-
-            foreach (var comparisonResult in result.ComparisonResults)
-            {
-                _output.WriteLine(comparisonResult.ChangeType + ": " + comparisonResult.Message);
-            }
-        }
-
+        
         public string SingleClass => @"
 namespace MyNamespace 
 {

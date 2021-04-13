@@ -5,7 +5,12 @@
 
     public class InterfaceComparer : TypeComparer<IInterfaceDefinition>, IInterfaceComparer
     {
-        public InterfaceComparer(IAccessModifiersComparer accessModifiersComparer, IFieldMatchProcessor fieldProcessor, IPropertyMatchProcessor propertyProcessor, IAttributeMatchProcessor attributeProcessor) : base(accessModifiersComparer, fieldProcessor, propertyProcessor, attributeProcessor)
+        public InterfaceComparer(IAccessModifiersComparer accessModifiersComparer,
+            IGenericTypeElementComparer genericTypeElementComparer,
+            IPropertyMatchProcessor propertyProcessor, IMethodMatchProcessor methodProcessor,
+            IAttributeMatchProcessor attributeProcessor)
+            : base(accessModifiersComparer, genericTypeElementComparer, propertyProcessor,
+                methodProcessor, attributeProcessor)
         {
         }
     }

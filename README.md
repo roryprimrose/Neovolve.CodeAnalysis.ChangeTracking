@@ -9,10 +9,11 @@ C# code analysis tool for evaluating changes to contracts
 - [Usage](#usage)
 - [Limitations](#limitations)
 - [Frequently asked questions](#frequently-asked-questions)
+- [Resources](#resources)
 
 ## Introduction
 
-Neovolve.CodeAnalysis.ChangeTracking is a package that calculates changes between two versions of C# code to identify what has changed such that there could be a change in Semantic Versioning. The outcome will be an overall Semantic Version change result (None, Feature, Breaking) as well as a collection of changes. Each change in the collection identifies the source and target change along with a message indicating the change and the SemVer impact of that change.
+Neovolve.CodeAnalysis.ChangeTracking is a package that calculates changes between two versions of C# code to identify what has changed in regard to [Semantic Versioning](https://semver.org). The outcome will be an overall Semantic Version change result (None, Feature, Breaking) as well as a collection of changes. Each change in the collection identifies the source and target change along with a message indicating the change and the SemVer impact of that change.
 
 ## Installation
 
@@ -32,16 +33,27 @@ Install-Package Neovolve.CodeAnalysis.ChangeTracking -Source https://www.myget.o
 
 This library will determine whether C# code has changed in a way that introduces a new feature or a breaking change. 
 
-Changes currently evaluated are:
-- Adding or removing class or interface properties
-- Adding or removing fields
-- Adding, removing or changing attributes
-- Changes to class or interface property visibility
-- Changes to field visibility
+Changes are evaluated for:
+- Classes
+- Interfaces
+- Structs
+- Properties
+- Fields
+- Methods
+- Attributes
+
+The types of changes evaluated are:
+- Items removed
+- Items added
+- Items renamed
+- Changes to namespace (moved types, renamed namespace)
+- Changes of types
+- Changes to access modifiers
+- Changes to modifiers
+- Changes to generic type parameters
+- Changes to generic type constraints
 
 Changes not currently evaluated are:
-- Changes in class methods
-- Changes in interface methods
 - net5.0 record types
 - net5.0 init properties
 
@@ -115,11 +127,11 @@ public MyNamespace
 
 This package attempts to calculate the Semantic Version impact on a C# binary based on changes to the public API surface (see attribute comparison below). Adding new signatures would be calculated as a feature and removing or modifying signatures would result in a breaking change. 
 
-There are only two other types of changes that could occur between two sets of C# code. There is either no change or there is a change to internal logic where there is no impact on the public API surface. No change really should not even be identified as a Patch change while changes to internal logic should be a patch change. As the library does not look at internal code, it can't actually determine the difference between these two scenarios so it does not attempt to identify a patch change.
+There are only two other scenarios that could occur between two sets of C# code. There is either no change or there is a change to internal logic where there is no impact on the public API surface. No change should not even be identified as a patch change while changes to internal logic should be a patch change. As the library does not look at internal code, it can't actually determine the difference between these two scenarios so it does not attempt to identify a patch change as this may be misleading.
 
 **Why do attribute changes identify a feature or breaking change when the public API signature hasn't changed?**
 
-There is an edge case to the idea that the library only compares the public API surface between two versions of C# code. The library also evaluates changes to attributes based on the `ComparerOptions` class in order to determine a Semantic Version impact of attributes. 
+There is an edge case to the idea that the library only compares the public API surface between two versions of C# code. The library also evaluates changes to attributes based on the `ComparerOptions` class in order to determine a Semantic Version impact of attributes.
 
 What this means is that the C# signatures could be the same, but attribute changes regarding XML and JSON serialization could cause a potential breaking change to consumers of the library. So signatures compiled into the binary are the same, but the attributes are telling the runtime to handle serialization differently.
 
@@ -154,3 +166,9 @@ public MyNamespace
 ```
 
 This is a breaking change to consumers because the json serialization of this class has changed the name of the property from `MyValue` to `otherValue`.
+
+## Resources
+
+Combinations of data sets (combinations of access modifiers for example) were calculated using https://www.mathsisfun.com/combinatorics/combinations-permutations-calculator.html.
+
+This project is supported by [JetBrains](https://www.jetbrains.com/?from=ModelBuilder)

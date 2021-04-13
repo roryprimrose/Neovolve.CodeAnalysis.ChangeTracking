@@ -14,12 +14,9 @@
     public class ClassChangesTests
     {
         private readonly IChangeCalculator _calculator;
-        private readonly ITestOutputHelper _output;
 
         public ClassChangesTests(ITestOutputHelper output)
         {
-            _output = output;
-
             var logger = output.BuildLogger(LogLevel.Information);
 
             _calculator = ChangeCalculatorFactory.BuildCalculator(logger);
@@ -34,19 +31,17 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleClass.Replace("public class MyClass", oldModifiers + " class MyClass"))
+                new(SingleClass.Replace("public class MyClass", oldModifiers + " class MyClass"))
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleClass.Replace("public class MyClass", newModifiers + " class MyClass"))
+                new(SingleClass.Replace("public class MyClass", newModifiers + " class MyClass"))
             };
 
             var options = OptionsFactory.BuildOptions();
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(expected);
         }
@@ -180,19 +175,17 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleClass.Replace("class MyClass", oldModifiers + " class MyClass"))
+                new(SingleClass.Replace("class MyClass", oldModifiers + " class MyClass"))
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleClass.Replace("class MyClass", newModifiers + " class MyClass"))
+                new(SingleClass.Replace("class MyClass", newModifiers + " class MyClass"))
             };
 
             var options = OptionsFactory.BuildOptions();
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(expected);
         }
@@ -202,19 +195,17 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleClass)
+                new(SingleClass)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleClass.Replace("MyClass", "MyNewClass"))
+                new(SingleClass.Replace("MyClass", "MyNewClass"))
             };
 
             var options = OptionsFactory.BuildOptions();
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(SemVerChangeType.Breaking);
         }
@@ -224,19 +215,17 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleClass)
+                new(SingleClass)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleClass.Replace("MyNamespace", "MyNewNamespace"))
+                new(SingleClass.Replace("MyNamespace", "MyNewNamespace"))
             };
 
             var options = OptionsFactory.BuildOptions();
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(SemVerChangeType.Breaking);
         }
@@ -246,7 +235,7 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleClass)
+                new(SingleClass)
             };
             var newCode = Array.Empty<CodeSource>();
 
@@ -254,8 +243,6 @@
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(SemVerChangeType.Breaking);
         }
@@ -266,15 +253,13 @@
             var oldCode = Array.Empty<CodeSource>();
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleClass)
+                new(SingleClass)
             };
 
             var options = OptionsFactory.BuildOptions();
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(SemVerChangeType.Feature);
         }
@@ -284,19 +269,17 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleClass)
+                new(SingleClass)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleClass)
+                new(SingleClass)
             };
 
             var options = OptionsFactory.BuildOptions();
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(SemVerChangeType.None);
         }
@@ -306,11 +289,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(TypeDefinitionCode.ClassWithMultipleGenericConstraints)
+                new(TypeDefinitionCode.ClassWithMultipleGenericConstraints)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(
+                new(
                     TypeDefinitionCode.ClassWithMultipleGenericConstraints.Replace("TValue", "TUpdatedValue"))
             };
 
@@ -318,8 +301,6 @@
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(SemVerChangeType.None);
         }
@@ -354,11 +335,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(TypeDefinitionCode.ChildClassWithAttribute)
+                new(TypeDefinitionCode.ChildClassWithAttribute)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(
+                new(
                     TypeDefinitionCode.ChildClassWithAttribute.Replace("[JsonPropertyName(\"item\")]", updatedValue))
             };
 
@@ -366,8 +347,6 @@
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(expected);
         }
@@ -402,11 +381,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(TypeDefinitionCode.ClassWithAttribute)
+                new(TypeDefinitionCode.ClassWithAttribute)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(
+                new(
                     TypeDefinitionCode.ClassWithAttribute.Replace("[JsonPropertyName(\"item\")]", updatedValue))
             };
 
@@ -414,8 +393,6 @@
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(expected);
         }
@@ -429,18 +406,7 @@
         public void TestGenericTypes()
         {
         }
-
-        private void OutputResult(ChangeCalculatorResult result)
-        {
-            _output.WriteLine($"Overall result: {result.ChangeType}");
-            _output.WriteLine(string.Empty);
-
-            foreach (var comparisonResult in result.ComparisonResults)
-            {
-                _output.WriteLine(comparisonResult.ChangeType + ": " + comparisonResult.Message);
-            }
-        }
-
+        
         public string SingleClass =>
             @"
 namespace MyNamespace 

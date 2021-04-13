@@ -20,8 +20,8 @@
             ComparerOptions options,
             IChangeResultAggregator aggregator)
         {
-            RunComparisonStep(EvaluateAccessModifierChanges, match, options, aggregator);
-            RunComparisonStep(EvaluateReturnTypeChanges, match, options, aggregator);
+            RunComparisonStep(EvaluateAccessModifierChanges, match, options, aggregator, true);
+            RunComparisonStep(EvaluateReturnTypeChanges, match, options, aggregator, true);
         }
 
         private void EvaluateAccessModifierChanges(
@@ -31,7 +31,7 @@
         {
             var convertedMatch = new ItemMatch<IAccessModifiersElement<AccessModifiers>>(match.OldItem, match.NewItem);
 
-            var results = _accessModifiersComparer.CompareItems(convertedMatch, options);
+            var results = _accessModifiersComparer.CompareMatch(convertedMatch, options);
 
             aggregator.AddResults(results);
         }
@@ -39,70 +39,45 @@
         private static void EvaluateReturnTypeChanges(ItemMatch<T> match, ComparerOptions options,
             IChangeResultAggregator aggregator)
         {
-            if (match.OldItem.ReturnType != match.NewItem.ReturnType)
+            var oldType = match.OldItem.ReturnType;
+            var newType = match.NewItem.ReturnType;
+
+            IGenericTypeElement deepestNewGenericTypeElement;
+            IGenericTypeElement deepestOldGenericTypeElement;
+
+            // We need to check whether the element itself can declare generic type parameters
+            // If not, the declaring type will be used for generic type parameter mapping
+            if (match.OldItem is IGenericTypeElement oldElement
+                && match.NewItem is IGenericTypeElement newElement)
             {
-                var genericTypeMatch = MapGenericTypeName(match);
-
-                if (genericTypeMatch != match.NewItem.ReturnType)
-                {
-                    var args = new FormatArguments(
-                        "{DefinitionType} {Identifier} return type has changed from {OldValue} to {NewValue}",
-                        match.NewItem.FullName, match.OldItem.ReturnType, match.NewItem.ReturnType);
-
-                    aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
-                }
+                deepestOldGenericTypeElement = oldElement;
+                deepestNewGenericTypeElement = newElement;
             }
-        }
-
-        private static string MapGenericTypeName(ItemMatch<T> match)
-        {
-            var typeName = match.OldItem.ReturnType;
-
-            // We need to determine all the generic type parameters from the complete parent hierarchy not just the parent type
-
-            var oldDeclaringType = match.OldItem.DeclaringType;
-            var newDeclaringType = match.NewItem.DeclaringType;
-
-            return ResolveRenamedGenericTypeParameter(typeName, oldDeclaringType, newDeclaringType);
-        }
-
-        private static string ResolveRenamedGenericTypeParameter(
-            string originalTypeName,
-            ITypeDefinition oldDeclaringType,
-            ITypeDefinition newDeclaringType)
-        {
-            if (oldDeclaringType.DeclaringType != null
-                && newDeclaringType.DeclaringType != null)
+            else
             {
-                // Search the parents
-                var mappedTypeName = ResolveRenamedGenericTypeParameter(
-                    originalTypeName,
-                    oldDeclaringType.DeclaringType,
-                    newDeclaringType.DeclaringType);
-
-                if (mappedTypeName != originalTypeName)
-                {
-                    // We have found the generic type parameter that has been renamed somewhere in the parent type hierarchy
-                    return mappedTypeName;
-                }
+                deepestOldGenericTypeElement = match.OldItem.DeclaringType;
+                deepestNewGenericTypeElement = match.NewItem.DeclaringType;
             }
 
-            var oldGenericTypes = oldDeclaringType.GenericTypeParameters.FastToList();
+            var oldMappedType =
+                deepestOldGenericTypeElement.GetMatchingGenericType(oldType, deepestNewGenericTypeElement);
 
-            if (oldGenericTypes.Count == 0)
+            if (oldMappedType == newType)
             {
-                return originalTypeName;
+                return;
             }
 
-            var newGenericTypes = newDeclaringType.GenericTypeParameters.FastToList();
-            var typeIndex = oldGenericTypes.IndexOf(originalTypeName);
+            // The return type has changed but we need to figure out how
+            // If the member previously returned void then this is a feature because binary compatibility hasn't been broken
+            // Any other change would be breaking however
 
-            if (typeIndex == -1)
-            {
-                return originalTypeName;
-            }
+            var changeType = oldMappedType == "void" ? SemVerChangeType.Feature : SemVerChangeType.Breaking;
+            
+            var args = new FormatArguments(
+                "{DefinitionType} {Identifier} return type has changed from {OldValue} to {NewValue}",
+                match.NewItem.FullName, match.OldItem.ReturnType, match.NewItem.ReturnType);
 
-            return newGenericTypes[typeIndex];
+            aggregator.AddElementChangedResult(changeType, match, options.MessageFormatter, args);
         }
     }
 }

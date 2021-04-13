@@ -14,12 +14,9 @@
     public class InterfaceChangesTests
     {
         private readonly IChangeCalculator _calculator;
-        private readonly ITestOutputHelper _output;
 
         public InterfaceChangesTests(ITestOutputHelper output)
         {
-            _output = output;
-
             var logger = output.BuildLogger(LogLevel.Information);
 
             _calculator = ChangeCalculatorFactory.BuildCalculator(logger);
@@ -34,12 +31,12 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(
+                new(
                     SingleInterface.Replace("public interface MyInterface", oldModifiers + " interface MyInterface"))
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(
+                new(
                     SingleInterface.Replace("public interface MyInterface", newModifiers + " interface MyInterface"))
             };
 
@@ -47,8 +44,6 @@
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(expected);
         }
@@ -58,19 +53,17 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleInterface)
+                new(SingleInterface)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleInterface.Replace("MyInterface", "MyNewInterface"))
+                new(SingleInterface.Replace("MyInterface", "MyNewInterface"))
             };
 
             var options = OptionsFactory.BuildOptions();
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(SemVerChangeType.Breaking);
         }
@@ -80,19 +73,17 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleInterface)
+                new(SingleInterface)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleInterface.Replace("MyNamespace", "MyNewNamespace"))
+                new(SingleInterface.Replace("MyNamespace", "MyNewNamespace"))
             };
 
             var options = OptionsFactory.BuildOptions();
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(SemVerChangeType.Breaking);
         }
@@ -102,7 +93,7 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleInterface)
+                new(SingleInterface)
             };
             var newCode = Array.Empty<CodeSource>();
 
@@ -110,8 +101,6 @@
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(SemVerChangeType.Breaking);
         }
@@ -122,15 +111,13 @@
             var oldCode = Array.Empty<CodeSource>();
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleInterface)
+                new(SingleInterface)
             };
 
             var options = OptionsFactory.BuildOptions();
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(SemVerChangeType.Feature);
         }
@@ -140,19 +127,17 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleInterface)
+                new(SingleInterface)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleInterface)
+                new(SingleInterface)
             };
 
             var options = OptionsFactory.BuildOptions();
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(SemVerChangeType.None);
         }
@@ -187,11 +172,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(TypeDefinitionCode.ChildInterfaceWithAttribute)
+                new(TypeDefinitionCode.ChildInterfaceWithAttribute)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(
+                new(
                     TypeDefinitionCode.ChildInterfaceWithAttribute.Replace("[JsonPropertyName(\"item\")]",
                         updatedValue))
             };
@@ -200,8 +185,6 @@
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(expected);
         }
@@ -236,11 +219,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(TypeDefinitionCode.InterfaceWithAttribute)
+                new(TypeDefinitionCode.InterfaceWithAttribute)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(
+                new(
                     TypeDefinitionCode.InterfaceWithAttribute.Replace("[JsonPropertyName(\"item\")]",
                         updatedValue))
             };
@@ -250,22 +233,9 @@
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
 
-            OutputResult(result);
-
             result.ChangeType.Should().Be(expected);
         }
-
-        private void OutputResult(ChangeCalculatorResult result)
-        {
-            _output.WriteLine($"Overall result: {result.ChangeType}");
-            _output.WriteLine(string.Empty);
-
-            foreach (var comparisonResult in result.ComparisonResults)
-            {
-                _output.WriteLine(comparisonResult.ChangeType + ": " + comparisonResult.Message);
-            }
-        }
-
+        
         public string SingleInterface =>
             @"
 namespace MyNamespace 

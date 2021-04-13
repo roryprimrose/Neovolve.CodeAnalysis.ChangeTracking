@@ -49,7 +49,7 @@
             return new PropertyAccessorDefinition(propertyDefinition, accessorNode);
         }
 
-        private static MemberModifiers DetermineModifiers(PropertyDeclarationSyntax node)
+        private static PropertyModifiers DetermineModifiers(PropertyDeclarationSyntax node)
         {
             var isVirtual = node.Modifiers.HasModifier(SyntaxKind.VirtualKeyword);
             var isAbstract = node.Modifiers.HasModifier(SyntaxKind.AbstractKeyword);
@@ -64,61 +64,61 @@
                 {
                     if (isVirtual)
                     {
-                        return MemberModifiers.NewAbstractVirtual;
+                        return PropertyModifiers.NewAbstractVirtual;
                     }
 
-                    return MemberModifiers.NewAbstract;
+                    return PropertyModifiers.NewAbstract;
                 }
 
                 if (isStatic)
                 {
-                    return MemberModifiers.NewStatic;
+                    return PropertyModifiers.NewStatic;
                 }
 
                 if (isVirtual)
                 {
-                    return MemberModifiers.NewVirtual;
+                    return PropertyModifiers.NewVirtual;
                 }
 
-                return MemberModifiers.New;
+                return PropertyModifiers.New;
             }
 
             if (isAbstract)
             {
                 if (isOverride)
                 {
-                    return MemberModifiers.AbstractOverride;
+                    return PropertyModifiers.AbstractOverride;
                 }
 
-                return MemberModifiers.Abstract;
+                return PropertyModifiers.Abstract;
             }
 
             if (isOverride)
             {
                 if (isSealed)
                 {
-                    return MemberModifiers.SealedOverride;
+                    return PropertyModifiers.SealedOverride;
                 }
 
-                return MemberModifiers.Override;
+                return PropertyModifiers.Override;
             }
 
             if (isSealed)
             {
-                return MemberModifiers.Sealed;
+                return PropertyModifiers.Sealed;
             }
 
             if (isStatic)
             {
-                return MemberModifiers.Static;
+                return PropertyModifiers.Static;
             }
 
             if (isVirtual)
             {
-                return MemberModifiers.Virtual;
+                return PropertyModifiers.Virtual;
             }
 
-            return MemberModifiers.None;
+            return PropertyModifiers.None;
         }
 
         private static AccessorDeclarationSyntax? FindAccessor(PropertyDeclarationSyntax node, SyntaxKind accessorType)
@@ -136,7 +136,7 @@
         public IPropertyAccessorDefinition? GetAccessor { get; }
 
         /// <inheritdoc />
-        public MemberModifiers Modifiers { get; }
+        public PropertyModifiers Modifiers { get; }
 
         /// <inheritdoc />
         public override string Name { get; }

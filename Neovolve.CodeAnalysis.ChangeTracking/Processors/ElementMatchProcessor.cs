@@ -9,7 +9,7 @@
     public abstract class ElementMatchProcessor<T> : MatchProcessor<T>, IElementMatchProcessor<T>
         where T : IElementDefinition
     {
-        protected ElementMatchProcessor(IMatchEvaluator<T> evaluator, IItemComparer<T> comparer, ILogger? logger) : base(evaluator, comparer, logger)
+        protected ElementMatchProcessor(IEvaluator<T> evaluator, IItemComparer<T> comparer, ILogger? logger) : base(evaluator, comparer, logger)
         {
         }
 

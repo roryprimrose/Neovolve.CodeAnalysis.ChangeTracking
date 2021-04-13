@@ -12,7 +12,7 @@
         public DefinitionLocation Location { get; }
 
         /// <summary>
-        ///     Gets the name of the type.
+        ///     Gets the name of the item.
         /// </summary>
         public string Name { get; }
     }

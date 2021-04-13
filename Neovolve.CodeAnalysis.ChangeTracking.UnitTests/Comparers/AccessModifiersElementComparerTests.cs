@@ -20,11 +20,11 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsResultForChangedModifiers()
+        public void CompareMatchReturnsResultForChangedModifiers()
         {
             var options = new ComparerOptions();
             var fullName = Guid.NewGuid().ToString();
-            var expected = SemVerChangeType.Feature;
+            const SemVerChangeType expected = SemVerChangeType.Feature;
 
             var changeTable = Substitute.For<IAccessModifiersChangeTable>();
             var oldElement = Substitute.For<IPropertyDefinition>();
@@ -41,21 +41,28 @@
             changeTable.CalculateChange(oldElement.AccessModifiers, newElement.AccessModifiers)
                 .Returns(expected);
 
-            var sut = new AccessModifiersElementComparer<AccessModifiers>(changeTable);
+            var sut = new Wrapper(changeTable);
 
-            var actual = sut.CompareItems(match, options)
+            var actual = sut.CompareMatch(match, options)
                 .ToList();
+
+            _output.WriteResults(actual);
 
             actual.Should().NotBeEmpty();
 
             var result = actual.Single();
 
-            _output.WriteLine(result.Message);
-
             result.Message.Should().Contain("protected internal");
             result.Message.Should().Contain("access modifiers");
             result.Message.Should().NotContain("sealed");
             result.Message.Should().NotContain("override");
+        }
+
+        private class Wrapper : AccessModifiersElementComparer<AccessModifiers>
+        {
+            public Wrapper(IChangeTable<AccessModifiers> changeTable) : base(changeTable)
+            {
+            }
         }
     }
 }

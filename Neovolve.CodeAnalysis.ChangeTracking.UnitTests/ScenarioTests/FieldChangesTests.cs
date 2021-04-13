@@ -13,12 +13,9 @@
     public class FieldChangesTests
     {
         private readonly IChangeCalculator _calculator;
-        private readonly ITestOutputHelper _output;
 
         public FieldChangesTests(ITestOutputHelper output)
         {
-            _output = output;
-
             var logger = output.BuildLogger(LogLevel.Information);
 
             _calculator = ChangeCalculatorFactory.BuildCalculator(logger);
@@ -29,11 +26,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(FieldOnTypeWithMultipleGenericTypeParameters)
+                new(FieldOnTypeWithMultipleGenericTypeParameters)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(
+                new(
                     FieldOnTypeWithMultipleGenericTypeParameters.Replace("TKey MyField", "TValue MyField"))
             };
 
@@ -41,8 +38,6 @@
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(SemVerChangeType.Breaking);
         }
@@ -56,19 +51,17 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleField.Replace("public string MyField", oldModifiers + " string MyField"))
+                new(SingleField.Replace("public string MyField", oldModifiers + " string MyField"))
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleField.Replace("public string MyField", newModifiers + " string MyField"))
+                new(SingleField.Replace("public string MyField", newModifiers + " string MyField"))
             };
 
             var options = OptionsFactory.BuildOptions();
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(expected);
         }
@@ -79,7 +72,7 @@
         [InlineData("", "static", SemVerChangeType.Breaking)]
         [InlineData("", "static readonly", SemVerChangeType.Breaking)]
         [InlineData("", "readonly static", SemVerChangeType.Breaking)]
-        [InlineData("readonly", "", SemVerChangeType.Breaking)]
+        [InlineData("readonly", "", SemVerChangeType.Feature)]
         [InlineData("readonly", "readonly", SemVerChangeType.None)]
         [InlineData("readonly", "static", SemVerChangeType.Breaking)]
         [InlineData("readonly", "static readonly", SemVerChangeType.Breaking)]
@@ -91,12 +84,12 @@
         [InlineData("static", "readonly static", SemVerChangeType.Breaking)]
         [InlineData("static readonly", "", SemVerChangeType.Breaking)]
         [InlineData("static readonly", "readonly", SemVerChangeType.Breaking)]
-        [InlineData("static readonly", "static", SemVerChangeType.Breaking)]
+        [InlineData("static readonly", "static", SemVerChangeType.Feature)]
         [InlineData("static readonly", "static readonly", SemVerChangeType.None)]
         [InlineData("static readonly", "readonly static", SemVerChangeType.None)]
         [InlineData("readonly static", "", SemVerChangeType.Breaking)]
         [InlineData("readonly static", "readonly", SemVerChangeType.Breaking)]
-        [InlineData("readonly static", "static", SemVerChangeType.Breaking)]
+        [InlineData("readonly static", "static", SemVerChangeType.Feature)]
         [InlineData("readonly static", "static readonly", SemVerChangeType.None)]
         [InlineData("readonly static", "readonly static", SemVerChangeType.None)]
         public async Task EvaluatesChangeOfModifiers(string oldModifiers, string newModifiers,
@@ -104,19 +97,17 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleField.Replace("string MyField", oldModifiers + " string MyField"))
+                new(SingleField.Replace("string MyField", oldModifiers + " string MyField"))
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleField.Replace("string MyField", newModifiers + " string MyField"))
+                new(SingleField.Replace("string MyField", newModifiers + " string MyField"))
             };
 
             var options = OptionsFactory.BuildOptions();
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(expected);
         }
@@ -126,19 +117,17 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(FieldOnTypeWithMultipleGenericTypeParameters)
+                new(FieldOnTypeWithMultipleGenericTypeParameters)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(FieldOnTypeWithMultipleGenericTypeParameters.Replace("TKey", "TMyKey"))
+                new(FieldOnTypeWithMultipleGenericTypeParameters.Replace("TKey", "TMyKey"))
             };
 
             var options = OptionsFactory.BuildOptions();
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(SemVerChangeType.None);
         }
@@ -148,19 +137,17 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleField)
+                new(SingleField)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleField.Replace("MyField", "MyNewField"))
+                new(SingleField.Replace("MyField", "MyNewField"))
             };
 
             var options = OptionsFactory.BuildOptions();
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(SemVerChangeType.Breaking);
         }
@@ -170,7 +157,7 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleField)
+                new(SingleField)
             };
             var newCode = Array.Empty<CodeSource>();
 
@@ -178,8 +165,6 @@
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(SemVerChangeType.Breaking);
         }
@@ -189,19 +174,17 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleField)
+                new(SingleField)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleField.Replace("string MyField", "bool MyField"))
+                new(SingleField.Replace("string MyField", "bool MyField"))
             };
 
             var options = OptionsFactory.BuildOptions();
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(SemVerChangeType.Breaking);
         }
@@ -212,15 +195,13 @@
             var oldCode = Array.Empty<CodeSource>();
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleField)
+                new(SingleField)
             };
 
             var options = OptionsFactory.BuildOptions();
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(SemVerChangeType.Feature);
         }
@@ -230,19 +211,17 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleField)
+                new(SingleField)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleField)
+                new(SingleField)
             };
 
             var options = OptionsFactory.BuildOptions();
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(SemVerChangeType.None);
         }
@@ -277,11 +256,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SimpleField)
+                new(SimpleField)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(
+                new(
                     SimpleField.Replace("[JsonPropertyName(\"item\")]", updatedValue))
             };
 
@@ -290,22 +269,9 @@
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
 
-            OutputResult(result);
-
             result.ChangeType.Should().Be(expected);
         }
-
-        private void OutputResult(ChangeCalculatorResult result)
-        {
-            _output.WriteLine($"Overall result: {result.ChangeType}");
-            _output.WriteLine(string.Empty);
-
-            foreach (var comparisonResult in result.ComparisonResults)
-            {
-                _output.WriteLine(comparisonResult.ChangeType + ": " + comparisonResult.Message);
-            }
-        }
-
+        
         public string FieldOnTypeWithMultipleGenericTypeParameters => @"
 namespace MyNamespace 
 {

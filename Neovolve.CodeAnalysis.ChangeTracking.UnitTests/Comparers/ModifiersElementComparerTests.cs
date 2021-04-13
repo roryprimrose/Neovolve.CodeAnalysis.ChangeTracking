@@ -20,11 +20,10 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsResultForChangedModifiers()
+        public void CompareMatchReturnsResultForChangedModifiers()
         {
             var options = new ComparerOptions();
             var fullName = Guid.NewGuid().ToString();
-            var expected = SemVerChangeType.Feature;
 
             var changeTable = Substitute.For<IClassModifiersChangeTable>();
             var oldElement = Substitute.For<IClassDefinition>();
@@ -39,25 +38,32 @@
             var match = new ItemMatch<IModifiersElement<ClassModifiers>>(oldElement, newElement);
 
             changeTable.CalculateChange(oldElement.Modifiers, newElement.Modifiers)
-                .Returns(expected);
+                .Returns(SemVerChangeType.Feature);
 
-            var sut = new ModifiersElementComparer<ClassModifiers>(changeTable);
+            var sut = new Wrapper(changeTable);
 
-            var actual = sut.CompareItems(match, options)
+            var actual = sut.CompareMatch(match, options)
                 .ToList();
+
+            _output.WriteResults(actual);
 
             actual.Should().NotBeEmpty();
 
             var result = actual.Single();
-
-            _output.WriteLine(result.Message);
-
+            
             result.Message.Should().Contain("abstract partial");
             result.Message.Should().Contain("static partial");
             result.Message.Should().Contain("modifiers");
             result.Message.Should().NotContain("access modifiers");
             result.Message.Should().NotContain("public");
             result.Message.Should().NotContain("internal");
+        }
+
+        private class Wrapper : ModifiersElementComparer<ClassModifiers>
+        {
+            public Wrapper(IChangeTable<ClassModifiers> changeTable) : base(changeTable)
+            {
+            }
         }
     }
 }

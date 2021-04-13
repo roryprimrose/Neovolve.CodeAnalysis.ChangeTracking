@@ -7,22 +7,18 @@
         protected override void BuildChanges()
         {
             // @formatter:off — disable formatter after this line
-            AddChange(FieldModifiers.None, FieldModifiers.None, SemVerChangeType.None);
             AddChange(FieldModifiers.None, FieldModifiers.ReadOnly, SemVerChangeType.Breaking);
             AddChange(FieldModifiers.None, FieldModifiers.Static, SemVerChangeType.Breaking);
             AddChange(FieldModifiers.None, FieldModifiers.StaticReadOnly, SemVerChangeType.Breaking);
-            AddChange(FieldModifiers.ReadOnly, FieldModifiers.None, SemVerChangeType.Breaking);
-            AddChange(FieldModifiers.ReadOnly, FieldModifiers.ReadOnly, SemVerChangeType.None);
+            AddChange(FieldModifiers.ReadOnly, FieldModifiers.None, SemVerChangeType.Feature);
             AddChange(FieldModifiers.ReadOnly, FieldModifiers.Static, SemVerChangeType.Breaking);
             AddChange(FieldModifiers.ReadOnly, FieldModifiers.StaticReadOnly, SemVerChangeType.Breaking);
             AddChange(FieldModifiers.Static, FieldModifiers.None, SemVerChangeType.Breaking);
             AddChange(FieldModifiers.Static, FieldModifiers.ReadOnly, SemVerChangeType.Breaking);
-            AddChange(FieldModifiers.Static, FieldModifiers.Static, SemVerChangeType.None);
             AddChange(FieldModifiers.Static, FieldModifiers.StaticReadOnly, SemVerChangeType.Breaking);
             AddChange(FieldModifiers.StaticReadOnly, FieldModifiers.None, SemVerChangeType.Breaking);
             AddChange(FieldModifiers.StaticReadOnly, FieldModifiers.ReadOnly, SemVerChangeType.Breaking);
-            AddChange(FieldModifiers.StaticReadOnly, FieldModifiers.Static, SemVerChangeType.Breaking);
-            AddChange(FieldModifiers.StaticReadOnly, FieldModifiers.StaticReadOnly, SemVerChangeType.None);
+            AddChange(FieldModifiers.StaticReadOnly, FieldModifiers.Static, SemVerChangeType.Feature);
             // @formatter:on — enable formatter after this line
         }
     }

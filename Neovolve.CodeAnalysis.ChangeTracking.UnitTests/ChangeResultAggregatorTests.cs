@@ -43,13 +43,13 @@
         {
             var childResults = new List<ComparisonResult>
             {
-                new ComparisonResult(SemVerChangeType.Feature, null, new TestClassDefinition(), Guid.NewGuid().ToString()),
-                new ComparisonResult(SemVerChangeType.Breaking, new TestInterfaceDefinition(), null, Guid.NewGuid().ToString()),
-                new ComparisonResult(
+                new(SemVerChangeType.Feature, null, new TestClassDefinition(), Guid.NewGuid().ToString()),
+                new(SemVerChangeType.Breaking, new TestInterfaceDefinition(), null, Guid.NewGuid().ToString()),
+                new(
                     SemVerChangeType.Feature,
                     new TestPropertyDefinition(), new TestPropertyDefinition(),
                     Guid.NewGuid().ToString()),
-                new ComparisonResult(
+                new(
                     SemVerChangeType.Breaking,
                     new TestFieldDefinition(), new TestFieldDefinition(),
                     Guid.NewGuid().ToString()),
@@ -129,13 +129,13 @@
             var second = new ComparisonResult(SemVerChangeType.Breaking, new TestFieldDefinition(), null, Guid.NewGuid().ToString());
             var set = new List<ComparisonResult>
             {
-                new ComparisonResult(SemVerChangeType.Feature, null, new TestClassDefinition(), Guid.NewGuid().ToString()),
-                new ComparisonResult(SemVerChangeType.Breaking, new TestInterfaceDefinition(), null, Guid.NewGuid().ToString()),
-                new ComparisonResult(
+                new(SemVerChangeType.Feature, null, new TestClassDefinition(), Guid.NewGuid().ToString()),
+                new(SemVerChangeType.Breaking, new TestInterfaceDefinition(), null, Guid.NewGuid().ToString()),
+                new(
                     SemVerChangeType.Feature,
                     new TestPropertyDefinition(), new TestPropertyDefinition(),
                     Guid.NewGuid().ToString()),
-                new ComparisonResult(
+                new(
                     SemVerChangeType.Breaking,
                     new TestAttributeDefinition(), new TestAttributeDefinition(),
                     Guid.NewGuid().ToString()),

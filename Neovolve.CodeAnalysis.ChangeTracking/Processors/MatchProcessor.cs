@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using Microsoft.Extensions.Logging;
     using Neovolve.CodeAnalysis.ChangeTracking.Comparers;
     using Neovolve.CodeAnalysis.ChangeTracking.Evaluators;
@@ -11,10 +10,10 @@
     public abstract class MatchProcessor<T> : IMatchProcessor<T> where T : IItemDefinition
     {
         private readonly IItemComparer<T> _comparer;
-        private readonly IMatchEvaluator<T> _evaluator;
+        private readonly IEvaluator<T> _evaluator;
         private readonly ILogger? _logger;
 
-        protected MatchProcessor(IMatchEvaluator<T> evaluator, IItemComparer<T> comparer, ILogger? logger)
+        protected MatchProcessor(IEvaluator<T> evaluator, IItemComparer<T> comparer, ILogger? logger)
         {
             _evaluator = evaluator ?? throw new ArgumentNullException(nameof(evaluator));
             _comparer = comparer ?? throw new ArgumentNullException(nameof(comparer));
@@ -30,64 +29,74 @@
             newItems = newItems ?? throw new ArgumentNullException(nameof(newItems));
             options = options ?? throw new ArgumentNullException(nameof(options));
 
-            IMatchResults<T> matchingNodes = _evaluator.MatchItems(oldItems, newItems);
+            IMatchResults<T> matchingNodes = _evaluator.FindMatches(oldItems, newItems);
 
-            // Record any visible types that have been added
-            // Types added which are not publicly visible are ignored
-            foreach (var memberAdded in matchingNodes.ItemsAdded.Where(IsVisible))
+            // Record any visible items that have been added
+            // Items added which are not publicly visible are ignored
+            foreach (var memberAdded in matchingNodes.ItemsAdded)
             {
-                var isVisible = true;
+                var isVisible = IsVisible(memberAdded);
                 var name = memberAdded.Name;
 
                 if (memberAdded is IElementDefinition element)
                 {
-                    isVisible = element.IsVisible;
                     name = element.FullName;
                 }
 
-                var changeType = SemVerChangeType.None;
-
                 if (isVisible)
                 {
-                    changeType = SemVerChangeType.Feature;
+                    var args = new FormatArguments("{DefinitionType} {Identifier} has been added", name, null, null);
+
+                    var message = options.MessageFormatter.FormatItemAddedMessage(memberAdded, args);
+
+                    var result = new ComparisonResult(SemVerChangeType.Feature, null, memberAdded, message);
+
+                    yield return result;
                 }
+                else if (_logger != null
+                         && _logger.IsEnabled(LogLevel.Debug))
+                {
+                    var args = new FormatArguments("{DefinitionType} {Identifier} has been added but is not visible",
+                        name, null, null);
 
-                var args = new FormatArguments("{DefinitionType} {Identifier} has been added", name, null, null);
+                    var message = options.MessageFormatter.FormatItemAddedMessage(memberAdded, args);
 
-                var message = options.MessageFormatter.FormatItemAddedMessage(memberAdded, args);
-
-                var result = new ComparisonResult(changeType, null, memberAdded, message);
-
-                yield return result;
+                    _logger.LogDebug(message);
+                }
             }
 
-            // Record any visible types that have been removed
-            // Types removed which are not publicly visible are ignored
-            foreach (var memberRemoved in matchingNodes.ItemsRemoved.Where(IsVisible))
+            // Record any visible items that have been removed
+            // Items removed which are not publicly visible are ignored
+            foreach (var memberRemoved in matchingNodes.ItemsRemoved)
             {
-                var isVisible = true;
+                var isVisible = IsVisible(memberRemoved);
                 var name = memberRemoved.Name;
 
                 if (memberRemoved is IElementDefinition element)
                 {
-                    isVisible = element.IsVisible;
                     name = element.FullName;
                 }
 
-                var changeType = SemVerChangeType.None;
-
                 if (isVisible)
                 {
-                    changeType = SemVerChangeType.Breaking;
+                    var args = new FormatArguments("{DefinitionType} {Identifier} has been removed", name, null, null);
+
+                    var message = options.MessageFormatter.FormatItemRemovedMessage(memberRemoved, args);
+
+                    var result = new ComparisonResult(SemVerChangeType.Breaking, memberRemoved, null, message);
+
+                    yield return result;
                 }
+                else if (_logger != null
+                         && _logger.IsEnabled(LogLevel.Debug))
+                {
+                    var args = new FormatArguments("{DefinitionType} {Identifier} has been removed but is not visible",
+                        name, null, null);
 
-                var args = new FormatArguments("{DefinitionType} {Identifier} has been removed", name, null, null);
+                    var message = options.MessageFormatter.FormatItemAddedMessage(memberRemoved, args);
 
-                var message = options.MessageFormatter.FormatItemRemovedMessage(memberRemoved, args);
-
-                var result = new ComparisonResult(changeType, memberRemoved, null, message);
-
-                yield return result;
+                    _logger.LogDebug(message);
+                }
             }
 
             // Check all the matches for a breaking change or feature added
@@ -107,7 +116,7 @@
             match = match ?? throw new ArgumentNullException(nameof(match));
             options = options ?? throw new ArgumentNullException(nameof(options));
 
-            return _comparer.CompareItems(match, options);
+            return _comparer.CompareMatch(match, options);
         }
 
         protected abstract bool IsVisible(T item);

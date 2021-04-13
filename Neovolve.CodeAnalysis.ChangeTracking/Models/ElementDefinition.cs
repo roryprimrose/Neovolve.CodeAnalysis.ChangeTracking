@@ -23,6 +23,18 @@
         ///     Initializes a new instance of the <see cref="ElementDefinition" /> class.
         /// </summary>
         /// <param name="node">The syntax node that defines the type.</param>
+        protected ElementDefinition(ParameterSyntax node) : base(node)
+        {
+            node = node ?? throw new ArgumentNullException(nameof(node));
+
+            DeclaredModifiers = node.Modifiers.ToString();
+            Attributes = DetermineAttributes(node, this);
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ElementDefinition" /> class.
+        /// </summary>
+        /// <param name="node">The syntax node that defines the type.</param>
         protected ElementDefinition(AccessorDeclarationSyntax node) : base(node)
         {
             node = node ?? throw new ArgumentNullException(nameof(node));
@@ -58,6 +70,17 @@
             }
 
             return definitions.AsReadOnly();
+        }
+
+        private static IReadOnlyCollection<IAttributeDefinition> DetermineAttributes(ParameterSyntax node,
+            IElementDefinition declaringItem)
+        {
+            node = node ?? throw new ArgumentNullException(nameof(node));
+            declaringItem = declaringItem ?? throw new ArgumentNullException(nameof(declaringItem));
+
+            var attributeList = node.AttributeLists;
+
+            return DetermineAttributes(declaringItem, attributeList);
         }
 
         private static IReadOnlyCollection<IAttributeDefinition> DetermineAttributes(MemberDeclarationSyntax node,

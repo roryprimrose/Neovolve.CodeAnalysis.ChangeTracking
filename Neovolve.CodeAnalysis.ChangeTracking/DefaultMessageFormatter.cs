@@ -92,6 +92,11 @@
                 return "Interface";
             }
 
+            if (definition is IStructDefinition)
+            {
+                return "Struct";
+            }
+
             if (definition is IConstraintListDefinition)
             {
                 return "Generic constraint";
@@ -110,6 +115,16 @@
             if (definition is IFieldDefinition)
             {
                 return "Field";
+            }
+
+            if (definition is IMethodDefinition)
+            {
+                return "Method";
+            }
+
+            if (definition is IParameterDefinition)
+            {
+                return "Parameter";
             }
 
             if (definition is IAttributeDefinition)

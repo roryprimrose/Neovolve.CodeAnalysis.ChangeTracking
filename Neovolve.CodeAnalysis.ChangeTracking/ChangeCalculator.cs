@@ -30,7 +30,12 @@
 
             foreach (var change in changes)
             {
-                _logger?.LogInformation(change.Message);
+                if (change.ChangeType == SemVerChangeType.None)
+                {
+                    continue;
+                }
+
+                _logger?.LogInformation($@"{change.ChangeType}: {change.Message}");
 
                 result.Add(change);
             }

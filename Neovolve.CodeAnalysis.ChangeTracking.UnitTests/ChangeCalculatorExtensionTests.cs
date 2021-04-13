@@ -43,11 +43,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(TestNode.MultipleClasses)
+                new(TestNode.MultipleClasses)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(TestNode.MultipleInterfaces)
+                new(TestNode.MultipleInterfaces)
             };
             var options = new ComparerOptions();
             var expected = new ChangeCalculatorResult();
@@ -70,11 +70,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(TestNode.ClassProperty)
+                new(TestNode.ClassProperty)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(TestNode.Field)
+                new(TestNode.Field)
             };
             var expected = new ChangeCalculatorResult();
 
@@ -96,11 +96,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(TestNode.ClassProperty)
+                new(TestNode.ClassProperty)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(TestNode.Field)
+                new(TestNode.Field)
             };
             var options = new ComparerOptions();
             var expected = new ChangeCalculatorResult();

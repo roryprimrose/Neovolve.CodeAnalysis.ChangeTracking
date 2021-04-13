@@ -36,6 +36,7 @@
 
             ImplementedTypes = DetermineImplementedTypes(node);
             Properties = DetermineProperties(node);
+            Methods = DetermineMethods(node);
             ChildClasses = DetermineChildClasses(node);
             ChildInterfaces = DetermineChildInterfaces(node);
             ChildStructs = DetermineChildStructs(node);
@@ -65,6 +66,7 @@
 
             ImplementedTypes = DetermineImplementedTypes(node);
             Properties = DetermineProperties(node);
+            Methods = DetermineMethods(node);
             ChildClasses = DetermineChildClasses(node);
             ChildInterfaces = DetermineChildInterfaces(node);
             ChildStructs = DetermineChildStructs(node);
@@ -246,6 +248,14 @@
             return childTypes.AsReadOnly();
         }
 
+        private IReadOnlyCollection<IMethodDefinition> DetermineMethods(SyntaxNode node)
+        {
+            var childNodes = node.ChildNodes().OfType<MethodDeclarationSyntax>();
+            var childTypes = childNodes.Select(childNode => new MethodDefinition(this, childNode)).FastToList();
+
+            return childTypes.AsReadOnly();
+        }
+
         private IReadOnlyCollection<IPropertyDefinition> DetermineProperties(SyntaxNode node)
         {
             var childNodes = node.ChildNodes().OfType<PropertyDeclarationSyntax>();
@@ -289,6 +299,9 @@
 
         /// <inheritdoc />
         public override bool IsVisible { get; }
+
+        /// <inheritdoc />
+        public IReadOnlyCollection<IMethodDefinition> Methods { get; }
 
         /// <inheritdoc />
         public override string Name { get; }

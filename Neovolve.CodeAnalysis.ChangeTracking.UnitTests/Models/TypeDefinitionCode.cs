@@ -150,6 +150,20 @@ namespace MyNamespace
 }
 ";
 
+        public const string ClassWithMethod = @"
+namespace MyNamespace
+{
+    using System;
+
+    public class MyClass
+    {
+        public string GetValue(string first, bool second, int third)
+        {
+            return Guid.NewGuid().ToString();
+        }
+    }
+}";
+
         public const string ClassWithMultipleAttributes = @"
 namespace MyNamespace 
 {
@@ -294,6 +308,15 @@ namespace MyNamespace
     }  
 }
 ";
+
+        public const string InterfaceWithMethod = @"
+namespace MyNamespace
+{
+    public interface MyInterface
+    {
+        string GetValue(string first, bool second, int third);
+    }
+}";
 
         public const string InterfaceWithMultipleGenericConstraints = @"
 namespace MyNamespace
@@ -488,6 +511,20 @@ namespace MyNamespace
     }  
 }
 ";
+
+        public const string StructWithMethod = @"
+namespace MyNamespace
+{
+    using System;
+
+    public struct MyClass
+    {
+        public string GetValue(string first, bool second, int third)
+        {
+            return Guid.NewGuid().ToString();
+        }
+    }
+}";
 
         public const string StructWithMultipleGenericConstraints = @"
 namespace MyNamespace

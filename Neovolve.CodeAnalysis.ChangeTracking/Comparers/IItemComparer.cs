@@ -16,6 +16,6 @@
         /// <param name="match">The match to evaluate.</param>
         /// <param name="options">The comparison options.</param>
         /// <returns>The changes identified when comparing the item match.</returns>
-        IEnumerable<ComparisonResult> CompareItems(ItemMatch<T> match, ComparerOptions options);
+        IEnumerable<ComparisonResult> CompareMatch(ItemMatch<T> match, ComparerOptions options);
     }
 }

@@ -12,12 +12,9 @@
     public class PropertyChangesTests
     {
         private readonly IChangeCalculator _calculator;
-        private readonly ITestOutputHelper _output;
 
         public PropertyChangesTests(ITestOutputHelper output)
         {
-            _output = output;
-
             var logger = output.BuildLogger(LogLevel.Information);
 
             _calculator = ChangeCalculatorFactory.BuildCalculator(logger);
@@ -35,19 +32,17 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty.Replace("get;", string.Empty))
+                new(SingleProperty.Replace("get;", string.Empty))
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty.Replace("get;", modifiers + " get;"))
+                new(SingleProperty.Replace("get;", modifiers + " get;"))
             };
 
             var options = OptionsFactory.BuildOptions();
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(expected);
         }
@@ -64,19 +59,17 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty.Replace("set;", string.Empty))
+                new(SingleProperty.Replace("set;", string.Empty))
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty.Replace("set;", modifiers + " set;"))
+                new(SingleProperty.Replace("set;", modifiers + " set;"))
             };
 
             var options = OptionsFactory.BuildOptions();
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(expected);
         }
@@ -86,11 +79,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(PropertyOnTypeWithMultipleGenericTypeParameters)
+                new(PropertyOnTypeWithMultipleGenericTypeParameters)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(
+                new(
                     PropertyOnTypeWithMultipleGenericTypeParameters.Replace("TKey MyProperty", "TValue MyProperty"))
             };
 
@@ -98,8 +91,6 @@
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(SemVerChangeType.Breaking);
         }
@@ -109,19 +100,17 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty)
+                new(SingleProperty)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty.Replace("MyProperty", "MyNewProperty"))
+                new(SingleProperty.Replace("MyProperty", "MyNewProperty"))
             };
 
             var options = OptionsFactory.BuildOptions();
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(SemVerChangeType.Breaking);
         }
@@ -131,19 +120,17 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty)
+                new(SingleProperty)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(NoProperty)
+                new(NoProperty)
             };
 
             var options = OptionsFactory.BuildOptions();
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(SemVerChangeType.Breaking);
         }
@@ -153,19 +140,17 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty)
+                new(SingleProperty)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty.Replace("string MyProperty", "bool MyProperty"))
+                new(SingleProperty.Replace("string MyProperty", "bool MyProperty"))
             };
 
             var options = OptionsFactory.BuildOptions();
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(SemVerChangeType.Breaking);
         }
@@ -179,19 +164,17 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty.Replace("public string MyProperty", oldModifiers + " string MyProperty"))
+                new(SingleProperty.Replace("public string MyProperty", oldModifiers + " string MyProperty"))
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty.Replace("public string MyProperty", newModifiers + " string MyProperty"))
+                new(SingleProperty.Replace("public string MyProperty", newModifiers + " string MyProperty"))
             };
 
             var options = OptionsFactory.BuildOptions();
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(expected);
         }
@@ -205,43 +188,39 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty.Replace("get;", oldModifiers + " get;"))
+                new(SingleProperty.Replace("get;", oldModifiers + " get;"))
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty.Replace("get;", newModifiers + " get;"))
+                new(SingleProperty.Replace("get;", newModifiers + " get;"))
             };
 
             var options = OptionsFactory.BuildOptions();
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(expected);
         }
 
         [Theory]
-        [ClassData(typeof(MemberModifiersDataSet))]
+        [ClassData(typeof(PropertyModifiersDataSet))]
         public async Task EvaluatesChangeOfModifiers(string oldModifiers, string newModifiers,
             SemVerChangeType expected)
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty.Replace("string MyProperty", oldModifiers + " string MyProperty"))
+                new(SingleProperty.Replace("string MyProperty", oldModifiers + " string MyProperty"))
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty.Replace("string MyProperty", newModifiers + " string MyProperty"))
+                new(SingleProperty.Replace("string MyProperty", newModifiers + " string MyProperty"))
             };
 
             var options = OptionsFactory.BuildOptions();
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(expected);
         }
@@ -255,19 +234,17 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty.Replace("set;", oldModifiers + " set;"))
+                new(SingleProperty.Replace("set;", oldModifiers + " set;"))
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty.Replace("set;", newModifiers + " set;"))
+                new(SingleProperty.Replace("set;", newModifiers + " set;"))
             };
 
             var options = OptionsFactory.BuildOptions();
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(expected);
         }
@@ -314,11 +291,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty)
+                new(SingleProperty)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty.Replace("[PropertyAttribute(344, true, myName: \"on the property\")]",
+                new(SingleProperty.Replace("[PropertyAttribute(344, true, myName: \"on the property\")]",
                     updatedValue))
             };
 
@@ -326,8 +303,6 @@
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(expected);
         }
@@ -337,19 +312,17 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(NoProperty)
+                new(NoProperty)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty)
+                new(SingleProperty)
             };
 
             var options = OptionsFactory.BuildOptions();
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(SemVerChangeType.Feature);
         }
@@ -359,19 +332,17 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty)
+                new(SingleProperty)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty)
+                new(SingleProperty)
             };
 
             var options = OptionsFactory.BuildOptions();
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(SemVerChangeType.None);
         }
@@ -381,19 +352,17 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(PropertyOnTypeWithMultipleGenericTypeParameters)
+                new(PropertyOnTypeWithMultipleGenericTypeParameters)
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(PropertyOnTypeWithMultipleGenericTypeParameters.Replace("TKey", "TMyKey"))
+                new(PropertyOnTypeWithMultipleGenericTypeParameters.Replace("TKey", "TMyKey"))
             };
 
             var options = OptionsFactory.BuildOptions();
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(SemVerChangeType.None);
         }
@@ -410,19 +379,17 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty.Replace("get;", modifiers + " get;"))
+                new(SingleProperty.Replace("get;", modifiers + " get;"))
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty.Replace("get;", string.Empty))
+                new(SingleProperty.Replace("get;", string.Empty))
             };
 
             var options = OptionsFactory.BuildOptions();
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
-            OutputResult(result);
 
             result.ChangeType.Should().Be(expected);
         }
@@ -439,11 +406,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty.Replace("set;", modifiers + " set;"))
+                new(SingleProperty.Replace("set;", modifiers + " set;"))
             };
             var newCode = new List<CodeSource>
             {
-                new CodeSource(SingleProperty.Replace("set;", string.Empty))
+                new(SingleProperty.Replace("set;", string.Empty))
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -451,22 +418,9 @@
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
 
-            OutputResult(result);
-
             result.ChangeType.Should().Be(expected);
         }
-
-        private void OutputResult(ChangeCalculatorResult result)
-        {
-            _output.WriteLine($"Overall result: {result.ChangeType}");
-            _output.WriteLine(string.Empty);
-
-            foreach (var comparisonResult in result.ComparisonResults)
-            {
-                _output.WriteLine(comparisonResult.ChangeType + ": " + comparisonResult.Message);
-            }
-        }
-
+        
         public string NoProperty => @"
 namespace MyNamespace 
 {

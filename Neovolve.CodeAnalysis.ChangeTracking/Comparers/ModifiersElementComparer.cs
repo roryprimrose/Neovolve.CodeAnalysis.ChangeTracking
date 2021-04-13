@@ -5,20 +5,20 @@
     using Neovolve.CodeAnalysis.ChangeTracking.ChangeTables;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
-    public class ModifiersElementComparer<T> : ModifiersComparerBase<T>, IModifiersElementComparer<T>
+    public abstract class ModifiersElementComparer<T> : ModifiersComparerBase<T>, IModifiersElementComparer<T>
         where T : struct, Enum
     {
-        public ModifiersElementComparer(IChangeTable<T> changeTable) : base(changeTable)
+        protected ModifiersElementComparer(IChangeTable<T> changeTable) : base(changeTable)
         {
         }
 
-        public IEnumerable<ComparisonResult> CompareItems(
+        public IEnumerable<ComparisonResult> CompareMatch(
             ItemMatch<IModifiersElement<T>> match,
             ComparerOptions options)
         {
             var convertedMatch = new ItemMatch<IElementDefinition>(match.OldItem, match.NewItem);
 
-            return CompareItems(convertedMatch, match.OldItem.Modifiers, match.NewItem.Modifiers, options);
+            return CompareMatch(convertedMatch, match.OldItem.Modifiers, match.NewItem.Modifiers, options);
         }
 
         protected override string GetDeclaredModifiers(IElementDefinition element)

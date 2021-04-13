@@ -23,7 +23,7 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsEmptyWhenNoChangeFound()
+        public void CompareMatchReturnsEmptyWhenNoChangeFound()
         {
             var options = new ComparerOptions();
             var oldElement = new TestPropertyDefinition();
@@ -37,17 +37,16 @@
 
             var sut = new Wrapper(changeTable);
 
-            var actual = sut.RunCompareItems(match, AccessModifiers.Internal, AccessModifiers.Private, options);
+            var actual = sut.RunCompareMatch(match, AccessModifiers.Internal, AccessModifiers.Private, options);
 
             actual.Should().BeEmpty();
         }
 
         [Fact]
-        public void CompareItemsReturnsPluralModifierLabelWhenMultipleModifiersAdded()
+        public void CompareMatchReturnsPluralModifierLabelWhenMultipleModifiersAdded()
         {
             var options = new ComparerOptions();
             var fullName = Guid.NewGuid().ToString();
-            var expected = SemVerChangeType.Feature;
 
             var changeTable = Substitute.For<IAccessModifiersChangeTable>();
             var oldElement = Substitute.For<IPropertyDefinition>();
@@ -62,19 +61,19 @@
             var match = new ItemMatch<IElementDefinition>(oldElement, newElement);
 
             changeTable.CalculateChange(oldElement.AccessModifiers, newElement.AccessModifiers)
-                .Returns(expected);
+                .Returns(SemVerChangeType.Feature);
 
             var sut = new Wrapper(changeTable);
 
-            var actual = sut.RunCompareItems(match, oldElement.AccessModifiers, newElement.AccessModifiers, options)
+            var actual = sut.RunCompareMatch(match, oldElement.AccessModifiers, newElement.AccessModifiers, options)
                 .ToList();
+
+            _output.WriteResults(actual);
 
             actual.Should().NotBeEmpty();
 
             var result = actual.Single();
-
-            _output.WriteLine(result.Message);
-
+            
             result.Message.Should().Contain("Property");
             result.Message.Should().Contain(fullName);
             result.Message.Should().Contain("has added");
@@ -88,12 +87,11 @@
         [InlineData("private", "protected internal")]
         [InlineData("private protected", "protected internal")]
         [InlineData("private protected", "protected")]
-        public void CompareItemsReturnsPluralModifierLabelWhenMultipleModifiersChanged(string oldDeclaredModifiers,
+        public void CompareMatchReturnsPluralModifierLabelWhenMultipleModifiersChanged(string oldDeclaredModifiers,
             string newDeclaredModifiers)
         {
             var options = new ComparerOptions();
             var fullName = Guid.NewGuid().ToString();
-            var expected = SemVerChangeType.Feature;
 
             var changeTable = Substitute.For<IAccessModifiersChangeTable>();
             var oldElement = Substitute.For<IPropertyDefinition>();
@@ -108,19 +106,19 @@
             var match = new ItemMatch<IElementDefinition>(oldElement, newElement);
 
             changeTable.CalculateChange(oldElement.AccessModifiers, newElement.AccessModifiers)
-                .Returns(expected);
+                .Returns(SemVerChangeType.Feature);
 
             var sut = new Wrapper(changeTable);
 
-            var actual = sut.RunCompareItems(match, oldElement.AccessModifiers, newElement.AccessModifiers, options)
+            var actual = sut.RunCompareMatch(match, oldElement.AccessModifiers, newElement.AccessModifiers, options)
                 .ToList();
+
+            _output.WriteResults(actual);
 
             actual.Should().NotBeEmpty();
 
             var result = actual.Single();
-
-            _output.WriteLine(result.Message);
-
+            
             result.Message.Should().Contain("Property");
             result.Message.Should().Contain(fullName);
             result.Message.Should().Contain("has changed");
@@ -132,11 +130,10 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsPluralModifierLabelWhenMultipleModifiersRemoved()
+        public void CompareMatchReturnsPluralModifierLabelWhenMultipleModifiersRemoved()
         {
             var options = new ComparerOptions();
             var fullName = Guid.NewGuid().ToString();
-            var expected = SemVerChangeType.Breaking;
 
             var changeTable = Substitute.For<IAccessModifiersChangeTable>();
             var oldElement = Substitute.For<IPropertyDefinition>();
@@ -151,19 +148,19 @@
             var match = new ItemMatch<IElementDefinition>(oldElement, newElement);
 
             changeTable.CalculateChange(oldElement.AccessModifiers, newElement.AccessModifiers)
-                .Returns(expected);
+                .Returns(SemVerChangeType.Breaking);
 
             var sut = new Wrapper(changeTable);
 
-            var actual = sut.RunCompareItems(match, oldElement.AccessModifiers, newElement.AccessModifiers, options)
+            var actual = sut.RunCompareMatch(match, oldElement.AccessModifiers, newElement.AccessModifiers, options)
                 .ToList();
+
+            _output.WriteResults(actual);
 
             actual.Should().NotBeEmpty();
 
             var result = actual.Single();
-
-            _output.WriteLine(result.Message);
-
+            
             result.Message.Should().Contain("Property");
             result.Message.Should().Contain(fullName);
             result.Message.Should().Contain("has removed");
@@ -174,11 +171,11 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsResultForAddedModifiers()
+        public void CompareMatchReturnsResultForAddedModifiers()
         {
             var options = new ComparerOptions();
             var fullName = Guid.NewGuid().ToString();
-            var expected = SemVerChangeType.Feature;
+            const SemVerChangeType expected = SemVerChangeType.Feature;
 
             var changeTable = Substitute.For<IAccessModifiersChangeTable>();
             var oldElement = Substitute.For<IPropertyDefinition>();
@@ -197,26 +194,26 @@
 
             var sut = new Wrapper(changeTable);
 
-            var actual = sut.RunCompareItems(match, oldElement.AccessModifiers, newElement.AccessModifiers, options)
+            var actual = sut.RunCompareMatch(match, oldElement.AccessModifiers, newElement.AccessModifiers, options)
                 .ToList();
+
+            _output.WriteResults(actual);
 
             actual.Should().NotBeEmpty();
 
             var result = actual.Single();
-
-            _output.WriteLine(result.Message);
-
+            
             result.ChangeType.Should().Be(expected);
             result.OldItem.Should().Be(oldElement);
             result.NewItem.Should().Be(newElement);
         }
 
         [Fact]
-        public void CompareItemsReturnsResultForChangedModifiers()
+        public void CompareMatchReturnsResultForChangedModifiers()
         {
             var options = new ComparerOptions();
             var fullName = Guid.NewGuid().ToString();
-            var expected = SemVerChangeType.Feature;
+            const SemVerChangeType expected = SemVerChangeType.Feature;
 
             var changeTable = Substitute.For<IAccessModifiersChangeTable>();
             var oldElement = Substitute.For<IPropertyDefinition>();
@@ -235,26 +232,26 @@
 
             var sut = new Wrapper(changeTable);
 
-            var actual = sut.RunCompareItems(match, oldElement.AccessModifiers, newElement.AccessModifiers, options)
+            var actual = sut.RunCompareMatch(match, oldElement.AccessModifiers, newElement.AccessModifiers, options)
                 .ToList();
+
+            _output.WriteResults(actual);
 
             actual.Should().NotBeEmpty();
 
             var result = actual.Single();
-
-            _output.WriteLine(result.Message);
-
+            
             result.ChangeType.Should().Be(expected);
             result.OldItem.Should().Be(oldElement);
             result.NewItem.Should().Be(newElement);
         }
 
         [Fact]
-        public void CompareItemsReturnsResultForRemovedModifiers()
+        public void CompareMatchReturnsResultForRemovedModifiers()
         {
             var options = new ComparerOptions();
             var fullName = Guid.NewGuid().ToString();
-            var expected = SemVerChangeType.Breaking;
+            const SemVerChangeType expected = SemVerChangeType.Breaking;
 
             var changeTable = Substitute.For<IAccessModifiersChangeTable>();
             var oldElement = Substitute.For<IPropertyDefinition>();
@@ -273,26 +270,25 @@
 
             var sut = new Wrapper(changeTable);
 
-            var actual = sut.RunCompareItems(match, oldElement.AccessModifiers, newElement.AccessModifiers, options)
+            var actual = sut.RunCompareMatch(match, oldElement.AccessModifiers, newElement.AccessModifiers, options)
                 .ToList();
+
+            _output.WriteResults(actual);
 
             actual.Should().NotBeEmpty();
 
             var result = actual.Single();
-
-            _output.WriteLine(result.Message);
-
+            
             result.ChangeType.Should().Be(expected);
             result.OldItem.Should().Be(oldElement);
             result.NewItem.Should().Be(newElement);
         }
 
         [Fact]
-        public void CompareItemsReturnsSingularModifierLabelWhenSingleModifiersAdded()
+        public void CompareMatchReturnsSingularModifierLabelWhenSingleModifiersAdded()
         {
             var options = new ComparerOptions();
             var fullName = Guid.NewGuid().ToString();
-            var expected = SemVerChangeType.Feature;
 
             var changeTable = Substitute.For<IAccessModifiersChangeTable>();
             var oldElement = Substitute.For<IPropertyDefinition>();
@@ -307,19 +303,19 @@
             var match = new ItemMatch<IElementDefinition>(oldElement, newElement);
 
             changeTable.CalculateChange(oldElement.AccessModifiers, newElement.AccessModifiers)
-                .Returns(expected);
+                .Returns(SemVerChangeType.Feature);
 
             var sut = new Wrapper(changeTable);
 
-            var actual = sut.RunCompareItems(match, oldElement.AccessModifiers, newElement.AccessModifiers, options)
+            var actual = sut.RunCompareMatch(match, oldElement.AccessModifiers, newElement.AccessModifiers, options)
                 .ToList();
+
+            _output.WriteResults(actual);
 
             actual.Should().NotBeEmpty();
 
             var result = actual.Single();
-
-            _output.WriteLine(result.Message);
-
+            
             result.Message.Should().Contain("Property");
             result.Message.Should().Contain(fullName);
             result.Message.Should().Contain("has added");
@@ -331,11 +327,10 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsSingularModifierLabelWhenSingleModifiersChanged()
+        public void CompareMatchReturnsSingularModifierLabelWhenSingleModifiersChanged()
         {
             var options = new ComparerOptions();
             var fullName = Guid.NewGuid().ToString();
-            var expected = SemVerChangeType.Feature;
 
             var changeTable = Substitute.For<IAccessModifiersChangeTable>();
             var oldElement = Substitute.For<IPropertyDefinition>();
@@ -350,18 +345,18 @@
             var match = new ItemMatch<IElementDefinition>(oldElement, newElement);
 
             changeTable.CalculateChange(oldElement.AccessModifiers, newElement.AccessModifiers)
-                .Returns(expected);
+                .Returns(SemVerChangeType.Feature);
 
             var sut = new Wrapper(changeTable);
 
-            var actual = sut.RunCompareItems(match, oldElement.AccessModifiers, newElement.AccessModifiers, options)
+            var actual = sut.RunCompareMatch(match, oldElement.AccessModifiers, newElement.AccessModifiers, options)
                 .ToList();
+
+            _output.WriteResults(actual);
 
             actual.Should().NotBeEmpty();
 
             var result = actual.Single();
-
-            _output.WriteLine(result.Message);
 
             result.Message.Should().Contain("Property");
             result.Message.Should().Contain(fullName);
@@ -375,11 +370,10 @@
         }
 
         [Fact]
-        public void CompareItemsReturnsSingularModifierLabelWhenSingleModifiersRemoved()
+        public void CompareMatchReturnsSingularModifierLabelWhenSingleModifiersRemoved()
         {
             var options = new ComparerOptions();
             var fullName = Guid.NewGuid().ToString();
-            var expected = SemVerChangeType.Breaking;
 
             var changeTable = Substitute.For<IAccessModifiersChangeTable>();
             var oldElement = Substitute.For<IPropertyDefinition>();
@@ -394,19 +388,19 @@
             var match = new ItemMatch<IElementDefinition>(oldElement, newElement);
 
             changeTable.CalculateChange(oldElement.AccessModifiers, newElement.AccessModifiers)
-                .Returns(expected);
+                .Returns(SemVerChangeType.Breaking);
 
             var sut = new Wrapper(changeTable);
 
-            var actual = sut.RunCompareItems(match, oldElement.AccessModifiers, newElement.AccessModifiers, options)
+            var actual = sut.RunCompareMatch(match, oldElement.AccessModifiers, newElement.AccessModifiers, options)
                 .ToList();
+
+            _output.WriteResults(actual);
 
             actual.Should().NotBeEmpty();
 
             var result = actual.Single();
-
-            _output.WriteLine(result.Message);
-
+            
             result.Message.Should().Contain("Property");
             result.Message.Should().Contain(fullName);
             result.Message.Should().Contain("has removed");
@@ -418,7 +412,7 @@
         }
 
         [Fact]
-        public void CompareItemsThrowsExceptionWithNullMatch()
+        public void CompareMatchThrowsExceptionWithNullMatch()
         {
             var options = new ComparerOptions();
 
@@ -427,7 +421,7 @@
             var sut = new Wrapper(changeTable);
 
             Action action = () =>
-                sut.RunCompareItems(null!, AccessModifiers.Internal, AccessModifiers.Private, options)
+                sut.RunCompareMatch(null!, AccessModifiers.Internal, AccessModifiers.Private, options)
                     .ForceEnumeration();
 
             action.Should().Throw<ArgumentNullException>();
@@ -448,10 +442,10 @@
             {
             }
 
-            public IEnumerable<ComparisonResult> RunCompareItems(ItemMatch<IElementDefinition> match,
+            public IEnumerable<ComparisonResult> RunCompareMatch(ItemMatch<IElementDefinition> match,
                 AccessModifiers oldValue, AccessModifiers newValue, ComparerOptions options)
             {
-                return base.CompareItems(match, oldValue, newValue, options);
+                return base.CompareMatch(match, oldValue, newValue, options);
             }
 
             protected override string GetDeclaredModifiers(IElementDefinition element)

@@ -1,6 +1,5 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.Processors
 {
-    using System;
     using System.Collections.Generic;
     using Microsoft.Extensions.Logging;
     using Neovolve.CodeAnalysis.ChangeTracking.Comparers;
@@ -10,8 +9,8 @@
     public class TypeMatchProcessor : ElementMatchProcessor<ITypeDefinition>, ITypeMatchProcessor
     {
         public TypeMatchProcessor(
-            IMatchEvaluator<ITypeDefinition> evaluator,
-            ITypeComparer<ITypeDefinition> comparer,
+            ITypeEvaluator evaluator,
+            ITypeComparer comparer,
             ILogger? logger) : base(evaluator, comparer, logger)
         {
         }

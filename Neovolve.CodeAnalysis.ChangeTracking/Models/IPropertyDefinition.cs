@@ -4,7 +4,7 @@
     ///     The <see cref="IPropertyDefinition" />
     ///     interface defines the members that describe a property.
     /// </summary>
-    public interface IPropertyDefinition : IMemberDefinition, IModifiersElement<MemberModifiers>
+    public interface IPropertyDefinition : IMemberDefinition, IModifiersElement<PropertyModifiers>
     {
         /// <summary>
         ///     Gets the property get accessor.

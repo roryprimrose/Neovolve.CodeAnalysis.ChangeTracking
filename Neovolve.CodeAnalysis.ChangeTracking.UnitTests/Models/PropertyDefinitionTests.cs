@@ -72,35 +72,35 @@
         }
 
         [Theory]
-        [InlineData("", MemberModifiers.None)]
-        [InlineData("new", MemberModifiers.New)]
-        [InlineData("new static", MemberModifiers.NewStatic)]
-        [InlineData("static new", MemberModifiers.NewStatic)]
-        [InlineData("new virtual", MemberModifiers.NewVirtual)]
-        [InlineData("virtual new", MemberModifiers.NewVirtual)]
-        [InlineData("new abstract", MemberModifiers.NewAbstract)]
-        [InlineData("abstract new", MemberModifiers.NewAbstract)]
-        [InlineData("new abstract virtual", MemberModifiers.NewAbstractVirtual)]
-        [InlineData("abstract new virtual", MemberModifiers.NewAbstractVirtual)]
-        [InlineData("abstract virtual new", MemberModifiers.NewAbstractVirtual)]
-        [InlineData("virtual abstract new", MemberModifiers.NewAbstractVirtual)]
-        [InlineData("virtual new abstract", MemberModifiers.NewAbstractVirtual)]
-        [InlineData("new virtual abstract", MemberModifiers.NewAbstractVirtual)]
-        [InlineData("abstract", MemberModifiers.Abstract)]
-        [InlineData("abstract override", MemberModifiers.AbstractOverride)]
-        [InlineData("override abstract", MemberModifiers.AbstractOverride)]
-        [InlineData("override", MemberModifiers.Override)]
-        [InlineData("override sealed", MemberModifiers.SealedOverride)]
-        [InlineData("sealed override", MemberModifiers.SealedOverride)]
-        [InlineData("sealed", MemberModifiers.Sealed)]
-        [InlineData("static", MemberModifiers.Static)]
-        [InlineData("virtual", MemberModifiers.Virtual)]
-        public async Task ModifiersReturnsExpectedValue(string modifiers, MemberModifiers expected)
+        [InlineData("", PropertyModifiers.None)]
+        [InlineData("new", PropertyModifiers.New)]
+        [InlineData("new static", PropertyModifiers.NewStatic)]
+        [InlineData("static new", PropertyModifiers.NewStatic)]
+        [InlineData("new virtual", PropertyModifiers.NewVirtual)]
+        [InlineData("virtual new", PropertyModifiers.NewVirtual)]
+        [InlineData("new abstract", PropertyModifiers.NewAbstract)]
+        [InlineData("abstract new", PropertyModifiers.NewAbstract)]
+        [InlineData("new abstract virtual", PropertyModifiers.NewAbstractVirtual)]
+        [InlineData("abstract new virtual", PropertyModifiers.NewAbstractVirtual)]
+        [InlineData("abstract virtual new", PropertyModifiers.NewAbstractVirtual)]
+        [InlineData("virtual abstract new", PropertyModifiers.NewAbstractVirtual)]
+        [InlineData("virtual new abstract", PropertyModifiers.NewAbstractVirtual)]
+        [InlineData("new virtual abstract", PropertyModifiers.NewAbstractVirtual)]
+        [InlineData("abstract", PropertyModifiers.Abstract)]
+        [InlineData("abstract override", PropertyModifiers.AbstractOverride)]
+        [InlineData("override abstract", PropertyModifiers.AbstractOverride)]
+        [InlineData("override", PropertyModifiers.Override)]
+        [InlineData("override sealed", PropertyModifiers.SealedOverride)]
+        [InlineData("sealed override", PropertyModifiers.SealedOverride)]
+        [InlineData("sealed", PropertyModifiers.Sealed)]
+        [InlineData("static", PropertyModifiers.Static)]
+        [InlineData("virtual", PropertyModifiers.Virtual)]
+        public async Task ModifiersReturnsExpectedValue(string modifiers, PropertyModifiers expected)
         {
             var declaringType = Substitute.For<IClassDefinition>();
 
             var node = await TestNode
-                .FindNode<PropertyDeclarationSyntax>(PropertyDefinitionCode.BuildPropertyWithModifiers(modifiers))
+                .FindNode<PropertyDeclarationSyntax>(PropertyDefinitionCode.BuildClassPropertyWithModifiers(modifiers))
                 .ConfigureAwait(false);
 
             var sut = new PropertyDefinition(declaringType, node);

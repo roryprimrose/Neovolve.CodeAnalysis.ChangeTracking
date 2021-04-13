@@ -19,7 +19,7 @@
         {
             node = node ?? throw new ArgumentNullException(nameof(node));
 
-            Name = node.Name.ToString();
+            Name = node.GetRawName();
             Arguments = DetermineParameters(node);
         }
 

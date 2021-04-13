@@ -34,12 +34,25 @@ namespace MyNamespace
 }
 ";
 
-        public static string BuildFieldWithModifiers(string scope)
+        public static string BuildClassFieldWithModifiers(string scope)
         {
             return @$"
 namespace MyNamespace 
 {{
     public class MyClass
+    {{
+        {scope} string Value;
+    }}  
+}}
+";
+        }
+
+        public static string BuildStructFieldWithModifiers(string scope)
+        {
+            return @$"
+namespace MyNamespace 
+{{
+    public struct MyClass
     {{
         {scope} string Value;
     }}  

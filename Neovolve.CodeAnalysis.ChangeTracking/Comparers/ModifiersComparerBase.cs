@@ -14,7 +14,7 @@
             _changeTable = changeTable ?? throw new ArgumentNullException(nameof(changeTable));
         }
 
-        protected virtual IEnumerable<ComparisonResult> CompareItems(
+        protected virtual IEnumerable<ComparisonResult> CompareMatch(
             ItemMatch<IElementDefinition> match,
             T oldValue,
             T newValue,

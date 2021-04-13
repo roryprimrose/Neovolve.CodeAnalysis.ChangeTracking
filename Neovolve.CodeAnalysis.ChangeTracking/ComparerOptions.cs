@@ -3,14 +3,14 @@
     using System;
     using System.Collections.Generic;
     using System.Text.RegularExpressions;
-
+    
     /// <summary>
     ///     The <see cref="ComparerOptions" />
     ///     class describes the options that control how code is compared.
     /// </summary>
     public class ComparerOptions
     {
-        private readonly List<Regex> _attributesNamesToCompare = new List<Regex>();
+        private readonly List<Regex> _attributesNamesToCompare = new();
 
         /// <summary>
         ///     Adds an expression to the list of attribute names to compare.
@@ -90,15 +90,15 @@
         ///     Gets the name expressions that identify attributes to compare.
         /// </summary>
         public IEnumerable<Regex> AttributeNamesToCompare => _attributesNamesToCompare.AsReadOnly();
+        
+        /// <summary>
+        ///     Determines whether attribute changes should be evaluated.
+        /// </summary>
+        public AttributeCompareOption CompareAttributes { get; set; } = AttributeCompareOption.Skip;
 
         /// <summary>
         ///     Gets or sets the message formatter creates the type change messages.
         /// </summary>
         public IMessageFormatter MessageFormatter { get; set; } = new DefaultMessageFormatter();
-
-        /// <summary>
-        ///     Determines whether attribute changes should be evaluated.
-        /// </summary>
-        public AttributeCompareOption CompareAttributes { get; set; } = AttributeCompareOption.Skip;
     }
 }

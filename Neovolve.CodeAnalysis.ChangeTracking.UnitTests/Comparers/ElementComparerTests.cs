@@ -11,23 +11,31 @@
     using Neovolve.CodeAnalysis.ChangeTracking.UnitTests.TestModels;
     using NSubstitute;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class ElementComparerTests
     {
+        private readonly ITestOutputHelper _output;
+
+        public ElementComparerTests(ITestOutputHelper output)
+        {
+            _output = output;
+        }
+
         [Theory]
         [InlineData(false, false, SemVerChangeType.None, false)]
-        [InlineData(true, false, SemVerChangeType.None, true)]
-        [InlineData(false, true, SemVerChangeType.None, true)]
+        [InlineData(true, false, SemVerChangeType.None, false)]
+        [InlineData(false, true, SemVerChangeType.None, false)]
         [InlineData(true, true, SemVerChangeType.None, true)]
         [InlineData(false, false, SemVerChangeType.Feature, false)]
-        [InlineData(true, false, SemVerChangeType.Feature, true)]
-        [InlineData(false, true, SemVerChangeType.Feature, true)]
+        [InlineData(true, false, SemVerChangeType.Feature, false)]
+        [InlineData(false, true, SemVerChangeType.Feature, false)]
         [InlineData(true, true, SemVerChangeType.Feature, true)]
         [InlineData(false, false, SemVerChangeType.Breaking, false)]
         [InlineData(true, false, SemVerChangeType.Breaking, false)]
         [InlineData(false, true, SemVerChangeType.Breaking, false)]
         [InlineData(true, true, SemVerChangeType.Breaking, false)]
-        public void CompareItemsEvaluatesAttributeMatchesWhenAtLeastOneItemVisibleAndItemMatchIsNotBreaking(
+        public void CompareMatchEvaluatesAttributeMatchesWhenBothItemsVisibleAndItemMatchIsNotBreaking(
             bool firstItemVisible,
             bool secondItemVisible, SemVerChangeType changeType, bool attributesEvaluated)
         {
@@ -36,8 +44,9 @@
             var secondItem = Substitute.For<IClassDefinition>();
             var secondItemAttributes = Model.UsingModule<ConfigurationModule>().Create<List<TestAttributeDefinition>>();
             var itemResult = new ComparisonResult(changeType, firstItem, secondItem, Guid.NewGuid().ToString());
-            var attributeResult = new ComparisonResult(changeType, firstItemAttributes.Last(), secondItemAttributes.Last(), Guid.NewGuid().ToString());
-            var attributeResults = new List<ComparisonResult> {attributeResult};
+            var attributeResult = new ComparisonResult(changeType, firstItemAttributes.Last(),
+                secondItemAttributes.Last(), Guid.NewGuid().ToString());
+            var attributeResults = new List<ComparisonResult> { attributeResult };
             var match = new ItemMatch<IClassDefinition>(firstItem, secondItem);
             var options = ComparerOptions.Default;
 
@@ -50,7 +59,9 @@
 
             var sut = new Wrapper<IClassDefinition>(attributeProcessor, itemResult);
 
-            var actual = sut.CompareItems(match, options);
+            var actual = sut.CompareMatch(match, options).ToList();
+
+            _output.WriteResults(actual);
 
             if (attributesEvaluated)
             {
@@ -67,10 +78,10 @@
 
         [Theory]
         [InlineData(false, false, false)]
-        [InlineData(true, false, true)]
-        [InlineData(false, true, true)]
+        [InlineData(true, false, false)]
+        [InlineData(false, true, false)]
         [InlineData(true, true, true)]
-        public void CompareItemsEvaluatesMatchWhenAtLeastOneItemVisible(bool firstItemVisible,
+        public void CompareMatchEvaluatesMatchWhenBothItemsVisible(bool firstItemVisible,
             bool secondItemVisible, bool matchEvaluated)
         {
             var firstItem = Substitute.For<IClassDefinition>();
@@ -87,7 +98,9 @@
 
             var sut = new Wrapper<IClassDefinition>(attributeProcessor, result);
 
-            var actual = sut.CompareItems(match, options);
+            var actual = sut.CompareMatch(match, options).ToList();
+
+            _output.WriteResults(actual);
 
             if (matchEvaluated)
             {
@@ -95,12 +108,12 @@
             }
             else
             {
-                actual.Should().BeEmpty();
+                actual.Should().NotContain(result);
             }
         }
 
         [Fact]
-        public void CompareItemsThrowsExceptionWithNullMatch()
+        public void CompareMatchThrowsExceptionWithNullMatch()
         {
             var firstItem = Substitute.For<IClassDefinition>();
             var secondItem = Substitute.For<IClassDefinition>();
@@ -112,13 +125,13 @@
 
             var sut = new Wrapper<IClassDefinition>(attributeProcessor, result);
 
-            Action action = () => sut.CompareItems(null!, options);
+            Action action = () => sut.CompareMatch(null!, options);
 
             action.Should().Throw<ArgumentNullException>();
         }
 
         [Fact]
-        public void CompareItemsThrowsExceptionWithNullOptions()
+        public void CompareMatchThrowsExceptionWithNullOptions()
         {
             var firstItem = Substitute.For<IClassDefinition>();
             var secondItem = Substitute.For<IClassDefinition>();
@@ -130,9 +143,42 @@
 
             var sut = new Wrapper<IClassDefinition>(attributeProcessor, result);
 
-            Action action = () => sut.CompareItems(match, null!);
+            Action action = () => sut.CompareMatch(match, null!);
 
             action.Should().Throw<ArgumentNullException>();
+        }
+
+        [Theory]
+        [InlineData(false, false, null)]
+        [InlineData(true, false, SemVerChangeType.Breaking)]
+        [InlineData(false, true, SemVerChangeType.Feature)]
+        public void CompareReturnsReturnsChangeTypeWhenAtLeastOneItemHidden(bool firstItemVisible,
+            bool secondItemVisible, SemVerChangeType? changeType)
+        {
+            var oldMember = new TestClassDefinition()
+                .Set(x => { x.IsVisible = firstItemVisible; });
+            var newMember = oldMember.JsonClone()
+                .Set(x => { x.IsVisible = secondItemVisible; });
+            var match = new ItemMatch<IClassDefinition>(oldMember, newMember);
+            var options = ComparerOptions.Default;
+
+            var attributeProcessor = Substitute.For<IAttributeMatchProcessor>();
+
+            var sut = new Wrapper<IClassDefinition>(attributeProcessor, null);
+
+            var actual = sut.CompareMatch(match, options).ToList();
+
+            _output.WriteResults(actual);
+
+            if (changeType == null)
+            {
+                actual.Should().BeEmpty();
+            }
+            else
+            {
+                actual.Should().HaveCount(1);
+                actual[0].ChangeType.Should().Be(changeType);
+            }
         }
 
         [Fact]
