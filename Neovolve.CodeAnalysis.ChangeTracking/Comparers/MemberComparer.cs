@@ -42,17 +42,42 @@
             var oldType = match.OldItem.ReturnType;
             var newType = match.NewItem.ReturnType;
 
-            var oldMappedType =
-                match.OldItem.DeclaringType.GetMatchingGenericType(oldType, match.NewItem.DeclaringType);
-            
-            if (oldMappedType != newType)
-            {
-                var args = new FormatArguments(
-                    "{DefinitionType} {Identifier} return type has changed from {OldValue} to {NewValue}",
-                    match.NewItem.FullName, match.OldItem.ReturnType, match.NewItem.ReturnType);
+            IGenericTypeElement deepestNewGenericTypeElement;
+            IGenericTypeElement deepestOldGenericTypeElement;
 
-                aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
+            // We need to check whether the element itself can declare generic type parameters
+            // If not, the declaring type will be used for generic type parameter mapping
+            if (match.OldItem is IGenericTypeElement oldElement
+                && match.NewItem is IGenericTypeElement newElement)
+            {
+                deepestOldGenericTypeElement = oldElement;
+                deepestNewGenericTypeElement = newElement;
             }
+            else
+            {
+                deepestOldGenericTypeElement = match.OldItem.DeclaringType;
+                deepestNewGenericTypeElement = match.NewItem.DeclaringType;
+            }
+
+            var oldMappedType =
+                deepestOldGenericTypeElement.GetMatchingGenericType(oldType, deepestNewGenericTypeElement);
+
+            if (oldMappedType == newType)
+            {
+                return;
+            }
+
+            // The return type has changed but we need to figure out how
+            // If the member previously returned void then this is a feature because binary compatibility hasn't been broken
+            // Any other change would be breaking however
+
+            var changeType = oldMappedType == "void" ? SemVerChangeType.Feature : SemVerChangeType.Breaking;
+            
+            var args = new FormatArguments(
+                "{DefinitionType} {Identifier} return type has changed from {OldValue} to {NewValue}",
+                match.NewItem.FullName, match.OldItem.ReturnType, match.NewItem.ReturnType);
+
+            aggregator.AddElementChangedResult(changeType, match, options.MessageFormatter, args);
         }
     }
 }
