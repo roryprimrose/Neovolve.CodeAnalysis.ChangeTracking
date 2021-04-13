@@ -36,6 +36,8 @@
             RunComparisonStep(EvaluateMethodNameChanges, match, options, aggregator, true);
             RunComparisonStep(EvaluateGenericTypeDefinitionChanges, match, options, aggregator, true);
             RunComparisonStep(EvaluateParameterChanges, match, options, aggregator);
+
+            base.EvaluateMatch(match, options, aggregator);
         }
 
         private static void EvaluateMethodNameChanges(
@@ -43,16 +45,16 @@
             ComparerOptions options,
             IChangeResultAggregator aggregator)
         {
-            if (match.OldItem.Name == match.NewItem.Name)
+            if (match.OldItem.RawName == match.NewItem.RawName)
             {
                 return;
             }
 
             var args = new FormatArguments(
-                "{DefinitionType} {Identifier} has been renamed from {OldValue}",
-                match.NewItem.FullName,
-                match.OldItem.Name,
-                null);
+                "{DefinitionType} {Identifier} has been renamed to {NewValue}",
+                match.OldItem.FullName,
+                null,
+                match.NewItem.Name);
 
             aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
         }

@@ -55,7 +55,7 @@
         public void CompareMatchDoesNotContinueEvaluationWhenModifierChangeIsBreaking()
         {
             var oldItem = new TestMethodDefinition();
-            var newItem = oldItem.JsonClone().Set(x => x.Name = "Renamed");
+            var newItem = oldItem.JsonClone();
             var match = new ItemMatch<IMethodDefinition>(oldItem, newItem);
             var options = ComparerOptions.Default;
             const SemVerChangeType changeType = SemVerChangeType.Breaking;
@@ -86,7 +86,11 @@
         public void CompareMatchDoesNotContinueEvaluationWhenNameChanged()
         {
             var oldItem = new TestMethodDefinition();
-            var newItem = oldItem.JsonClone().Set(x => x.Name = "Renamed");
+            var newItem = oldItem.JsonClone().Set(x =>
+            {
+                x.Name = "Renamed";
+                x.RawName = "Renamed";
+            });
             var match = new ItemMatch<IMethodDefinition>(oldItem, newItem);
             var options = ComparerOptions.Default;
 
@@ -105,14 +109,53 @@
         [Fact]
         public void CompareMatchReturnsBreakingWhenNameChanged()
         {
-            var oldItem = new TestMethodDefinition();
-            var newItem = oldItem.JsonClone().Set(x => x.Name = "Renamed");
+            var oldItem = new TestMethodDefinition().Set(x =>
+            {
+                x.Name = "Original";
+                x.RawName = "Original";
+            });
+            var newItem = oldItem.JsonClone().Set(x =>
+            {
+                x.Name = "Renamed";
+                x.RawName = "Renamed";
+            });
             var match = new ItemMatch<IMethodDefinition>(oldItem, newItem);
             var options = ComparerOptions.Default;
 
             var actual = SUT.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
+            actual.First().Message.Should().Contain("renamed");
+
+            actual.Should().HaveCount(1);
+            actual[0].ChangeType.Should().BeEquivalentTo(SemVerChangeType.Breaking);
+        }
+
+        [Fact]
+        public void CompareMatchReturnsBreakingWhenNameChangedWithGenericTypeParameters()
+        {
+            var genericTypeParameters = new List<string>
+            {
+                "T"
+            }.AsReadOnly();
+            var oldItem = new TestMethodDefinition().Set(x =>
+            {
+                x.Name = "Original<T>";
+                x.RawName = "Original";
+                x.GenericTypeParameters = genericTypeParameters;
+            });
+            var newItem = oldItem.JsonClone().Set(x =>
+            {
+                x.Name = "Renamed<T>";
+                x.RawName = "Renamed";
+            });
+            var match = new ItemMatch<IMethodDefinition>(oldItem, newItem);
+            var options = ComparerOptions.Default;
+
+            var actual = SUT.CompareMatch(match, options).ToList();
+
+            _output.WriteResults(actual);
+            actual.First().Message.Should().Contain("renamed");
 
             actual.Should().HaveCount(1);
             actual[0].ChangeType.Should().BeEquivalentTo(SemVerChangeType.Breaking);
@@ -135,6 +178,7 @@
             actual.Should().HaveCount(1);
             actual[0].ChangeType.Should().BeEquivalentTo(SemVerChangeType.Breaking);
             actual[0].Message.Should().Contain("added");
+            actual[0].Message.Should().Contain("parameter");
         }
 
         [Fact]
@@ -154,6 +198,40 @@
             actual.Should().HaveCount(1);
             actual[0].ChangeType.Should().BeEquivalentTo(SemVerChangeType.Breaking);
             actual[0].Message.Should().Contain("removed");
+            actual[0].Message.Should().Contain("parameter");
+        }
+
+        [Fact]
+        public void CompareMatchReturnsEmptyChangesWhenGenericTypeParameterRenamed()
+        {
+            var oldTypeParameters = new List<string>
+            {
+                "T"
+            }.AsReadOnly();
+            var oldItem = new TestMethodDefinition().Set(x =>
+            {
+                x.Name = "Original<T>";
+                x.RawName = "Original";
+                x.GenericTypeParameters = oldTypeParameters;
+            });
+            var newTypeParameters = new List<string>
+            {
+                "V"
+            }.AsReadOnly();
+            var newItem = oldItem.JsonClone().Set(x =>
+            {
+                x.Name = "Original<V>";
+                x.RawName = "Original";
+                x.GenericTypeParameters = newTypeParameters;
+            });
+            var match = new ItemMatch<IMethodDefinition>(oldItem, newItem);
+            var options = ComparerOptions.Default;
+
+            var actual = SUT.CompareMatch(match, options).ToList();
+
+            _output.WriteResults(actual);
+
+            actual.Should().BeEmpty();
         }
 
         [Fact]
