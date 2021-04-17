@@ -13,5 +13,15 @@
             ILogger? logger) : base(evaluator, comparer, logger)
         {
         }
+
+        protected override SemVerChangeType GetItemAddedChangeType(IPropertyDefinition memberAdded)
+        {
+            if (memberAdded.Modifiers.HasFlag(PropertyModifiers.Abstract))
+            {
+                return SemVerChangeType.Breaking;
+            }
+
+            return base.GetItemAddedChangeType(memberAdded);
+        }
     }
 }

@@ -96,6 +96,26 @@
         }
 
         [Fact]
+        public async Task EvaluatesBreakingWhenAbstractPropertyAdded()
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new(NoProperty)
+            };
+            var newCode = new List<CodeSource>
+            {
+                new(SingleProperty.Replace("public string MyProperty", "public abstract string MyProperty"))
+            };
+
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            result.ChangeType.Should().Be(SemVerChangeType.Breaking);
+        }
+
+        [Fact]
         public async Task EvaluatesBreakingWhenPropertyChangesName()
         {
             var oldCode = new List<CodeSource>
@@ -420,7 +440,7 @@
 
             result.ChangeType.Should().Be(expected);
         }
-        
+
         public string NoProperty => @"
 namespace MyNamespace 
 {

@@ -19,6 +19,26 @@
             _calculator = ChangeCalculatorFactory.BuildCalculator(logger);
         }
 
+        [Fact]
+        public async Task EvaluatesBreakingWhenAbstractMethodAdded()
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new(NoMethod)
+            };
+            var newCode = new List<CodeSource>
+            {
+                new(NoParameters.Replace("public string MyMethod", "public abstract string MyMethod"))
+            };
+
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            result.ChangeType.Should().Be(SemVerChangeType.Breaking);
+        }
+
         [Theory]
         [ClassData(typeof(AccessModifiersDataSet))]
         public async Task EvaluatesChangeOfAccessModifiers(
@@ -33,6 +53,77 @@
             var newCode = new List<CodeSource>
             {
                 new(NoParameters.Replace("public string MyMethod", newModifiers + " string MyMethod"))
+            };
+
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            result.ChangeType.Should().Be(expected);
+        }
+
+        [Theory]
+        [InlineData("MyClass", "MyClass", "MyMethod()", "MyMethod()", SemVerChangeType.None)]
+        [InlineData("MyClass<T>", "MyClass<T>", "MyMethod(T first)", "MyMethod(T first)", SemVerChangeType.None)]
+        [InlineData("MyClass<T>", "MyClass<V>", "MyMethod(T first)", "MyMethod(V first)", SemVerChangeType.None)]
+        [InlineData("MyClass<T>", "MyClass", "MyMethod(T first)", "MyMethod()", SemVerChangeType.Breaking)]
+        [InlineData("MyClass", "MyClass<T>", "MyMethod()", "MyMethod(T first)", SemVerChangeType.Breaking)]
+        [InlineData("MyClass<T, V>", "MyClass<T>", "MyMethod(T first)", "MyMethod(T first)", SemVerChangeType.Breaking)]
+        [InlineData("MyClass<T, V>", "MyClass<T>", "MyMethod(T first, V second)", "MyMethod(T first)",
+            SemVerChangeType.Breaking)]
+        [InlineData("MyClass<T>", "MyClass<T, V>", "MyMethod(T first)", "MyMethod(T first)", SemVerChangeType.Breaking)]
+        [InlineData("MyClass<T>", "MyClass<T, V>", "MyMethod(T first)", "MyMethod(T first, V second)",
+            SemVerChangeType.Breaking)]
+        public async Task EvaluatesChangeOfGenericTypeDefinitionsOnDeclaringType(
+            string oldClass,
+            string newClass,
+            string oldSignature,
+            string newSignature,
+            SemVerChangeType expected)
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new(NoParameters
+                    .Replace("public class MyClass", "public class " + oldClass)
+                    .Replace("public string MyMethod()", "public string " + oldSignature))
+            };
+            var newCode = new List<CodeSource>
+            {
+                new(NoParameters
+                    .Replace("public class MyClass", "public class " + newClass)
+                    .Replace("public string MyMethod()", "public string " + newSignature))
+            };
+
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            result.ChangeType.Should().Be(expected);
+        }
+
+        [Theory]
+        [InlineData("MyMethod<T>(T first)", "MyMethod<T>(T first)", SemVerChangeType.None)]
+        [InlineData("MyMethod<T>(T first)", "MyMethod<V>(V first)", SemVerChangeType.None)]
+        [InlineData("MyMethod()", "MyMethod<T>(T first)", SemVerChangeType.Breaking)]
+        [InlineData("MyMethod<T>(T first)", "MyMethod()", SemVerChangeType.Breaking)]
+        [InlineData("MyMethod<T>()", "MyMethod<T, V>()", SemVerChangeType.Breaking)]
+        [InlineData("MyMethod<T, V>()", "MyMethod<T>()", SemVerChangeType.Breaking)]
+        [InlineData("MyMethod<T>(T first, V)", "MyMethod<T, V>(T first, V second)", SemVerChangeType.Breaking)]
+        [InlineData("MyMethod<T, V>(T first, V second)", "MyMethod<T>(T first)", SemVerChangeType.Breaking)]
+        public async Task EvaluatesChangeOfGenericTypeDefinitionsOnMethod(
+            string oldSignature,
+            string newSignature,
+            SemVerChangeType expected)
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new(NoParameters.Replace("public string MyMethod()", "public string " + oldSignature))
+            };
+            var newCode = new List<CodeSource>
+            {
+                new(NoParameters.Replace("public string MyMethod()", "public string " + newSignature))
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -143,15 +234,15 @@
         }
 
         [Theory]
-        [InlineData("MyMethod<T>(T first)", "MyMethod<T>(T first)", SemVerChangeType.None)]
-        [InlineData("MyMethod<T>(T first)", "MyMethod<V>(V first)", SemVerChangeType.None)]
-        [InlineData("MyMethod()", "MyMethod<T>(T first)", SemVerChangeType.Breaking)]
-        [InlineData("MyMethod<T>(T first)", "MyMethod()", SemVerChangeType.Breaking)]
-        [InlineData("MyMethod<T>()", "MyMethod<T, V>()", SemVerChangeType.Breaking)]
-        [InlineData("MyMethod<T, V>()", "MyMethod<T>()", SemVerChangeType.Breaking)]
-        [InlineData("MyMethod<T>(T first, V)", "MyMethod<T, V>(T first, V second)", SemVerChangeType.Breaking)]
-        [InlineData("MyMethod<T, V>(T first, V second)", "MyMethod<T>(T first)", SemVerChangeType.Breaking)]
-        public async Task EvaluatesChangeOfGenericTypeDefinitionsOnMethod(
+        [InlineData("MyMethod()", "MyMethod()", SemVerChangeType.None)]
+        [InlineData("MyMethod()", "MyOtherMethod()", SemVerChangeType.Breaking)]
+        [InlineData("MyMethod(string first, bool second, int third)",
+            "MyOtherMethod(string first, bool second, int third)", SemVerChangeType.Breaking)]
+        [InlineData("MyMethod(string first, bool second, int third)",
+            "MyOtherMethod(string fourth, bool fifth, int sixth)", SemVerChangeType.Breaking)]
+        [InlineData("MyMethod<T>(T first, bool second, int third)", "MyOtherMethod<T>(T first, bool second, int third)",
+            SemVerChangeType.Breaking)]
+        public async Task EvaluatesChangeOfName(
             string oldSignature,
             string newSignature,
             SemVerChangeType expected)
@@ -163,44 +254,6 @@
             var newCode = new List<CodeSource>
             {
                 new(NoParameters.Replace("public string MyMethod()", "public string " + newSignature))
-            };
-
-            var options = OptionsFactory.BuildOptions();
-
-            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
-                .ConfigureAwait(false);
-
-            result.ChangeType.Should().Be(expected);
-        }
-
-        [Theory]
-        [InlineData("MyClass", "MyClass", "MyMethod()", "MyMethod()", SemVerChangeType.None)]
-        [InlineData("MyClass<T>", "MyClass<T>", "MyMethod(T first)", "MyMethod(T first)", SemVerChangeType.None)]
-        [InlineData("MyClass<T>", "MyClass<V>", "MyMethod(T first)", "MyMethod(V first)", SemVerChangeType.None)]
-        [InlineData("MyClass<T>", "MyClass", "MyMethod(T first)", "MyMethod()", SemVerChangeType.Breaking)]
-        [InlineData("MyClass", "MyClass<T>", "MyMethod()", "MyMethod(T first)", SemVerChangeType.Breaking)]
-        [InlineData("MyClass<T, V>", "MyClass<T>", "MyMethod(T first)", "MyMethod(T first)", SemVerChangeType.Breaking)]
-        [InlineData("MyClass<T, V>", "MyClass<T>", "MyMethod(T first, V second)", "MyMethod(T first)", SemVerChangeType.Breaking)]
-        [InlineData("MyClass<T>", "MyClass<T, V>", "MyMethod(T first)", "MyMethod(T first)", SemVerChangeType.Breaking)]
-        [InlineData("MyClass<T>", "MyClass<T, V>", "MyMethod(T first)", "MyMethod(T first, V second)", SemVerChangeType.Breaking)]
-        public async Task EvaluatesChangeOfGenericTypeDefinitionsOnDeclaringType(
-            string oldClass,
-            string newClass,
-            string oldSignature,
-            string newSignature,
-            SemVerChangeType expected)
-        {
-            var oldCode = new List<CodeSource>
-            {
-                new(NoParameters
-                    .Replace("public class MyClass", "public class " + oldClass)
-                    .Replace("public string MyMethod()", "public string " + oldSignature))
-            };
-            var newCode = new List<CodeSource>
-            {
-                new(NoParameters
-                    .Replace("public class MyClass", "public class " + newClass)
-                    .Replace("public string MyMethod()", "public string " + newSignature))
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -215,16 +268,24 @@
         [InlineData("()", "()", SemVerChangeType.None)]
         [InlineData("<T>(T first)", "<V>(V first)", SemVerChangeType.None)]
         [InlineData("<T, V>(T first, V second)", "<T, V>(T first, V second)", SemVerChangeType.None)]
-        [InlineData("(string first, bool second, int third)", "(string first, bool second, int third)", SemVerChangeType.None)]
+        [InlineData("(string first, bool second, int third)", "(string first, bool second, int third)",
+            SemVerChangeType.None)]
         [InlineData("(string first, bool second)", "(string first, bool second, int third)", SemVerChangeType.Breaking)]
         [InlineData("(string first, bool second, int third)", "(string first, bool second)", SemVerChangeType.Breaking)]
-        [InlineData("(string first, bool second, int third)", "(DateTime first, bool second, int third)", SemVerChangeType.Breaking)]
-        [InlineData("(string first, bool second, int third)", "(DateTime? first, bool second, int third)", SemVerChangeType.Breaking)]
-        [InlineData("(string first, bool second)", "(string first, bool second, int third = 0)", SemVerChangeType.Breaking)]
-        [InlineData("(string first, bool second, int third)", "(string first, bool second, int third = 0)", SemVerChangeType.Feature)]
-        [InlineData("(string first, bool second, int third = 0)", "(string first, bool second)", SemVerChangeType.Breaking)]
-        [InlineData("(string first, bool second, int third = 0)", "(string first, bool second, int third)", SemVerChangeType.Breaking)]
-        [InlineData("(string first, bool second, int third = 0)", "(string first, bool second, int third = 1)", SemVerChangeType.None)]
+        [InlineData("(string first, bool second, int third)", "(DateTime first, bool second, int third)",
+            SemVerChangeType.Breaking)]
+        [InlineData("(string first, bool second, int third)", "(DateTime? first, bool second, int third)",
+            SemVerChangeType.Breaking)]
+        [InlineData("(string first, bool second)", "(string first, bool second, int third = 0)",
+            SemVerChangeType.Breaking)]
+        [InlineData("(string first, bool second, int third)", "(string first, bool second, int third = 0)",
+            SemVerChangeType.Feature)]
+        [InlineData("(string first, bool second, int third = 0)", "(string first, bool second)",
+            SemVerChangeType.Breaking)]
+        [InlineData("(string first, bool second, int third = 0)", "(string first, bool second, int third)",
+            SemVerChangeType.Breaking)]
+        [InlineData("(string first, bool second, int third = 0)", "(string first, bool second, int third = 1)",
+            SemVerChangeType.None)]
         public async Task EvaluatesChangeOfParameters(
             string oldSignature,
             string newSignature,
@@ -237,34 +298,6 @@
             var newCode = new List<CodeSource>
             {
                 new(NoParameters.Replace("public string MyMethod", "public string MyMethod" + newSignature))
-            };
-
-            var options = OptionsFactory.BuildOptions();
-
-            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
-                .ConfigureAwait(false);
-
-            result.ChangeType.Should().Be(expected);
-        }
-
-        [Theory]
-        [InlineData("MyMethod()", "MyMethod()", SemVerChangeType.None)]
-        [InlineData("MyMethod()", "MyOtherMethod()", SemVerChangeType.Breaking)]
-        [InlineData("MyMethod(string first, bool second, int third)", "MyOtherMethod(string first, bool second, int third)", SemVerChangeType.Breaking)]
-        [InlineData("MyMethod(string first, bool second, int third)", "MyOtherMethod(string fourth, bool fifth, int sixth)", SemVerChangeType.Breaking)]
-        [InlineData("MyMethod<T>(T first, bool second, int third)", "MyOtherMethod<T>(T first, bool second, int third)", SemVerChangeType.Breaking)]
-        public async Task EvaluatesChangeOfName(
-            string oldSignature,
-            string newSignature,
-            SemVerChangeType expected)
-        {
-            var oldCode = new List<CodeSource>
-            {
-                new(NoParameters.Replace("public string MyMethod()", "public string " + oldSignature))
-            };
-            var newCode = new List<CodeSource>
-            {
-                new(NoParameters.Replace("public string MyMethod()", "public string " + newSignature))
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -310,6 +343,17 @@
 
             result.ChangeType.Should().Be(expected);
         }
+
+        private static string NoMethod => @"
+namespace MyNamespace 
+{
+    using System;
+
+    public class MyClass
+    {
+    }  
+}
+";
 
         private static string NoParameters => @"
 namespace MyNamespace 
