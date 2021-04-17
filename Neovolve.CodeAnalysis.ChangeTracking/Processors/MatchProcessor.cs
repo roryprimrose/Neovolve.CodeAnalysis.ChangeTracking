@@ -49,7 +49,9 @@
 
                     var message = options.MessageFormatter.FormatItemAddedMessage(memberAdded, args);
 
-                    var result = new ComparisonResult(SemVerChangeType.Feature, null, memberAdded, message);
+                    var changeType = GetItemAddedChangeType(memberAdded);
+
+                    var result = new ComparisonResult(changeType, null, memberAdded, message);
 
                     yield return result;
                 }
@@ -117,6 +119,11 @@
             options = options ?? throw new ArgumentNullException(nameof(options));
 
             return _comparer.CompareMatch(match, options);
+        }
+
+        protected virtual SemVerChangeType GetItemAddedChangeType(T memberAdded)
+        {
+            return SemVerChangeType.Feature;
         }
 
         protected abstract bool IsVisible(T item);
