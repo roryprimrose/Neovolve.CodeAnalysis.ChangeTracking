@@ -16,6 +16,11 @@
 
         protected override SemVerChangeType GetItemAddedChangeType(IPropertyDefinition memberAdded)
         {
+            if (memberAdded.DeclaringType is IInterfaceDefinition)
+            {
+                return SemVerChangeType.Breaking;
+            }
+
             if (memberAdded.Modifiers.HasFlag(PropertyModifiers.Abstract))
             {
                 return SemVerChangeType.Breaking;

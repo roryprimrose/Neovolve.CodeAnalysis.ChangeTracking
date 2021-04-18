@@ -24,6 +24,32 @@
             _logger = output.BuildLogger();
         }
 
+        [Fact]
+        public void CalculateChangesReturnsBreakingWhenAddingMethodToInterface()
+        {
+            var declaringType = new TestInterfaceDefinition();
+            var oldItems = Array.Empty<IPropertyDefinition>();
+            var newItem = new TestPropertyDefinition().Set(x =>
+            {
+                x.IsVisible = true;
+                x.DeclaringType = declaringType;
+            });
+            var newItems = new List<IPropertyDefinition>
+            {
+                newItem
+            };
+            var options = ComparerOptions.Default;
+            var matchResults = new MatchResults<IPropertyDefinition>(Array.Empty<IPropertyDefinition>(),
+                newItems);
+
+            Service<IPropertyEvaluator>().FindMatches(oldItems, newItems).Returns(matchResults);
+
+            var actual = SUT.CalculateChanges(oldItems, newItems, options).ToList();
+
+            actual.Should().HaveCount(1);
+            actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
+        }
+
         [Theory]
         [InlineData(PropertyModifiers.None, SemVerChangeType.Feature)]
         [InlineData(PropertyModifiers.Abstract, SemVerChangeType.Breaking)]

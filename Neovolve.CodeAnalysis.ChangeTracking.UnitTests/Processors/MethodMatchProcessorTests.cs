@@ -77,6 +77,32 @@
         }
 
         [Fact]
+        public void CalculateChangesReturnsBreakingWhenAddingMethodToInterface()
+        {
+            var declaringType = new TestInterfaceDefinition();
+            var oldItems = Array.Empty<IMethodDefinition>();
+            var newItem = new TestMethodDefinition().Set(x =>
+            {
+                x.IsVisible = true;
+                x.DeclaringType = declaringType;
+            });
+            var newItems = new List<IMethodDefinition>
+            {
+                newItem
+            };
+            var options = ComparerOptions.Default;
+            var matchResults = new MatchResults<IMethodDefinition>(Array.Empty<IMethodDefinition>(),
+                newItems);
+
+            Service<IMethodEvaluator>().FindMatches(oldItems, newItems).Returns(matchResults);
+
+            var actual = SUT.CalculateChanges(oldItems, newItems, options).ToList();
+
+            actual.Should().HaveCount(1);
+            actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
+        }
+
+        [Fact]
         public void CanCreateClass()
         {
             var comparer = Substitute.For<IMethodComparer>();
