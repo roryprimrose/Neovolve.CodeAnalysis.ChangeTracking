@@ -49,6 +49,46 @@
         }
 
         [Fact]
+        public async Task ReturnsBreakingWhenInterfaceAddsMethod()
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new(EmptyInterface)
+            };
+            var newCode = new List<CodeSource>
+            {
+                new(InterfaceWithMethod)
+            };
+
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            result.ChangeType.Should().Be(SemVerChangeType.Breaking);
+        }
+
+        [Fact]
+        public async Task ReturnsBreakingWhenInterfaceAddsProperty()
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new(EmptyInterface)
+            };
+            var newCode = new List<CodeSource>
+            {
+                new(InterfaceWithProperty)
+            };
+
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            result.ChangeType.Should().Be(SemVerChangeType.Breaking);
+        }
+
+        [Fact]
         public async Task ReturnsBreakingWhenInterfaceChangesName()
         {
             var oldCode = new List<CodeSource>
@@ -235,19 +275,56 @@
 
             result.ChangeType.Should().Be(expected);
         }
-        
+
+        public string EmptyInterface =>
+            @"
+namespace MyNamespace 
+{
+    [InterfaceAttribute(123, false, myName: ""on the interface"")]
+    public interface MyInterface
+    {
+    }  
+}
+";
+
+        public string InterfaceWithMethod =>
+            @"
+namespace MyNamespace 
+{
+    [InterfaceAttribute(123, false, myName: ""on the interface"")]
+    public interface MyInterface
+    {
+        [MethodAttribute(23, false, myName: ""on the method"")]
+        DateTime MyMethod(int first, bool second, string third);
+    }  
+}
+";
+
+        public string InterfaceWithProperty =>
+            @"
+namespace MyNamespace 
+{
+    [InterfaceAttribute(123, false, myName: ""on the interface"")]
+    public interface MyInterface
+    {
+        [PropertyAttribute(344, true, myName: ""on the property"")]
+        string MyProperty { get; set; }
+    }  
+}
+";
+
         public string SingleInterface =>
             @"
 namespace MyNamespace 
 {
-    [InterfaceAttribute(123, false, myName: ""on the class"")]
+    [InterfaceAttribute(123, false, myName: ""on the interface"")]
     public interface MyInterface
     {
         [PropertyAttribute(344, true, myName: ""on the property"")]
         string MyProperty { get; set; }
 
-        [FieldAttribute(885, myName: ""on the field"")]
-        string MyField;
+        [MethodAttribute(23, false, myName: ""on the method"")]
+        DateTime MyMethod(int first, bool second, string third);
     }  
 }
 ";
