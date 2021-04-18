@@ -4,5 +4,6 @@
 
     public class TestInterfaceDefinition : TestTypeDefinition, IInterfaceDefinition
     {
+        public InterfaceModifiers Modifiers => InterfaceModifiers.None;
     }
 }

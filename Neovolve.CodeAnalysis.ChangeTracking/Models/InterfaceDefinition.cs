@@ -1,5 +1,6 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.Models
 {
+    using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
     /// <summary>
@@ -14,6 +15,7 @@
         /// <param name="node">The syntax node that defines the class.</param>
         public InterfaceDefinition(InterfaceDeclarationSyntax node) : base(node)
         {
+            Modifiers = DetermineModifiers(node);
         }
 
         /// <summary>
@@ -25,6 +27,32 @@
             declaringType,
             node)
         {
+            Modifiers = DetermineModifiers(node);
         }
+
+        private static InterfaceModifiers DetermineModifiers(InterfaceDeclarationSyntax node)
+        {
+            var isPartial = node.Modifiers.HasModifier(SyntaxKind.PartialKeyword);
+
+            if (node.Modifiers.HasModifier(SyntaxKind.NewKeyword))
+            {
+                if (isPartial)
+                {
+                    return InterfaceModifiers.NewPartial;
+                }
+
+                return InterfaceModifiers.New;
+            }
+
+            if (isPartial)
+            {
+                return InterfaceModifiers.Partial;
+            }
+
+            return InterfaceModifiers.None;
+        }
+
+        /// <inheritdoc />
+        public InterfaceModifiers Modifiers { get; }
     }
 }

@@ -88,5 +88,23 @@
             secondConstraintList.Name.Should().Be("TValue");
             secondConstraintList.Constraints.First().Should().Be("struct");
         }
+
+        [Theory]
+        [InlineData("", InterfaceModifiers.None)]
+        [InlineData("new", InterfaceModifiers.New)]
+        [InlineData("new partial", InterfaceModifiers.NewPartial)]
+        [InlineData("partial", InterfaceModifiers.Partial)]
+        public async Task ModifiersReturnsExpectedValue(string modifiers, InterfaceModifiers expected)
+        {
+            var code = TypeDefinitionCode.EmptyInterface.Replace("public interface MyInterface",
+                "public " + modifiers + " interface MyInterface");
+
+            var node = await TestNode.FindNode<InterfaceDeclarationSyntax>(code)
+                .ConfigureAwait(false);
+
+            var sut = new InterfaceDefinition(node);
+
+            sut.Modifiers.Should().Be(expected);
+        }
     }
 }
