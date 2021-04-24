@@ -6,8 +6,13 @@
 
     public abstract class TestTypeDefinition : ITypeDefinition
     {
+        public void MergePartialType(ITypeDefinition partialType)
+        {
+        }
+
         public AccessModifiers AccessModifiers { get; set; } = AccessModifiers.Public;
         public IReadOnlyCollection<IAttributeDefinition> Attributes { get; set; } = new List<TestAttributeDefinition>();
+
         public IReadOnlyCollection<IClassDefinition> ChildClasses { get; set; } = new List<TestClassDefinition>();
 
         public IReadOnlyCollection<IInterfaceDefinition> ChildInterfaces { get; set; } =

@@ -31,6 +31,17 @@
             Modifiers = DetermineModifiers(node);
         }
 
+        /// <inheritdoc />
+        public override void MergePartialType(ITypeDefinition partialType)
+        {
+            base.MergePartialType(partialType);
+
+            var partialStructType = (IStructDefinition)partialType;
+            
+            Fields = MergeMembers(Fields, partialStructType.Fields);
+            Modifiers = Modifiers | partialStructType.Modifiers;
+        }
+
         private static StructModifiers DetermineModifiers(StructDeclarationSyntax node)
         {
             var isPartial = node.Modifiers.HasModifier(SyntaxKind.PartialKeyword);
@@ -54,9 +65,9 @@
         }
 
         /// <inheritdoc />
-        public IReadOnlyCollection<IFieldDefinition> Fields { get; }
+        public IReadOnlyCollection<IFieldDefinition> Fields { get; private set; }
 
         /// <inheritdoc />
-        public StructModifiers Modifiers { get; }
+        public StructModifiers Modifiers { get; private set; }
     }
 }

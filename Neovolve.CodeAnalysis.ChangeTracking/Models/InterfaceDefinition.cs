@@ -30,6 +30,16 @@
             Modifiers = DetermineModifiers(node);
         }
 
+        /// <inheritdoc />
+        public override void MergePartialType(ITypeDefinition partialType)
+        {
+            base.MergePartialType(partialType);
+
+            var partialInterfaceType = (IInterfaceDefinition)partialType;
+            
+            Modifiers = Modifiers | partialInterfaceType.Modifiers;
+        }
+
         private static InterfaceModifiers DetermineModifiers(InterfaceDeclarationSyntax node)
         {
             var isPartial = node.Modifiers.HasModifier(SyntaxKind.PartialKeyword);
@@ -53,6 +63,6 @@
         }
 
         /// <inheritdoc />
-        public InterfaceModifiers Modifiers { get; }
+        public InterfaceModifiers Modifiers { get; private set; }
     }
 }

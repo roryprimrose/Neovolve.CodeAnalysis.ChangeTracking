@@ -95,10 +95,10 @@
         }
 
         /// <inheritdoc />
-        public IReadOnlyCollection<IAttributeDefinition> Attributes { get; }
+        public IReadOnlyCollection<IAttributeDefinition> Attributes { get; protected set; }
 
         /// <inheritdoc />
-        public string DeclaredModifiers { get; }
+        public string DeclaredModifiers { get; protected set; }
 
         /// <inheritdoc />
         public abstract string FullName { get; }

@@ -117,6 +117,62 @@ namespace MyNamespace
             secondConstraintList.Constraints.First().Should().Be("struct");
         }
 
+        [Fact]
+        public async Task MergePartialTypeMergesFields()
+        {
+            var firstClass = ClassWithFields.Replace("class", "partial class");
+            var secondClass = firstClass.Replace("First", "Third").Replace("Second", "Fourth");
+
+            var firstNode = await TestNode.FindNode<ClassDeclarationSyntax>(firstClass)
+                .ConfigureAwait(false);
+            var secondNode = await TestNode.FindNode<ClassDeclarationSyntax>(secondClass)
+                .ConfigureAwait(false);
+
+            var firstDefinition = new ClassDefinition(firstNode);
+            var secondDefinition = new ClassDefinition(secondNode);
+
+            firstDefinition.MergePartialType(secondDefinition);
+
+            firstDefinition.Fields.Count.Should().Be(4);
+            firstDefinition.Fields.Should().Contain(x => x.Name == "First");
+            firstDefinition.Fields.Should().Contain(x => x.Name == "Second");
+            firstDefinition.Fields.Should().Contain(secondDefinition.Fields);
+            firstDefinition.Fields.All(x => x.DeclaringType == firstDefinition).Should().BeTrue();
+        }
+
+        [Theory]
+        [InlineData("", "", ClassModifiers.Partial)]
+        [InlineData("abstract", "", ClassModifiers.AbstractPartial)]
+        [InlineData("", "abstract", ClassModifiers.AbstractPartial)]
+        [InlineData("abstract", "abstract", ClassModifiers.AbstractPartial)]
+        [InlineData("sealed", "", ClassModifiers.SealedPartial)]
+        [InlineData("", "sealed", ClassModifiers.SealedPartial)]
+        [InlineData("sealed", "sealed", ClassModifiers.SealedPartial)]
+        [InlineData("static", "", ClassModifiers.StaticPartial)]
+        [InlineData("", "static", ClassModifiers.StaticPartial)]
+        [InlineData("static", "static", ClassModifiers.StaticPartial)]
+        public async Task MergePartialTypeMergesModifiers(string firstModifiers, string secondModifiers,
+            ClassModifiers expected)
+        {
+            var firstClass = ClassWithFields.Replace("class", firstModifiers + " partial class");
+            var secondClass = ClassWithFields
+                .Replace("class", secondModifiers + " partial class")
+                .Replace("First", "Third")
+                .Replace("Second", "Fourth");
+
+            var firstNode = await TestNode.FindNode<ClassDeclarationSyntax>(firstClass)
+                .ConfigureAwait(false);
+            var secondNode = await TestNode.FindNode<ClassDeclarationSyntax>(secondClass)
+                .ConfigureAwait(false);
+
+            var firstDefinition = new ClassDefinition(firstNode);
+            var secondDefinition = new ClassDefinition(secondNode);
+
+            firstDefinition.MergePartialType(secondDefinition);
+
+            firstDefinition.Modifiers.Should().Be(expected);
+        }
+
         [Theory]
         [InlineData("", ClassModifiers.None)]
         [InlineData("abstract", ClassModifiers.Abstract)]

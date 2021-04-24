@@ -53,7 +53,7 @@
         public AccessModifiers AccessModifiers { get; }
 
         /// <inheritdoc />
-        public ITypeDefinition DeclaringType { get; }
+        public ITypeDefinition DeclaringType { get; set; }
 
         /// <inheritdoc />
         public override bool IsVisible { get; }

@@ -9,7 +9,7 @@
         /// <summary>
         ///     Gets the type that declares the member.
         /// </summary>
-        public ITypeDefinition DeclaringType { get; }
+        public ITypeDefinition DeclaringType { get; set; }
 
         /// <summary>
         ///     Gets the type that the member returns.
