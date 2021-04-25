@@ -191,6 +191,48 @@
         }
 
         [Fact]
+        public async Task ReturnsBreakingWhenAddingGenericTypeParameters()
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new(TypeDefinitionCode.ClassWithGenericType)
+            };
+            var newCode = new List<CodeSource>
+            {
+                new(
+                    TypeDefinitionCode.ClassWithMultipleGenericConstraints)
+            };
+
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            result.ChangeType.Should().Be(SemVerChangeType.Breaking);
+        }
+
+        [Fact]
+        public async Task ReturnsBreakingWhenChangingGenericTypeConstraints()
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new(TypeDefinitionCode.ClassWithMultipleGenericConstraints)
+            };
+            var newCode = new List<CodeSource>
+            {
+                new(
+                    TypeDefinitionCode.ClassWithMultipleGenericConstraints.Replace("struct", "class"))
+            };
+
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            result.ChangeType.Should().Be(SemVerChangeType.Breaking);
+        }
+
+        [Fact]
         public async Task ReturnsBreakingWhenClassChangesName()
         {
             var oldCode = new List<CodeSource>
@@ -231,6 +273,26 @@
         }
 
         [Fact]
+        public async Task ReturnsBreakingWhenClassChangesTypeDefinition()
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new(SingleClass)
+            };
+            var newCode = new List<CodeSource>
+            {
+                new(SingleClass.Replace("class", "interface"))
+            };
+
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            result.ChangeType.Should().Be(SemVerChangeType.Breaking);
+        }
+
+        [Fact]
         public async Task ReturnsBreakingWhenClassRemoved()
         {
             var oldCode = new List<CodeSource>
@@ -238,6 +300,26 @@
                 new(SingleClass)
             };
             var newCode = Array.Empty<CodeSource>();
+
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            result.ChangeType.Should().Be(SemVerChangeType.Breaking);
+        }
+
+        [Fact]
+        public async Task ReturnsBreakingWhenPartialClassChangesName()
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new(PartialClasses)
+            };
+            var newCode = new List<CodeSource>
+            {
+                new(PartialClasses.Replace("MyClass", "MyNewClass"))
+            };
 
             var options = OptionsFactory.BuildOptions();
 
@@ -285,6 +367,46 @@
         }
 
         [Fact]
+        public async Task ReturnsNoneWhenMatchingSamePartialClass()
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new(PartialClasses)
+            };
+            var newCode = new List<CodeSource>
+            {
+                new(PartialClasses)
+            };
+
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            result.ChangeType.Should().Be(SemVerChangeType.None);
+        }
+
+        [Fact]
+        public async Task ReturnsNoneWhenMergingPartialClass()
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new(PartialClasses)
+            };
+            var newCode = new List<CodeSource>
+            {
+                new(SingleClass)
+            };
+
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            result.ChangeType.Should().Be(SemVerChangeType.None);
+        }
+
+        [Fact]
         public async Task ReturnsNoneWhenRenamingGenericTypeParameter()
         {
             var oldCode = new List<CodeSource>
@@ -295,6 +417,26 @@
             {
                 new(
                     TypeDefinitionCode.ClassWithMultipleGenericConstraints.Replace("TValue", "TUpdatedValue"))
+            };
+
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            result.ChangeType.Should().Be(SemVerChangeType.None);
+        }
+
+        [Fact]
+        public async Task ReturnsNoneWhenSplittingPartialClass()
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new(SingleClass)
+            };
+            var newCode = new List<CodeSource>
+            {
+                new(PartialClasses)
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -397,16 +539,25 @@
             result.ChangeType.Should().Be(expected);
         }
 
-        [Fact(Skip = "Not implemented yet")]
-        public void TestGenericTypeConstraints()
-        {
-        }
+        public string PartialClasses =>
+            @"
+namespace MyNamespace 
+{
+    [ClassAttribute(123, false, myName: ""on the class"")]
+    public partial class MyClass
+    {
+        [PropertyAttribute(344, true, myName: ""on the property"")]
+        public string MyProperty { get; set; }
+    }  
 
-        [Fact(Skip = "Not implemented yet")]
-        public void TestGenericTypes()
-        {
-        }
-        
+    public partial class MyClass
+    {
+        [FieldAttribute(885, myName: ""on the field"")]
+        public string MyField;
+    }  
+}
+";
+
         public string SingleClass =>
             @"
 namespace MyNamespace 

@@ -15,6 +15,15 @@
         {
         }
 
+        public override IEnumerable<ComparisonResult> CalculateChanges(IEnumerable<ITypeDefinition> oldItems,
+            IEnumerable<ITypeDefinition> newItems, ComparerOptions options)
+        {
+            var oldTypes = MergePartialTypes(oldItems);
+            var newTypes = MergePartialTypes(newItems);
+
+            return base.CalculateChanges(oldTypes, newTypes, options);
+        }
+
         protected override IEnumerable<ComparisonResult> EvaluateMatch(
             ItemMatch<ITypeDefinition> match,
             ComparerOptions options)
@@ -36,6 +45,28 @@
             {
                 yield return result;
             }
+        }
+
+        private static IEnumerable<ITypeDefinition> MergePartialTypes(IEnumerable<ITypeDefinition> items)
+        {
+            var types = new Dictionary<string, ITypeDefinition>();
+
+            foreach (var item in items)
+            {
+                var key = item.GetType().Name + "|" + item.FullName;
+
+                if (types.ContainsKey(key))
+                {
+                    // Merge this type into the existing type
+                    types[key].MergePartialType(item);
+                }
+                else
+                {
+                    types.Add(key, item);
+                }
+            }
+
+            return types.Values;
         }
     }
 }

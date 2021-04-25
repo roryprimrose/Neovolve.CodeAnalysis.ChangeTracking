@@ -9,7 +9,7 @@
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
     using Neovolve.CodeAnalysis.ChangeTracking.UnitTests.TestModels;
     using Xunit;
-    
+
     public class TypeEvaluatorTests
     {
         [Fact]
@@ -57,29 +57,6 @@
                 x.Namespace = oldItem.Namespace;
                 x.DeclaringType = newParent;
             });
-            var oldItems = new List<ITypeDefinition>
-            {
-                oldItem
-            };
-            var newItems = new List<ITypeDefinition>
-            {
-                newItem
-            };
-
-            var sut = new TypeEvaluator();
-
-            var actual = sut.FindMatches(oldItems, newItems);
-
-            actual.ItemsRemoved.Should().BeEquivalentTo(oldItems);
-            actual.ItemsAdded.Should().BeEquivalentTo(newItems);
-            actual.MatchingItems.Should().BeEmpty();
-        }
-
-        [Fact]
-        public void FindMatchesDoesNotReturnMatchWhenItemsAreDifferentTypes()
-        {
-            var oldItem = new TestInterfaceDefinition();
-            var newItem = new TestClassDefinition().Set(x => { x.RawName = oldItem.RawName; });
             var oldItems = new List<ITypeDefinition>
             {
                 oldItem
@@ -300,6 +277,71 @@
             actual.MatchingItems.Should().HaveCount(1);
 
             var match = actual.MatchingItems.First();
+
+            match.OldItem.Should().Be(oldItem);
+            match.NewItem.Should().Be(newItem);
+        }
+
+        [Fact]
+        public void FindMatchesReturnsMatchWhenGenericTypesHaveChanged()
+        {
+            var oldItem = new TestClassDefinition();
+            var newItem = new TestClassDefinition().Set(x =>
+            {
+                x.RawName = oldItem.RawName;
+                x.Namespace = oldItem.Namespace;
+                x.GenericTypeParameters = new List<string>(new[] {"T"});
+            });
+            var oldItems = new List<ITypeDefinition>
+            {
+                oldItem
+            };
+            var newItems = new List<ITypeDefinition>
+            {
+                newItem
+            };
+
+            var sut = new TypeEvaluator();
+
+            var actual = sut.FindMatches(oldItems, newItems);
+
+            actual.ItemsRemoved.Should().BeEmpty();
+            actual.ItemsAdded.Should().BeEmpty();
+            actual.MatchingItems.Should().HaveCount(1);
+
+            var match = actual.MatchingItems.First();
+
+            match.OldItem.Should().Be(oldItem);
+            match.NewItem.Should().Be(newItem);
+        }
+
+        [Fact]
+        public void FindMatchesReturnsMatchWhenItemsAreDifferentTypeDefinitions()
+        {
+            var oldItem = new TestInterfaceDefinition();
+            var newItem = new TestClassDefinition().Set(x =>
+            {
+                x.Namespace = oldItem.Namespace;
+                x.RawName = oldItem.RawName;
+            });
+            var oldItems = new List<ITypeDefinition>
+            {
+                oldItem
+            };
+            var newItems = new List<ITypeDefinition>
+            {
+                newItem
+            };
+
+            var sut = new TypeEvaluator();
+
+            var actual = sut.FindMatches(oldItems, newItems);
+
+            actual.ItemsRemoved.Should().BeEmpty();
+            actual.ItemsAdded.Should().BeEmpty();
+            actual.MatchingItems.Should().HaveCount(1);
+
+            var match = actual.MatchingItems.Single();
 
             match.OldItem.Should().Be(oldItem);
             match.NewItem.Should().Be(newItem);
