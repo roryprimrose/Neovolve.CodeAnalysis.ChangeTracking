@@ -9,6 +9,12 @@
     public interface ITypeDefinition : IAccessModifiersElement<AccessModifiers>, IGenericTypeElement
     {
         /// <summary>
+        ///     Merges the partial type into this type.
+        /// </summary>
+        /// <param name="partialType">The partial type to merge.</param>
+        void MergePartialType(ITypeDefinition partialType);
+
+        /// <summary>
         ///     Gets the child classes defined on this type.
         /// </summary>
         IReadOnlyCollection<IClassDefinition> ChildClasses { get; }
@@ -30,10 +36,10 @@
         IReadOnlyCollection<ITypeDefinition> ChildTypes { get; }
 
         /// <summary>
-        ///     Gets the type that declares the member.
+        ///     Gets or sets the type that declares the member.
         /// </summary>
-        public ITypeDefinition? DeclaringType { get; }
-        
+        public ITypeDefinition? DeclaringType { get; set; }
+
         /// <summary>
         ///     Gets the types implemented/inherited by this type.
         /// </summary>
@@ -47,7 +53,7 @@
         /// <summary>
         ///     Gets the namespace of the type.
         /// </summary>
-        string Namespace { get; set; }
+        string Namespace { get; }
 
         /// <summary>
         ///     Gets the properties declared on the type.

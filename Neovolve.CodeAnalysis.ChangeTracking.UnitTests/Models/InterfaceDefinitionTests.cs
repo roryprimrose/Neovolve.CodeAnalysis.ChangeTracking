@@ -88,5 +88,49 @@
             secondConstraintList.Name.Should().Be("TValue");
             secondConstraintList.Constraints.First().Should().Be("struct");
         }
+
+        [Theory]
+        [InlineData("", "", InterfaceModifiers.Partial)]
+        [InlineData("new", "", InterfaceModifiers.NewPartial)]
+        [InlineData("", "new", InterfaceModifiers.NewPartial)]
+        [InlineData("new", "new", InterfaceModifiers.NewPartial)]
+        public async Task MergePartialTypeMergesModifiers(string firstModifiers, string secondModifiers,
+            InterfaceModifiers expected)
+        {
+            var firstCode =
+                TypeDefinitionCode.EmptyInterface.Replace("interface", firstModifiers + " partial interface");
+            var secondCode = TypeDefinitionCode.EmptyInterface
+                .Replace("interface", secondModifiers + " partial interface");
+
+            var firstNode = await TestNode.FindNode<InterfaceDeclarationSyntax>(firstCode)
+                .ConfigureAwait(false);
+            var secondNode = await TestNode.FindNode<InterfaceDeclarationSyntax>(secondCode)
+                .ConfigureAwait(false);
+
+            var firstDefinition = new InterfaceDefinition(firstNode);
+            var secondDefinition = new InterfaceDefinition(secondNode);
+
+            firstDefinition.MergePartialType(secondDefinition);
+
+            firstDefinition.Modifiers.Should().Be(expected);
+        }
+
+        [Theory]
+        [InlineData("", InterfaceModifiers.None)]
+        [InlineData("new", InterfaceModifiers.New)]
+        [InlineData("new partial", InterfaceModifiers.NewPartial)]
+        [InlineData("partial", InterfaceModifiers.Partial)]
+        public async Task ModifiersReturnsExpectedValue(string modifiers, InterfaceModifiers expected)
+        {
+            var code = TypeDefinitionCode.EmptyInterface.Replace("public interface MyInterface",
+                "public " + modifiers + " interface MyInterface");
+
+            var node = await TestNode.FindNode<InterfaceDeclarationSyntax>(code)
+                .ConfigureAwait(false);
+
+            var sut = new InterfaceDefinition(node);
+
+            sut.Modifiers.Should().Be(expected);
+        }
     }
 }

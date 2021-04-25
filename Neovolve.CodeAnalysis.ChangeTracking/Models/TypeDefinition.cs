@@ -76,6 +76,67 @@
             IsVisible = DetermineIsVisible(node, DeclaringType);
         }
 
+        /// <inheritdoc />
+        public virtual void MergePartialType(ITypeDefinition partialType)
+        {
+            partialType = partialType ?? throw new ArgumentNullException(nameof(partialType));
+
+            if (GetType() != partialType.GetType())
+            {
+                throw new InvalidOperationException(
+                    $"Unable to merge partial {partialType.GetType().FullName} type into {GetType().FullName}");
+            }
+
+            if (FullName != partialType.FullName)
+            {
+                throw new InvalidOperationException(
+                    $"Unable to merge partial type {partialType.FullName} into {FullName}");
+            }
+
+            Attributes = Attributes.Union(partialType.Attributes).ToList().AsReadOnly();
+
+            Methods = MergeMembers(Methods, partialType.Methods);
+            Properties = MergeMembers(Properties, partialType.Properties);
+            ChildClasses = MergeTypes(ChildClasses, partialType.ChildClasses);
+            ChildInterfaces = MergeTypes(ChildInterfaces, partialType.ChildInterfaces);
+            ChildStructs = MergeTypes(ChildStructs, partialType.ChildStructs);
+
+            // Rebuild the child types
+            ChildTypes = DetermineChildTypes(ChildClasses, ChildInterfaces, ChildStructs);
+        }
+
+        protected IReadOnlyCollection<T> MergeMembers<T>(
+            IReadOnlyCollection<T> currentMembers,
+            IReadOnlyCollection<T> incomingMembers) where T : class, IMemberDefinition
+        {
+            var members = new List<T>(currentMembers);
+
+            foreach (var incomingMember in incomingMembers)
+            {
+                incomingMember.DeclaringType = this;
+
+                members.Add(incomingMember);
+            }
+
+            return members.AsReadOnly();
+        }
+
+        private IReadOnlyCollection<T> MergeTypes<T>(
+            IReadOnlyCollection<T> currentTypes,
+            IReadOnlyCollection<T> incomingTypes) where T : class, ITypeDefinition
+        {
+            var types = new List<T>(currentTypes);
+
+            foreach (var incomingType in incomingTypes)
+            {
+                incomingType.DeclaringType = this;
+
+                types.Add(incomingType);
+            }
+
+            return types.AsReadOnly();
+        }
+
         /// <summary>
         ///     Gets the fields that are declared on the node.
         /// </summary>
@@ -265,22 +326,22 @@
         }
 
         /// <inheritdoc />
-        public AccessModifiers AccessModifiers { get; }
+        public AccessModifiers AccessModifiers { get; private set; }
 
         /// <inheritdoc />
-        public IReadOnlyCollection<IClassDefinition> ChildClasses { get; }
+        public IReadOnlyCollection<IClassDefinition> ChildClasses { get; private set; }
 
         /// <inheritdoc />
-        public IReadOnlyCollection<IInterfaceDefinition> ChildInterfaces { get; }
+        public IReadOnlyCollection<IInterfaceDefinition> ChildInterfaces { get; private set; }
 
         /// <inheritdoc />
-        public IReadOnlyCollection<IStructDefinition> ChildStructs { get; }
+        public IReadOnlyCollection<IStructDefinition> ChildStructs { get; private set; }
 
         /// <inheritdoc />
-        public IReadOnlyCollection<ITypeDefinition> ChildTypes { get; }
+        public IReadOnlyCollection<ITypeDefinition> ChildTypes { get; private set; }
 
         /// <inheritdoc />
-        public ITypeDefinition? DeclaringType { get; }
+        public ITypeDefinition? DeclaringType { get; set; }
 
         /// <inheritdoc />
         public override string FullName { get; }
@@ -301,7 +362,7 @@
         public override bool IsVisible { get; }
 
         /// <inheritdoc />
-        public IReadOnlyCollection<IMethodDefinition> Methods { get; }
+        public IReadOnlyCollection<IMethodDefinition> Methods { get; private set; }
 
         /// <inheritdoc />
         public override string Name { get; }
@@ -310,7 +371,7 @@
         public string Namespace { get; set; }
 
         /// <inheritdoc />
-        public IReadOnlyCollection<IPropertyDefinition> Properties { get; }
+        public IReadOnlyCollection<IPropertyDefinition> Properties { get; private set; }
 
         /// <inheritdoc />
         public override string RawName { get; }

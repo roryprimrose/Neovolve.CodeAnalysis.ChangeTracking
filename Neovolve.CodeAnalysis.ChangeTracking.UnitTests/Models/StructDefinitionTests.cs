@@ -117,6 +117,56 @@ namespace MyNamespace
             secondConstraintList.Constraints.First().Should().Be("struct");
         }
 
+        [Fact]
+        public async Task MergePartialTypeMergesFields()
+        {
+            var firstCode = StructWithFields.Replace("struct", "partial struct");
+            var secondCode = firstCode.Replace("First", "Third").Replace("Second", "Fourth");
+
+            var firstNode = await TestNode.FindNode<StructDeclarationSyntax>(firstCode)
+                .ConfigureAwait(false);
+            var secondNode = await TestNode.FindNode<StructDeclarationSyntax>(secondCode)
+                .ConfigureAwait(false);
+
+            var firstDefinition = new StructDefinition(firstNode);
+            var secondDefinition = new StructDefinition(secondNode);
+
+            firstDefinition.MergePartialType(secondDefinition);
+
+            firstDefinition.Fields.Count.Should().Be(4);
+            firstDefinition.Fields.Should().Contain(x => x.Name == "First");
+            firstDefinition.Fields.Should().Contain(x => x.Name == "Second");
+            firstDefinition.Fields.Should().Contain(secondDefinition.Fields);
+            firstDefinition.Fields.All(x => x.DeclaringType == firstDefinition).Should().BeTrue();
+        }
+
+        [Theory]
+        [InlineData("", "", StructModifiers.Partial)]
+        [InlineData("readonly", "", StructModifiers.ReadOnlyPartial)]
+        [InlineData("", "readonly", StructModifiers.ReadOnlyPartial)]
+        [InlineData("readonly", "readonly", StructModifiers.ReadOnlyPartial)]
+        public async Task MergePartialTypeMergesModifiers(string firstModifiers, string secondModifiers,
+            StructModifiers expected)
+        {
+            var firstCode = StructWithFields.Replace("struct", firstModifiers + " partial struct");
+            var secondCode = StructWithFields
+                .Replace("struct", secondModifiers + " partial struct")
+                .Replace("First", "Third")
+                .Replace("Second", "Fourth");
+
+            var firstNode = await TestNode.FindNode<StructDeclarationSyntax>(firstCode)
+                .ConfigureAwait(false);
+            var secondNode = await TestNode.FindNode<StructDeclarationSyntax>(secondCode)
+                .ConfigureAwait(false);
+
+            var firstDefinition = new StructDefinition(firstNode);
+            var secondDefinition = new StructDefinition(secondNode);
+
+            firstDefinition.MergePartialType(secondDefinition);
+
+            firstDefinition.Modifiers.Should().Be(expected);
+        }
+
         [Theory]
         [InlineData("", StructModifiers.None)]
         [InlineData("readonly", StructModifiers.ReadOnly)]
