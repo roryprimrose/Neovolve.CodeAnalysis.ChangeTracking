@@ -15,13 +15,26 @@
                                           ?? throw new ArgumentNullException(nameof(parameterModifiersComparer));
         }
 
-        protected override void EvaluateMatch(
-            ItemMatch<IParameterDefinition> match,
-            ComparerOptions options,
+        protected override void EvaluateModifierChanges(ItemMatch<IParameterDefinition> match, ComparerOptions options,
             IChangeResultAggregator aggregator)
         {
-            RunComparisonStep(EvaluateModifierChanges, match, options, aggregator);
-            RunComparisonStep(EvaluateTypeChanges, match, options, aggregator, true);
+            match = match ?? throw new ArgumentNullException(nameof(match));
+            options = options ?? throw new ArgumentNullException(nameof(options));
+
+            base.EvaluateModifierChanges(match, options, aggregator);
+
+            RunComparisonStep(EvaluateParameterModifierChanges, match, options, aggregator);
+        }
+
+        protected override void EvaluateSignatureChanges(ItemMatch<IParameterDefinition> match, ComparerOptions options,
+            IChangeResultAggregator aggregator)
+        {
+            match = match ?? throw new ArgumentNullException(nameof(match));
+            options = options ?? throw new ArgumentNullException(nameof(options));
+
+            base.EvaluateSignatureChanges(match, options, aggregator);
+
+            RunComparisonStep(EvaluateParameterTypeChanges, match, options, aggregator, true);
             RunComparisonStep(EvaluateDefaultValueChanges, match, options, aggregator);
         }
 
@@ -46,7 +59,7 @@
                 aggregator.AddElementChangedResult(SemVerChangeType.Feature, match, options.MessageFormatter, args);
             }
             else if (string.IsNullOrWhiteSpace(oldItem.DefaultValue) == false
-                && string.IsNullOrWhiteSpace(newItem.DefaultValue))
+                     && string.IsNullOrWhiteSpace(newItem.DefaultValue))
             {
                 // A default value has been removed
                 // This will not be a breaking change for existing applications that happen to use a new binary without recompilation
@@ -61,7 +74,7 @@
             }
         }
 
-        private static void EvaluateTypeChanges(
+        private static void EvaluateParameterTypeChanges(
             ItemMatch<IParameterDefinition> match,
             ComparerOptions options,
             IChangeResultAggregator aggregator)
@@ -71,7 +84,7 @@
 
             var oldMappedType =
                 match.OldItem.DeclaringMethod.GetMatchingGenericType(oldType, match.NewItem.DeclaringMethod);
-            
+
             if (oldMappedType != newType)
             {
                 var args = new FormatArguments(
@@ -84,7 +97,7 @@
             }
         }
 
-        private void EvaluateModifierChanges(
+        private void EvaluateParameterModifierChanges(
             ItemMatch<IParameterDefinition> match,
             ComparerOptions options,
             IChangeResultAggregator aggregator)

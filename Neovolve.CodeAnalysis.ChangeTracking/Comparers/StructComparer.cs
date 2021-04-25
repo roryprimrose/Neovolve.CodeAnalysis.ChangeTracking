@@ -27,13 +27,26 @@
             _fieldProcessor = fieldProcessor ?? throw new ArgumentNullException(nameof(fieldProcessor));
         }
 
-        protected override void EvaluateMatch(ItemMatch<IStructDefinition> match, ComparerOptions options,
+        protected override void EvaluateChildElementChanges(ItemMatch<IStructDefinition> match, ComparerOptions options,
             IChangeResultAggregator aggregator)
         {
-            base.EvaluateMatch(match, options, aggregator);
+            match = match ?? throw new ArgumentNullException(nameof(match));
+            options = options ?? throw new ArgumentNullException(nameof(options));
+
+            base.EvaluateChildElementChanges(match, options, aggregator);
+
+            RunComparisonStep(EvaluateFieldChanges, match, options, aggregator);
+        }
+
+        protected override void EvaluateModifierChanges(ItemMatch<IStructDefinition> match, ComparerOptions options,
+            IChangeResultAggregator aggregator)
+        {
+            match = match ?? throw new ArgumentNullException(nameof(match));
+            options = options ?? throw new ArgumentNullException(nameof(options));
+
+            base.EvaluateModifierChanges(match, options, aggregator);
 
             RunComparisonStep(EvaluateStructModifierChanges, match, options, aggregator);
-            RunComparisonStep(EvaluateFieldChanges, match, options, aggregator);
         }
 
         private void EvaluateFieldChanges(

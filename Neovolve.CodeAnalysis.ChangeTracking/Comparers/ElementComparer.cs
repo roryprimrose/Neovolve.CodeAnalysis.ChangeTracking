@@ -55,16 +55,56 @@
                 return aggregator.Results;
             }
 
-            RunComparisonStep(EvaluateMatch, match, options, aggregator, true);
-            RunComparisonStep(EvaluateAttributeChanges, match, options, aggregator);
+            EvaluateElementMatch(match, options, aggregator);
 
             return aggregator.Results;
         }
 
-        protected abstract void EvaluateMatch(
+        protected virtual void EvaluateChildElementChanges(
             ItemMatch<T> match,
             ComparerOptions options,
-            IChangeResultAggregator aggregator);
+            IChangeResultAggregator aggregator)
+        {
+        }
+
+        protected virtual void EvaluateElementMatch(
+            ItemMatch<T> match,
+            ComparerOptions options,
+            IChangeResultAggregator aggregator)
+        {
+            RunComparisonStep(EvaluateTypeDefinitionChanges, match, options, aggregator, true);
+            RunComparisonStep(EvaluateModifierChanges, match, options, aggregator, true);
+            RunComparisonStep(EvaluateSignatureChanges, match, options, aggregator, true);
+            RunComparisonStep(EvaluateChildElementChanges, match, options, aggregator, true);
+            RunComparisonStep(EvaluateAttributeChanges, match, options, aggregator);
+        }
+
+        protected virtual void EvaluateModifierChanges(
+            ItemMatch<T> match,
+            ComparerOptions options,
+            IChangeResultAggregator aggregator)
+        {
+        }
+
+        protected virtual void EvaluateSignatureChanges(
+            ItemMatch<T> match,
+            ComparerOptions options,
+            IChangeResultAggregator aggregator)
+        {
+        }
+
+        /// <summary>
+        ///     Evaluate changes to the type definition such as changes to namespace or the type itself (class -> interface).
+        /// </summary>
+        /// <param name="match">The item match to evaluate.</param>
+        /// <param name="options">The comparer options.</param>
+        /// <param name="aggregator">The results aggregator.</param>
+        protected virtual void EvaluateTypeDefinitionChanges(
+            ItemMatch<T> match,
+            ComparerOptions options,
+            IChangeResultAggregator aggregator)
+        {
+        }
 
         protected void RunComparisonStep(
             Action<ItemMatch<T>, ComparerOptions, IChangeResultAggregator> step,

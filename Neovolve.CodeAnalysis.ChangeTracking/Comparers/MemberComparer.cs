@@ -7,33 +7,35 @@
     public abstract class MemberComparer<T> : ElementComparer<T>, IMemberComparer<T> where T : IMemberDefinition
     {
         private readonly IAccessModifiersComparer _accessModifiersComparer;
-        
+
         protected MemberComparer(
-            IAccessModifiersComparer accessModifiersComparer, IAttributeMatchProcessor attributeProcessor) : base(attributeProcessor)
+            IAccessModifiersComparer accessModifiersComparer, IAttributeMatchProcessor attributeProcessor) : base(
+            attributeProcessor)
         {
             _accessModifiersComparer = accessModifiersComparer
                                        ?? throw new ArgumentNullException(nameof(accessModifiersComparer));
         }
 
-        protected override void EvaluateMatch(
-            ItemMatch<T> match,
-            ComparerOptions options,
+        protected override void EvaluateModifierChanges(ItemMatch<T> match, ComparerOptions options,
             IChangeResultAggregator aggregator)
         {
+            match = match ?? throw new ArgumentNullException(nameof(match));
+            options = options ?? throw new ArgumentNullException(nameof(options));
+
+            base.EvaluateModifierChanges(match, options, aggregator);
+
             RunComparisonStep(EvaluateAccessModifierChanges, match, options, aggregator, true);
-            RunComparisonStep(EvaluateReturnTypeChanges, match, options, aggregator, true);
         }
 
-        private void EvaluateAccessModifierChanges(
-            ItemMatch<T> match,
-            ComparerOptions options,
+        protected override void EvaluateSignatureChanges(ItemMatch<T> match, ComparerOptions options,
             IChangeResultAggregator aggregator)
         {
-            var convertedMatch = new ItemMatch<IAccessModifiersElement<AccessModifiers>>(match.OldItem, match.NewItem);
+            match = match ?? throw new ArgumentNullException(nameof(match));
+            options = options ?? throw new ArgumentNullException(nameof(options));
 
-            var results = _accessModifiersComparer.CompareMatch(convertedMatch, options);
+            base.EvaluateSignatureChanges(match, options, aggregator);
 
-            aggregator.AddResults(results);
+            RunComparisonStep(EvaluateReturnTypeChanges, match, options, aggregator, true);
         }
 
         private static void EvaluateReturnTypeChanges(ItemMatch<T> match, ComparerOptions options,
@@ -72,12 +74,24 @@
             // Any other change would be breaking however
 
             var changeType = oldMappedType == "void" ? SemVerChangeType.Feature : SemVerChangeType.Breaking;
-            
+
             var args = new FormatArguments(
                 "{DefinitionType} {Identifier} return type has changed from {OldValue} to {NewValue}",
                 match.NewItem.FullName, match.OldItem.ReturnType, match.NewItem.ReturnType);
 
             aggregator.AddElementChangedResult(changeType, match, options.MessageFormatter, args);
+        }
+
+        private void EvaluateAccessModifierChanges(
+            ItemMatch<T> match,
+            ComparerOptions options,
+            IChangeResultAggregator aggregator)
+        {
+            var convertedMatch = new ItemMatch<IAccessModifiersElement<AccessModifiers>>(match.OldItem, match.NewItem);
+
+            var results = _accessModifiersComparer.CompareMatch(convertedMatch, options);
+
+            aggregator.AddResults(results);
         }
     }
 }

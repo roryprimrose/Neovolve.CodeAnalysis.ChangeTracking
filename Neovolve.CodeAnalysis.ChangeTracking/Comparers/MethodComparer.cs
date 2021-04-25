@@ -24,20 +24,28 @@
             _parameterComparer = parameterComparer ?? throw new ArgumentNullException(nameof(parameterComparer));
         }
 
-        protected override void EvaluateMatch(
-            ItemMatch<IMethodDefinition> match,
-            ComparerOptions options,
+        protected override void EvaluateModifierChanges(ItemMatch<IMethodDefinition> match, ComparerOptions options,
             IChangeResultAggregator aggregator)
         {
             match = match ?? throw new ArgumentNullException(nameof(match));
             options = options ?? throw new ArgumentNullException(nameof(options));
 
+            base.EvaluateModifierChanges(match, options, aggregator);
+
             RunComparisonStep(EvaluateMethodModifierChanges, match, options, aggregator, true);
+        }
+
+        protected override void EvaluateSignatureChanges(ItemMatch<IMethodDefinition> match, ComparerOptions options,
+            IChangeResultAggregator aggregator)
+        {
+            match = match ?? throw new ArgumentNullException(nameof(match));
+            options = options ?? throw new ArgumentNullException(nameof(options));
+
+            base.EvaluateSignatureChanges(match, options, aggregator);
+
             RunComparisonStep(EvaluateMethodNameChanges, match, options, aggregator, true);
             RunComparisonStep(EvaluateGenericTypeDefinitionChanges, match, options, aggregator, true);
             RunComparisonStep(EvaluateParameterChanges, match, options, aggregator);
-
-            base.EvaluateMatch(match, options, aggregator);
         }
 
         private static void EvaluateMethodNameChanges(

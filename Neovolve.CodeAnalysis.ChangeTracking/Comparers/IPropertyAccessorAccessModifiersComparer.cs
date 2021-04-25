@@ -2,8 +2,8 @@
 {
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
-    public interface IPropertyAccessorAccessModifiersComparer : IAccessModifiersElementComparer<PropertyAccessorAccessModifiers>
+    public interface
+        IPropertyAccessorAccessModifiersComparer : IAccessModifiersElementComparer<PropertyAccessorAccessModifiers>
     {
-
     }
 }

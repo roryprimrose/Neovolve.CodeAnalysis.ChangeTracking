@@ -205,9 +205,10 @@
                 _matchResult = matchResult;
             }
 
-            protected override void EvaluateMatch(ItemMatch<T> match, ComparerOptions options,
-                IChangeResultAggregator aggregator)
+            protected override void EvaluateTypeDefinitionChanges(ItemMatch<T> match, ComparerOptions options, IChangeResultAggregator aggregator)
             {
+                base.EvaluateTypeDefinitionChanges(match, options, aggregator);
+
                 if (_matchResult != null)
                 {
                     aggregator.AddResult(_matchResult);
