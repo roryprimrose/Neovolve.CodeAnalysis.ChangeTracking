@@ -4,6 +4,5 @@
 
     public interface ITypeComparer : ITypeComparer<ITypeDefinition>
     {
-
     }
 }

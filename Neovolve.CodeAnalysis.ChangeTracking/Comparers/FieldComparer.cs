@@ -17,16 +17,18 @@
                 fieldModifiersComparer ?? throw new ArgumentNullException(nameof(fieldModifiersComparer));
         }
 
-        protected override void EvaluateMatch(
-            ItemMatch<IFieldDefinition> match,
-            ComparerOptions options, IChangeResultAggregator aggregator)
+        protected override void EvaluateModifierChanges(ItemMatch<IFieldDefinition> match, ComparerOptions options,
+            IChangeResultAggregator aggregator)
         {
-            RunComparisonStep(EvaluateModifierChanges, match, options, aggregator);
+            match = match ?? throw new ArgumentNullException(nameof(match));
+            options = options ?? throw new ArgumentNullException(nameof(options));
 
-            base.EvaluateMatch(match, options, aggregator);
+            base.EvaluateModifierChanges(match, options, aggregator);
+
+            RunComparisonStep(EvaluateFieldModifierChanges, match, options, aggregator);
         }
 
-        private void EvaluateModifierChanges(
+        private void EvaluateFieldModifierChanges(
             ItemMatch<IFieldDefinition> match,
             ComparerOptions options,
             IChangeResultAggregator aggregator)

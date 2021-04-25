@@ -4,7 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
-    
+
     public class AttributeComparer : IAttributeComparer
     {
         public IEnumerable<ComparisonResult> CompareMatch(ItemMatch<IAttributeDefinition> match,
@@ -125,7 +125,8 @@
                     // Create a match for the arguments
                     var argumentMatch = new ItemMatch<IArgumentDefinition>(oldArgument, newArgument);
 
-                    aggregator.AddElementChangedResult(SemVerChangeType.Breaking, argumentMatch, options.MessageFormatter,
+                    aggregator.AddElementChangedResult(SemVerChangeType.Breaking, argumentMatch,
+                        options.MessageFormatter,
                         args);
 
                     return;
@@ -153,7 +154,8 @@
                     // Create a match for the arguments
                     var argumentMatch = new ItemMatch<IArgumentDefinition>(oldArgument, newArgument);
 
-                    aggregator.AddElementChangedResult(SemVerChangeType.Breaking, argumentMatch, options.MessageFormatter,
+                    aggregator.AddElementChangedResult(SemVerChangeType.Breaking, argumentMatch,
+                        options.MessageFormatter,
                         args);
 
                     return true;

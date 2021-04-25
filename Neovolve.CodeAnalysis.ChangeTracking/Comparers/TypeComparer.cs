@@ -7,10 +7,10 @@
 
     public abstract class TypeComparer<T> : ElementComparer<T>, ITypeComparer<T> where T : ITypeDefinition
     {
-        private readonly IGenericTypeElementComparer _genericTypeElementComparer;
-        private readonly IPropertyMatchProcessor _propertyProcessor;
         private readonly IAccessModifiersComparer _accessModifiersComparer;
+        private readonly IGenericTypeElementComparer _genericTypeElementComparer;
         private readonly IMethodMatchProcessor _methodProcessor;
+        private readonly IPropertyMatchProcessor _propertyProcessor;
 
         protected TypeComparer(IAccessModifiersComparer accessModifiersComparer,
             IGenericTypeElementComparer genericTypeElementComparer,
@@ -26,22 +26,52 @@
             _methodProcessor = methodProcessor ?? throw new ArgumentNullException(nameof(methodProcessor));
         }
 
-        protected override void EvaluateMatch(
-            ItemMatch<T> match,
-            ComparerOptions options,
+        protected override void EvaluateChildElementChanges(ItemMatch<T> match, ComparerOptions options,
             IChangeResultAggregator aggregator)
         {
             match = match ?? throw new ArgumentNullException(nameof(match));
             options = options ?? throw new ArgumentNullException(nameof(options));
-            
-            RunComparisonStep(CompareNamespace, match, options, aggregator, true);
-            RunComparisonStep(EvaluateAccessModifierChanges, match, options, aggregator, true);
-            RunComparisonStep(EvaluateGenericTypeDefinitionChanges, match, options, aggregator, true);
-            RunComparisonStep(EvaluateImplementedTypeChanges, match, options, aggregator, true);
+
+            base.EvaluateChildElementChanges(match, options, aggregator);
+
             RunComparisonStep(EvaluatePropertyChanges, match, options, aggregator);
             RunComparisonStep(EvaluateMethodChanges, match, options, aggregator);
         }
-        
+
+        protected override void EvaluateModifierChanges(ItemMatch<T> match, ComparerOptions options,
+            IChangeResultAggregator aggregator)
+        {
+            match = match ?? throw new ArgumentNullException(nameof(match));
+            options = options ?? throw new ArgumentNullException(nameof(options));
+
+            base.EvaluateModifierChanges(match, options, aggregator);
+
+            RunComparisonStep(EvaluateAccessModifierChanges, match, options, aggregator, true);
+        }
+
+        protected override void EvaluateSignatureChanges(ItemMatch<T> match, ComparerOptions options,
+            IChangeResultAggregator aggregator)
+        {
+            match = match ?? throw new ArgumentNullException(nameof(match));
+            options = options ?? throw new ArgumentNullException(nameof(options));
+
+            base.EvaluateSignatureChanges(match, options, aggregator);
+
+            RunComparisonStep(EvaluateImplementedTypeChanges, match, options, aggregator, true);
+        }
+
+        protected override void EvaluateTypeDefinitionChanges(ItemMatch<T> match, ComparerOptions options,
+            IChangeResultAggregator aggregator)
+        {
+            match = match ?? throw new ArgumentNullException(nameof(match));
+            options = options ?? throw new ArgumentNullException(nameof(options));
+
+            base.EvaluateTypeDefinitionChanges(match, options, aggregator);
+
+            RunComparisonStep(CompareNamespace, match, options, aggregator, true);
+            RunComparisonStep(EvaluateGenericTypeDefinitionChanges, match, options, aggregator, true);
+        }
+
         private static void CompareNamespace(
             ItemMatch<T> match,
             ComparerOptions options,
@@ -56,30 +86,6 @@
 
                 aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
             }
-        }
-        
-        private void EvaluateAccessModifierChanges(
-            ItemMatch<T> match,
-            ComparerOptions options,
-            IChangeResultAggregator aggregator)
-        {
-            var convertedMatch = new ItemMatch<IAccessModifiersElement<AccessModifiers>>(match.OldItem, match.NewItem);
-
-            var results = _accessModifiersComparer.CompareMatch(convertedMatch, options);
-
-            aggregator.AddResults(results);
-        }
-        
-        private void EvaluateGenericTypeDefinitionChanges(
-            ItemMatch<T> match,
-            ComparerOptions options,
-            IChangeResultAggregator aggregator)
-        {
-            var convertedMatch = new ItemMatch<IGenericTypeElement>(match.OldItem, match.NewItem);
-
-            var results = _genericTypeElementComparer.CompareMatch(convertedMatch, options);
-
-            aggregator.AddResults(results);
         }
 
         private static void EvaluateImplementedTypeChanges(
@@ -111,16 +117,27 @@
                 aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
             }
         }
-        
-        private void EvaluatePropertyChanges(
+
+        private void EvaluateAccessModifierChanges(
             ItemMatch<T> match,
             ComparerOptions options,
             IChangeResultAggregator aggregator)
         {
-            var oldProperties = match.OldItem.Properties;
-            var newProperties = match.NewItem.Properties;
+            var convertedMatch = new ItemMatch<IAccessModifiersElement<AccessModifiers>>(match.OldItem, match.NewItem);
 
-            var results = _propertyProcessor.CalculateChanges(oldProperties, newProperties, options);
+            var results = _accessModifiersComparer.CompareMatch(convertedMatch, options);
+
+            aggregator.AddResults(results);
+        }
+
+        private void EvaluateGenericTypeDefinitionChanges(
+            ItemMatch<T> match,
+            ComparerOptions options,
+            IChangeResultAggregator aggregator)
+        {
+            var convertedMatch = new ItemMatch<IGenericTypeElement>(match.OldItem, match.NewItem);
+
+            var results = _genericTypeElementComparer.CompareMatch(convertedMatch, options);
 
             aggregator.AddResults(results);
         }
@@ -134,6 +151,19 @@
             var newMethods = match.NewItem.Methods;
 
             var results = _methodProcessor.CalculateChanges(oldMethods, newMethods, options);
+
+            aggregator.AddResults(results);
+        }
+
+        private void EvaluatePropertyChanges(
+            ItemMatch<T> match,
+            ComparerOptions options,
+            IChangeResultAggregator aggregator)
+        {
+            var oldProperties = match.OldItem.Properties;
+            var newProperties = match.NewItem.Properties;
+
+            var results = _propertyProcessor.CalculateChanges(oldProperties, newProperties, options);
 
             aggregator.AddResults(results);
         }

@@ -115,20 +115,21 @@
         }
 
         [Fact]
-        public void CompareMatchRunsAdditionalChecksIfModifiersCheckFindsBreakingChange()
+        public void CompareMatchDoesNotRunAdditionalChecksIfAccessModifiersCheckFindsBreakingChange()
         {
             var oldItem = new TestFieldDefinition();
             var newItem = new TestFieldDefinition().Set(x => x.AccessModifiers = AccessModifiers.Private);
             var match = new ItemMatch<IFieldDefinition>(oldItem, newItem);
             var options = ComparerOptions.Default;
-            var result = new ComparisonResult(SemVerChangeType.Breaking, oldItem, newItem, "Different modifier");
+            var modifierResult = new ComparisonResult(SemVerChangeType.Breaking, oldItem, newItem, "Different modifier");
+            var accessModifierResult = new ComparisonResult(SemVerChangeType.Breaking, oldItem, newItem, "Different access modifier");
 
             var accessModifiersComparer = Substitute.For<IAccessModifiersComparer>();
             var modifiersComparer = Substitute.For<IFieldModifiersComparer>();
             var attributeProcessor = Substitute.For<IAttributeMatchProcessor>();
 
-            modifiersComparer.CompareMatch(Arg.Is<ItemMatch<IModifiersElement<FieldModifiers>>>(x => x.OldItem == oldItem && x.NewItem == newItem), options).Returns(new []{ result });
-            accessModifiersComparer.CompareMatch(Arg.Is<ItemMatch<IAccessModifiersElement<AccessModifiers>>>(x => x.OldItem == oldItem && x.NewItem == newItem), options).Returns(new[] { result });
+            accessModifiersComparer.CompareMatch(Arg.Is<ItemMatch<IAccessModifiersElement<AccessModifiers>>>(x => x.OldItem == oldItem && x.NewItem == newItem), options).Returns(new[] { accessModifierResult });
+            modifiersComparer.CompareMatch(Arg.Is<ItemMatch<IModifiersElement<FieldModifiers>>>(x => x.OldItem == oldItem && x.NewItem == newItem), options).Returns(new []{ modifierResult });
 
             var sut = new FieldComparer(accessModifiersComparer, modifiersComparer, attributeProcessor);
 
@@ -136,7 +137,8 @@
 
             _output.WriteResults(actual);
 
-            actual.Should().HaveCount(2);
+            actual.Should().HaveCount(1);
+            actual[0].Should().Be(accessModifierResult);
         }
 
         [Fact]

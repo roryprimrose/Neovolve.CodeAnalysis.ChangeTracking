@@ -20,14 +20,26 @@
             _accessorProcessor = accessorProcessor ?? throw new ArgumentNullException(nameof(accessorProcessor));
         }
 
-        protected override void EvaluateMatch(
-            ItemMatch<IPropertyDefinition> match,
-            ComparerOptions options, IChangeResultAggregator aggregator)
+        protected override void EvaluateModifierChanges(ItemMatch<IPropertyDefinition> match, ComparerOptions options,
+            IChangeResultAggregator aggregator)
         {
-            RunComparisonStep(EvaluateModifierChanges, match, options, aggregator);
-            RunComparisonStep(EvaluatePropertyAccessors, match, options, aggregator);
+            match = match ?? throw new ArgumentNullException(nameof(match));
+            options = options ?? throw new ArgumentNullException(nameof(options));
 
-            base.EvaluateMatch(match, options, aggregator);
+            base.EvaluateModifierChanges(match, options, aggregator);
+
+            RunComparisonStep(EvaluatePropertyModifierChanges, match, options, aggregator);
+        }
+
+        protected override void EvaluateSignatureChanges(ItemMatch<IPropertyDefinition> match, ComparerOptions options,
+            IChangeResultAggregator aggregator)
+        {
+            match = match ?? throw new ArgumentNullException(nameof(match));
+            options = options ?? throw new ArgumentNullException(nameof(options));
+
+            base.EvaluateSignatureChanges(match, options, aggregator);
+
+            RunComparisonStep(EvaluatePropertyAccessors, match, options, aggregator);
         }
 
         private static IEnumerable<IPropertyAccessorDefinition> GetAccessorList(IPropertyDefinition definition)
@@ -43,19 +55,6 @@
             }
         }
 
-        private void EvaluateModifierChanges(
-            ItemMatch<IPropertyDefinition> match,
-            ComparerOptions options,
-            IChangeResultAggregator aggregator)
-        {
-            var convertedMatch =
-                new ItemMatch<IModifiersElement<PropertyModifiers>>(match.OldItem, match.NewItem);
-
-            var results = _propertyModifiersComparer.CompareMatch(convertedMatch, options);
-
-            aggregator.AddResults(results);
-        }
-
         private void EvaluatePropertyAccessors(
             ItemMatch<IPropertyDefinition> match,
             ComparerOptions options,
@@ -67,6 +66,19 @@
             var changes = _accessorProcessor.CalculateChanges(oldAccessors, newAccessors, options);
 
             aggregator.AddResults(changes);
+        }
+
+        private void EvaluatePropertyModifierChanges(
+            ItemMatch<IPropertyDefinition> match,
+            ComparerOptions options,
+            IChangeResultAggregator aggregator)
+        {
+            var convertedMatch =
+                new ItemMatch<IModifiersElement<PropertyModifiers>>(match.OldItem, match.NewItem);
+
+            var results = _propertyModifiersComparer.CompareMatch(convertedMatch, options);
+
+            aggregator.AddResults(results);
         }
     }
 }

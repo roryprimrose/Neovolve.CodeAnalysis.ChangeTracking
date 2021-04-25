@@ -4,6 +4,5 @@
 
     public interface IClassModifiersComparer : IModifiersElementComparer<ClassModifiers>
     {
-
     }
 }

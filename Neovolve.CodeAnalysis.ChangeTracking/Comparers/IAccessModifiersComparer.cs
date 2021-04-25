@@ -4,6 +4,5 @@
 
     public interface IAccessModifiersComparer : IAccessModifiersElementComparer<AccessModifiers>
     {
-
     }
 }
