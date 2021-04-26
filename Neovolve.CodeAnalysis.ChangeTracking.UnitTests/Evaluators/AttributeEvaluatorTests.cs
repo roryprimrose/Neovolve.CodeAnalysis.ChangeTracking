@@ -2,15 +2,27 @@
 {
     using System;
     using System.Linq;
+    using System.Threading.Tasks;
     using FluentAssertions;
+    using Microsoft.CodeAnalysis.CSharp.Syntax;
+    using Microsoft.Extensions.Logging;
     using ModelBuilder;
     using Neovolve.CodeAnalysis.ChangeTracking.Evaluators;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
+    using Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Models;
     using Neovolve.CodeAnalysis.ChangeTracking.UnitTests.TestModels;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class AttributeEvaluatorTests
     {
+        private readonly ITestOutputHelper _output;
+
+        public AttributeEvaluatorTests(ITestOutputHelper output)
+        {
+            _output = output;
+        }
+
         [Fact]
         public void FindMatchesIdentifiesAttributesNotMatching()
         {
@@ -22,7 +34,11 @@
                 oldAttribute, oldMatchingAttribute
             };
             var newMatchingAttribute = Model.UsingModule<ConfigurationModule>().Create<TestAttributeDefinition>()
-                .Set(x => x.Name = oldMatchingAttribute.Name);
+                .Set(x =>
+                {
+                    x.Name = oldMatchingAttribute.Name;
+                    x.Arguments = oldMatchingAttribute.Arguments;
+                });
             var newAttributes = new[]
             {
                 newMatchingAttribute, newAttribute
@@ -57,7 +73,7 @@
                 oldAttribute
             };
             var newAttribute = Model.UsingModule<ConfigurationModule>().Create<TestAttributeDefinition>()
-                .Set(x => x.Name = secondName);
+                .Set(x => { x.Name = secondName; });
             var newAttributes = new[]
             {
                 newAttribute
@@ -106,6 +122,69 @@
             results.MatchingItems.First().NewItem.Should().Be(newAttribute);
             results.ItemsAdded.Should().BeEmpty();
             results.ItemsRemoved.Should().BeEmpty();
+        }
+
+        [Theory]
+        [InlineData("SimpleAttribute(\"stringValue\", 123, first: true, second: \"anothervalue\")",
+            "SimpleAttribute(\"stringValue\", 123, first: true, second: \"anothervalue\")", true, "Arguments match")]
+        [InlineData("SimpleAttribute(\"stringValue\", 123, first: true, second: \"anothervalue\")",
+            "SimpleAttribute(\"stringValue\", 123, first: true, second: \"changed\")", true, "Changed named argument value")]
+        [InlineData("SimpleAttribute(\"stringValue\", 123, first: true, second: \"anothervalue\")",
+            "SimpleAttribute(\"stringValue\", 123, first: true, third: \"anothervalue\")", true, "Changed named argument parameter name")]
+        [InlineData("SimpleAttribute(\"stringValue\", 123, first: true, third: \"anothervalue\")",
+            "SimpleAttribute(\"stringValue\", 123, first: true", true, "Removed named parameter")]
+        [InlineData("SimpleAttribute(\"stringValue\", 123, first: true)",
+            "SimpleAttribute(\"stringValue\", 123, first: true, second: \"anothervalue\")", true, "Added named argument")]
+        [InlineData("SimpleAttribute(\"changed\", 123, first: true, second: \"anothervalue\")",
+            "SimpleAttribute(\"stringValue\", 123, first: true, second: \"anothervalue\"", true, "Changed ordinal argument value")]
+        [InlineData("SimpleAttribute(\"stringValue\", 123, first: true, second: \"anothervalue\")",
+            "OtherAttribute(\"stringValue\", 123, first: true, second: \"anothervalue\")", false, "Different attribute name")]
+        [InlineData("SimpleAttribute(123, first: true, second: \"anothervalue\")",
+            "SimpleAttribute(\"stringValue\", 123, first: true, second: \"anothervalue\")", true, "Added ordinal argument")]
+        [InlineData("SimpleAttribute(\"stringValue\", 123, first: true, second: \"anothervalue\")",
+            "SimpleAttribute(123, first: true, second: \"anothervalue\"", true, "Removed ordinal argument")]
+        [InlineData("SimpleAttribute(\"stringValue\", first: true, second: \"anothervalue\")",
+            "SimpleAttribute(\"stringValue\", 123, first: true)", true, "Added ordinal, removed named argument")]
+        [InlineData("SimpleAttribute(\"stringValue\", 123, first: true, second: \"anothervalue\")",
+            "SimpleAttribute(\"stringValue\", first: true, second: \"anothervalue\", third: 554)", true, "Removed ordinal, added named argument")]
+        public async Task FindMatchesReturnsMatchesByArguments(string oldCode, string newCode,
+            bool expected, string scenario)
+        {
+            _output.WriteLine(scenario);
+
+            var oldNode = await TestNode
+                .FindNode<AttributeSyntax>(AttributeDefinitionCode.SimpleAttribute.Replace("SimpleAttribute", oldCode))
+                .ConfigureAwait(false);
+            var oldAttribute = new AttributeDefinition(oldNode);
+            var oldAttributes = new[]
+            {
+                oldAttribute
+            };
+            var newNode = await TestNode
+                .FindNode<AttributeSyntax>(AttributeDefinitionCode.SimpleAttribute.Replace("SimpleAttribute", newCode))
+                .ConfigureAwait(false);
+            var newAttribute = new AttributeDefinition(newNode);
+            var newAttributes = new[]
+            {
+                newAttribute
+            };
+
+            var sut = new AttributeEvaluator();
+
+            var results = sut.FindMatches(oldAttributes, newAttributes);
+
+            if (expected)
+            {
+                results.MatchingItems.Should().HaveCount(1);
+                results.MatchingItems.First().OldItem.Should().Be(oldAttribute);
+                results.MatchingItems.First().NewItem.Should().Be(newAttribute);
+                results.ItemsAdded.Should().BeEmpty();
+                results.ItemsRemoved.Should().BeEmpty();
+            }
+            else
+            {
+                results.MatchingItems.Should().BeEmpty();
+            }
         }
 
         [Fact]
