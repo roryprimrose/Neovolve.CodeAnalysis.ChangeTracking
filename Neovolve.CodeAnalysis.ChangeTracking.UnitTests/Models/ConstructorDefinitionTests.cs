@@ -32,6 +32,34 @@
         }
 
         [Fact]
+        public async Task AttributesReturnsDefinedValues()
+        {
+            var declaringType = new TestClassDefinition();
+
+            var node = await TestNode.FindNode<ConstructorDeclarationSyntax>(ConstructorWithAttributes)
+                .ConfigureAwait(false);
+
+            var sut = new ConstructorDefinition(declaringType, node);
+
+            sut.Attributes.Should().HaveCount(2);
+            sut.Attributes.First().Name.Should().Be("First");
+            sut.Attributes.Skip(1).First().Name.Should().Be("Second");
+        }
+
+        [Fact]
+        public async Task AttributesReturnsEmptyOnWhenNoneDefined()
+        {
+            var declaringType = new TestClassDefinition();
+
+            var node = await TestNode.FindNode<ConstructorDeclarationSyntax>(DefaultConstructor)
+                .ConfigureAwait(false);
+
+            var sut = new ConstructorDefinition(declaringType, node);
+
+            sut.Attributes.Should().BeEmpty();
+        }
+
+        [Fact]
         public async Task DefaultConstructorReturnsEmptyParameters()
         {
             var declaringType = new TestClassDefinition();
@@ -99,6 +127,19 @@
         }
 
         [Fact]
+        public async Task ParametersReturnsEmptyOnDefaultConstructor()
+        {
+            var declaringType = new TestClassDefinition();
+
+            var node = await TestNode.FindNode<ConstructorDeclarationSyntax>(DefaultConstructor)
+                .ConfigureAwait(false);
+
+            var sut = new ConstructorDefinition(declaringType, node);
+
+            sut.Parameters.Should().BeEmpty();
+        }
+
+        [Fact]
         public async Task ReturnTypeReturnsEmpty()
         {
             var declaringType = new TestClassDefinition();
@@ -110,6 +151,20 @@
 
             sut.ReturnType.Should().BeEmpty();
         }
+
+        private static string ConstructorWithAttributes => @"
+namespace MyNamespace 
+{
+    public class MyClass
+    {
+        [First]
+        [Second(""here"", true, 123)]
+        public MyClass()
+        {
+        }
+    }  
+}
+";
 
         private static string DefaultConstructor => @"
 namespace MyNamespace 

@@ -4,12 +4,17 @@
 
     /// <summary>
     ///     The <see cref="IStructDefinition" />
-    ///     interface defines the members that describe a class.
+    ///     interface defines the members that describe a struct.
     /// </summary>
     public interface IStructDefinition : ITypeDefinition, IModifiersElement<StructModifiers>
     {
         /// <summary>
-        ///     Gets the fields declared on the class.
+        ///     Gets the constructors declared on the struct.
+        /// </summary>
+        IReadOnlyCollection<IConstructorDefinition> Constructors { get; }
+
+        /// <summary>
+        ///     Gets the fields declared on the struct.
         /// </summary>
         IReadOnlyCollection<IFieldDefinition> Fields { get; }
     }

@@ -9,6 +9,11 @@
     public interface IClassDefinition : ITypeDefinition, IModifiersElement<ClassModifiers>
     {
         /// <summary>
+        ///     Gets the constructors declared on the class.
+        /// </summary>
+        IReadOnlyCollection<IConstructorDefinition> Constructors { get; }
+
+        /// <summary>
         ///     Gets the fields declared on the class.
         /// </summary>
         IReadOnlyCollection<IFieldDefinition> Fields { get; }

@@ -17,6 +17,7 @@
         public StructDefinition(StructDeclarationSyntax node) : base(node)
         {
             Fields = DetermineFields(node);
+            Constructors = DetermineConstructors(node);
             Modifiers = DetermineModifiers(node);
         }
 
@@ -28,6 +29,7 @@
         public StructDefinition(ITypeDefinition declaringType, StructDeclarationSyntax node) : base(declaringType, node)
         {
             Fields = DetermineFields(node);
+            Constructors = DetermineConstructors(node);
             Modifiers = DetermineModifiers(node);
         }
 
@@ -37,7 +39,8 @@
             base.MergePartialType(partialType);
 
             var partialStructType = (IStructDefinition)partialType;
-            
+
+            Constructors = MergeMembers(Constructors, partialStructType.Constructors);
             Fields = MergeMembers(Fields, partialStructType.Fields);
             Modifiers = Modifiers | partialStructType.Modifiers;
         }
@@ -63,6 +66,9 @@
 
             return StructModifiers.None;
         }
+
+        /// <inheritdoc />
+        public IReadOnlyCollection<IConstructorDefinition> Constructors { get; private set; }
 
         /// <inheritdoc />
         public IReadOnlyCollection<IFieldDefinition> Fields { get; private set; }

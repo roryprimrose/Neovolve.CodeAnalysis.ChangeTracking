@@ -18,6 +18,25 @@ namespace MyNamespace
 }
 ";
 
+        private const string StructWithConstructors = @"
+namespace MyNamespace 
+{
+    public struct MyStruct
+    {
+        public MyStruct(string first, bool second)
+        {
+        }
+
+        public MyStruct(string first, bool second, DateTimeOffset third)
+        {
+        }
+
+        public string First;
+        public DateTimeOffset Second;
+    }   
+}
+";
+
         private const string StructWithFields = @"
 namespace MyNamespace 
 {
@@ -41,6 +60,30 @@ namespace MyNamespace
             sut.Namespace.Should().Be("MyNamespace");
             sut.DeclaringType.Should().BeNull();
             sut.ChildStructs.Should().BeEmpty();
+        }
+
+        [Fact]
+        public async Task ConstructorsReturnsDeclaredConstructors()
+        {
+            var node = await TestNode.FindNode<StructDeclarationSyntax>(StructWithConstructors)
+                .ConfigureAwait(false);
+
+            var sut = new StructDefinition(node);
+
+            sut.Constructors.Should().HaveCount(2);
+            sut.Constructors.First().Parameters.Should().HaveCount(2);
+            sut.Constructors.Skip(1).First().Parameters.Should().HaveCount(3);
+        }
+
+        [Fact]
+        public async Task ConstructorsReturnsEmptyWhenNoneDeclared()
+        {
+            var node = await TestNode.FindNode<StructDeclarationSyntax>(StructWithFields)
+                .ConfigureAwait(false);
+
+            var sut = new StructDefinition(node);
+
+            sut.Constructors.Should().BeEmpty();
         }
 
         [Fact]
@@ -115,6 +158,29 @@ namespace MyNamespace
 
             secondConstraintList.Name.Should().Be("TValue");
             secondConstraintList.Constraints.First().Should().Be("struct");
+        }
+
+        [Fact]
+        public async Task MergePartialTypeMergesConstructors()
+        {
+            var firstCode = StructWithConstructors.Replace("struct", "partial struct");
+            var secondCode = firstCode.Replace("First", "Third").Replace("Second", "Fourth");
+
+            var firstNode = await TestNode.FindNode<StructDeclarationSyntax>(firstCode)
+                .ConfigureAwait(false);
+            var secondNode = await TestNode.FindNode<StructDeclarationSyntax>(secondCode)
+                .ConfigureAwait(false);
+
+            var firstDefinition = new StructDefinition(firstNode);
+            var secondDefinition = new StructDefinition(secondNode);
+
+            firstDefinition.MergePartialType(secondDefinition);
+
+            firstDefinition.Fields.Count.Should().Be(4);
+            firstDefinition.Constructors.FirstOrDefault(x => x.Parameters.FirstOrDefault(y => y.Name == "first") != null).Should().NotBeNull();
+            firstDefinition.Constructors.FirstOrDefault(x => x.Parameters.FirstOrDefault(y => y.Name == "third") != null).Should().NotBeNull();
+            firstDefinition.Constructors.Should().Contain(secondDefinition.Constructors);
+            firstDefinition.Constructors.All(x => x.DeclaringType == firstDefinition).Should().BeTrue();
         }
 
         [Fact]
