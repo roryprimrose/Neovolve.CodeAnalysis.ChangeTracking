@@ -6,7 +6,7 @@
 
     public class ParameterDefinition : ElementDefinition, IParameterDefinition
     {
-        public ParameterDefinition(IMethodDefinition declaringMember, ParameterSyntax node) : base(node)
+        public ParameterDefinition(IMemberDefinition declaringMember, ParameterSyntax node) : base(node)
         {
             DeclaringMember = declaringMember ?? throw new ArgumentNullException(nameof(declaringMember));
             node = node ?? throw new ArgumentNullException(nameof(node));
