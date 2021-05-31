@@ -8,15 +8,15 @@
     {
         public ParameterDefinition(IMethodDefinition declaringMember, ParameterSyntax node) : base(node)
         {
-            DeclaringMethod = declaringMember ?? throw new ArgumentNullException(nameof(declaringMember));
+            DeclaringMember = declaringMember ?? throw new ArgumentNullException(nameof(declaringMember));
             node = node ?? throw new ArgumentNullException(nameof(node));
 
             var name = node.Identifier.Text;
 
             Name = name;
-            FullName = DeclaringMethod.FullName + "_" + name;
+            FullName = DeclaringMember.FullName + "_" + name;
             RawName = name;
-            FullRawName = DeclaringMethod.FullRawName + "_" + name;
+            FullRawName = DeclaringMember.FullRawName + "_" + name;
 
             Type = node.Type?.ToString() ?? string.Empty;
             DefaultValue = node.Default?.Value.ToString() ?? string.Empty;
@@ -48,11 +48,11 @@
             return ParameterModifiers.None;
         }
 
-        public IMethodDefinition DeclaringMethod { get; }
+        public IMemberDefinition DeclaringMember { get; }
         public string DefaultValue { get; }
         public override string FullName { get; }
         public override string FullRawName { get; }
-        public override bool IsVisible => DeclaringMethod.IsVisible;
+        public override bool IsVisible => DeclaringMember.IsVisible;
         public ParameterModifiers Modifiers { get; }
         public override string Name { get; }
         public override string RawName { get; }

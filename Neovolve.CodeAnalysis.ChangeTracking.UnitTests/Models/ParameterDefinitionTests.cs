@@ -38,7 +38,7 @@
 
             var sut = new ParameterDefinition(declaringMethod, node);
 
-            sut.DeclaringMethod.Should().Be(declaringMethod);
+            sut.DeclaringMember.Should().Be(declaringMethod);
         }
 
         [Theory]
