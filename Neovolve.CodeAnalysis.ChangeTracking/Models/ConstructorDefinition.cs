@@ -18,15 +18,15 @@
             declaringType)
         {
             Modifiers = DetermineModifiers(node);
+            Parameters = DetermineParameters(node);
 
-            string name = Modifiers == ConstructorModifiers.Static ? "cctor" : "ctor";
+            string name = BuildName();
 
             Name = name;
             RawName = name;
             FullName = DeclaringType.FullName + "." + name;
             FullRawName = DeclaringType.FullRawName + "." + name;
             ReturnType = string.Empty;
-            Parameters = DetermineParameters(node);
         }
 
         private static ConstructorModifiers DetermineModifiers(ConstructorDeclarationSyntax node)
@@ -37,6 +37,29 @@
             }
 
             return ConstructorModifiers.None;
+        }
+
+        private string BuildName()
+        {
+            var name = Modifiers == ConstructorModifiers.Static ? "cctor" : "ctor";
+
+            name += "(";
+
+            var parameterList = string.Empty;
+
+            foreach (var parameter in Parameters)
+            {
+                if (parameterList.Length > 0)
+                {
+                    parameterList += ", ";
+                }
+
+                parameterList += parameter.Type;
+            }
+
+            name += parameterList + ")";
+
+            return name;
         }
 
         /// <inheritdoc />

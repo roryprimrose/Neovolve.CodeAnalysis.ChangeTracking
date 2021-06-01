@@ -91,10 +91,31 @@
         [Theory]
         [InlineData("", "ctor")]
         [InlineData("static", "cctor")]
-        public async Task NamesReturnsExpectedValue(string modifiers, string expected)
+        public async Task NamesReturnsExpectedValueWhenNoParametersDeclared(string modifiers, string expectedPrefix)
         {
             var declaringType = new TestClassDefinition();
             var code = DefaultConstructor.Replace("public MyClass", "public " + modifiers + " MyClass");
+            var expected = expectedPrefix + "()";
+
+            var node = await TestNode.FindNode<ConstructorDeclarationSyntax>(code)
+                .ConfigureAwait(false);
+
+            var sut = new ConstructorDefinition(declaringType, node);
+
+            sut.Name.Should().Be(expected);
+            sut.RawName.Should().Be(expected);
+            sut.FullName.Should().Be(declaringType.FullName + "." + expected);
+            sut.FullRawName.Should().Be(declaringType.FullRawName + "." + expected);
+        }
+
+        [Theory]
+        [InlineData("", "ctor")]
+        [InlineData("static", "cctor")]
+        public async Task NamesReturnsExpectedValueWhenParametersDeclared(string modifiers, string expectedPrefix)
+        {
+            var declaringType = new TestClassDefinition();
+            var code = ParameterConstructor.Replace("public MyClass", "public " + modifiers + " MyClass");
+            var expected = expectedPrefix + "(string, bool, int)";
 
             var node = await TestNode.FindNode<ConstructorDeclarationSyntax>(code)
                 .ConfigureAwait(false);

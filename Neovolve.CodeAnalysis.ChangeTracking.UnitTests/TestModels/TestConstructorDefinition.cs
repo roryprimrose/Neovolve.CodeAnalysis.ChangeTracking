@@ -14,9 +14,9 @@
         public string FullRawName { get; set; } = Guid.NewGuid().ToString();
         public bool IsVisible { get; set; } = true;
         public DefinitionLocation Location { get; set; } = new(string.Empty, 0, 0);
-        public ConstructorModifiers Modifiers { get; } = ConstructorModifiers.None;
+        public ConstructorModifiers Modifiers { get; set; } = ConstructorModifiers.None;
         public string Name { get; set; } = Guid.NewGuid().ToString();
-        public IReadOnlyCollection<IParameterDefinition> Parameters { get; } = new List<IParameterDefinition>();
+        public IReadOnlyCollection<IParameterDefinition> Parameters { get; set; } = new List<TestParameterDefinition>();
         public string RawName { get; set; } = Guid.NewGuid().ToString();
         public string ReturnType { get; set; } = string.Empty;
     }
