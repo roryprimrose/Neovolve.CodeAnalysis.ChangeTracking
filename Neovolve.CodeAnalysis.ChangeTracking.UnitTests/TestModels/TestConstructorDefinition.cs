@@ -16,7 +16,13 @@
         public DefinitionLocation Location { get; set; } = new(string.Empty, 0, 0);
         public ConstructorModifiers Modifiers { get; set; } = ConstructorModifiers.None;
         public string Name { get; set; } = Guid.NewGuid().ToString();
-        public IReadOnlyCollection<IParameterDefinition> Parameters { get; set; } = new List<TestParameterDefinition>();
+        public IReadOnlyCollection<IParameterDefinition> Parameters { get; set; } = new List<TestParameterDefinition>
+        {
+            new TestParameterDefinition(),
+            new TestParameterDefinition(),
+            new TestParameterDefinition(),
+            new TestParameterDefinition()
+        };
         public string RawName { get; set; } = Guid.NewGuid().ToString();
         public string ReturnType { get; set; } = string.Empty;
     }
