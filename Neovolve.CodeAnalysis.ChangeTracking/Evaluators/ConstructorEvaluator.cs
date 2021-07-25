@@ -1,10 +1,43 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.Evaluators
 {
+    using System.Collections.Generic;
     using System.Linq;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
     public class ConstructorEvaluator : Evaluator<IConstructorDefinition>, IConstructorEvaluator
     {
+        public override IMatchResults<IConstructorDefinition> FindMatches(IEnumerable<IConstructorDefinition> oldItems,
+            IEnumerable<IConstructorDefinition> newItems)
+        {
+            var oldConstructors = oldItems.ToList();
+            var newConstructors = newItems.ToList();
+
+            var matches = base.FindMatches(oldConstructors, newConstructors);
+
+            // We need to look for default constructors (instance or static) that have been added or removed where there is no other constructor
+            if (oldConstructors.Count + newConstructors.Count != 1)
+            {
+                return matches;
+            }
+
+            // There is a single constructor that is either added or removed
+
+            // First we need to find the constructor
+            var constructor = oldConstructors.Count > 0 ? oldConstructors[0] : newConstructors[0];
+
+            // Next validate whether it is a default constructor
+            if (constructor.Parameters.Count > 0)
+            {
+                // It isn't a default constructor so we need to return the existing matches
+                // which would identify the constructor as either added or removed
+                return matches;
+            }
+
+            // If we got this far then a default constructor has been added or removed and there are no other constructors
+            // We need to wipe out the match results which would have identified this as a feature (added) or breaking (removed) change
+            return MatchResults<IConstructorDefinition>.Empty;
+        }
+
         protected override void FindMatches(IMatchAgent<IConstructorDefinition> agent)
         {
             agent.MatchOn(ExactSignature);
@@ -26,7 +59,7 @@
             {
                 return false;
             }
-            
+
             // The constructors have no parameters but have changed modifiers (because ExactMatch would have already matched to a constructor with the same modifier)
             return true;
         }

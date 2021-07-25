@@ -57,7 +57,7 @@
 
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
-
+            
             result.ChangeType.Should().Be(SemVerChangeType.Breaking);
         }
 

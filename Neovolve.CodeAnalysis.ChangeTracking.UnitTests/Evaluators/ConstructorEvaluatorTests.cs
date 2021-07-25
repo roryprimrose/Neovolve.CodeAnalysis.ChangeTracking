@@ -161,9 +161,105 @@
         }
 
         [Fact]
+        public void
+            FindMatchesReturnsEmptyWhenDefaultConstructorAddedAndNoOtherConstructorsDefined()
+        {
+            var oldItems = Array.Empty<IConstructorDefinition>();
+            var newConstructor = new TestConstructorDefinition
+            {
+                Modifiers = ConstructorModifiers.None,
+                Parameters = new List<IParameterDefinition>()
+            };
+            var newItems = new List<IConstructorDefinition>
+            {
+                newConstructor
+            };
+
+            var sut = new ConstructorEvaluator();
+
+            var actual = sut.FindMatches(oldItems, newItems);
+
+            actual.ItemsAdded.Should().BeEmpty();
+            actual.ItemsRemoved.Should().BeEmpty();
+            actual.MatchingItems.Should().BeEmpty();
+        }
+
+        [Fact]
+        public void
+            FindMatchesReturnsEmptyWhenDefaultConstructorRemovedAndNoOtherConstructorsDefined()
+        {
+            var oldConstructor = new TestConstructorDefinition
+            {
+                Modifiers = ConstructorModifiers.None,
+                Parameters = new List<IParameterDefinition>()
+            };
+            var oldItems = new List<IConstructorDefinition>
+            {
+                oldConstructor
+            };
+            var newItems = Array.Empty<IConstructorDefinition>();
+
+            var sut = new ConstructorEvaluator();
+
+            var actual = sut.FindMatches(oldItems, newItems);
+
+            actual.ItemsAdded.Should().BeEmpty();
+            actual.ItemsRemoved.Should().BeEmpty();
+            actual.MatchingItems.Should().BeEmpty();
+        }
+
+        [Fact]
         public void FindMatchesReturnsEmptyWhenNoConstructorsProvided()
         {
             var oldItems = Array.Empty<IConstructorDefinition>();
+            var newItems = Array.Empty<IConstructorDefinition>();
+
+            var sut = new ConstructorEvaluator();
+
+            var actual = sut.FindMatches(oldItems, newItems);
+
+            actual.ItemsAdded.Should().BeEmpty();
+            actual.ItemsRemoved.Should().BeEmpty();
+            actual.MatchingItems.Should().BeEmpty();
+        }
+
+        [Fact]
+        public void
+            FindMatchesReturnsEmptyWhenStaticConstructorAddedAndNoOtherConstructorsDefined()
+        {
+            var oldItems = Array.Empty<IConstructorDefinition>();
+            var newConstructor = new TestConstructorDefinition
+            {
+                Modifiers = ConstructorModifiers.Static,
+                Parameters = new List<IParameterDefinition>()
+            };
+            var newItems = new List<IConstructorDefinition>
+            {
+                newConstructor
+            };
+
+            var sut = new ConstructorEvaluator();
+
+            var actual = sut.FindMatches(oldItems, newItems);
+
+            actual.ItemsAdded.Should().BeEmpty();
+            actual.ItemsRemoved.Should().BeEmpty();
+            actual.MatchingItems.Should().BeEmpty();
+        }
+
+        [Fact]
+        public void
+            FindMatchesReturnsEmptyWhenStaticConstructorRemovedAndNoOtherConstructorsDefined()
+        {
+            var oldConstructor = new TestConstructorDefinition
+            {
+                Modifiers = ConstructorModifiers.Static,
+                Parameters = new List<IParameterDefinition>()
+            };
+            var oldItems = new List<IConstructorDefinition>
+            {
+                oldConstructor
+            };
             var newItems = Array.Empty<IConstructorDefinition>();
 
             var sut = new ConstructorEvaluator();
@@ -450,6 +546,76 @@
             actual.MatchingItems.Should().HaveCount(1);
             actual.MatchingItems.First().OldItem.Should().BeEquivalentTo(oldConstructor);
             actual.MatchingItems.First().NewItem.Should().BeEquivalentTo(newConstructor);
+        }
+
+        [Fact]
+        public void
+            FindMatchesReturnsNoMatchOnAddedConstructorWithParameters()
+        {
+            var newConstructor = new TestConstructorDefinition
+            {
+                Parameters = new List<IParameterDefinition>
+                {
+                    new TestParameterDefinition
+                    {
+                        Type = "string"
+                    },
+                    new TestParameterDefinition
+                    {
+                        Type = "CancellationToken"
+                    }
+                }
+            };
+
+            var oldItems = Array.Empty<IConstructorDefinition>();
+            var newItems = new List<IConstructorDefinition>
+            {
+                newConstructor
+            };
+
+            var sut = new ConstructorEvaluator();
+
+            var actual = sut.FindMatches(oldItems, newItems);
+
+            actual.ItemsAdded.Should().HaveCount(1);
+            actual.ItemsAdded.First().Should().BeEquivalentTo(newConstructor);
+            actual.ItemsRemoved.Should().BeEmpty();
+            actual.MatchingItems.Should().BeEmpty();
+        }
+
+        [Fact]
+        public void
+            FindMatchesReturnsNoMatchOnRemovedConstructorWithParameters()
+        {
+            var oldConstructor = new TestConstructorDefinition
+            {
+                Parameters = new List<IParameterDefinition>
+                {
+                    new TestParameterDefinition
+                    {
+                        Type = "string"
+                    },
+                    new TestParameterDefinition
+                    {
+                        Type = "CancellationToken"
+                    }
+                }
+            };
+
+            var oldItems = new List<IConstructorDefinition>
+            {
+                oldConstructor
+            };
+            var newItems = Array.Empty<IConstructorDefinition>();
+
+            var sut = new ConstructorEvaluator();
+
+            var actual = sut.FindMatches(oldItems, newItems);
+
+            actual.ItemsAdded.Should().BeEmpty();
+            actual.ItemsRemoved.Should().HaveCount(1);
+            actual.ItemsRemoved.First().Should().BeEquivalentTo(oldConstructor);
+            actual.MatchingItems.Should().BeEmpty();
         }
 
         [Fact]

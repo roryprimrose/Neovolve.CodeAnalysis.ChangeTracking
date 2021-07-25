@@ -32,6 +32,14 @@
             var fieldMatcher = new FieldEvaluator();
             var fieldProcessor = new FieldMatchProcessor(fieldMatcher, fieldComparer, logger);
 
+            var parameterModifiersChangeTable = new ParameterModifiersChangeTable();
+            var parameterModifiersComparer = new ParameterModifiersComparer(parameterModifiersChangeTable);
+            var parameterComparer = new ParameterComparer(parameterModifiersComparer, attributeProcessor);
+
+            var constructorComparer = new ConstructorComparer(accessModifiersComparer, parameterComparer, attributeProcessor);
+            var constructorMatcher = new ConstructorEvaluator();
+            var constructorProcessor = new ConstructorMatchProcessor(constructorMatcher, constructorComparer, logger);
+
             var propertyAccessorAccessModifiersChangeTable = new PropertyAccessorAccessModifiersChangeTable();
             var propertyAccessorAccessModifiersComparer = new PropertyAccessorAccessModifiersComparer(propertyAccessorAccessModifiersChangeTable);
             var propertyAccessorComparer = new PropertyAccessorComparer(propertyAccessorAccessModifiersComparer, attributeProcessor);
@@ -45,9 +53,6 @@
             var methodEvaluator = new MethodEvaluator();
             var methodModifiersChangeTable = new MethodModifiersChangeTable();
             var methodModifiersComparer = new MethodModifiersComparer(methodModifiersChangeTable);
-            var parameterModifiersChangeTable = new ParameterModifiersChangeTable();
-            var parameterModifiersComparer = new ParameterModifiersComparer(parameterModifiersChangeTable);
-            var parameterComparer = new ParameterComparer(parameterModifiersComparer, attributeProcessor);
             var methodComparer = new MethodComparer(accessModifiersComparer, methodModifiersComparer, genericTypeElementComparer, parameterComparer, attributeProcessor);
             var methodProcessor = new MethodMatchProcessor(methodEvaluator, methodComparer, logger);
 
@@ -58,6 +63,7 @@
                 classModifiersComparer,
                 genericTypeElementComparer,
                 fieldProcessor,
+                constructorProcessor,
                 propertyProcessor,
                 methodProcessor, attributeProcessor);
 

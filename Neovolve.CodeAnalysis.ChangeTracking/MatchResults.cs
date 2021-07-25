@@ -13,6 +13,11 @@
     public class MatchResults<T> : IMatchResults<T> where T : IItemDefinition
     {
         /// <summary>
+        /// Returns an empty instance of the results.
+        /// </summary>
+        public static MatchResults<T> Empty = new(Array.Empty<T>(), Array.Empty<T>());
+
+        /// <summary>
         ///     Initializes a new instance of the <see cref="MatchResults{T}" /> class.
         /// </summary>
         /// <param name="itemsRemoved">The items that have been removed.</param>
