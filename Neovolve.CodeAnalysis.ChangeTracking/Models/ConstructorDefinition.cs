@@ -17,9 +17,10 @@
             node,
             declaringType)
         {
+            Modifiers = DetermineModifiers(node);
+
             string name = BuildName(node);
 
-            Modifiers = DetermineModifiers(node);
             Name = name;
             RawName = name;
             FullName = DeclaringType.FullName + "." + name;
@@ -56,7 +57,7 @@
                     parameterList += ", ";
                 }
 
-                parameterList += parameter.Identifier.Text;
+                parameterList += parameter.Type?.ToString() ?? parameter.Identifier.Text;
             }
 
             name += parameterList + ")";

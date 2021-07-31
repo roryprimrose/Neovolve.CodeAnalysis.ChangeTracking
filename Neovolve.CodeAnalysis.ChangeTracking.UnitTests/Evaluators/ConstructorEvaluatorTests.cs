@@ -17,10 +17,34 @@
         {
             var oldItems = new List<IConstructorDefinition>
             {
-                new TestConstructorDefinition(),
-                new TestConstructorDefinition(),
-                new TestConstructorDefinition(),
-                new TestConstructorDefinition()
+                new TestConstructorDefinition
+                {
+                    Parameters = new []
+                    {
+                        new TestParameterDefinition()
+                    }
+                },
+                new TestConstructorDefinition
+                {
+                    Parameters = new []
+                    {
+                        new TestParameterDefinition()
+                    }
+                },
+                new TestConstructorDefinition
+                {
+                    Parameters = new []
+                    {
+                        new TestParameterDefinition()
+                    }
+                },
+                new TestConstructorDefinition
+                {
+                    Parameters = new []
+                    {
+                        new TestParameterDefinition()
+                    }
+                }
             };
             var newItems = new List<IConstructorDefinition>(oldItems);
 
