@@ -6,6 +6,7 @@
 
     public class StructComparer : TypeComparer<IStructDefinition>, IStructComparer
     {
+        private readonly IConstructorMatchProcessor _constructorProcessor;
         private readonly IFieldMatchProcessor _fieldProcessor;
         private readonly IStructModifiersComparer _structModifiersComparer;
 
@@ -13,6 +14,7 @@
             IStructModifiersComparer structModifiersComparer,
             IGenericTypeElementComparer genericTypeElementComparer,
             IFieldMatchProcessor fieldProcessor,
+            IConstructorMatchProcessor constructorProcessor,
             IPropertyMatchProcessor propertyProcessor,
             IMethodMatchProcessor methodProcessor,
             IAttributeMatchProcessor attributeProcessor) : base(
@@ -25,6 +27,8 @@
             _structModifiersComparer =
                 structModifiersComparer ?? throw new ArgumentNullException(nameof(structModifiersComparer));
             _fieldProcessor = fieldProcessor ?? throw new ArgumentNullException(nameof(fieldProcessor));
+            _constructorProcessor =
+                constructorProcessor ?? throw new ArgumentNullException(nameof(constructorProcessor));
         }
 
         protected override void EvaluateChildElementChanges(ItemMatch<IStructDefinition> match, ComparerOptions options,
@@ -33,9 +37,10 @@
             match = match ?? throw new ArgumentNullException(nameof(match));
             options = options ?? throw new ArgumentNullException(nameof(options));
 
-            base.EvaluateChildElementChanges(match, options, aggregator);
-
             RunComparisonStep(EvaluateFieldChanges, match, options, aggregator);
+            RunComparisonStep(EvaluateConstructorChanges, match, options, aggregator);
+
+            base.EvaluateChildElementChanges(match, options, aggregator);
         }
 
         protected override void EvaluateModifierChanges(ItemMatch<IStructDefinition> match, ComparerOptions options,
@@ -47,6 +52,17 @@
             base.EvaluateModifierChanges(match, options, aggregator);
 
             RunComparisonStep(EvaluateStructModifierChanges, match, options, aggregator);
+        }
+
+        private void EvaluateConstructorChanges(
+            ItemMatch<IStructDefinition> match,
+            ComparerOptions options,
+            IChangeResultAggregator aggregator)
+        {
+            var changes =
+                _constructorProcessor.CalculateChanges(match.OldItem.Constructors, match.NewItem.Constructors, options);
+
+            aggregator.AddResults(changes);
         }
 
         private void EvaluateFieldChanges(

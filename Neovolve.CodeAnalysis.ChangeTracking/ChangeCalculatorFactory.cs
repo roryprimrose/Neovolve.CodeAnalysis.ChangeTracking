@@ -81,6 +81,7 @@
                 structModifiersComparer,
                 genericTypeElementComparer,
                 fieldProcessor,
+                constructorProcessor,
                 propertyProcessor,
                 methodProcessor,
                 attributeProcessor);

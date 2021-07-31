@@ -86,6 +86,23 @@ namespace MyNamespace
 }
 ";
 
+        public const string StructWithDefaultConstructorAndParameterConstructor =
+            @"
+namespace MyNamespace 
+{
+    public struct MyStruct
+    {
+        public MyStruct()
+        {
+        }
+
+        public MyStruct(string first, int second, bool third, DateTimeOffset fourth)
+        {
+        }
+    }  
+}
+";
+
         private readonly IChangeCalculator _calculator;
         private readonly ITestOutputHelper _output;
 
@@ -99,7 +116,7 @@ namespace MyNamespace
         }
 
         [Fact]
-        public async Task ReturnsBreakingWhenConstructorAddsParameter()
+        public async Task ReturnsBreakingWhenClassConstructorAddsParameter()
         {
             var oldCode = new List<CodeSource>
             {
@@ -121,7 +138,7 @@ namespace MyNamespace
         }
 
         [Fact]
-        public async Task ReturnsBreakingWhenConstructorChangesParameterType()
+        public async Task ReturnsBreakingWhenClassConstructorChangesParameterType()
         {
             var oldCode = new List<CodeSource>
             {
@@ -143,7 +160,7 @@ namespace MyNamespace
         }
 
         [Fact]
-        public async Task ReturnsBreakingWhenConstructorRemovesParameter()
+        public async Task ReturnsBreakingWhenClassConstructorRemovesParameter()
         {
             var oldCode = new List<CodeSource>
             {
@@ -198,6 +215,74 @@ namespace MyNamespace
             var newCode = new List<CodeSource>
             {
                 new(ClassWithParameterConstructor)
+            };
+
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            _output.WriteResult(result);
+
+            result.ChangeType.Should().Be(SemVerChangeType.Breaking);
+        }
+
+        [Fact]
+        public async Task ReturnsBreakingWhenStructConstructorAddsParameter()
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new(StructWithDefaultConstructorAndParameterConstructor.Replace(", DateTimeOffset fourth",
+                    string.Empty))
+            };
+            var newCode = new List<CodeSource>
+            {
+                new(StructWithDefaultConstructorAndParameterConstructor)
+            };
+
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            _output.WriteResult(result);
+
+            result.ChangeType.Should().Be(SemVerChangeType.Breaking);
+        }
+
+        [Fact]
+        public async Task ReturnsBreakingWhenStructConstructorChangesParameterType()
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new(StructWithDefaultConstructorAndParameterConstructor)
+            };
+            var newCode = new List<CodeSource>
+            {
+                new(StructWithDefaultConstructorAndParameterConstructor.Replace("DateTimeOffset", "Stream"))
+            };
+
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            _output.WriteResult(result);
+
+            result.ChangeType.Should().Be(SemVerChangeType.Breaking);
+        }
+
+        [Fact]
+        public async Task ReturnsBreakingWhenStructConstructorRemovesParameter()
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new(StructWithDefaultConstructorAndParameterConstructor)
+            };
+            var newCode = new List<CodeSource>
+            {
+                new(StructWithDefaultConstructorAndParameterConstructor.Replace(", DateTimeOffset fourth",
+                    string.Empty))
             };
 
             var options = OptionsFactory.BuildOptions();
