@@ -1,13 +1,15 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.Models
 {
     using System;
+    using System.Collections.Generic;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
-    
+
     public abstract class MemberDefinition : ElementDefinition, IMemberDefinition
     {
         protected MemberDefinition(MemberDeclarationSyntax node, ITypeDefinition declaringType) : base(node)
         {
             DeclaringType = declaringType ?? throw new ArgumentNullException(nameof(declaringType));
+
             AccessModifiers = DetermineAccessModifier(node, DeclaringType);
 
             if (declaringType.IsVisible == false)
@@ -19,6 +21,20 @@
                 // Determine visibility based on the access modifiers
                 IsVisible = AccessModifiers.IsVisible();
             }
+        }
+
+        protected IReadOnlyCollection<IParameterDefinition> DetermineParameters(ConstructorDeclarationSyntax node)
+        {
+            var parameters = new List<IParameterDefinition>();
+
+            foreach (var declaredParameter in node.ParameterList.Parameters)
+            {
+                var parameter = new ParameterDefinition(this, declaredParameter);
+
+                parameters.Add(parameter);
+            }
+
+            return parameters;
         }
 
         private static AccessModifiers DetermineAccessModifier(MemberDeclarationSyntax node,

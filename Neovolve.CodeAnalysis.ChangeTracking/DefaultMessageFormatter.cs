@@ -102,6 +102,21 @@
                 return "Generic constraint";
             }
 
+            if (definition is IFieldDefinition)
+            {
+                return "Field";
+            }
+
+            if (definition is IConstructorDefinition)
+            {
+                return "Constructor";
+            }
+
+            if (definition is IMethodDefinition)
+            {
+                return "Method";
+            }
+
             if (definition is IPropertyDefinition)
             {
                 return "Property";
@@ -110,16 +125,6 @@
             if (definition is IPropertyAccessorDefinition)
             {
                 return "Property accessor";
-            }
-
-            if (definition is IFieldDefinition)
-            {
-                return "Field";
-            }
-
-            if (definition is IMethodDefinition)
-            {
-                return "Method";
             }
 
             if (definition is IParameterDefinition)

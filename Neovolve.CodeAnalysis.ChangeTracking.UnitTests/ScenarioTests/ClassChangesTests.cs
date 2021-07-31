@@ -539,6 +539,42 @@
             result.ChangeType.Should().Be(expected);
         }
 
+        [Theory]
+        [ClassData(typeof(AccessModifiersDataSet))]
+        public async Task ReturnsResultBasedOnDefaultConstructorScope(string oldModifier, string newModifier,
+            SemVerChangeType expected)
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new(ClassWithDefaultConstructor.Replace("public MyClass", oldModifier + " MyClass"))
+            };
+            var newCode = new List<CodeSource>
+            {
+                new(
+                    ClassWithDefaultConstructor.Replace("public MyClass", newModifier + " MyClass"))
+            };
+
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            result.ChangeType.Should().Be(expected);
+        }
+
+        public string ClassWithDefaultConstructor =>
+            @"
+namespace MyNamespace 
+{
+    public class MyClass
+    {
+        public MyClass()
+        {
+        }
+    }  
+}
+";
+
         public string PartialClasses =>
             @"
 namespace MyNamespace 

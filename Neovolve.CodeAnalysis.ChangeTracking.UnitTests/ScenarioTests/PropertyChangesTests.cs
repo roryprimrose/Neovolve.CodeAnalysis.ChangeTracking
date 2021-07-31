@@ -20,6 +20,44 @@
             _calculator = ChangeCalculatorFactory.BuildCalculator(logger);
         }
 
+        [Fact]
+        public async Task ChangeOfInterfacePropertyTypeReturnsBreaking()
+        {
+            var oldInterface = @"
+namespace MyNamespace.Calculator
+{
+    public interface ICalculator
+    {
+        int Add(int x, int y);
+        public long X {get;set;}
+        public int Y {get;set;}
+        public int Z {get;set;}
+
+        
+        public Decimal ZZ {get;set;}
+
+        public long AAAA {get;set;}
+        public int BBBB {get;set;}
+    }
+}";
+            var newInterface = oldInterface.Replace("public int BBBB {get;set;}", "public string BBBB {get;set;}");
+            var oldCode = new List<CodeSource>
+            {
+                new(oldInterface)
+            };
+            var newCode = new List<CodeSource>
+            {
+                new(newInterface)
+            };
+
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            result.ChangeType.Should().Be(SemVerChangeType.Breaking);
+        }
+
         [Theory]
         [InlineData("", SemVerChangeType.Feature)]
         [InlineData("internal", SemVerChangeType.None)]

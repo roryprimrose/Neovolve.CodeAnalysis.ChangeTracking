@@ -3,9 +3,9 @@
     public interface IParameterDefinition : IModifiersElement<ParameterModifiers>
     {
         /// <summary>
-        ///     Gets the method that declares this parameter.
+        ///     Gets the member that declares this parameter.
         /// </summary>
-        IMethodDefinition DeclaringMethod { get; }
+        IMemberDefinition DeclaringMember { get; }
 
         /// <summary>
         ///     Gets the default value declared on the parameter.

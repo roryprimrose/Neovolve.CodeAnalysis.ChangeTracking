@@ -82,9 +82,14 @@
             var oldType = match.OldItem.Type;
             var newType = match.NewItem.Type;
 
-            var oldMappedType =
-                match.OldItem.DeclaringMethod.GetMatchingGenericType(oldType, match.NewItem.DeclaringMethod);
+            string oldMappedType = oldType;
 
+            if (match.OldItem.DeclaringMember is IGenericTypeElement oldGenericMember
+                && match.NewItem.DeclaringMember is IGenericTypeElement newGenericMember)
+            {
+                oldMappedType = oldGenericMember.GetMatchingGenericType(oldType, newGenericMember);
+            }
+            
             if (oldMappedType != newType)
             {
                 var args = new FormatArguments(

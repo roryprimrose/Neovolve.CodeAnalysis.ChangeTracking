@@ -28,6 +28,7 @@
             var structModifiersComparer = Substitute.For<IStructModifiersComparer>();
             var genericTypeElementComparer = Substitute.For<IGenericTypeElementComparer>();
             var fieldProcessor = Substitute.For<IFieldMatchProcessor>();
+            var constructorProcessor = Substitute.For<IConstructorMatchProcessor>();
             var propertyProcessor = Substitute.For<IPropertyMatchProcessor>();
             var methodProcessor = Substitute.For<IMethodMatchProcessor>();
             var attributeProcessor = Substitute.For<IAttributeMatchProcessor>();
@@ -35,10 +36,35 @@
             // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new StructComparer(accessModifiersComparer, structModifiersComparer,
                 genericTypeElementComparer,
-                fieldProcessor, propertyProcessor,
+                fieldProcessor, constructorProcessor, propertyProcessor,
                 methodProcessor, attributeProcessor);
 
             action.Should().NotThrow();
+        }
+
+        [Fact]
+        public void CompareMatchReturnsResultFromConstructorMatchProcessor()
+        {
+            var oldItem = new TestStructDefinition();
+            var newItem = oldItem.JsonClone();
+            var match = new ItemMatch<IStructDefinition>(oldItem, newItem);
+            var options = ComparerOptions.Default;
+            var changeType = Model.Create<SemVerChangeType>();
+            var message = Guid.NewGuid().ToString();
+            var result = new ComparisonResult(changeType, oldItem, newItem, message);
+            var results = new[] {result};
+
+            Service<IConstructorMatchProcessor>()
+                .CalculateChanges(oldItem.Constructors,
+                    newItem.Constructors,
+                    options).Returns(results);
+
+            var actual = SUT.CompareMatch(match, options).ToList();
+
+            _output.WriteResults(actual);
+
+            actual.Should().HaveCount(1);
+            actual[0].Should().BeEquivalentTo(result);
         }
 
         [Fact]
@@ -91,11 +117,12 @@
         }
 
         [Fact]
-        public void ThrowsExceptionWhenCreatedWithNullFieldMatchProcessor()
+        public void ThrowsExceptionWhenCreatedWithNullConstructorMatchProcessor()
         {
             var accessModifiersComparer = Substitute.For<IAccessModifiersComparer>();
             var structModifiersComparer = Substitute.For<IStructModifiersComparer>();
             var genericTypeElementComparer = Substitute.For<IGenericTypeElementComparer>();
+            var fieldProcessor = Substitute.For<IFieldMatchProcessor>();
             var propertyProcessor = Substitute.For<IPropertyMatchProcessor>();
             var methodProcessor = Substitute.For<IMethodMatchProcessor>();
             var attributeProcessor = Substitute.For<IAttributeMatchProcessor>();
@@ -103,7 +130,26 @@
             // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new StructComparer(accessModifiersComparer, structModifiersComparer,
                 genericTypeElementComparer,
-                null!, propertyProcessor, methodProcessor, attributeProcessor);
+                fieldProcessor, null!, propertyProcessor, methodProcessor, attributeProcessor);
+
+            action.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
+        public void ThrowsExceptionWhenCreatedWithNullFieldMatchProcessor()
+        {
+            var accessModifiersComparer = Substitute.For<IAccessModifiersComparer>();
+            var structModifiersComparer = Substitute.For<IStructModifiersComparer>();
+            var genericTypeElementComparer = Substitute.For<IGenericTypeElementComparer>();
+            var constructorProcessor = Substitute.For<IConstructorMatchProcessor>();
+            var propertyProcessor = Substitute.For<IPropertyMatchProcessor>();
+            var methodProcessor = Substitute.For<IMethodMatchProcessor>();
+            var attributeProcessor = Substitute.For<IAttributeMatchProcessor>();
+
+            // ReSharper disable once ObjectCreationAsStatement
+            Action action = () => new StructComparer(accessModifiersComparer, structModifiersComparer,
+                genericTypeElementComparer,
+                null!, constructorProcessor, propertyProcessor, methodProcessor, attributeProcessor);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -113,6 +159,7 @@
         {
             var accessModifiersComparer = Substitute.For<IAccessModifiersComparer>();
             var genericTypeElementComparer = Substitute.For<IGenericTypeElementComparer>();
+            var constructorProcessor = Substitute.For<IConstructorMatchProcessor>();
             var fieldProcessor = Substitute.For<IFieldMatchProcessor>();
             var propertyProcessor = Substitute.For<IPropertyMatchProcessor>();
             var methodProcessor = Substitute.For<IMethodMatchProcessor>();
@@ -120,7 +167,7 @@
 
             // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new StructComparer(accessModifiersComparer, null!, genericTypeElementComparer,
-                fieldProcessor, propertyProcessor,
+                fieldProcessor, constructorProcessor, propertyProcessor,
                 methodProcessor, attributeProcessor);
 
             action.Should().Throw<ArgumentNullException>();

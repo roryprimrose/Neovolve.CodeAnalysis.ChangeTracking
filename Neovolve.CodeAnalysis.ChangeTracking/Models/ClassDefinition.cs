@@ -16,8 +16,9 @@
         /// <param name="node">The syntax node that defines the class.</param>
         public ClassDefinition(ClassDeclarationSyntax node) : base(node)
         {
-            Fields = DetermineFields(node);
             Modifiers = DetermineModifiers(node);
+            Constructors = DetermineConstructors(node);
+            Fields = DetermineFields(node);
         }
 
         /// <summary>
@@ -27,8 +28,9 @@
         /// <param name="node">The syntax node that defines the class.</param>
         public ClassDefinition(ITypeDefinition declaringType, ClassDeclarationSyntax node) : base(declaringType, node)
         {
-            Fields = DetermineFields(node);
             Modifiers = DetermineModifiers(node);
+            Constructors = DetermineConstructors(node);
+            Fields = DetermineFields(node);
         }
 
         /// <inheritdoc />
@@ -38,6 +40,7 @@
 
             var partialClassType = (IClassDefinition) partialType;
 
+            Constructors = MergeMembers(Constructors, partialClassType.Constructors);
             Fields = MergeMembers(Fields, partialClassType.Fields);
             Modifiers = Modifiers | partialClassType.Modifiers;
         }
@@ -83,6 +86,9 @@
 
             return ClassModifiers.None;
         }
+
+        /// <inheritdoc />
+        public IReadOnlyCollection<IConstructorDefinition> Constructors { get; private set; }
 
         /// <inheritdoc />
         public IReadOnlyCollection<IFieldDefinition> Fields { get; private set; }

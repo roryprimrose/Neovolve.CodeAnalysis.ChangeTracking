@@ -34,8 +34,8 @@
 
             base.EvaluateChildElementChanges(match, options, aggregator);
 
-            RunComparisonStep(EvaluatePropertyChanges, match, options, aggregator);
             RunComparisonStep(EvaluateMethodChanges, match, options, aggregator);
+            RunComparisonStep(EvaluatePropertyChanges, match, options, aggregator);
         }
 
         protected override void EvaluateModifierChanges(ItemMatch<T> match, ComparerOptions options,

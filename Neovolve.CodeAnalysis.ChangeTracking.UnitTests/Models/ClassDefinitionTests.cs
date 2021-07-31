@@ -9,6 +9,25 @@
 
     public class ClassDefinitionTests
     {
+        private const string ClassWithConstructors = @"
+namespace MyNamespace 
+{
+    public class MyClass
+    {
+        public MyClass()
+        {
+        }
+
+        public MyClass(string first, DateTimeOffset second)
+        {
+        }
+
+        public string First;
+        public DateTimeOffset Second;
+    }   
+}
+";
+
         private const string ClassWithFields = @"
 namespace MyNamespace 
 {
@@ -41,6 +60,30 @@ namespace MyNamespace
             sut.Namespace.Should().Be("MyNamespace");
             sut.DeclaringType.Should().BeNull();
             sut.ChildClasses.Should().BeEmpty();
+        }
+
+        [Fact]
+        public async Task ConstructorsReturnsDeclaredConstructors()
+        {
+            var node = await TestNode.FindNode<ClassDeclarationSyntax>(ClassWithConstructors)
+                .ConfigureAwait(false);
+
+            var sut = new ClassDefinition(node);
+
+            sut.Constructors.Should().HaveCount(2);
+            sut.Constructors.First().Parameters.Should().BeEmpty();
+            sut.Constructors.Skip(1).First().Parameters.Should().HaveCount(2);
+        }
+
+        [Fact]
+        public async Task ConstructorsReturnsEmptyWhenNoneDefined()
+        {
+            var node = await TestNode.FindNode<ClassDeclarationSyntax>(ClassWithFields)
+                .ConfigureAwait(false);
+
+            var sut = new ClassDefinition(node);
+
+            sut.Constructors.Should().BeEmpty();
         }
 
         [Fact]
@@ -115,6 +158,28 @@ namespace MyNamespace
 
             secondConstraintList.Name.Should().Be("TValue");
             secondConstraintList.Constraints.First().Should().Be("struct");
+        }
+
+        [Fact]
+        public async Task MergePartialTypeMergesConstructors()
+        {
+            var firstClass = ClassWithConstructors.Replace("class", "partial class");
+            var secondClass = firstClass.Replace("first", "third").Replace("second", "fourth");
+
+            var firstNode = await TestNode.FindNode<ClassDeclarationSyntax>(firstClass)
+                .ConfigureAwait(false);
+            var secondNode = await TestNode.FindNode<ClassDeclarationSyntax>(secondClass)
+                .ConfigureAwait(false);
+
+            var firstDefinition = new ClassDefinition(firstNode);
+            var secondDefinition = new ClassDefinition(secondNode);
+
+            firstDefinition.MergePartialType(secondDefinition);
+
+            firstDefinition.Constructors.Count.Should().Be(4);
+            firstDefinition.Constructors.FirstOrDefault(x => x.Parameters.FirstOrDefault(y => y.Name == "first") != null).Should().NotBeNull();
+            firstDefinition.Constructors.FirstOrDefault(x => x.Parameters.FirstOrDefault(y => y.Name == "third") != null).Should().NotBeNull();
+            firstDefinition.Constructors.All(x => x.DeclaringType == firstDefinition).Should().BeTrue();
         }
 
         [Fact]

@@ -46,6 +46,31 @@
         }
 
         [Fact]
+        public void CompareMatchReturnsResultFromConstructorMatchProcessor()
+        {
+            var oldItem = new TestClassDefinition();
+            var newItem = oldItem.JsonClone();
+            var match = new ItemMatch<IClassDefinition>(oldItem, newItem);
+            var options = ComparerOptions.Default;
+            var changeType = Model.Create<SemVerChangeType>();
+            var message = Guid.NewGuid().ToString();
+            var result = new ComparisonResult(changeType, oldItem, newItem, message);
+            var results = new[] {result};
+
+            Service<IConstructorMatchProcessor>()
+                .CalculateChanges(oldItem.Constructors,
+                    newItem.Constructors,
+                    options).Returns(results);
+
+            var actual = SUT.CompareMatch(match, options).ToList();
+
+            _output.WriteResults(actual);
+
+            actual.Should().HaveCount(1);
+            actual[0].Should().BeEquivalentTo(result);
+        }
+
+        [Fact]
         public void CompareMatchReturnsResultFromFieldMatchProcessor()
         {
             var oldItem = new TestClassDefinition();
@@ -76,13 +101,33 @@
             var accessModifiersComparer = Substitute.For<IAccessModifiersComparer>();
             var genericTypeElementComparer = Substitute.For<IGenericTypeElementComparer>();
             var fieldProcessor = Substitute.For<IFieldMatchProcessor>();
+            var constructorProcessor = Substitute.For<IConstructorMatchProcessor>();
             var propertyProcessor = Substitute.For<IPropertyMatchProcessor>();
             var methodProcessor = Substitute.For<IMethodMatchProcessor>();
             var attributeProcessor = Substitute.For<IAttributeMatchProcessor>();
 
             // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new ClassComparer(accessModifiersComparer, null!, genericTypeElementComparer,
-                fieldProcessor, propertyProcessor, methodProcessor, attributeProcessor);
+                fieldProcessor, constructorProcessor, propertyProcessor, methodProcessor, attributeProcessor);
+
+            action.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
+        public void ThrowsExceptionWhenCreatedWithNullConstructorMatchProcessor()
+        {
+            var accessModifiersComparer = Substitute.For<IAccessModifiersComparer>();
+            var classModifiersComparer = Substitute.For<IClassModifiersComparer>();
+            var genericTypeElementComparer = Substitute.For<IGenericTypeElementComparer>();
+            var fieldProcessor = Substitute.For<IFieldMatchProcessor>();
+            var propertyProcessor = Substitute.For<IPropertyMatchProcessor>();
+            var methodProcessor = Substitute.For<IMethodMatchProcessor>();
+            var attributeProcessor = Substitute.For<IAttributeMatchProcessor>();
+
+            // ReSharper disable once ObjectCreationAsStatement
+            Action action = () => new ClassComparer(accessModifiersComparer, classModifiersComparer,
+                genericTypeElementComparer,
+                fieldProcessor, null!, propertyProcessor, methodProcessor, attributeProcessor);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -93,6 +138,7 @@
             var accessModifiersComparer = Substitute.For<IAccessModifiersComparer>();
             var classModifiersComparer = Substitute.For<IClassModifiersComparer>();
             var genericTypeElementComparer = Substitute.For<IGenericTypeElementComparer>();
+            var constructorProcessor = Substitute.For<IConstructorMatchProcessor>();
             var propertyProcessor = Substitute.For<IPropertyMatchProcessor>();
             var methodProcessor = Substitute.For<IMethodMatchProcessor>();
             var attributeProcessor = Substitute.For<IAttributeMatchProcessor>();
@@ -100,7 +146,7 @@
             // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new ClassComparer(accessModifiersComparer, classModifiersComparer,
                 genericTypeElementComparer,
-                null!, propertyProcessor, methodProcessor, attributeProcessor);
+                null!, constructorProcessor, propertyProcessor, methodProcessor, attributeProcessor);
 
             action.Should().Throw<ArgumentNullException>();
         }

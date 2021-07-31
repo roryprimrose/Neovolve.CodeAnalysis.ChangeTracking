@@ -105,6 +105,32 @@
             ChildTypes = DetermineChildTypes(ChildClasses, ChildInterfaces, ChildStructs);
         }
 
+        /// <summary>
+        ///     Gets the fields that are declared on the node.
+        /// </summary>
+        /// <param name="node">The node to evaluate.</param>
+        /// <returns>The fields that are declared on the node.</returns>
+        protected IReadOnlyCollection<ConstructorDefinition> DetermineConstructors(SyntaxNode node)
+        {
+            var childNodes = node.ChildNodes().OfType<ConstructorDeclarationSyntax>();
+            var childTypes = childNodes.Select(childNode => new ConstructorDefinition(this, childNode)).FastToList();
+
+            return childTypes.AsReadOnly();
+        }
+
+        /// <summary>
+        ///     Gets the fields that are declared on the node.
+        /// </summary>
+        /// <param name="node">The node to evaluate.</param>
+        /// <returns>The fields that are declared on the node.</returns>
+        protected IReadOnlyCollection<FieldDefinition> DetermineFields(SyntaxNode node)
+        {
+            var childNodes = node.ChildNodes().OfType<FieldDeclarationSyntax>();
+            var childTypes = childNodes.Select(childNode => new FieldDefinition(this, childNode)).FastToList();
+
+            return childTypes.AsReadOnly();
+        }
+
         protected IReadOnlyCollection<T> MergeMembers<T>(
             IReadOnlyCollection<T> currentMembers,
             IReadOnlyCollection<T> incomingMembers) where T : class, IMemberDefinition
@@ -119,35 +145,6 @@
             }
 
             return members.AsReadOnly();
-        }
-
-        private IReadOnlyCollection<T> MergeTypes<T>(
-            IReadOnlyCollection<T> currentTypes,
-            IReadOnlyCollection<T> incomingTypes) where T : class, ITypeDefinition
-        {
-            var types = new List<T>(currentTypes);
-
-            foreach (var incomingType in incomingTypes)
-            {
-                incomingType.DeclaringType = this;
-
-                types.Add(incomingType);
-            }
-
-            return types.AsReadOnly();
-        }
-
-        /// <summary>
-        ///     Gets the fields that are declared on the node.
-        /// </summary>
-        /// <param name="node">The node to evaluate.</param>
-        /// <returns>The fields that are declared on the node.</returns>
-        protected IReadOnlyCollection<FieldDefinition> DetermineFields(SyntaxNode node)
-        {
-            var childNodes = node.ChildNodes().OfType<FieldDeclarationSyntax>();
-            var childTypes = childNodes.Select(childNode => new FieldDefinition(this, childNode)).FastToList();
-
-            return childTypes.AsReadOnly();
         }
 
         private static AccessModifiers DetermineAccessModifier(TypeDeclarationSyntax node,
@@ -325,8 +322,24 @@
             return childTypes.AsReadOnly();
         }
 
+        private IReadOnlyCollection<T> MergeTypes<T>(
+            IReadOnlyCollection<T> currentTypes,
+            IReadOnlyCollection<T> incomingTypes) where T : class, ITypeDefinition
+        {
+            var types = new List<T>(currentTypes);
+
+            foreach (var incomingType in incomingTypes)
+            {
+                incomingType.DeclaringType = this;
+
+                types.Add(incomingType);
+            }
+
+            return types.AsReadOnly();
+        }
+
         /// <inheritdoc />
-        public AccessModifiers AccessModifiers { get; private set; }
+        public AccessModifiers AccessModifiers { get; }
 
         /// <inheritdoc />
         public IReadOnlyCollection<IClassDefinition> ChildClasses { get; private set; }
