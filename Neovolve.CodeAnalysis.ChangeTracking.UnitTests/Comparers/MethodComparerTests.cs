@@ -128,7 +128,7 @@
             actual.First().Message.Should().Contain("renamed");
 
             actual.Should().HaveCount(1);
-            actual[0].ChangeType.Should().BeEquivalentTo(SemVerChangeType.Breaking);
+            actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
         }
 
         [Fact]
@@ -158,7 +158,7 @@
             actual.First().Message.Should().Contain("renamed");
 
             actual.Should().HaveCount(1);
-            actual[0].ChangeType.Should().BeEquivalentTo(SemVerChangeType.Breaking);
+            actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
         }
 
         [Fact]
@@ -176,7 +176,7 @@
             _output.WriteResults(actual);
 
             actual.Should().HaveCount(1);
-            actual[0].ChangeType.Should().BeEquivalentTo(SemVerChangeType.Breaking);
+            actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
             actual[0].Message.Should().Contain("added");
             actual[0].Message.Should().Contain("parameter");
         }
@@ -196,7 +196,7 @@
             _output.WriteResults(actual);
 
             actual.Should().HaveCount(1);
-            actual[0].ChangeType.Should().BeEquivalentTo(SemVerChangeType.Breaking);
+            actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
             actual[0].Message.Should().Contain("removed");
             actual[0].Message.Should().Contain("parameter");
         }

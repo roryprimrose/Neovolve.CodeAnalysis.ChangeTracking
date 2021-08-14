@@ -16,7 +16,7 @@
 
             Location = DetermineLocation(node);
         }
-
+        
         private static DefinitionLocation DetermineLocation(CSharpSyntaxNode node)
         {
             node = node ?? throw new ArgumentNullException(nameof(node));

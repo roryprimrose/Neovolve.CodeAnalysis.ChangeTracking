@@ -10,7 +10,7 @@
     ///     The <see cref="TypeDefinition" />
     ///     class is used to describe a type.
     /// </summary>
-    public abstract class TypeDefinition : ElementDefinition, ITypeDefinition
+    public abstract class TypeDefinition : BaseTypeDefinition, ITypeDefinition
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="TypeDefinition" /> class.
@@ -19,20 +19,6 @@
         protected TypeDefinition(TypeDeclarationSyntax node) : base(node)
         {
             node = node ?? throw new ArgumentNullException(nameof(node));
-
-            var name = DetermineName(node);
-            var rawName = node.Identifier.Text;
-
-            DeclaringType = null;
-            Namespace = DetermineNamespace(node);
-
-            IsVisible = DetermineIsVisible(node, DeclaringType);
-
-            AccessModifiers = DetermineAccessModifier(node, DeclaringType);
-            Name = name;
-            RawName = rawName;
-            FullRawName = Namespace + "." + rawName;
-            FullName = Namespace + "." + name;
 
             ImplementedTypes = DetermineImplementedTypes(node);
             Properties = DetermineProperties(node);
@@ -50,20 +36,8 @@
         /// </summary>
         /// <param name="declaringType">The parent type that declares this type.</param>
         /// <param name="node">The syntax node that defines the type.</param>
-        protected TypeDefinition(ITypeDefinition declaringType, TypeDeclarationSyntax node) : base(node)
+        protected TypeDefinition(ITypeDefinition declaringType, TypeDeclarationSyntax node) : base(declaringType, node)
         {
-            DeclaringType = declaringType ?? throw new ArgumentNullException(nameof(declaringType));
-
-            var name = DetermineName(node);
-            var rawName = node.Identifier.Text;
-
-            Namespace = DetermineNamespace(node);
-            AccessModifiers = DetermineAccessModifier(node, DeclaringType);
-            Name = name;
-            RawName = rawName;
-            FullRawName = DeclaringType.FullRawName + "+" + rawName;
-            FullName = DeclaringType.FullName + "+" + name;
-
             ImplementedTypes = DetermineImplementedTypes(node);
             Properties = DetermineProperties(node);
             Methods = DetermineMethods(node);
@@ -73,7 +47,6 @@
             ChildTypes = DetermineChildTypes(ChildClasses, ChildInterfaces, ChildStructs);
             GenericTypeParameters = DetermineGenericTypeParameters(node);
             GenericConstraints = DetermineGenericConstraints(node);
-            IsVisible = DetermineIsVisible(node, DeclaringType);
         }
 
         /// <inheritdoc />
@@ -147,19 +120,6 @@
             return members.AsReadOnly();
         }
 
-        private static AccessModifiers DetermineAccessModifier(TypeDeclarationSyntax node,
-            ITypeDefinition? declaringType)
-        {
-            node = node ?? throw new ArgumentNullException(nameof(node));
-
-            if (declaringType == null)
-            {
-                return node.Modifiers.DetermineAccessModifier(AccessModifiers.Internal);
-            }
-
-            return node.Modifiers.DetermineAccessModifier(AccessModifiers.Private);
-        }
-
         private static IReadOnlyCollection<ITypeDefinition> DetermineChildTypes(
             IReadOnlyCollection<ITypeDefinition> childClasses,
             IReadOnlyCollection<ITypeDefinition> childInterfaces, IReadOnlyCollection<IStructDefinition> childStructs)
@@ -217,71 +177,7 @@
 
             return childTypes.AsReadOnly();
         }
-
-        private static bool DetermineIsVisible(TypeDeclarationSyntax node, ITypeDefinition? declaringType)
-        {
-            node = node ?? throw new ArgumentNullException(nameof(node));
-
-            if (declaringType != null
-                && declaringType.IsVisible == false)
-            {
-                // The parent type is not visible so this one can't be either
-                return false;
-            }
-
-            // This is either a top level type or the parent type is visible
-            // Determine visibility based on the access modifiers
-            var accessModifier = DetermineAccessModifier(node, declaringType);
-
-            return accessModifier.IsVisible();
-        }
-
-        private static string DetermineName(BaseTypeDeclarationSyntax node)
-        {
-            var name = string.Empty;
-
-            name += node.Identifier.Text;
-
-            var typeParameters = node.ChildNodes().OfType<TypeParameterListSyntax>().FirstOrDefault();
-
-            if (typeParameters == null)
-            {
-                return name;
-            }
-
-            var parameterList = typeParameters.ToString();
-
-            return name + parameterList;
-        }
-
-        /// <summary>
-        ///     Gets the namespace that contains the node.
-        /// </summary>
-        /// <param name="node">The node to evaluate.</param>
-        /// <returns>The namespace that contains the node or <see cref="string.Empty" /> if no namespace is found.</returns>
-        private static string DetermineNamespace(SyntaxNode node)
-        {
-            node = node ?? throw new ArgumentNullException(nameof(node));
-
-            var containerNamespace = node.FirstAncestorOrSelf<NamespaceDeclarationSyntax>(x => x != node);
-
-            if (containerNamespace != null)
-            {
-                var parentNamespace = DetermineNamespace(containerNamespace);
-
-                var namespaceValue = containerNamespace.Name.GetText().ToString().Trim();
-
-                if (string.IsNullOrWhiteSpace(parentNamespace))
-                {
-                    return namespaceValue;
-                }
-
-                return parentNamespace + "." + namespaceValue;
-            }
-
-            return string.Empty;
-        }
-
+        
         private IReadOnlyCollection<IClassDefinition> DetermineChildClasses(SyntaxNode node)
         {
             var childNodes = node.ChildNodes().OfType<ClassDeclarationSyntax>();
@@ -337,10 +233,7 @@
 
             return types.AsReadOnly();
         }
-
-        /// <inheritdoc />
-        public AccessModifiers AccessModifiers { get; }
-
+        
         /// <inheritdoc />
         public IReadOnlyCollection<IClassDefinition> ChildClasses { get; private set; }
 
@@ -352,16 +245,7 @@
 
         /// <inheritdoc />
         public IReadOnlyCollection<ITypeDefinition> ChildTypes { get; private set; }
-
-        /// <inheritdoc />
-        public ITypeDefinition? DeclaringType { get; set; }
-
-        /// <inheritdoc />
-        public override string FullName { get; }
-
-        /// <inheritdoc />
-        public override string FullRawName { get; }
-
+        
         /// <inheritdoc />
         public IReadOnlyCollection<IConstraintListDefinition> GenericConstraints { get; protected set; }
 
@@ -370,23 +254,11 @@
 
         /// <inheritdoc />
         public IReadOnlyCollection<string> ImplementedTypes { get; }
-
-        /// <inheritdoc />
-        public override bool IsVisible { get; }
-
+        
         /// <inheritdoc />
         public IReadOnlyCollection<IMethodDefinition> Methods { get; private set; }
-
-        /// <inheritdoc />
-        public override string Name { get; }
-
-        /// <inheritdoc />
-        public string Namespace { get; set; }
-
+        
         /// <inheritdoc />
         public IReadOnlyCollection<IPropertyDefinition> Properties { get; private set; }
-
-        /// <inheritdoc />
-        public override string RawName { get; }
     }
 }

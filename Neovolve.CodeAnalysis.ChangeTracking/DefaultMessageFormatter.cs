@@ -92,6 +92,16 @@
                 return "Interface";
             }
 
+            if (definition is IEnumDefinition)
+            {
+                return "Enum";
+            }
+
+            if (definition is IEnumMemberDefinition)
+            {
+                return "Enum Member";
+            }
+
             if (definition is IStructDefinition)
             {
                 return "Struct";

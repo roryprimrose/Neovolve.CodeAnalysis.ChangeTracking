@@ -74,6 +74,8 @@
         }
 
         [Theory]
+        [InlineData("System.Flags")]
+        [InlineData("Flags")]
         [InlineData("System.Text.Json.Serialization.JsonConverter")]
         [InlineData("System.Text.Json.Serialization.JsonExtensionData")]
         [InlineData("System.Text.Json.Serialization.JsonIgnore")]

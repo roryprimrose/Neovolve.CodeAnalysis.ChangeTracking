@@ -23,7 +23,7 @@
             Func<Task> action = async () => await calculator.CalculateChanges(oldCode, null!, CancellationToken.None)
                 .ConfigureAwait(false);
 
-            action.Should().Throw<ArgumentNullException>();
+            action.Should().ThrowAsync<ArgumentNullException>();
         }
 
         [Fact]
@@ -35,7 +35,7 @@
             Func<Task> action = async () => await calculator.CalculateChanges(null!, newCode, CancellationToken.None)
                 .ConfigureAwait(false);
 
-            action.Should().Throw<ArgumentNullException>();
+            action.Should().ThrowAsync<ArgumentNullException>();
         }
 
         [Fact]
@@ -127,7 +127,7 @@
             Func<Task> action = async () => await ChangeCalculatorExtensions
                 .CalculateChanges(null!, oldCode, newCode, CancellationToken.None).ConfigureAwait(false);
 
-            action.Should().Throw<ArgumentNullException>();
+            action.Should().ThrowAsync<ArgumentNullException>();
         }
 
         [Fact]

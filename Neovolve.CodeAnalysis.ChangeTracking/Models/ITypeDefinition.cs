@@ -6,7 +6,7 @@
     ///     The <see cref="ITypeDefinition" />
     ///     interface defines common properties for types.
     /// </summary>
-    public interface ITypeDefinition : IAccessModifiersElement<AccessModifiers>, IGenericTypeElement
+    public interface ITypeDefinition : IBaseTypeDefinition, IGenericTypeElement
     {
         /// <summary>
         ///     Merges the partial type into this type.
@@ -36,11 +36,6 @@
         IReadOnlyCollection<ITypeDefinition> ChildTypes { get; }
 
         /// <summary>
-        ///     Gets or sets the type that declares the member.
-        /// </summary>
-        public ITypeDefinition? DeclaringType { get; set; }
-
-        /// <summary>
         ///     Gets the types implemented/inherited by this type.
         /// </summary>
         IReadOnlyCollection<string> ImplementedTypes { get; }
@@ -49,11 +44,6 @@
         ///     Gets the methods declared on the type.
         /// </summary>
         IReadOnlyCollection<IMethodDefinition> Methods { get; }
-
-        /// <summary>
-        ///     Gets the namespace of the type.
-        /// </summary>
-        string Namespace { get; }
 
         /// <summary>
         ///     Gets the properties declared on the type.
