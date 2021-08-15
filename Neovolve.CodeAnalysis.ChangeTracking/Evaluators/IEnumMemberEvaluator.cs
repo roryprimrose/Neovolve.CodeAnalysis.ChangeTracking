@@ -2,7 +2,7 @@
 {
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
-    public interface IFieldEvaluator : IEvaluator<IFieldDefinition>
+    public interface IEnumMemberEvaluator : IEvaluator<IEnumMemberDefinition>
     {
     }
 }
