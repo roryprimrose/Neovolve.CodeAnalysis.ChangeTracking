@@ -49,11 +49,12 @@ namespace MyNamespace
         public async Task CanCreateFromDeclarationNode()
         {
             var declaringType = new TestEnumDefinition();
+            var index = Environment.TickCount;
 
             var node = await TestNode.FindNode<EnumMemberDeclarationSyntax>(EnumMemberWithExplicitValue)
                 .ConfigureAwait(false);
 
-            var sut = new EnumMemberDefinition(declaringType, node, 0);
+            var sut = new EnumMemberDefinition(declaringType, node, index);
 
             sut.DeclaringType.Should().Be(declaringType);
             sut.Name.Should().Be("First");
@@ -61,6 +62,21 @@ namespace MyNamespace
             sut.FullName.Should().Be(declaringType.FullName + ".First");
             sut.FullRawName.Should().Be(declaringType.FullRawName + ".First");
             sut.IsVisible.Should().Be(declaringType.IsVisible);
+            sut.Index.Should().Be(index);
+        }
+
+        [Fact]
+        public async Task ValueReturnsEmptyWhenNoExplicitValueFound()
+        {
+            var index = Environment.TickCount;
+            var declaringType = new TestEnumDefinition();
+
+            var node = await TestNode.FindNode<EnumMemberDeclarationSyntax>(EnumMemberWithImplicitValues)
+                .ConfigureAwait(false);
+
+            var sut = new EnumMemberDefinition(declaringType, node, index);
+
+            sut.Value.Should().BeEmpty();
         }
 
         [Fact]
@@ -91,20 +107,6 @@ namespace MyNamespace
             var sut = new EnumMemberDefinition(declaringType, memberNode, index);
 
             sut.Value.Should().Be("First | Second | Third");
-        }
-
-        [Fact]
-        public async Task ValueReturnsIndexWhenNoExplicitValueFound()
-        {
-            var index = Environment.TickCount;
-            var declaringType = new TestEnumDefinition();
-
-            var node = await TestNode.FindNode<EnumMemberDeclarationSyntax>(EnumMemberWithImplicitValues)
-                .ConfigureAwait(false);
-
-            var sut = new EnumMemberDefinition(declaringType, node, index);
-
-            sut.Value.Should().Be(index.ToString());
         }
     }
 }

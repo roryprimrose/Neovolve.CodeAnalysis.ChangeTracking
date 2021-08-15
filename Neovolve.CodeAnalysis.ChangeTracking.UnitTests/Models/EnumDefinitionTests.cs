@@ -77,6 +77,20 @@ namespace MyNamespace
         }
 
         [Fact]
+        public async Task MembersReturnsEmptyValuesForImplicitEnumValues()
+        {
+            var node = await TestNode.FindNode<EnumDeclarationSyntax>(EnumMembersWithImplicitValues)
+                .ConfigureAwait(false);
+
+            var sut = new EnumDefinition(node);
+
+            sut.Members.Should().HaveCount(3);
+            sut.Members.Single(x => x.Name == "First").Value.Should().BeEmpty();
+            sut.Members.Single(x => x.Name == "Second").Value.Should().BeEmpty();
+            sut.Members.Single(x => x.Name == "Third").Value.Should().BeEmpty();
+        }
+
+        [Fact]
         public async Task MembersReturnsExplicitEnumValues()
         {
             var node = await TestNode.FindNode<EnumDeclarationSyntax>(EnumMembersWithExplicitValues)
@@ -103,20 +117,6 @@ namespace MyNamespace
             sut.Members.Single(x => x.Name == "Second").Value.Should().Be("2");
             sut.Members.Single(x => x.Name == "Third").Value.Should().Be("4");
             sut.Members.Single(x => x.Name == "All").Value.Should().Be("First | Second | Third");
-        }
-
-        [Fact]
-        public async Task MembersReturnsImplicitEnumValues()
-        {
-            var node = await TestNode.FindNode<EnumDeclarationSyntax>(EnumMembersWithImplicitValues)
-                .ConfigureAwait(false);
-
-            var sut = new EnumDefinition(node);
-
-            sut.Members.Should().HaveCount(3);
-            sut.Members.Single(x => x.Name == "First").Value.Should().Be("0");
-            sut.Members.Single(x => x.Name == "Second").Value.Should().Be("1");
-            sut.Members.Single(x => x.Name == "Third").Value.Should().Be("2");
         }
     }
 }

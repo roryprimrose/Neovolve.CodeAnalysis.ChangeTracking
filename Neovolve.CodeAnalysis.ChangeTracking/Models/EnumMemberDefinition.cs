@@ -26,10 +26,11 @@
             FullName = declaringType.FullName + "." + name;
             FullRawName = declaringType.FullRawName + "." + name;
             IsVisible = declaringType.IsVisible;
+            Index = index;
 
             if (node.EqualsValue == null)
             {
-                Value = index.ToString();
+                Value = string.Empty;
             }
             else
             {
@@ -43,6 +44,7 @@
         public override bool IsVisible { get; }
         public override string RawName { get; }
         public IEnumDefinition DeclaringType { get; set; }
+        public int Index { get; }
         public string Value { get; set; }
     }
 }
