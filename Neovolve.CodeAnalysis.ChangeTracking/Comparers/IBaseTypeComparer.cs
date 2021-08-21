@@ -2,7 +2,7 @@
 {
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
-    public interface ITypeComparer<T> : IBaseTypeComparer<T> where T : ITypeDefinition
+    public interface IBaseTypeComparer<T> : IElementComparer<T> where T : IBaseTypeDefinition
     {
     }
 }

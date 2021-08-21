@@ -89,7 +89,7 @@
             var changeType = Model.Create<SemVerChangeType>();
             var message = Guid.NewGuid().ToString();
             var result = new ComparisonResult(changeType, oldItem, newItem, message);
-            var results = new[] {result};
+            var results = new[] { result };
 
             Service<IAccessModifiersComparer>()
                 .CompareMatch(
@@ -115,7 +115,7 @@
             var changeType = Model.Create<SemVerChangeType>();
             var message = Guid.NewGuid().ToString();
             var result = new ComparisonResult(changeType, oldItem, newItem, message);
-            var results = new[] {result};
+            var results = new[] { result };
 
             Service<IGenericTypeElementComparer>()
                 .CompareMatch(
@@ -141,7 +141,7 @@
             var changeType = Model.Create<SemVerChangeType>();
             var message = Guid.NewGuid().ToString();
             var result = new ComparisonResult(changeType, oldItem, newItem, message);
-            var results = new[] {result};
+            var results = new[] { result };
 
             Service<IMethodMatchProcessor>()
                 .CalculateChanges(oldItem.Methods,
@@ -166,7 +166,7 @@
             var changeType = Model.Create<SemVerChangeType>();
             var message = Guid.NewGuid().ToString();
             var result = new ComparisonResult(changeType, oldItem, newItem, message);
-            var results = new[] {result};
+            var results = new[] { result };
 
             Service<IPropertyMatchProcessor>()
                 .CalculateChanges(oldItem.Properties,
