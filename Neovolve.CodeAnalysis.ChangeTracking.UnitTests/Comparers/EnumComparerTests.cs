@@ -11,9 +11,43 @@
     using Neovolve.CodeAnalysis.ChangeTracking.UnitTests.TestModels;
     using NSubstitute;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class EnumComparerTests : Tests<EnumComparer>
     {
+        private readonly ITestOutputHelper _output;
+
+        public EnumComparerTests(ITestOutputHelper output)
+        {
+            _output = output;
+        }
+
+        [Fact]
+        public void CompareMatchReturnsResultFromAccessModifiersComparer()
+        {
+            var oldItem = new TestEnumDefinition();
+            var newItem = oldItem.JsonClone();
+            var match = new ItemMatch<IEnumDefinition>(oldItem, newItem);
+            var options = ComparerOptions.Default;
+            var changeType = Model.Create<SemVerChangeType>();
+            var message = Guid.NewGuid().ToString();
+            var result = new ComparisonResult(changeType, oldItem, newItem, message);
+            var results = new[] { result };
+
+            Service<IEnumAccessModifiersComparer>()
+                .CompareMatch(
+                    Arg.Is<ItemMatch<IAccessModifiersElement<EnumAccessModifiers>>>(
+                        x => x.OldItem == oldItem && x.NewItem == newItem),
+                    options).Returns(results);
+
+            var actual = SUT.CompareMatch(match, options).ToList();
+
+            _output.WriteResults(actual);
+
+            actual.Should().HaveCount(1);
+            actual[0].Should().BeEquivalentTo(result);
+        }
+
         [Fact]
         public void CompareMatchReturnsResultsFromEnumMemberProcessor()
         {
@@ -40,9 +74,10 @@
         [Fact]
         public void ThrowsExceptionWhenCreatedWithNullEnumMemberProcessor()
         {
-            var accessModifiersComparer = Substitute.For<IAccessModifiersComparer>();
+            var accessModifiersComparer = Substitute.For<IEnumAccessModifiersComparer>();
             var attributeProcessor = Substitute.For<IAttributeMatchProcessor>();
 
+            // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new EnumComparer(null!, accessModifiersComparer, attributeProcessor);
 
             action.Should().Throw<ArgumentNullException>();

@@ -5,8 +5,9 @@
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
     using Neovolve.CodeAnalysis.ChangeTracking.Processors;
 
-    public abstract class TypeComparer<T> : BaseTypeComparer<T> where T : ITypeDefinition
+    public abstract class TypeComparer<T> : ElementComparer<T> where T : ITypeDefinition
     {
+        private readonly IAccessModifiersComparer _accessModifiersComparer;
         private readonly IGenericTypeElementComparer _genericTypeElementComparer;
         private readonly IMethodMatchProcessor _methodProcessor;
         private readonly IPropertyMatchProcessor _propertyProcessor;
@@ -15,8 +16,10 @@
             IGenericTypeElementComparer genericTypeElementComparer,
             IPropertyMatchProcessor propertyProcessor,
             IMethodMatchProcessor methodProcessor,
-            IAttributeMatchProcessor attributeProcessor) : base(accessModifiersComparer, attributeProcessor)
+            IAttributeMatchProcessor attributeProcessor) : base(attributeProcessor)
         {
+            _accessModifiersComparer = accessModifiersComparer
+                                       ?? throw new ArgumentNullException(nameof(accessModifiersComparer));
             _genericTypeElementComparer = genericTypeElementComparer
                                           ?? throw new ArgumentNullException(nameof(genericTypeElementComparer));
             _propertyProcessor = propertyProcessor ?? throw new ArgumentNullException(nameof(propertyProcessor));
@@ -33,6 +36,17 @@
 
             RunComparisonStep(EvaluateMethodChanges, match, options, aggregator);
             RunComparisonStep(EvaluatePropertyChanges, match, options, aggregator);
+        }
+
+        protected override void EvaluateModifierChanges(ItemMatch<T> match, ComparerOptions options,
+            IChangeResultAggregator aggregator)
+        {
+            match = match ?? throw new ArgumentNullException(nameof(match));
+            options = options ?? throw new ArgumentNullException(nameof(options));
+
+            base.EvaluateModifierChanges(match, options, aggregator);
+
+            RunComparisonStep(EvaluateAccessModifierChanges, match, options, aggregator, true);
         }
 
         protected override void EvaluateSignatureChanges(ItemMatch<T> match, ComparerOptions options,
@@ -102,6 +116,18 @@
 
                 aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
             }
+        }
+
+        private void EvaluateAccessModifierChanges(
+            ItemMatch<T> match,
+            ComparerOptions options,
+            IChangeResultAggregator aggregator)
+        {
+            var convertedMatch = new ItemMatch<IAccessModifiersElement<AccessModifiers>>(match.OldItem, match.NewItem);
+
+            var results = _accessModifiersComparer.CompareMatch(convertedMatch, options);
+
+            aggregator.AddResults(results);
         }
 
         private void EvaluateGenericTypeDefinitionChanges(
