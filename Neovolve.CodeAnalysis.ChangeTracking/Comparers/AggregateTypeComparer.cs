@@ -7,15 +7,17 @@
     public class AggregateTypeComparer : IBaseTypeComparer
     {
         private readonly IClassComparer _classComparer;
+        private readonly IEnumComparer _enumComparer;
         private readonly IInterfaceComparer _interfaceComparer;
         private readonly IStructComparer _structComparer;
 
         public AggregateTypeComparer(IClassComparer classComparer, IInterfaceComparer interfaceComparer,
-            IStructComparer structComparer)
+            IStructComparer structComparer, IEnumComparer enumComparer)
         {
             _classComparer = classComparer ?? throw new ArgumentNullException(nameof(classComparer));
             _interfaceComparer = interfaceComparer ?? throw new ArgumentNullException(nameof(interfaceComparer));
             _structComparer = structComparer ?? throw new ArgumentNullException(nameof(structComparer));
+            _enumComparer = enumComparer ?? throw new ArgumentNullException(nameof(enumComparer));
         }
 
         public IEnumerable<ComparisonResult> CompareMatch(ItemMatch<IBaseTypeDefinition> match, ComparerOptions options)
@@ -72,6 +74,14 @@
                 return _interfaceComparer.CompareMatch(itemMatch, options);
             }
 
+            if (match.OldItem is IEnumDefinition oldEnum
+                && match.NewItem is IEnumDefinition newEnum)
+            {
+                var itemMatch = new ItemMatch<IEnumDefinition>(oldEnum, newEnum);
+
+                return _enumComparer.CompareMatch(itemMatch, options);
+            }
+
             throw new NotSupportedException(
                 $"There is no {nameof(IBaseTypeComparer<IBaseTypeDefinition>)} implementation for {match.OldItem.GetType()}");
         }
@@ -91,6 +101,11 @@
             if (item is IInterfaceDefinition)
             {
                 return "interface";
+            }
+
+            if (item is IEnumDefinition)
+            {
+                return "enum";
             }
 
             throw new NotSupportedException("Unknown type provided");

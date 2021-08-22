@@ -23,6 +23,19 @@ namespace MyNamespace
 }
 ";
 
+        public const string Enum = @"
+namespace MyNamespace 
+{
+    public enum TestEnum
+    {
+        First,
+        Second,
+        Third,
+        Fourth
+    }   
+}
+";
+
         public const string Field = @"
 namespace MyNamespace 
 {
