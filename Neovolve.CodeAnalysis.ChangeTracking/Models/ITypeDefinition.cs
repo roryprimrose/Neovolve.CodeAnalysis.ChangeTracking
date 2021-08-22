@@ -6,7 +6,7 @@
     ///     The <see cref="ITypeDefinition" />
     ///     interface defines common properties for types.
     /// </summary>
-    public interface ITypeDefinition : IBaseTypeDefinition, IGenericTypeElement
+    public interface ITypeDefinition : IBaseTypeDefinition<AccessModifiers>, IGenericTypeElement
     {
         /// <summary>
         ///     Merges the partial type into this type.
@@ -18,6 +18,11 @@
         ///     Gets the child classes defined on this type.
         /// </summary>
         IReadOnlyCollection<IClassDefinition> ChildClasses { get; }
+
+        /// <summary>
+        ///     Gets the child enums defined on this type.
+        /// </summary>
+        IReadOnlyCollection<IEnumDefinition> ChildEnums { get; }
 
         /// <summary>
         ///     Gets the child interfaces defined on this type.
@@ -33,7 +38,7 @@
         ///     Gets the child types defined on this type.
         /// </summary>
         /// <remarks>This should be a combination of child classes and child interfaces.</remarks>
-        IReadOnlyCollection<ITypeDefinition> ChildTypes { get; }
+        IReadOnlyCollection<IBaseTypeDefinition> ChildTypes { get; }
 
         /// <summary>
         ///     Gets the types implemented/inherited by this type.

@@ -10,57 +10,6 @@
     public class BaseTypeDefinitionTests
     {
         [Fact]
-        public async Task AccessModifierReturnsPrivateForNestedClassWithoutAccessModifier()
-        {
-            var code = TypeDefinitionCode.MultipleChildTypes.Replace("public class FirstClass", "class FirstClass");
-
-            var node = await TestNode.FindNode<ClassDeclarationSyntax>(code).ConfigureAwait(false);
-
-            var sut = new ClassDefinition(node);
-
-            var child = sut.ChildClasses.Single(x => x.Name == "FirstClass");
-
-            child.AccessModifiers.Should().Be(AccessModifiers.Private);
-        }
-
-        [Fact]
-        public async Task AccessModifierReturnsPrivateForNestedStructWithoutAccessModifier()
-        {
-            var code = TypeDefinitionCode.MultipleChildTypes.Replace("public struct FirstStruct", "struct FirstStruct");
-
-            var node = await TestNode.FindNode<ClassDeclarationSyntax>(code).ConfigureAwait(false);
-
-            var sut = new ClassDefinition(node);
-
-            var child = sut.ChildStructs.Single(x => x.Name == "FirstStruct");
-
-            child.AccessModifiers.Should().Be(AccessModifiers.Private);
-        }
-
-        [Theory]
-        [InlineData("", AccessModifiers.Internal)]
-        [InlineData("private", AccessModifiers.Private)]
-        [InlineData("internal", AccessModifiers.Internal)]
-        [InlineData("protected", AccessModifiers.Protected)]
-        [InlineData("private protected", AccessModifiers.ProtectedPrivate)]
-        [InlineData("protected private", AccessModifiers.ProtectedPrivate)]
-        [InlineData("protected internal", AccessModifiers.ProtectedInternal)]
-        [InlineData("internal protected", AccessModifiers.ProtectedInternal)]
-        [InlineData("public", AccessModifiers.Public)]
-        public async Task AccessModifierReturnsValueBasedOnAccessModifiers(
-            string accessModifiers,
-            AccessModifiers expected)
-        {
-            var code = TypeDefinitionCode.BuildClassWithScope(accessModifiers);
-
-            var node = await TestNode.FindNode<ClassDeclarationSyntax>(code).ConfigureAwait(false);
-
-            var sut = new ClassDefinition(node);
-
-            sut.AccessModifiers.Should().Be(expected);
-        }
-
-        [Fact]
         public async Task DeclaringTypeReturnsDeclaringClass()
         {
             var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassInGrandparentClass)

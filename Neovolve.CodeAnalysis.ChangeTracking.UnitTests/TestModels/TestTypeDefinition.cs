@@ -14,13 +14,14 @@
         public IReadOnlyCollection<IAttributeDefinition> Attributes { get; set; } = new List<TestAttributeDefinition>();
 
         public IReadOnlyCollection<IClassDefinition> ChildClasses { get; set; } = new List<TestClassDefinition>();
+        public IReadOnlyCollection<IEnumDefinition> ChildEnums { get; set; } = new List<TestEnumDefinition>();
 
         public IReadOnlyCollection<IInterfaceDefinition> ChildInterfaces { get; set; } =
             new List<TestInterfaceDefinition>();
 
         public IReadOnlyCollection<IStructDefinition> ChildStructs { get; set; } = new List<TestStructDefinition>();
 
-        public IReadOnlyCollection<ITypeDefinition> ChildTypes { get; set; } = new List<TestClassDefinition>();
+        public IReadOnlyCollection<IBaseTypeDefinition> ChildTypes { get; set; } = new List<IBaseTypeDefinition>();
         public string DeclaredModifiers { get; set; } = "public";
         public ITypeDefinition? DeclaringType { get; set; } = null;
         public string FullName { get; set; } = Guid.NewGuid().ToString();

@@ -72,9 +72,6 @@
         public ITypeDefinition DeclaringType { get; set; }
 
         /// <inheritdoc />
-        public override bool IsVisible { get; }
-
-        /// <inheritdoc />
         public abstract string ReturnType { get; }
     }
 }

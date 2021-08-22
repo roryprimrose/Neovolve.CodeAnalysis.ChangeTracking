@@ -12,6 +12,57 @@
     public class TypeDefinitionTests
     {
         [Fact]
+        public async Task AccessModifierReturnsPrivateForNestedClassWithoutAccessModifier()
+        {
+            var code = TypeDefinitionCode.MultipleChildTypes.Replace("public class FirstClass", "class FirstClass");
+
+            var node = await TestNode.FindNode<ClassDeclarationSyntax>(code).ConfigureAwait(false);
+
+            var sut = new ClassDefinition(node);
+
+            var child = sut.ChildClasses.Single(x => x.Name == "FirstClass");
+
+            child.AccessModifiers.Should().Be(AccessModifiers.Private);
+        }
+
+        [Fact]
+        public async Task AccessModifierReturnsPrivateForNestedStructWithoutAccessModifier()
+        {
+            var code = TypeDefinitionCode.MultipleChildTypes.Replace("public struct FirstStruct", "struct FirstStruct");
+
+            var node = await TestNode.FindNode<ClassDeclarationSyntax>(code).ConfigureAwait(false);
+
+            var sut = new ClassDefinition(node);
+
+            var child = sut.ChildStructs.Single(x => x.Name == "FirstStruct");
+
+            child.AccessModifiers.Should().Be(AccessModifiers.Private);
+        }
+
+        [Theory]
+        [InlineData("", AccessModifiers.Internal)]
+        [InlineData("private", AccessModifiers.Private)]
+        [InlineData("internal", AccessModifiers.Internal)]
+        [InlineData("protected", AccessModifiers.Protected)]
+        [InlineData("private protected", AccessModifiers.ProtectedPrivate)]
+        [InlineData("protected private", AccessModifiers.ProtectedPrivate)]
+        [InlineData("protected internal", AccessModifiers.ProtectedInternal)]
+        [InlineData("internal protected", AccessModifiers.ProtectedInternal)]
+        [InlineData("public", AccessModifiers.Public)]
+        public async Task AccessModifierReturnsValueBasedOnAccessModifiers(
+            string accessModifiers,
+            AccessModifiers expected)
+        {
+            var code = TypeDefinitionCode.BuildClassWithScope(accessModifiers);
+
+            var node = await TestNode.FindNode<ClassDeclarationSyntax>(code).ConfigureAwait(false);
+
+            var sut = new ClassDefinition(node);
+
+            sut.AccessModifiers.Should().Be(expected);
+        }
+
+        [Fact]
         public async Task ChildClassesIncludesHierarchyOfClassesAndInterfaces()
         {
             var node = await TestNode
@@ -100,6 +151,39 @@
             childClass.Name.Should().Be("MyClass");
             childClass.FullName.Should().Be("MyNamespace.MyParentClass+MyClass");
             childClass.DeclaringType.Should().Be(sut);
+        }
+
+        [Fact]
+        public async Task ChildEnumsReturnsEmptyWhenNoDeclarationsFound()
+        {
+            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithoutParent)
+                .ConfigureAwait(false);
+
+            var sut = new ClassDefinition(node);
+
+            sut.ChildEnums.Should().BeEmpty();
+        }
+
+        [Fact]
+        public async Task ChildEnumsReturnsMultipleEnumDefinitions()
+        {
+            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.MultipleChildEnums)
+                .ConfigureAwait(false);
+
+            var sut = new ClassDefinition(node);
+
+            sut.ChildEnums.Should().HaveCount(2);
+
+            var firstEnum = sut.ChildEnums.First();
+            var secondEnum = sut.ChildEnums.Skip(1).First();
+
+            firstEnum.Name.Should().Be("FirstChild");
+            firstEnum.FullName.Should().Be("MyNamespace.MyClass+FirstChild");
+            firstEnum.DeclaringType.Should().Be(sut);
+
+            secondEnum.Name.Should().Be("SecondChild");
+            secondEnum.FullName.Should().Be("MyNamespace.MyClass+SecondChild");
+            secondEnum.DeclaringType.Should().Be(sut);
         }
 
         [Fact]
@@ -223,11 +307,12 @@
 
             var sut = new ClassDefinition(node);
 
-            sut.ChildTypes.Should().HaveCount(6);
+            sut.ChildTypes.Should().HaveCount(8);
 
             sut.ChildTypes.OfType<ClassDefinition>().Should().HaveCount(2);
             sut.ChildTypes.OfType<InterfaceDefinition>().Should().HaveCount(2);
             sut.ChildTypes.OfType<StructDefinition>().Should().HaveCount(2);
+            sut.ChildTypes.OfType<EnumDefinition>().Should().HaveCount(2);
         }
 
         [Fact]
@@ -330,52 +415,40 @@
         }
 
         [Fact]
-        public async Task MergePartialTypeThrowsExceptionWithNullPartialType()
+        public async Task IsVisibleReturnsFalseWhenDeclaringTypeIsVisibleReturnsFalse()
         {
-            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassInGrandparentClass)
-                .ConfigureAwait(false);
+            var code = TypeDefinitionCode.MultipleChildTypes.Replace("public class MyClass", "class MyClass");
+
+            var node = await TestNode.FindNode<ClassDeclarationSyntax>(code).ConfigureAwait(false);
 
             var sut = new ClassDefinition(node);
 
-            Action action = () => sut.MergePartialType(null!);
+            var child = sut.ChildClasses.Single(x => x.Name == "FirstClass");
 
-            action.Should().Throw<ArgumentNullException>();
-        }
-
-        [Fact]
-        public async Task MergePartialTypeThrowsExceptionWhenPartialTypeIsDifferent()
-        {
-            var classNode = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassInGrandparentClass)
-                .ConfigureAwait(false);
-
-            var classDefinition = new ClassDefinition(classNode);
-
-            var interfaceNode = await TestNode.FindNode<InterfaceDeclarationSyntax>(TypeDefinitionCode.InterfaceWithMethod).ConfigureAwait(false);
-
-            var interfaceDefinition = new InterfaceDefinition(interfaceNode);
-
-            Action action = () => classDefinition.MergePartialType(interfaceDefinition);
-
-            action.Should().Throw<InvalidOperationException>();
+            child.IsVisible.Should().BeFalse();
         }
 
         [Theory]
-        [InlineData("MyClass", "MyOtherClass")]
-        [InlineData("MyNamespace", "MyOtherNamespace")]
-        public async Task MergePartialTypeThrowsExceptionWhenPartialTypeIsDifferentPartialType(string find, string replace)
+        [InlineData("", false)]
+        [InlineData("private", false)]
+        [InlineData("internal", false)]
+        [InlineData("protected", true)]
+        [InlineData("private protected", true)]
+        [InlineData("protected private", true)]
+        [InlineData("protected internal", true)]
+        [InlineData("internal protected", true)]
+        [InlineData("public", true)]
+        public async Task IsVisibleReturnsValueBasedOnAccessModifiers(
+            string accessModifiers,
+            bool expected)
         {
-            var classNode = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithoutParent)
-                .ConfigureAwait(false);
+            var code = TypeDefinitionCode.BuildClassWithScope(accessModifiers);
 
-            var classDefinition = new ClassDefinition(classNode);
+            var node = await TestNode.FindNode<ClassDeclarationSyntax>(code).ConfigureAwait(false);
 
-            var otherNode = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithoutParent.Replace(find, replace)).ConfigureAwait(false);
+            var sut = new ClassDefinition(node);
 
-            var otherDefinition = new ClassDefinition(otherNode);
-
-            Action action = () => classDefinition.MergePartialType(otherDefinition);
-
-            action.Should().Throw<InvalidOperationException>();
+            sut.IsVisible.Should().Be(expected);
         }
 
         [Fact]
@@ -397,51 +470,6 @@
             firstDefinition.Attributes.Count.Should().Be(3);
             firstDefinition.Attributes.Should().Contain(x => x.Name == "JsonPropertyName");
             firstDefinition.Attributes.Should().Contain(secondDefinition.Attributes);
-        }
-
-        [Fact]
-        public async Task MergePartialTypeMergesMethods()
-        {
-            var firstClass = TypeDefinitionCode.ClassWithMethod.Replace("class", "partial class");
-            var secondClass = firstClass.Replace("GetValue", "GetOtherValue");
-
-            var firstNode = await TestNode.FindNode<ClassDeclarationSyntax>(firstClass)
-                .ConfigureAwait(false);
-            var secondNode = await TestNode.FindNode<ClassDeclarationSyntax>(secondClass)
-                .ConfigureAwait(false);
-
-            var firstDefinition = new ClassDefinition(firstNode);
-            var secondDefinition = new ClassDefinition(secondNode);
-
-            firstDefinition.MergePartialType(secondDefinition);
-
-            firstDefinition.Methods.Count.Should().Be(2);
-            firstDefinition.Methods.Should().Contain(x => x.Name == "GetValue");
-            firstDefinition.Methods.Should().Contain(secondDefinition.Methods);
-            firstDefinition.Methods.All(x => x.DeclaringType == firstDefinition).Should().BeTrue();
-        }
-
-        [Fact]
-        public async Task MergePartialTypeMergesProperties()
-        {
-            var firstClass = TypeDefinitionCode.ClassWithProperties.Replace("class", "partial class");
-            var secondClass = firstClass.Replace("First", "Third").Replace("Second", "Fourth");
-
-            var firstNode = await TestNode.FindNode<ClassDeclarationSyntax>(firstClass)
-                .ConfigureAwait(false);
-            var secondNode = await TestNode.FindNode<ClassDeclarationSyntax>(secondClass)
-                .ConfigureAwait(false);
-
-            var firstDefinition = new ClassDefinition(firstNode);
-            var secondDefinition = new ClassDefinition(secondNode);
-
-            firstDefinition.MergePartialType(secondDefinition);
-
-            firstDefinition.Properties.Count.Should().Be(4);
-            firstDefinition.Properties.Should().Contain(x => x.Name == "First");
-            firstDefinition.Properties.Should().Contain(x => x.Name == "Second");
-            firstDefinition.Properties.Should().Contain(secondDefinition.Properties);
-            firstDefinition.Properties.All(x => x.DeclaringType == firstDefinition).Should().BeTrue();
         }
 
         [Fact]
@@ -529,15 +557,123 @@
 
             firstDefinition.MergePartialType(secondDefinition);
 
-            firstDefinition.ChildTypes.Count.Should().Be(12);
+            firstDefinition.ChildTypes.Count.Should().Be(16);
             firstDefinition.ChildTypes.Should().Contain(x => x.Name == "FirstClass");
             firstDefinition.ChildTypes.Should().Contain(x => x.Name == "SecondClass");
+            firstDefinition.ChildTypes.Should().Contain(x => x.Name == "ThirdClass");
+            firstDefinition.ChildTypes.Should().Contain(x => x.Name == "FourthClass");
             firstDefinition.ChildTypes.Should().Contain(x => x.Name == "FirstInterface");
             firstDefinition.ChildTypes.Should().Contain(x => x.Name == "SecondInterface");
+            firstDefinition.ChildTypes.Should().Contain(x => x.Name == "ThirdInterface");
+            firstDefinition.ChildTypes.Should().Contain(x => x.Name == "FourthInterface");
             firstDefinition.ChildTypes.Should().Contain(x => x.Name == "FirstStruct");
             firstDefinition.ChildTypes.Should().Contain(x => x.Name == "SecondStruct");
+            firstDefinition.ChildTypes.Should().Contain(x => x.Name == "ThirdStruct");
+            firstDefinition.ChildTypes.Should().Contain(x => x.Name == "FourthStruct");
+            firstDefinition.ChildTypes.Should().Contain(x => x.Name == "FirstEnum");
+            firstDefinition.ChildTypes.Should().Contain(x => x.Name == "SecondEnum");
+            firstDefinition.ChildTypes.Should().Contain(x => x.Name == "ThirdEnum");
+            firstDefinition.ChildTypes.Should().Contain(x => x.Name == "FourthEnum");
             firstDefinition.ChildTypes.Should().Contain(secondDefinition.ChildTypes);
             firstDefinition.ChildTypes.All(x => x.DeclaringType == firstDefinition).Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task MergePartialTypeMergesMethods()
+        {
+            var firstClass = TypeDefinitionCode.ClassWithMethod.Replace("class", "partial class");
+            var secondClass = firstClass.Replace("GetValue", "GetOtherValue");
+
+            var firstNode = await TestNode.FindNode<ClassDeclarationSyntax>(firstClass)
+                .ConfigureAwait(false);
+            var secondNode = await TestNode.FindNode<ClassDeclarationSyntax>(secondClass)
+                .ConfigureAwait(false);
+
+            var firstDefinition = new ClassDefinition(firstNode);
+            var secondDefinition = new ClassDefinition(secondNode);
+
+            firstDefinition.MergePartialType(secondDefinition);
+
+            firstDefinition.Methods.Count.Should().Be(2);
+            firstDefinition.Methods.Should().Contain(x => x.Name == "GetValue");
+            firstDefinition.Methods.Should().Contain(secondDefinition.Methods);
+            firstDefinition.Methods.All(x => x.DeclaringType == firstDefinition).Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task MergePartialTypeMergesProperties()
+        {
+            var firstClass = TypeDefinitionCode.ClassWithProperties.Replace("class", "partial class");
+            var secondClass = firstClass.Replace("First", "Third").Replace("Second", "Fourth");
+
+            var firstNode = await TestNode.FindNode<ClassDeclarationSyntax>(firstClass)
+                .ConfigureAwait(false);
+            var secondNode = await TestNode.FindNode<ClassDeclarationSyntax>(secondClass)
+                .ConfigureAwait(false);
+
+            var firstDefinition = new ClassDefinition(firstNode);
+            var secondDefinition = new ClassDefinition(secondNode);
+
+            firstDefinition.MergePartialType(secondDefinition);
+
+            firstDefinition.Properties.Count.Should().Be(4);
+            firstDefinition.Properties.Should().Contain(x => x.Name == "First");
+            firstDefinition.Properties.Should().Contain(x => x.Name == "Second");
+            firstDefinition.Properties.Should().Contain(secondDefinition.Properties);
+            firstDefinition.Properties.All(x => x.DeclaringType == firstDefinition).Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task MergePartialTypeThrowsExceptionWhenPartialTypeIsDifferent()
+        {
+            var classNode = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassInGrandparentClass)
+                .ConfigureAwait(false);
+
+            var classDefinition = new ClassDefinition(classNode);
+
+            var interfaceNode = await TestNode
+                .FindNode<InterfaceDeclarationSyntax>(TypeDefinitionCode.InterfaceWithMethod).ConfigureAwait(false);
+
+            var interfaceDefinition = new InterfaceDefinition(interfaceNode);
+
+            Action action = () => classDefinition.MergePartialType(interfaceDefinition);
+
+            action.Should().Throw<InvalidOperationException>();
+        }
+
+        [Theory]
+        [InlineData("MyClass", "MyOtherClass")]
+        [InlineData("MyNamespace", "MyOtherNamespace")]
+        public async Task MergePartialTypeThrowsExceptionWhenPartialTypeIsDifferentPartialType(string find,
+            string replace)
+        {
+            var classNode = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithoutParent)
+                .ConfigureAwait(false);
+
+            var classDefinition = new ClassDefinition(classNode);
+
+            var otherNode = await TestNode
+                .FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithoutParent.Replace(find, replace))
+                .ConfigureAwait(false);
+
+            var otherDefinition = new ClassDefinition(otherNode);
+
+            Action action = () => classDefinition.MergePartialType(otherDefinition);
+
+            action.Should().Throw<InvalidOperationException>();
+        }
+
+        [Fact]
+        public async Task MergePartialTypeThrowsExceptionWithNullPartialType()
+        {
+            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassInGrandparentClass)
+                .ConfigureAwait(false);
+
+            var sut = new ClassDefinition(node);
+
+            Action action = () => sut.MergePartialType(null!);
+
+            action.Should().Throw<ArgumentNullException>();
         }
 
         [Fact]

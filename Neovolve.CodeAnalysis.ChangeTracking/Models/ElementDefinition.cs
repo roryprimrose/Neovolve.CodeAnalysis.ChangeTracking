@@ -107,7 +107,7 @@
         public abstract string FullRawName { get; }
 
         /// <inheritdoc />
-        public abstract bool IsVisible { get; }
+        public bool IsVisible { get; protected set; }
 
         /// <inheritdoc />
         public abstract string RawName { get; }

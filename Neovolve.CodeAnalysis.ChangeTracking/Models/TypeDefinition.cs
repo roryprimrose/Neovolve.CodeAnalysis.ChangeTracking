@@ -10,7 +10,7 @@
     ///     The <see cref="TypeDefinition" />
     ///     class is used to describe a type.
     /// </summary>
-    public abstract class TypeDefinition : BaseTypeDefinition, ITypeDefinition
+    public abstract class TypeDefinition : BaseTypeDefinition<AccessModifiers>, ITypeDefinition
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="TypeDefinition" /> class.
@@ -20,13 +20,17 @@
         {
             node = node ?? throw new ArgumentNullException(nameof(node));
 
+            AccessModifiers = DetermineAccessModifier(node, DeclaringType);
+            IsVisible = DetermineIsVisible(node, DeclaringType);
+
             ImplementedTypes = DetermineImplementedTypes(node);
             Properties = DetermineProperties(node);
             Methods = DetermineMethods(node);
             ChildClasses = DetermineChildClasses(node);
+            ChildEnums = DetermineChildEnums(node);
             ChildInterfaces = DetermineChildInterfaces(node);
             ChildStructs = DetermineChildStructs(node);
-            ChildTypes = DetermineChildTypes(ChildClasses, ChildInterfaces, ChildStructs);
+            ChildTypes = DetermineChildTypes(ChildClasses, ChildInterfaces, ChildStructs, ChildEnums);
             GenericTypeParameters = DetermineGenericTypeParameters(node);
             GenericConstraints = DetermineGenericConstraints(node);
         }
@@ -38,13 +42,17 @@
         /// <param name="node">The syntax node that defines the type.</param>
         protected TypeDefinition(ITypeDefinition declaringType, TypeDeclarationSyntax node) : base(declaringType, node)
         {
+            AccessModifiers = DetermineAccessModifier(node, DeclaringType);
+            IsVisible = DetermineIsVisible(node, DeclaringType);
+
             ImplementedTypes = DetermineImplementedTypes(node);
             Properties = DetermineProperties(node);
             Methods = DetermineMethods(node);
             ChildClasses = DetermineChildClasses(node);
+            ChildEnums = DetermineChildEnums(node);
             ChildInterfaces = DetermineChildInterfaces(node);
             ChildStructs = DetermineChildStructs(node);
-            ChildTypes = DetermineChildTypes(ChildClasses, ChildInterfaces, ChildStructs);
+            ChildTypes = DetermineChildTypes(ChildClasses, ChildInterfaces, ChildStructs, ChildEnums);
             GenericTypeParameters = DetermineGenericTypeParameters(node);
             GenericConstraints = DetermineGenericConstraints(node);
         }
@@ -71,11 +79,12 @@
             Methods = MergeMembers(Methods, partialType.Methods);
             Properties = MergeMembers(Properties, partialType.Properties);
             ChildClasses = MergeTypes(ChildClasses, partialType.ChildClasses);
+            ChildEnums = MergeTypes(ChildEnums, partialType.ChildEnums);
             ChildInterfaces = MergeTypes(ChildInterfaces, partialType.ChildInterfaces);
             ChildStructs = MergeTypes(ChildStructs, partialType.ChildStructs);
 
             // Rebuild the child types
-            ChildTypes = DetermineChildTypes(ChildClasses, ChildInterfaces, ChildStructs);
+            ChildTypes = DetermineChildTypes(ChildClasses, ChildInterfaces, ChildStructs, ChildEnums);
         }
 
         /// <summary>
@@ -120,14 +129,29 @@
             return members.AsReadOnly();
         }
 
-        private static IReadOnlyCollection<ITypeDefinition> DetermineChildTypes(
-            IReadOnlyCollection<ITypeDefinition> childClasses,
-            IReadOnlyCollection<ITypeDefinition> childInterfaces, IReadOnlyCollection<IStructDefinition> childStructs)
+        private static AccessModifiers DetermineAccessModifier(BaseTypeDeclarationSyntax node,
+            ITypeDefinition? declaringType)
         {
-            var childTypes = new List<ITypeDefinition>(childClasses);
+            node = node ?? throw new ArgumentNullException(nameof(node));
+
+            if (declaringType == null)
+            {
+                return node.Modifiers.DetermineAccessModifier(AccessModifiers.Internal);
+            }
+
+            return node.Modifiers.DetermineAccessModifier(AccessModifiers.Private);
+        }
+
+        private static IReadOnlyCollection<IBaseTypeDefinition> DetermineChildTypes(
+            IReadOnlyCollection<ITypeDefinition> childClasses,
+            IReadOnlyCollection<ITypeDefinition> childInterfaces, IReadOnlyCollection<IStructDefinition> childStructs,
+            IReadOnlyCollection<IEnumDefinition> childEnums)
+        {
+            var childTypes = new List<IBaseTypeDefinition>(childClasses);
 
             childTypes.AddRange(childInterfaces);
             childTypes.AddRange(childStructs);
+            childTypes.AddRange(childEnums);
 
             return childTypes;
         }
@@ -177,11 +201,37 @@
 
             return childTypes.AsReadOnly();
         }
-        
+
+        private static bool DetermineIsVisible(BaseTypeDeclarationSyntax node, ITypeDefinition? declaringType)
+        {
+            node = node ?? throw new ArgumentNullException(nameof(node));
+
+            if (declaringType != null
+                && declaringType.IsVisible == false)
+            {
+                // The parent type is not visible so this one can't be either
+                return false;
+            }
+
+            // This is either a top level type or the parent type is visible
+            // Determine visibility based on the access modifiers
+            var accessModifier = DetermineAccessModifier(node, declaringType);
+
+            return accessModifier.IsVisible();
+        }
+
         private IReadOnlyCollection<IClassDefinition> DetermineChildClasses(SyntaxNode node)
         {
             var childNodes = node.ChildNodes().OfType<ClassDeclarationSyntax>();
             var childTypes = childNodes.Select(childNode => new ClassDefinition(this, childNode)).FastToList();
+
+            return childTypes.AsReadOnly();
+        }
+
+        private IReadOnlyCollection<IEnumDefinition> DetermineChildEnums(SyntaxNode node)
+        {
+            var childNodes = node.ChildNodes().OfType<EnumDeclarationSyntax>();
+            var childTypes = childNodes.Select(childNode => new EnumDefinition(this, childNode)).FastToList();
 
             return childTypes.AsReadOnly();
         }
@@ -220,7 +270,7 @@
 
         private IReadOnlyCollection<T> MergeTypes<T>(
             IReadOnlyCollection<T> currentTypes,
-            IReadOnlyCollection<T> incomingTypes) where T : class, ITypeDefinition
+            IReadOnlyCollection<T> incomingTypes) where T : class, IBaseTypeDefinition
         {
             var types = new List<T>(currentTypes);
 
@@ -233,9 +283,12 @@
 
             return types.AsReadOnly();
         }
-        
+
         /// <inheritdoc />
         public IReadOnlyCollection<IClassDefinition> ChildClasses { get; private set; }
+
+        /// <inheritdoc />
+        public IReadOnlyCollection<IEnumDefinition> ChildEnums { get; private set; }
 
         /// <inheritdoc />
         public IReadOnlyCollection<IInterfaceDefinition> ChildInterfaces { get; private set; }
@@ -244,8 +297,8 @@
         public IReadOnlyCollection<IStructDefinition> ChildStructs { get; private set; }
 
         /// <inheritdoc />
-        public IReadOnlyCollection<ITypeDefinition> ChildTypes { get; private set; }
-        
+        public IReadOnlyCollection<IBaseTypeDefinition> ChildTypes { get; private set; }
+
         /// <inheritdoc />
         public IReadOnlyCollection<IConstraintListDefinition> GenericConstraints { get; protected set; }
 
@@ -254,10 +307,10 @@
 
         /// <inheritdoc />
         public IReadOnlyCollection<string> ImplementedTypes { get; }
-        
+
         /// <inheritdoc />
         public IReadOnlyCollection<IMethodDefinition> Methods { get; private set; }
-        
+
         /// <inheritdoc />
         public IReadOnlyCollection<IPropertyDefinition> Properties { get; private set; }
     }

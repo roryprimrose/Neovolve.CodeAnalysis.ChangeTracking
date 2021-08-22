@@ -6,7 +6,7 @@
     ///     The <see cref="IEnumDefinition" />
     ///     interface defines the members that describe a enum.
     /// </summary>
-    public interface IEnumDefinition : IBaseTypeDefinition
+    public interface IEnumDefinition : IBaseTypeDefinition<EnumAccessModifiers>
     {
         /// <summary>
         ///     Gets the members defined on this type.

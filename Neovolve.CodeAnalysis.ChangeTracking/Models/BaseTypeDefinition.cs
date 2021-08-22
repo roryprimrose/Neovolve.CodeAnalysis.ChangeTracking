@@ -5,11 +5,12 @@
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-    public abstract class BaseTypeDefinition : ElementDefinition, IBaseTypeDefinition
+    public abstract class BaseTypeDefinition<T> : ElementDefinition, IBaseTypeDefinition<T> where T : struct, Enum
     {
         /// <summary>
-        ///     Initializes a new instance of the <see cref="BaseTypeDefinition" /> class.
+        ///     Initializes a new instance of the <see cref="BaseTypeDefinition{T}" /> class.
         /// </summary>
+        /// <typeparam name="T">The type of access modifier this type exposes.</typeparam>
         /// <param name="node">The syntax node that defines the type.</param>
         protected BaseTypeDefinition(BaseTypeDeclarationSyntax node) : base(node)
         {
@@ -19,8 +20,6 @@
             var rawName = node.Identifier.Text;
 
             Namespace = DetermineNamespace(node);
-            IsVisible = DetermineIsVisible(node, DeclaringType);
-            AccessModifiers = DetermineAccessModifier(node, DeclaringType);
 
             Name = name;
             RawName = rawName;
@@ -29,38 +28,24 @@
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="BaseTypeDefinition" /> class.
+        ///     Initializes a new instance of the <see cref="BaseTypeDefinition{T}" /> class.
         /// </summary>
+        /// <typeparam name="T">The type of access modifier this type exposes.</typeparam>
         /// <param name="declaringType">The parent type that declares this type.</param>
         /// <param name="node">The syntax node that defines the type.</param>
         protected BaseTypeDefinition(ITypeDefinition declaringType, BaseTypeDeclarationSyntax node) : base(node)
         {
             DeclaringType = declaringType ?? throw new ArgumentNullException(nameof(declaringType));
-            
+
             var name = DetermineName(node);
             var rawName = node.Identifier.Text;
 
             Namespace = DetermineNamespace(node);
-            IsVisible = DetermineIsVisible(node, DeclaringType);
-            AccessModifiers = DetermineAccessModifier(node, DeclaringType);
 
             Name = name;
             RawName = rawName;
             FullRawName = DeclaringType.FullRawName + "+" + rawName;
             FullName = DeclaringType.FullName + "+" + name;
-        }
-
-        protected static AccessModifiers DetermineAccessModifier(BaseTypeDeclarationSyntax node,
-            ITypeDefinition? declaringType)
-        {
-            node = node ?? throw new ArgumentNullException(nameof(node));
-
-            if (declaringType == null)
-            {
-                return node.Modifiers.DetermineAccessModifier(AccessModifiers.Internal);
-            }
-
-            return node.Modifiers.DetermineAccessModifier(AccessModifiers.Private);
         }
 
         protected static string DetermineName(BaseTypeDeclarationSyntax node)
@@ -109,26 +94,8 @@
             return string.Empty;
         }
 
-        private static bool DetermineIsVisible(BaseTypeDeclarationSyntax node, ITypeDefinition? declaringType)
-        {
-            node = node ?? throw new ArgumentNullException(nameof(node));
-
-            if (declaringType != null
-                && declaringType.IsVisible == false)
-            {
-                // The parent type is not visible so this one can't be either
-                return false;
-            }
-
-            // This is either a top level type or the parent type is visible
-            // Determine visibility based on the access modifiers
-            var accessModifier = DetermineAccessModifier(node, declaringType);
-
-            return accessModifier.IsVisible();
-        }
-
         /// <inheritdoc />
-        public AccessModifiers AccessModifiers { get; }
+        public T AccessModifiers { get; protected set; }
 
         /// <inheritdoc />
         public ITypeDefinition? DeclaringType { get; set; }
@@ -138,9 +105,6 @@
 
         /// <inheritdoc />
         public override string FullRawName { get; }
-
-        /// <inheritdoc />
-        public override bool IsVisible { get; }
 
         /// <inheritdoc />
         public override string Name { get; }

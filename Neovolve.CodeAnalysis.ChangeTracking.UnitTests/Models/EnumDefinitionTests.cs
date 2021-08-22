@@ -49,6 +49,39 @@ namespace MyNamespace
 ";
 
         [Fact]
+        public async Task AccessModifierReturnsPrivateForNestedEnumWithoutAccessModifier()
+        {
+            var code = TypeDefinitionCode.MultipleChildTypes.Replace("public enum FirstEnum", "enum FirstEnum");
+
+            var node = await TestNode.FindNode<ClassDeclarationSyntax>(code).ConfigureAwait(false);
+
+            var sut = new ClassDefinition(node);
+
+            var child = sut.ChildEnums.Single(x => x.Name == "FirstEnum");
+
+            child.AccessModifiers.Should().Be(EnumAccessModifiers.Private);
+        }
+
+        [Theory]
+        [InlineData("", EnumAccessModifiers.Internal)]
+        [InlineData("private", EnumAccessModifiers.Private)]
+        [InlineData("internal", EnumAccessModifiers.Internal)]
+        [InlineData("protected", EnumAccessModifiers.Protected)]
+        [InlineData("public", EnumAccessModifiers.Public)]
+        public async Task AccessModifierReturnsValueBasedOnAccessModifiers(
+            string accessModifiers,
+            EnumAccessModifiers expected)
+        {
+            var code = EnumMembersWithImplicitValues.Replace("public enum MyEnum", accessModifiers + " enum MyEnum");
+
+            var node = await TestNode.FindNode<EnumDeclarationSyntax>(code).ConfigureAwait(false);
+
+            var sut = new EnumDefinition(node);
+
+            sut.AccessModifiers.Should().Be(expected);
+        }
+
+        [Fact]
         public async Task CanCreateFromDeclarationNode()
         {
             var node = await TestNode.FindNode<EnumDeclarationSyntax>(EnumMembersWithExplicitValues)
@@ -74,6 +107,45 @@ namespace MyNamespace
             sut.Name.Should().Be("MyEnum");
             sut.Namespace.Should().Be("MyNamespace");
             sut.DeclaringType.Should().Be(declaringType);
+        }
+
+        [Fact]
+        public async Task IsVisibleReturnsFalseWhenDeclaringTypeIsNotVisible()
+        {
+            var code = TypeDefinitionCode.MultipleChildTypes.Replace("public class MyClass", "internal class MyClass");
+            var node = await TestNode.FindNode<ClassDeclarationSyntax>(code).ConfigureAwait(false);
+
+            var sut = new ClassDefinition(node);
+
+            var childType = sut.ChildEnums.First(x => x.Name == "FirstEnum");
+
+            childType.IsVisible.Should().BeFalse();
+        }
+
+        [Theory]
+        [InlineData("", false)]
+        [InlineData("private", false)]
+        [InlineData("internal", false)]
+        [InlineData("protected", true)]
+        [InlineData("private protected", true)]
+        [InlineData("protected private", true)]
+        [InlineData("protected internal", true)]
+        [InlineData("internal protected", true)]
+        [InlineData("public", true)]
+        public async Task IsVisibleReturnsValueBasedOnAccessModifiersOnDeclaringType(
+            string accessModifiers,
+            bool expected)
+        {
+            var code = TypeDefinitionCode.MultipleChildTypes.Replace("public class MyClass",
+                accessModifiers + " class MyClass");
+
+            var node = await TestNode.FindNode<ClassDeclarationSyntax>(code).ConfigureAwait(false);
+
+            var sut = new ClassDefinition(node);
+
+            var childType = sut.ChildEnums.First(x => x.Name == "FirstEnum");
+
+            childType.IsVisible.Should().Be(expected);
         }
 
         [Fact]

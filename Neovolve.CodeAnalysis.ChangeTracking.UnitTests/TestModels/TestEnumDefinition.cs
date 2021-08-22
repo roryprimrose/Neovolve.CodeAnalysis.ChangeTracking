@@ -6,7 +6,7 @@
 
     public class TestEnumDefinition : IEnumDefinition
     {
-        public AccessModifiers AccessModifiers { get; set; } = AccessModifiers.Public;
+        public EnumAccessModifiers AccessModifiers { get; set; } = EnumAccessModifiers.Public;
         public IReadOnlyCollection<IAttributeDefinition> Attributes { get; set; } = new List<TestAttributeDefinition>();
         public IReadOnlyCollection<IEnumMemberDefinition> Members { get; set; } = new List<TestEnumMemberDefinition>();
         public string DeclaredModifiers { get; set; } = "public";

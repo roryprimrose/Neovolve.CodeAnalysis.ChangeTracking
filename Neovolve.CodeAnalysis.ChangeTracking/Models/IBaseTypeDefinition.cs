@@ -1,6 +1,6 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.Models
 {
-    public interface IBaseTypeDefinition : IAccessModifiersElement<AccessModifiers>
+    public interface IBaseTypeDefinition : IElementDefinition
     {
         /// <summary>
         ///     Gets or sets the type that declares the member.

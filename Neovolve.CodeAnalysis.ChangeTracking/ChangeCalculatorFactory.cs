@@ -95,7 +95,10 @@
             var enumMemberComparer = new EnumMemberComparer(attributeProcessor);
             var enumMemberMatchProcessor =
                 new EnumMemberMatchProcessor(enumMemberEvaluator, enumMemberComparer, logger);
-            var enumComparer = new EnumComparer(enumMemberMatchProcessor, accessModifiersComparer, attributeProcessor);
+            var enumAccessModifiersChangeTable = new EnumAccessModifiersChangeTable();
+            var enumAccessModifiersComparer = new EnumAccessModifiersComparer(enumAccessModifiersChangeTable);
+            var enumComparer =
+                new EnumComparer(enumMemberMatchProcessor, enumAccessModifiersComparer, attributeProcessor);
 
             var aggregateTypeComparer =
                 new AggregateTypeComparer(classComparer, interfaceComparer, structComparer, enumComparer);

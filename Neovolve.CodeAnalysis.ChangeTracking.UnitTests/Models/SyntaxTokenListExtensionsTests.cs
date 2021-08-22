@@ -19,6 +19,17 @@ namespace MyNamespace
 }
 ";
 
+        [Fact]
+        public void DetermineAccessModifierReturnsDefaultWhenNoModifierSpecified()
+        {
+            var defaultValue = AccessModifiers.Internal;
+            var list = new SyntaxTokenList();
+
+            var actual = list.DetermineAccessModifier(defaultValue);
+
+            actual.Should().Be(defaultValue);
+        }
+
         [Theory]
         [InlineData("", AccessModifiers.Internal)]
         [InlineData("private", AccessModifiers.Private)]
@@ -29,7 +40,7 @@ namespace MyNamespace
         [InlineData("protected internal", AccessModifiers.ProtectedInternal)]
         [InlineData("internal protected", AccessModifiers.ProtectedInternal)]
         [InlineData("public", AccessModifiers.Public)]
-        public async Task AccessModifierReturnsValueBasedOnAccessModifiers(
+        public async Task DetermineAccessModifierReturnsValueBasedOnAccessModifiers(
             string accessModifiers,
             AccessModifiers expected)
         {
@@ -46,14 +57,36 @@ namespace MyNamespace
         }
 
         [Fact]
-        public void DetermineAccessModifierReturnsDefaultWhenNoModifierSpecified()
+        public void DetermineEnumAccessModifierReturnsDefaultWhenNoModifierSpecified()
         {
-            var defaultValue = AccessModifiers.Internal;
+            var defaultValue = EnumAccessModifiers.Internal;
             var list = new SyntaxTokenList();
 
             var actual = list.DetermineAccessModifier(defaultValue);
 
             actual.Should().Be(defaultValue);
+        }
+
+        [Theory]
+        [InlineData("", EnumAccessModifiers.Internal)]
+        [InlineData("private", EnumAccessModifiers.Private)]
+        [InlineData("internal", EnumAccessModifiers.Internal)]
+        [InlineData("protected", EnumAccessModifiers.Protected)]
+        [InlineData("public", EnumAccessModifiers.Public)]
+        public async Task DetermineEnumAccessModifierReturnsValueBasedOnEnumAccessModifiers(
+            string accessModifiers,
+            EnumAccessModifiers expected)
+        {
+            var defaultValue = EnumAccessModifiers.Internal;
+            var code = TypeDefinitionCode.BuildClassWithScope(accessModifiers);
+
+            var node = await TestNode.FindNode<ClassDeclarationSyntax>(code).ConfigureAwait(false);
+
+            var list = node.Modifiers;
+
+            var actual = list.DetermineAccessModifier(defaultValue);
+
+            actual.Should().Be(expected);
         }
 
         [Theory]

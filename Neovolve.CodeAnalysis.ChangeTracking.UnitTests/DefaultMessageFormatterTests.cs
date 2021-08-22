@@ -23,6 +23,7 @@
                                                    && x != typeof(IGenericTypeElement)
                                                    && x != typeof(IMemberDefinition)
                                                    && x != typeof(IBaseTypeDefinition)
+                                                   && x != typeof(IBaseTypeDefinition<>)
                                                    && x != typeof(ITypeDefinition)
                                                    && x != typeof(IModifiersElement<>)
                                                    && x != typeof(IAccessModifiersElement<>)
