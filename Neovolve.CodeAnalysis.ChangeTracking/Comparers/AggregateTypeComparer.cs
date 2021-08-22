@@ -4,7 +4,7 @@
     using System.Collections.Generic;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
-    public class AggregateTypeComparer : ITypeComparer
+    public class AggregateTypeComparer : IBaseTypeComparer
     {
         private readonly IClassComparer _classComparer;
         private readonly IInterfaceComparer _interfaceComparer;
@@ -18,7 +18,7 @@
             _structComparer = structComparer ?? throw new ArgumentNullException(nameof(structComparer));
         }
 
-        public IEnumerable<ComparisonResult> CompareMatch(ItemMatch<ITypeDefinition> match, ComparerOptions options)
+        public IEnumerable<ComparisonResult> CompareMatch(ItemMatch<IBaseTypeDefinition> match, ComparerOptions options)
         {
             match = match ?? throw new ArgumentNullException(nameof(match));
             options = options ?? throw new ArgumentNullException(nameof(options));
@@ -73,10 +73,10 @@
             }
 
             throw new NotSupportedException(
-                $"There is no {nameof(ITypeComparer<ITypeDefinition>)} implementation for {match.OldItem.GetType()}");
+                $"There is no {nameof(IBaseTypeComparer<IBaseTypeDefinition>)} implementation for {match.OldItem.GetType()}");
         }
 
-        private static string DetermineTypeChangeDescription(ITypeDefinition item)
+        private static string DetermineTypeChangeDescription(IBaseTypeDefinition item)
         {
             if (item is IClassDefinition)
             {

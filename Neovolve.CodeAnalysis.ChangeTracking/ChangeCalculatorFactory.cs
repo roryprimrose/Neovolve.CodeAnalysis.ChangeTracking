@@ -88,8 +88,8 @@
 
             var aggregateTypeComparer = new AggregateTypeComparer(classComparer, interfaceComparer, structComparer);
 
-            var typeEvaluator = new TypeEvaluator();
-            var typeProcessor = new TypeMatchProcessor(typeEvaluator, aggregateTypeComparer, logger);
+            var typeEvaluator = new BaseTypeEvaluator();
+            var typeProcessor = new BaseTypeMatchProcessor(typeEvaluator, aggregateTypeComparer, logger);
 
             return new ChangeCalculator(typeProcessor, logger);
         }

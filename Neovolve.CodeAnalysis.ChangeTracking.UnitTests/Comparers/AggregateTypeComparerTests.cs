@@ -25,7 +25,7 @@
         {
             var oldItem = new TestStructDefinition();
             var newItem = new TestClassDefinition();
-            var match = new ItemMatch<ITypeDefinition>(oldItem, newItem);
+            var match = new ItemMatch<IBaseTypeDefinition>(oldItem, newItem);
             var options = Model.Create<ComparerOptions>();
 
             var actual = SUT.CompareMatch(match, options).ToList();
@@ -43,7 +43,7 @@
         {
             var oldItem = new TestClassDefinition();
             var newItem = new TestInterfaceDefinition();
-            var match = new ItemMatch<ITypeDefinition>(oldItem, newItem);
+            var match = new ItemMatch<IBaseTypeDefinition>(oldItem, newItem);
             var options = Model.Create<ComparerOptions>();
 
             var actual = SUT.CompareMatch(match, options).ToList();
@@ -61,7 +61,7 @@
         {
             var oldItem = new TestClassDefinition();
             var newItem = new TestStructDefinition();
-            var match = new ItemMatch<ITypeDefinition>(oldItem, newItem);
+            var match = new ItemMatch<IBaseTypeDefinition>(oldItem, newItem);
             var options = Model.Create<ComparerOptions>();
 
             var actual = SUT.CompareMatch(match, options).ToList();
@@ -79,7 +79,7 @@
         {
             var oldItem = new TestClassDefinition();
             var newItem = new TestClassDefinition();
-            var match = new ItemMatch<ITypeDefinition>(oldItem, newItem);
+            var match = new ItemMatch<IBaseTypeDefinition>(oldItem, newItem);
             var options = Model.Create<ComparerOptions>();
             var changeType = Model.Create<SemVerChangeType>();
             var message = Guid.NewGuid().ToString();
@@ -104,7 +104,7 @@
         {
             var oldItem = new TestInterfaceDefinition();
             var newItem = new TestInterfaceDefinition();
-            var match = new ItemMatch<ITypeDefinition>(oldItem, newItem);
+            var match = new ItemMatch<IBaseTypeDefinition>(oldItem, newItem);
             var options = Model.Create<ComparerOptions>();
             var changeType = Model.Create<SemVerChangeType>();
             var message = Guid.NewGuid().ToString();
@@ -130,7 +130,7 @@
         {
             var oldItem = new TestStructDefinition();
             var newItem = new TestStructDefinition();
-            var match = new ItemMatch<ITypeDefinition>(oldItem, newItem);
+            var match = new ItemMatch<IBaseTypeDefinition>(oldItem, newItem);
             var options = Model.Create<ComparerOptions>();
             var changeType = Model.Create<SemVerChangeType>();
             var message = Guid.NewGuid().ToString();
@@ -154,8 +154,8 @@
         public void CompareMatchThrowsExceptionWhenTypedChangedToUnsupportedType()
         {
             var oldItem = new TestStructDefinition();
-            var newItem = Substitute.For<ITypeDefinition>();
-            var match = new ItemMatch<ITypeDefinition>(oldItem, newItem);
+            var newItem = Substitute.For<IBaseTypeDefinition>();
+            var match = new ItemMatch<IBaseTypeDefinition>(oldItem, newItem);
             var options = Model.Create<ComparerOptions>();
 
             Action action = () => SUT.CompareMatch(match, options);
@@ -168,7 +168,7 @@
         {
             var oldItem = new TestClassDefinition();
             var newItem = new TestClassDefinition();
-            var match = new ItemMatch<ITypeDefinition>(oldItem, newItem);
+            var match = new ItemMatch<IBaseTypeDefinition>(oldItem, newItem);
 
             Action action = () => SUT.CompareMatch(match, null!);
 
@@ -188,9 +188,9 @@
         [Fact]
         public void CompareMatchThrowsExceptionWithUnsupportedTypeDefinitions()
         {
-            var oldItem = Substitute.For<ITypeDefinition>();
-            var newItem = Substitute.For<ITypeDefinition>();
-            var match = new ItemMatch<ITypeDefinition>(oldItem, newItem);
+            var oldItem = Substitute.For<IBaseTypeDefinition>();
+            var newItem = Substitute.For<IBaseTypeDefinition>();
+            var match = new ItemMatch<IBaseTypeDefinition>(oldItem, newItem);
             var options = Model.Create<ComparerOptions>();
 
             Action action = () => SUT.CompareMatch(match, options);

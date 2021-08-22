@@ -10,16 +10,16 @@
     public class ChangeCalculator : IChangeCalculator
     {
         private readonly ILogger? _logger;
-        private readonly ITypeMatchProcessor _matchProcessor;
+        private readonly IBaseTypeMatchProcessor _matchProcessor;
 
-        public ChangeCalculator(ITypeMatchProcessor matchProcessor, ILogger? logger)
+        public ChangeCalculator(IBaseTypeMatchProcessor matchProcessor, ILogger? logger)
         {
             _matchProcessor = matchProcessor ?? throw new ArgumentNullException(nameof(matchProcessor));
             _logger = logger;
         }
 
-        public ChangeCalculatorResult CalculateChanges(IEnumerable<ITypeDefinition> oldTypes,
-            IEnumerable<ITypeDefinition> newTypes, ComparerOptions options)
+        public ChangeCalculatorResult CalculateChanges(IEnumerable<IBaseTypeDefinition> oldTypes,
+            IEnumerable<IBaseTypeDefinition> newTypes, ComparerOptions options)
         {
             oldTypes = oldTypes ?? throw new ArgumentNullException(nameof(oldTypes));
             newTypes = newTypes ?? throw new ArgumentNullException(nameof(newTypes));

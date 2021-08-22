@@ -36,7 +36,7 @@
                 newItem
             };
 
-            var sut = new TypeEvaluator();
+            var sut = new BaseTypeEvaluator();
 
             var actual = sut.FindMatches(oldItems, newItems);
 
@@ -66,7 +66,7 @@
                 newItem
             };
 
-            var sut = new TypeEvaluator();
+            var sut = new BaseTypeEvaluator();
 
             var actual = sut.FindMatches(oldItems, newItems);
 
@@ -91,7 +91,7 @@
                 otherNewItem
             };
 
-            var sut = new TypeEvaluator();
+            var sut = new BaseTypeEvaluator();
 
             var actual = sut.FindMatches(oldItems, newItems);
 
@@ -116,7 +116,7 @@
                 newItem
             };
 
-            var sut = new TypeEvaluator();
+            var sut = new BaseTypeEvaluator();
 
             var actual = sut.FindMatches(oldItems, newItems);
 
@@ -139,7 +139,7 @@
                 newItem
             };
 
-            var sut = new TypeEvaluator();
+            var sut = new BaseTypeEvaluator();
 
             var actual = sut.FindMatches(oldItems, newItems);
 
@@ -168,7 +168,7 @@
                 newItem
             };
 
-            var sut = new TypeEvaluator();
+            var sut = new BaseTypeEvaluator();
 
             var actual = sut.FindMatches(oldItems, newItems);
 
@@ -183,7 +183,7 @@
             var oldItems = Array.Empty<ITypeDefinition>();
             var newItems = Array.Empty<ITypeDefinition>();
 
-            var sut = new TypeEvaluator();
+            var sut = new BaseTypeEvaluator();
 
             var actual = sut.FindMatches(oldItems, newItems);
 
@@ -211,7 +211,7 @@
                 newItem
             };
 
-            var sut = new TypeEvaluator();
+            var sut = new BaseTypeEvaluator();
 
             var actual = sut.FindMatches(oldItems, newItems);
 
@@ -234,7 +234,7 @@
                 newItem
             };
 
-            var sut = new TypeEvaluator();
+            var sut = new BaseTypeEvaluator();
 
             var actual = sut.FindMatches(oldItems, newItems);
 
@@ -268,7 +268,7 @@
                 newItem
             };
 
-            var sut = new TypeEvaluator();
+            var sut = new BaseTypeEvaluator();
 
             var actual = sut.FindMatches(oldItems, newItems);
 
@@ -301,7 +301,7 @@
                 newItem
             };
 
-            var sut = new TypeEvaluator();
+            var sut = new BaseTypeEvaluator();
 
             var actual = sut.FindMatches(oldItems, newItems);
 
@@ -333,7 +333,7 @@
                 newItem
             };
 
-            var sut = new TypeEvaluator();
+            var sut = new BaseTypeEvaluator();
 
             var actual = sut.FindMatches(oldItems, newItems);
 
@@ -372,7 +372,7 @@
                 newItem
             };
 
-            var sut = new TypeEvaluator();
+            var sut = new BaseTypeEvaluator();
 
             var actual = sut.FindMatches(oldItems, newItems);
 
@@ -404,7 +404,7 @@
                 newItem
             };
 
-            var sut = new TypeEvaluator();
+            var sut = new BaseTypeEvaluator();
 
             var actual = sut.FindMatches(oldItems, newItems);
 

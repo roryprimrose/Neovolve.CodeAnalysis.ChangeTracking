@@ -2,7 +2,7 @@
 {
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
-    public interface ITypeMatchProcessor : IMatchProcessor<ITypeDefinition>
+    public interface IBaseTypeMatchProcessor : IMatchProcessor<IBaseTypeDefinition>
     {
 
     }
