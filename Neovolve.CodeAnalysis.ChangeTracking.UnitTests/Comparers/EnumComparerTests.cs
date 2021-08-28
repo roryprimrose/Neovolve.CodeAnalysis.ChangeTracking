@@ -23,6 +23,24 @@
         }
 
         [Fact]
+        public void CompareMatchReturnsBreakingWhenNamespaceChanged()
+        {
+            var oldItem = new TestEnumDefinition();
+            var newItem = oldItem.JsonClone().Set(x => x.Namespace = Guid.NewGuid().ToString());
+            var match = new ItemMatch<IEnumDefinition>(oldItem, newItem);
+            var options = ComparerOptions.Default;
+
+            var actual = SUT.CompareMatch(match, options).ToList();
+
+            _output.WriteResults(actual);
+
+            actual.Should().HaveCount(1);
+
+            actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
+            actual[0].Message.Should().NotBeNullOrWhiteSpace();
+        }
+
+        [Fact]
         public void CompareMatchReturnsResultFromAccessModifiersComparer()
         {
             var oldItem = new TestEnumDefinition();

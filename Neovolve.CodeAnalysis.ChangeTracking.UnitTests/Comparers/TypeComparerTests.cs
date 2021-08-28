@@ -186,7 +186,7 @@
         public void CompareMatchReturnsResultsFromAccessModifierComparer()
         {
             var oldItem = new TestClassDefinition();
-            var newItem = new TestClassDefinition();
+            var newItem = oldItem.JsonClone();
             var match = new ItemMatch<IClassDefinition>(oldItem, newItem);
             var options = ComparerOptions.Default;
             var changeType = Model.Create<SemVerChangeType>();

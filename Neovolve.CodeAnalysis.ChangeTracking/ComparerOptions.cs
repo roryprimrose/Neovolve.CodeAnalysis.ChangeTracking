@@ -30,9 +30,7 @@
             {
                 CompareAttributes = AttributeCompareOption.ByExpression
             };
-
-            options.AddAttributeNameToCompare("(System\\.)?Flags");
-
+            
             // Register System.Text.Json attributes that impact how json data is serialized
             options.AddAttributeNameToCompare("((((System\\.)?Text\\.)?Json\\.)?Serialization\\.)?JsonConverter");
             options.AddAttributeNameToCompare("((((System\\.)?Text\\.)?Json\\.)?Serialization\\.)?JsonExtensionData");

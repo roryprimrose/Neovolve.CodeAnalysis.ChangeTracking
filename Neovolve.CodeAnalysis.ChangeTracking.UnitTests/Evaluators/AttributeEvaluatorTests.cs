@@ -5,7 +5,6 @@
     using System.Threading.Tasks;
     using FluentAssertions;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using Microsoft.Extensions.Logging;
     using ModelBuilder;
     using Neovolve.CodeAnalysis.ChangeTracking.Evaluators;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;

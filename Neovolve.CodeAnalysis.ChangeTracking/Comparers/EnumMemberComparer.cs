@@ -1,6 +1,7 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.Comparers
 {
     using System;
+    using System.Linq;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
     using Neovolve.CodeAnalysis.ChangeTracking.Processors;
 
@@ -32,8 +33,8 @@
                 aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
             }
             else if (string.IsNullOrWhiteSpace(match.OldItem.Value)
-                && string.IsNullOrWhiteSpace(match.NewItem.Value)
-                && match.OldItem.Index != match.NewItem.Index)
+                     && string.IsNullOrWhiteSpace(match.NewItem.Value)
+                     && match.OldItem.Index != match.NewItem.Index)
             {
                 // This enum has an implicit value assigned by the compiler but has changed position
                 // The underlying value of this member will most likely have changed
@@ -57,14 +58,7 @@
             if (string.IsNullOrEmpty(match.OldItem.Value) == false
                 && string.IsNullOrEmpty(match.NewItem.Value) == false)
             {
-                // Both members have values so the value of the enum member has changed
-                var args = new FormatArguments(
-                    "{DefinitionType} {Identifier} has changed the underlying value from {OldValue} to {NewValue}",
-                    match.NewItem.FullName,
-                    match.OldItem.Value,
-                    match.NewItem.Value);
-
-                aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
+                EvaluateMemberValueChanged(match, aggregator, options);
             }
             else if (string.IsNullOrEmpty(match.OldItem.Value))
             {
@@ -92,6 +86,34 @@
 
                 aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
             }
+        }
+
+        private static void EvaluateMemberValueChanged(ItemMatch<IEnumMemberDefinition> match,
+            IChangeResultAggregator aggregator,
+            ComparerOptions options)
+        {
+            // We want to check if the change of value is whitespace or ordering of bitwise values
+            var oldValue = match.OldItem.Value;
+            var newValue = match.NewItem.Value;
+
+            var oldParts = oldValue.Split('|').Select(x => x.Trim()).OrderBy(x => x);
+            var newParts = newValue.Split('|').Select(x => x.Trim()).OrderBy(x => x);
+
+            if (oldParts.SequenceEqual(newParts))
+            {
+                // The change in the value is either whitespace and/or ordering of the bitwise values
+                // This is not actually a change of the compiled value
+                return;
+            }
+
+            // Both members have values so the value of the enum member has changed
+            var args = new FormatArguments(
+                "{DefinitionType} {Identifier} has changed the underlying value from {OldValue} to {NewValue}",
+                match.NewItem.FullName,
+                match.OldItem.Value,
+                match.NewItem.Value);
+
+            aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
         }
     }
 }

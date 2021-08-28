@@ -48,6 +48,8 @@
         [InlineData("", "123")]
         [InlineData("123", "")]
         [InlineData("123", "456")]
+        [InlineData("123", "First | Second")]
+        [InlineData("First | Second", "123")]
         public void CompareMatchReturnsBreakingWhenMemberValueChanged(string oldValue, string newValue)
         {
             var options = ComparerOptions.Default;
@@ -89,6 +91,24 @@
             result.OldItem.Should().Be(oldItem);
             result.NewItem.Should().Be(newItem);
             result.Message.Should().NotBeNullOrWhiteSpace();
+        }
+
+        [Theory]
+        [InlineData("First | Second | Third", "First | Second | Third")]
+        [InlineData("First | Second | Third", "First | Third | Second")]
+        [InlineData("First | Second | Third", "First|Third|Second")]
+        [InlineData("First | Second | Third", "First|Second|Third")]
+        public void CompareMatchReturnsEmptyResultsWhenBitwiseWhitespaceOrOrderingChanges(string oldValue,
+            string newValue)
+        {
+            var options = ComparerOptions.Default;
+            var oldItem = new TestEnumMemberDefinition().Set(x => x.Value = oldValue);
+            var newItem = oldItem.JsonClone().Set(x => x.Value = newValue);
+            var match = new ItemMatch<IEnumMemberDefinition>(oldItem, newItem);
+
+            var actual = SUT.CompareMatch(match, options);
+
+            actual.Should().BeEmpty();
         }
 
         [Fact]

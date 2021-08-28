@@ -165,13 +165,13 @@
             var options = ComparerOptions.Default;
 
             Service<IBaseTypeEvaluator>().FindMatches(
-                    Match.On<IEnumerable<ITypeDefinition>>(x => x.Should().BeEquivalentTo(oldParentItems)),
-                    Match.On<IEnumerable<ITypeDefinition>>(x => x.Should().BeEquivalentTo(newParentItems)))
+                    Match.On<IEnumerable<IBaseTypeDefinition>>(x => x.Should().BeEquivalentTo(oldParentItems)),
+                    Match.On<IEnumerable<IBaseTypeDefinition>>(x => x.Should().BeEquivalentTo(newParentItems)))
                 .Returns(parentMatchResults);
             Service<IBaseTypeComparer>().CompareMatch(parentMatch, options).Returns(parentResults);
             Service<IBaseTypeEvaluator>().FindMatches(
-                    Match.On<IEnumerable<ITypeDefinition>>(x => x.Should().BeEquivalentTo(oldChildItems)),
-                    Match.On<IEnumerable<ITypeDefinition>>(x => x.Should().BeEquivalentTo(newChildItems)))
+                    Match.On<IEnumerable<IBaseTypeDefinition>>(x => x.Should().BeEquivalentTo(oldChildItems)),
+                    Match.On<IEnumerable<IBaseTypeDefinition>>(x => x.Should().BeEquivalentTo(newChildItems)))
                 .Returns(childMatchResults);
             Service<IBaseTypeComparer>().CompareMatch(childMatch, options).Returns(childResults);
 

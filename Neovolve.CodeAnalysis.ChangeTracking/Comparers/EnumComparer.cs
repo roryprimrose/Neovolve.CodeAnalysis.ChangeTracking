@@ -14,7 +14,7 @@
             IAttributeMatchProcessor attributeProcessor) : base(attributeProcessor)
         {
             _enumAccessModifiersComparer = enumAccessModifiersComparer
-                                       ?? throw new ArgumentNullException(nameof(enumAccessModifiersComparer));
+                                           ?? throw new ArgumentNullException(nameof(enumAccessModifiersComparer));
             _enumMemberMatchProcessor = enumMemberMatchProcessor
                                         ?? throw new ArgumentNullException(nameof(enumMemberMatchProcessor));
         }
@@ -39,6 +39,33 @@
             base.EvaluateModifierChanges(match, options, aggregator);
 
             RunComparisonStep(EvaluateAccessModifierChanges, match, options, aggregator, true);
+        }
+
+        protected override void EvaluateTypeDefinitionChanges(ItemMatch<IEnumDefinition> match, ComparerOptions options,
+            IChangeResultAggregator aggregator)
+        {
+            match = match ?? throw new ArgumentNullException(nameof(match));
+            options = options ?? throw new ArgumentNullException(nameof(options));
+
+            base.EvaluateTypeDefinitionChanges(match, options, aggregator);
+
+            RunComparisonStep(CompareNamespace, match, options, aggregator, true);
+        }
+
+        private static void CompareNamespace(
+            ItemMatch<IEnumDefinition> match,
+            ComparerOptions options,
+            IChangeResultAggregator aggregator)
+        {
+            // Check for a change in type
+            if (match.OldItem.Namespace != match.NewItem.Namespace)
+            {
+                var args = new FormatArguments(
+                    "{DefinitionType} {Identifier} has changed namespace from {OldValue} to {NewValue}",
+                    match.OldItem.FullName, match.OldItem.Namespace, match.NewItem.Namespace);
+
+                aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
+            }
         }
 
         private void EvaluateAccessModifierChanges(

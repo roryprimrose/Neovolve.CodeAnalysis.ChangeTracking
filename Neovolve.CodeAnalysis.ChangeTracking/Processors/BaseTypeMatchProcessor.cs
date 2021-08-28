@@ -1,6 +1,7 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.Processors
 {
     using System.Collections.Generic;
+    using System.Linq;
     using Microsoft.Extensions.Logging;
     using Neovolve.CodeAnalysis.ChangeTracking.Comparers;
     using Neovolve.CodeAnalysis.ChangeTracking.Evaluators;
@@ -53,16 +54,19 @@
 
         private static IEnumerable<IBaseTypeDefinition> MergePartialTypes(IEnumerable<IBaseTypeDefinition> items)
         {
+            var otherTypes = new List<IBaseTypeDefinition>();
             var types = new Dictionary<string, ITypeDefinition>();
 
             foreach (var item in items)
             {
                 if (item is not ITypeDefinition typeDefinition)
                 {
+                    otherTypes.Add(item);
+
                     continue;
                 }
 
-                var key = typeDefinition.GetType().Name + "|" + typeDefinition.FullName;
+                var key = item.GetType().Name + "|" + item.FullName;
 
                 if (types.ContainsKey(key))
                 {
@@ -75,7 +79,7 @@
                 }
             }
 
-            return types.Values;
+            return otherTypes.Union(types.Values);
         }
     }
 }
