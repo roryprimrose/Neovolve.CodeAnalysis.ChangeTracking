@@ -81,6 +81,28 @@ namespace MyNamespace
             sut.AccessModifiers.Should().Be(expected);
         }
 
+        [Theory]
+        [InlineData("")]
+        [InlineData("byte")]
+        [InlineData("sbyte")]
+        [InlineData("short")]
+        [InlineData("ushort")]
+        [InlineData("int")]
+        [InlineData("uint")]
+        [InlineData("long")]
+        [InlineData("ulong")]
+        public async Task ImplementedTypesReturnsDeclaredValue(string baseType)
+        {
+            var code = EnumMembersWithImplicitValues.Replace("MyEnum", "MyEnum : " + baseType);
+
+            var node = await TestNode.FindNode<EnumDeclarationSyntax>(code).ConfigureAwait(false);
+
+            var sut = new EnumDefinition(node);
+
+            sut.ImplementedTypes.Should().HaveCount(1);
+            sut.ImplementedTypes.First().Should().Be(baseType);
+        }
+
         [Fact]
         public async Task CanCreateFromDeclarationNode()
         {

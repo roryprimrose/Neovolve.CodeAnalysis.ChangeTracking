@@ -41,11 +41,6 @@
         IReadOnlyCollection<IBaseTypeDefinition> ChildTypes { get; }
 
         /// <summary>
-        ///     Gets the types implemented/inherited by this type.
-        /// </summary>
-        IReadOnlyCollection<string> ImplementedTypes { get; }
-
-        /// <summary>
         ///     Gets the methods declared on the type.
         /// </summary>
         IReadOnlyCollection<IMethodDefinition> Methods { get; }

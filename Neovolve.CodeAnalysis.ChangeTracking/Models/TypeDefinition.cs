@@ -23,7 +23,6 @@
             AccessModifiers = DetermineAccessModifier(node, DeclaringType);
             IsVisible = DetermineIsVisible(node, DeclaringType);
 
-            ImplementedTypes = DetermineImplementedTypes(node);
             Properties = DetermineProperties(node);
             Methods = DetermineMethods(node);
             ChildClasses = DetermineChildClasses(node);
@@ -45,7 +44,6 @@
             AccessModifiers = DetermineAccessModifier(node, DeclaringType);
             IsVisible = DetermineIsVisible(node, DeclaringType);
 
-            ImplementedTypes = DetermineImplementedTypes(node);
             Properties = DetermineProperties(node);
             Methods = DetermineMethods(node);
             ChildClasses = DetermineChildClasses(node);
@@ -188,20 +186,6 @@
             return typeParameters;
         }
 
-        private static IReadOnlyCollection<string> DetermineImplementedTypes(BaseTypeDeclarationSyntax node)
-        {
-            var baseList = node.ChildNodes().OfType<BaseListSyntax>().FirstOrDefault();
-
-            if (baseList == null)
-            {
-                return Array.Empty<string>();
-            }
-
-            var childTypes = baseList.Types.Select(x => x.ToString()).FastToList();
-
-            return childTypes.AsReadOnly();
-        }
-
         private static bool DetermineIsVisible(BaseTypeDeclarationSyntax node, ITypeDefinition? declaringType)
         {
             node = node ?? throw new ArgumentNullException(nameof(node));
@@ -304,9 +288,6 @@
 
         /// <inheritdoc />
         public IReadOnlyCollection<string> GenericTypeParameters { get; }
-
-        /// <inheritdoc />
-        public IReadOnlyCollection<string> ImplementedTypes { get; }
 
         /// <inheritdoc />
         public IReadOnlyCollection<IMethodDefinition> Methods { get; private set; }

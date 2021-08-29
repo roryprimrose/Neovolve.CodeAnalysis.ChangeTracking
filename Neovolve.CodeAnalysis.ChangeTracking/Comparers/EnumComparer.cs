@@ -1,6 +1,8 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.Comparers
 {
     using System;
+    using System.Linq;
+    using Neovolve.CodeAnalysis.ChangeTracking.ChangeTables;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
     using Neovolve.CodeAnalysis.ChangeTracking.Processors;
 
@@ -8,13 +10,17 @@
     {
         private readonly IEnumAccessModifiersComparer _enumAccessModifiersComparer;
         private readonly IEnumMemberMatchProcessor _enumMemberMatchProcessor;
+        private readonly IEnumUnderlyingTypeChangeTable _underlyingTypeChangeTable;
 
         public EnumComparer(IEnumMemberMatchProcessor enumMemberMatchProcessor,
             IEnumAccessModifiersComparer enumAccessModifiersComparer,
+            IEnumUnderlyingTypeChangeTable underlyingTypeChangeTable,
             IAttributeMatchProcessor attributeProcessor) : base(attributeProcessor)
         {
             _enumAccessModifiersComparer = enumAccessModifiersComparer
                                            ?? throw new ArgumentNullException(nameof(enumAccessModifiersComparer));
+            _underlyingTypeChangeTable = underlyingTypeChangeTable
+                                         ?? throw new ArgumentNullException(nameof(underlyingTypeChangeTable));
             _enumMemberMatchProcessor = enumMemberMatchProcessor
                                         ?? throw new ArgumentNullException(nameof(enumMemberMatchProcessor));
         }
@@ -50,6 +56,7 @@
             base.EvaluateTypeDefinitionChanges(match, options, aggregator);
 
             RunComparisonStep(CompareNamespace, match, options, aggregator, true);
+            RunComparisonStep(CompareUnderlyingType, match, options, aggregator, true);
         }
 
         private static void CompareNamespace(
@@ -65,6 +72,85 @@
                     match.OldItem.FullName, match.OldItem.Namespace, match.NewItem.Namespace);
 
                 aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
+            }
+        }
+
+        private void CompareUnderlyingType(ItemMatch<IEnumDefinition> match, ComparerOptions options,
+            IChangeResultAggregator aggregator)
+        {
+            var oldBaseType = string.Empty;
+            var newBaseType = string.Empty;
+
+            if (match.OldItem.ImplementedTypes.Count > 0)
+            {
+                oldBaseType = match.OldItem.ImplementedTypes.First();
+            }
+
+            if (match.NewItem.ImplementedTypes.Count > 0)
+            {
+                newBaseType = match.NewItem.ImplementedTypes.First();
+            }
+
+            var change = _underlyingTypeChangeTable.CalculateChange(oldBaseType, newBaseType);
+
+            if (change == SemVerChangeType.None)
+            {
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(oldBaseType))
+            {
+                // Underlying type has been added
+                var args = new FormatArguments(
+                    "{DefinitionType} {Identifier} has added the {NewValue} underlying type",
+                    match.NewItem.FullName,
+                    null,
+                    newBaseType);
+
+                var message = options.MessageFormatter.FormatItemChangedMessage(match, args);
+
+                var result = new ComparisonResult(
+                    change,
+                    match.OldItem, match.NewItem,
+                    message);
+
+                aggregator.AddResult(result);
+            }
+            else if (string.IsNullOrWhiteSpace(newBaseType))
+            {
+                // Underlying type has been removed
+                var args = new FormatArguments(
+                    "{DefinitionType} {Identifier} has removed the {OldValue} underlying type",
+                    match.NewItem.FullName,
+                    oldBaseType,
+                    null);
+
+                var message = options.MessageFormatter.FormatItemChangedMessage(match, args);
+
+                var result = new ComparisonResult(
+                    change,
+                    match.OldItem, match.NewItem,
+                    message);
+
+                aggregator.AddResult(result);
+            }
+            else
+            {
+                // Underlying type has been changed
+                var args = new FormatArguments(
+                    "{DefinitionType} {Identifier} has changed the underlying type from {OldValue} to {NewValue}",
+                    match.NewItem.FullName,
+                    oldBaseType,
+                    newBaseType);
+
+                var message = options.MessageFormatter.FormatItemChangedMessage(match, args);
+
+                var result = new ComparisonResult(
+                    change,
+                    match.OldItem, match.NewItem,
+                    message);
+
+                aggregator.AddResult(result);
             }
         }
 

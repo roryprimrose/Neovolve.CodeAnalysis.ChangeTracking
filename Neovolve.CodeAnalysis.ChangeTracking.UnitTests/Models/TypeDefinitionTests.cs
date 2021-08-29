@@ -365,56 +365,6 @@
         }
 
         [Fact]
-        public async Task ImplementedTypesReturnsEmptyWhenNoImplementedTypesDeclared()
-        {
-            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithoutParent)
-                .ConfigureAwait(false);
-
-            var sut = new ClassDefinition(node);
-
-            sut.ImplementedTypes.Should().BeEmpty();
-        }
-
-        [Fact]
-        public async Task ImplementedTypesReturnsMultipleImplementedType()
-        {
-            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassImplementsMultipleTypes)
-                .ConfigureAwait(false);
-
-            var sut = new ClassDefinition(node);
-
-            sut.ImplementedTypes.Should().HaveCount(2);
-            sut.ImplementedTypes.First().Should().Be("MyBase");
-            sut.ImplementedTypes.Skip(1).First().Should().Be("IEnumerable<string>");
-        }
-
-        [Fact]
-        public async Task ImplementedTypesReturnsMultipleImplementedTypeWithGenericTypeDefinition()
-        {
-            var node = await TestNode
-                .FindNode<InterfaceDeclarationSyntax>(TypeDefinitionCode.InterfaceImplementsMultipleTypes)
-                .ConfigureAwait(false);
-
-            var sut = new InterfaceDefinition(node);
-
-            sut.ImplementedTypes.Should().HaveCount(2);
-            sut.ImplementedTypes.First().Should().Be("IDisposable");
-            sut.ImplementedTypes.Skip(1).First().Should().Be("IEnumerable<T>");
-        }
-
-        [Fact]
-        public async Task ImplementedTypesReturnsSingleImplementedType()
-        {
-            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassImplementsSingleType)
-                .ConfigureAwait(false);
-
-            var sut = new ClassDefinition(node);
-
-            sut.ImplementedTypes.Should().HaveCount(1);
-            sut.ImplementedTypes.First().Should().Be("MyBase");
-        }
-
-        [Fact]
         public async Task IsVisibleReturnsFalseWhenDeclaringTypeIsVisibleReturnsFalse()
         {
             var code = TypeDefinitionCode.MultipleChildTypes.Replace("public class MyClass", "class MyClass");

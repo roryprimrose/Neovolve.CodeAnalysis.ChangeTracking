@@ -229,6 +229,29 @@ namespace MyNamespace
             result.ChangeType.Should().Be(SemVerChangeType.Breaking);
         }
 
+        [Theory]
+        [InlineData("byte", "")]
+        [InlineData("", "byte")]
+        [InlineData("byte", "long")]
+        public async Task EvaluatesReturnsBreakingWhenUnderlyingTypeChanges(string oldValue, string newValue)
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new(EnumMembersWithFlagsValues.Replace("MyEnum", "MyEnum : " + oldValue))
+            };
+            var newCode = new List<CodeSource>
+            {
+                new(EnumMembersWithFlagsValues.Replace("MyEnum", "MyEnum : " + newValue))
+            };
+
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            result.ChangeType.Should().Be(SemVerChangeType.Breaking);
+        }
+
         [Fact]
         public async Task EvaluatesReturnsFeatureWhenEnumAdded()
         {
@@ -306,6 +329,31 @@ namespace MyNamespace
             var newCode = new List<CodeSource>
             {
                 new(EnumMembersWithFlagsValues.Replace("First | Second | Third", updatedValue))
+            };
+
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            result.ChangeType.Should().Be(SemVerChangeType.None);
+        }
+
+        [Theory]
+        [InlineData("", "")]
+        [InlineData("", "int")]
+        [InlineData("int", "")]
+        [InlineData("int", "int")]
+        public async Task EvaluatesReturnsNoneWhenUnderlyingTypeChangesBetweenImplicitAndExplicitDefault(
+            string oldValue, string newValue)
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new(EnumMembersWithFlagsValues.Replace("MyEnum", "MyEnum : " + oldValue))
+            };
+            var newCode = new List<CodeSource>
+            {
+                new(EnumMembersWithFlagsValues.Replace("MyEnum", "MyEnum : " + newValue))
             };
 
             var options = OptionsFactory.BuildOptions();

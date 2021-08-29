@@ -1,6 +1,7 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.Models
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -16,10 +17,11 @@
         {
             DeclaringType = null;
 
+            Namespace = DetermineNamespace(node);
+            ImplementedTypes = DetermineImplementedTypes(node);
+
             var name = DetermineName(node);
             var rawName = node.Identifier.Text;
-
-            Namespace = DetermineNamespace(node);
 
             Name = name;
             RawName = rawName;
@@ -37,10 +39,11 @@
         {
             DeclaringType = declaringType ?? throw new ArgumentNullException(nameof(declaringType));
 
+            Namespace = DetermineNamespace(node);
+            ImplementedTypes = DetermineImplementedTypes(node);
+
             var name = DetermineName(node);
             var rawName = node.Identifier.Text;
-
-            Namespace = DetermineNamespace(node);
 
             Name = name;
             RawName = rawName;
@@ -94,6 +97,20 @@
             return string.Empty;
         }
 
+        private static IReadOnlyCollection<string> DetermineImplementedTypes(BaseTypeDeclarationSyntax node)
+        {
+            var baseList = node.ChildNodes().OfType<BaseListSyntax>().FirstOrDefault();
+
+            if (baseList == null)
+            {
+                return Array.Empty<string>();
+            }
+
+            var childTypes = baseList.Types.Select(x => x.ToString()).FastToList();
+
+            return childTypes.AsReadOnly();
+        }
+
         /// <inheritdoc />
         public T AccessModifiers { get; protected set; }
 
@@ -105,6 +122,9 @@
 
         /// <inheritdoc />
         public override string FullRawName { get; }
+
+        /// <inheritdoc />
+        public IReadOnlyCollection<string> ImplementedTypes { get; }
 
         /// <inheritdoc />
         public override string Name { get; }

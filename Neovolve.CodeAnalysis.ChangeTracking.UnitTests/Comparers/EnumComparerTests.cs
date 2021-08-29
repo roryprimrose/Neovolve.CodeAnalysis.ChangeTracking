@@ -5,6 +5,7 @@
     using System.Linq;
     using FluentAssertions;
     using ModelBuilder;
+    using Neovolve.CodeAnalysis.ChangeTracking.ChangeTables;
     using Neovolve.CodeAnalysis.ChangeTracking.Comparers;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
     using Neovolve.CodeAnalysis.ChangeTracking.Processors;
@@ -20,6 +21,36 @@
         public EnumComparerTests(ITestOutputHelper output)
         {
             _output = output;
+        }
+
+        [Theory]
+        [InlineData(SemVerChangeType.None)]
+        [InlineData(SemVerChangeType.Feature)]
+        [InlineData(SemVerChangeType.Breaking)]
+        public void CompareMatchCalculatesResultFromUnderlyingTypeChangeTable(SemVerChangeType expected)
+        {
+            var oldItem = new TestEnumDefinition().Set(x => x.ImplementedTypes = new[] { "byte" });
+            var newItem = oldItem.JsonClone().Set(x => x.ImplementedTypes = new[] { "ushort" });
+            var match = new ItemMatch<IEnumDefinition>(oldItem, newItem);
+            var options = ComparerOptions.Default;
+
+            Service<IEnumUnderlyingTypeChangeTable>()
+                .CalculateChange(oldItem.ImplementedTypes.First(),
+                    newItem.ImplementedTypes.First()).Returns(expected);
+
+            var actual = SUT.CompareMatch(match, options).ToList();
+
+            _output.WriteResults(actual);
+
+            if (expected == SemVerChangeType.None)
+            {
+                actual.Should().BeEmpty();
+            }
+            else
+            {
+                actual.Should().HaveCount(1);
+                actual[0].ChangeType.Should().Be(expected);
+            }
         }
 
         [Fact]
@@ -66,6 +97,48 @@
             actual[0].Should().BeEquivalentTo(result);
         }
 
+        [Theory]
+        [InlineData("", "", SemVerChangeType.None)]
+        [InlineData("", "short", SemVerChangeType.Breaking)]
+        [InlineData("short", "", SemVerChangeType.Breaking)]
+        [InlineData("short", "long", SemVerChangeType.Breaking)]
+        public void CompareMatchReturnsResultFromEnumUnderlyingTypeChangeTable(string oldValue, string newValue,
+            SemVerChangeType expected)
+        {
+            var oldItem = new TestEnumDefinition();
+            var newItem = oldItem.JsonClone();
+
+            if (string.IsNullOrWhiteSpace(oldValue) == false)
+            {
+                oldItem.ImplementedTypes = new[] { oldValue };
+            }
+
+            if (string.IsNullOrWhiteSpace(newValue) == false)
+            {
+                newItem.ImplementedTypes = new[] { newValue };
+            }
+
+            var match = new ItemMatch<IEnumDefinition>(oldItem, newItem);
+            var options = ComparerOptions.Default;
+
+            Service<IEnumUnderlyingTypeChangeTable>().CalculateChange(oldValue, newValue).Returns(expected);
+
+            var actual = SUT.CompareMatch(match, options).ToList();
+
+            _output.WriteResults(actual);
+
+            if (expected == SemVerChangeType.None)
+            {
+                actual.Should().BeEmpty();
+            }
+            else
+            {
+                actual.Should().HaveCount(1);
+
+                actual[0].ChangeType.Should().Be(expected);
+            }
+        }
+
         [Fact]
         public void CompareMatchReturnsResultsFromEnumMemberProcessor()
         {
@@ -90,13 +163,43 @@
         }
 
         [Fact]
+        public void ThrowsExceptionWhenCreatedWithNullEnumAccessModifierComparer()
+        {
+            var enumAccessModifiersComparer = Substitute.For<IEnumMemberMatchProcessor>();
+            var attributeProcessor = Substitute.For<IAttributeMatchProcessor>();
+            var underlyingTypeChangeTable = Substitute.For<IEnumUnderlyingTypeChangeTable>();
+
+            // ReSharper disable once ObjectCreationAsStatement
+            Action action = () =>
+                new EnumComparer(enumAccessModifiersComparer, null!, underlyingTypeChangeTable, attributeProcessor);
+
+            action.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
         public void ThrowsExceptionWhenCreatedWithNullEnumMemberProcessor()
         {
             var accessModifiersComparer = Substitute.For<IEnumAccessModifiersComparer>();
             var attributeProcessor = Substitute.For<IAttributeMatchProcessor>();
+            var underlyingTypeChangeTable = Substitute.For<IEnumUnderlyingTypeChangeTable>();
 
             // ReSharper disable once ObjectCreationAsStatement
-            Action action = () => new EnumComparer(null!, accessModifiersComparer, attributeProcessor);
+            Action action = () =>
+                new EnumComparer(null!, accessModifiersComparer, underlyingTypeChangeTable, attributeProcessor);
+
+            action.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
+        public void ThrowsExceptionWhenCreatedWithNullUnderlyingTypeChangeTable()
+        {
+            var enumAccessModifiersComparer = Substitute.For<IEnumMemberMatchProcessor>();
+            var accessModifiersComparer = Substitute.For<IEnumAccessModifiersComparer>();
+            var attributeProcessor = Substitute.For<IAttributeMatchProcessor>();
+
+            // ReSharper disable once ObjectCreationAsStatement
+            Action action = () =>
+                new EnumComparer(enumAccessModifiersComparer, accessModifiersComparer, null!, attributeProcessor);
 
             action.Should().Throw<ArgumentNullException>();
         }
