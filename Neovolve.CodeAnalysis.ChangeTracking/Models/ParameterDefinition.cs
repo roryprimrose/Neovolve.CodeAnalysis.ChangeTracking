@@ -21,6 +21,8 @@
             Type = node.Type?.ToString() ?? string.Empty;
             DefaultValue = node.Default?.Value.ToString() ?? string.Empty;
             Modifiers = DetermineModifier(node);
+
+            IsVisible = DeclaringMember.IsVisible;
         }
 
         private static ParameterModifiers DetermineModifier(ParameterSyntax node)
@@ -52,7 +54,6 @@
         public string DefaultValue { get; }
         public override string FullName { get; }
         public override string FullRawName { get; }
-        public override bool IsVisible => DeclaringMember.IsVisible;
         public ParameterModifiers Modifiers { get; }
         public override string Name { get; }
         public override string RawName { get; }

@@ -23,7 +23,7 @@
             Func<Task> action = async () => await calculator.CalculateChanges(oldCode, null!, CancellationToken.None)
                 .ConfigureAwait(false);
 
-            action.Should().Throw<ArgumentNullException>();
+            action.Should().ThrowAsync<ArgumentNullException>();
         }
 
         [Fact]
@@ -35,7 +35,7 @@
             Func<Task> action = async () => await calculator.CalculateChanges(null!, newCode, CancellationToken.None)
                 .ConfigureAwait(false);
 
-            action.Should().Throw<ArgumentNullException>();
+            action.Should().ThrowAsync<ArgumentNullException>();
         }
 
         [Fact]
@@ -55,8 +55,8 @@
             var calculator = Substitute.For<IChangeCalculator>();
 
             calculator.CalculateChanges(
-                Arg.Is<IEnumerable<ITypeDefinition>>(x => x.OfType<ClassDefinition>().Count() == 2),
-                Arg.Is<IEnumerable<ITypeDefinition>>(x => x.OfType<InterfaceDefinition>().Count() == 2),
+                Arg.Is<IEnumerable<IBaseTypeDefinition>>(x => x.OfType<ClassDefinition>().Count() == 2),
+                Arg.Is<IEnumerable<IBaseTypeDefinition>>(x => x.OfType<InterfaceDefinition>().Count() == 2),
                 options).Returns(expected);
 
             var actual = await calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
@@ -81,8 +81,8 @@
             var calculator = Substitute.For<IChangeCalculator>();
 
             calculator.CalculateChanges(
-                Arg.Is<IEnumerable<ITypeDefinition>>(x => x.OfType<ClassDefinition>().First().Fields.Count == 0),
-                Arg.Is<IEnumerable<ITypeDefinition>>(x => x.OfType<ClassDefinition>().First().Fields.Count == 1),
+                Arg.Is<IEnumerable<IBaseTypeDefinition>>(x => x.OfType<ClassDefinition>().First().Fields.Count == 0),
+                Arg.Is<IEnumerable<IBaseTypeDefinition>>(x => x.OfType<ClassDefinition>().First().Fields.Count == 1),
                 Arg.Any<ComparerOptions>()).Returns(expected);
 
             var actual = await calculator.CalculateChanges(oldCode, newCode, CancellationToken.None)
@@ -108,8 +108,8 @@
             var calculator = Substitute.For<IChangeCalculator>();
 
             calculator.CalculateChanges(
-                Arg.Is<IEnumerable<ITypeDefinition>>(x => x.OfType<ClassDefinition>().First().Fields.Count == 0),
-                Arg.Is<IEnumerable<ITypeDefinition>>(x => x.OfType<ClassDefinition>().First().Fields.Count == 1),
+                Arg.Is<IEnumerable<IBaseTypeDefinition>>(x => x.OfType<ClassDefinition>().First().Fields.Count == 0),
+                Arg.Is<IEnumerable<IBaseTypeDefinition>>(x => x.OfType<ClassDefinition>().First().Fields.Count == 1),
                 options).Returns(expected);
 
             var actual = await calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
@@ -127,18 +127,18 @@
             Func<Task> action = async () => await ChangeCalculatorExtensions
                 .CalculateChanges(null!, oldCode, newCode, CancellationToken.None).ConfigureAwait(false);
 
-            action.Should().Throw<ArgumentNullException>();
+            action.Should().ThrowAsync<ArgumentNullException>();
         }
 
         [Fact]
         public async Task CalculateChangesWithSyntaxNodesReturnsResultsForMultipleDefinitions()
         {
-            var oldNode = await TestNode.Parse(TestNode.MultipleClasses).ConfigureAwait(false);
+            var oldNode = await TestNode.Parse(TestNode.MultipleClasses + Environment.NewLine + TestNode.MultipleInterfaces).ConfigureAwait(false);
             var oldNodes = new List<SyntaxNode>
             {
                 oldNode
             };
-            var newNode = await TestNode.Parse(TestNode.MultipleStructs).ConfigureAwait(false);
+            var newNode = await TestNode.Parse(TestNode.MultipleStructs + Environment.NewLine + TestNode.Enum).ConfigureAwait(false);
             var newNodes = new List<SyntaxNode>
             {
                 newNode
@@ -149,8 +149,8 @@
             var calculator = Substitute.For<IChangeCalculator>();
 
             calculator.CalculateChanges(
-                Arg.Is<IEnumerable<ITypeDefinition>>(x => x.OfType<ClassDefinition>().Count() == 2),
-                Arg.Is<IEnumerable<ITypeDefinition>>(x => x.OfType<StructDefinition>().Count() == 2),
+                Arg.Is<IEnumerable<IBaseTypeDefinition>>(x => x.OfType<ClassDefinition>().Count() == 2 && x.OfType<InterfaceDefinition>().Count() == 2),
+                Arg.Is<IEnumerable<IBaseTypeDefinition>>(x => x.OfType<StructDefinition>().Count() == 2 && x.OfType<EnumDefinition>().Count() == 1),
                 options).Returns(expected);
 
             var actual = calculator.CalculateChanges(oldNodes, newNodes, options);
@@ -176,8 +176,8 @@
             var calculator = Substitute.For<IChangeCalculator>();
 
             calculator.CalculateChanges(
-                Arg.Is<IEnumerable<ITypeDefinition>>(x => x.OfType<ClassDefinition>().First().Fields.Count == 0),
-                Arg.Is<IEnumerable<ITypeDefinition>>(x => x.OfType<ClassDefinition>().First().Fields.Count == 1),
+                Arg.Is<IEnumerable<IBaseTypeDefinition>>(x => x.OfType<ClassDefinition>().First().Fields.Count == 0),
+                Arg.Is<IEnumerable<IBaseTypeDefinition>>(x => x.OfType<ClassDefinition>().First().Fields.Count == 1),
                 Arg.Any<ComparerOptions>()).Returns(expected);
 
             var actual = calculator.CalculateChanges(oldNodes, newNodes);
@@ -204,8 +204,8 @@
             var calculator = Substitute.For<IChangeCalculator>();
 
             calculator.CalculateChanges(
-                Arg.Is<IEnumerable<ITypeDefinition>>(x => x.OfType<ClassDefinition>().First().Fields.Count == 0),
-                Arg.Is<IEnumerable<ITypeDefinition>>(x => x.OfType<ClassDefinition>().First().Fields.Count == 1),
+                Arg.Is<IEnumerable<IBaseTypeDefinition>>(x => x.OfType<ClassDefinition>().First().Fields.Count == 0),
+                Arg.Is<IEnumerable<IBaseTypeDefinition>>(x => x.OfType<ClassDefinition>().First().Fields.Count == 1),
                 options).Returns(expected);
 
             var actual = calculator.CalculateChanges(oldNodes, newNodes, options);

@@ -34,7 +34,7 @@
             _output.WriteResults(actual);
 
             actual.Should().HaveCount(1);
-            actual[0].ChangeType.Should().BeEquivalentTo(SemVerChangeType.Breaking);
+            actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
         }
 
         [Fact]
@@ -83,7 +83,7 @@
             else
             {
                 actual.Should().HaveCount(1);
-                actual[0].ChangeType.Should().BeEquivalentTo(expected);
+                actual[0].ChangeType.Should().Be(expected);
             }
         }
 

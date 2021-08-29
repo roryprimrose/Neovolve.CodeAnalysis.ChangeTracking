@@ -6,7 +6,7 @@
     ///     The <see cref="ITypeDefinition" />
     ///     interface defines common properties for types.
     /// </summary>
-    public interface ITypeDefinition : IAccessModifiersElement<AccessModifiers>, IGenericTypeElement
+    public interface ITypeDefinition : IBaseTypeDefinition<AccessModifiers>, IGenericTypeElement
     {
         /// <summary>
         ///     Merges the partial type into this type.
@@ -18,6 +18,11 @@
         ///     Gets the child classes defined on this type.
         /// </summary>
         IReadOnlyCollection<IClassDefinition> ChildClasses { get; }
+
+        /// <summary>
+        ///     Gets the child enums defined on this type.
+        /// </summary>
+        IReadOnlyCollection<IEnumDefinition> ChildEnums { get; }
 
         /// <summary>
         ///     Gets the child interfaces defined on this type.
@@ -33,27 +38,12 @@
         ///     Gets the child types defined on this type.
         /// </summary>
         /// <remarks>This should be a combination of child classes and child interfaces.</remarks>
-        IReadOnlyCollection<ITypeDefinition> ChildTypes { get; }
-
-        /// <summary>
-        ///     Gets or sets the type that declares the member.
-        /// </summary>
-        public ITypeDefinition? DeclaringType { get; set; }
-
-        /// <summary>
-        ///     Gets the types implemented/inherited by this type.
-        /// </summary>
-        IReadOnlyCollection<string> ImplementedTypes { get; }
+        IReadOnlyCollection<IBaseTypeDefinition> ChildTypes { get; }
 
         /// <summary>
         ///     Gets the methods declared on the type.
         /// </summary>
         IReadOnlyCollection<IMethodDefinition> Methods { get; }
-
-        /// <summary>
-        ///     Gets the namespace of the type.
-        /// </summary>
-        string Namespace { get; }
 
         /// <summary>
         ///     Gets the properties declared on the type.

@@ -2,10 +2,10 @@
 {
     using System;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
-
-    public class TypeEvaluator : Evaluator<ITypeDefinition>, ITypeEvaluator
+    
+    public class BaseTypeEvaluator : Evaluator<IBaseTypeDefinition>, IBaseTypeEvaluator
     {
-        protected override void FindMatches(IMatchAgent<ITypeDefinition> agent)
+        protected override void FindMatches(IMatchAgent<IBaseTypeDefinition> agent)
         {
             agent.MatchOn(ExactSignature);
             agent.MatchOn(DifferentGenericTypes);
@@ -13,22 +13,22 @@
             agent.MatchOn(ChangedTypeDefinition);
         }
 
-        private static bool ExactSignature(ITypeDefinition oldType, ITypeDefinition newType)
+        private static bool ExactSignature(IBaseTypeDefinition oldType, IBaseTypeDefinition newType)
         {
             return IsSameType(oldType, newType);
         }
 
-        private static bool ChangedTypeDefinition(ITypeDefinition oldType, ITypeDefinition newType)
+        private static bool ChangedTypeDefinition(IBaseTypeDefinition oldType, IBaseTypeDefinition newType)
         {
             return IsSameType(oldType, newType, false);
         }
 
-        private static bool DifferentGenericTypes(ITypeDefinition oldType, ITypeDefinition newType)
+        private static bool DifferentGenericTypes(IBaseTypeDefinition oldType, IBaseTypeDefinition newType)
         {
             return IsSameType(oldType, newType, true, true, false);
         }
 
-        private static bool IsSameType(ITypeDefinition oldType, ITypeDefinition newType,
+        private static bool IsSameType(IBaseTypeDefinition oldType, IBaseTypeDefinition newType,
             bool evaluateTypeDefinition = true, bool evaluateNamespace = true, bool evaluateGenericTypes = true)
         {
             oldType = oldType ?? throw new ArgumentNullException(nameof(oldType));
@@ -53,12 +53,17 @@
                 return false;
             }
 
-            // Types are the same if they have the same name with the same number of generic type parameters
-            // Check the number of generic type parameters first because if the number is different then it doesn't matter about the name
-            // If it is a generic type then we need to parse the type parameters out to validate the name
-            if (evaluateGenericTypes && oldType.GenericTypeParameters.Count != newType.GenericTypeParameters.Count)
+            if (evaluateGenericTypes 
+                && oldType is ITypeDefinition oldTypeDefinition
+                && newType is ITypeDefinition newTypeDefinition)
             {
-                return false;
+                // Types are the same if they have the same name with the same number of generic type parameters
+                // Check the number of generic type parameters first because if the number is different then it doesn't matter about the name
+                // If it is a generic type then we need to parse the type parameters out to validate the name
+                if (oldTypeDefinition.GenericTypeParameters.Count != newTypeDefinition.GenericTypeParameters.Count)
+                {
+                    return false;
+                }
             }
 
             if (oldType.DeclaringType != null
@@ -92,7 +97,7 @@
             return true;
         }
 
-        private static bool MovedType(ITypeDefinition oldType, ITypeDefinition newType)
+        private static bool MovedType(IBaseTypeDefinition oldType, IBaseTypeDefinition newType)
         {
             return IsSameType(oldType, newType, true, false);
         }

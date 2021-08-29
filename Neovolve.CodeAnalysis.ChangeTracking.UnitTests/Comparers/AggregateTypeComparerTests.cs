@@ -25,7 +25,7 @@
         {
             var oldItem = new TestStructDefinition();
             var newItem = new TestClassDefinition();
-            var match = new ItemMatch<ITypeDefinition>(oldItem, newItem);
+            var match = new ItemMatch<IBaseTypeDefinition>(oldItem, newItem);
             var options = Model.Create<ComparerOptions>();
 
             var actual = SUT.CompareMatch(match, options).ToList();
@@ -33,7 +33,25 @@
             _output.WriteResults(actual);
 
             actual.Should().HaveCount(1);
-            
+
+            actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
+            actual[0].Message.Should().NotBeNullOrWhiteSpace();
+        }
+
+        [Fact]
+        public void CompareMatchReturnsBreakingChangeWhenTypeChangedToEnum()
+        {
+            var oldItem = new TestClassDefinition();
+            var newItem = new TestEnumDefinition();
+            var match = new ItemMatch<IBaseTypeDefinition>(oldItem, newItem);
+            var options = Model.Create<ComparerOptions>();
+
+            var actual = SUT.CompareMatch(match, options).ToList();
+
+            _output.WriteResults(actual);
+
+            actual.Should().HaveCount(1);
+
             actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
             actual[0].Message.Should().NotBeNullOrWhiteSpace();
         }
@@ -43,7 +61,7 @@
         {
             var oldItem = new TestClassDefinition();
             var newItem = new TestInterfaceDefinition();
-            var match = new ItemMatch<ITypeDefinition>(oldItem, newItem);
+            var match = new ItemMatch<IBaseTypeDefinition>(oldItem, newItem);
             var options = Model.Create<ComparerOptions>();
 
             var actual = SUT.CompareMatch(match, options).ToList();
@@ -51,7 +69,7 @@
             _output.WriteResults(actual);
 
             actual.Should().HaveCount(1);
-            
+
             actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
             actual[0].Message.Should().NotBeNullOrWhiteSpace();
         }
@@ -61,7 +79,7 @@
         {
             var oldItem = new TestClassDefinition();
             var newItem = new TestStructDefinition();
-            var match = new ItemMatch<ITypeDefinition>(oldItem, newItem);
+            var match = new ItemMatch<IBaseTypeDefinition>(oldItem, newItem);
             var options = Model.Create<ComparerOptions>();
 
             var actual = SUT.CompareMatch(match, options).ToList();
@@ -69,7 +87,7 @@
             _output.WriteResults(actual);
 
             actual.Should().HaveCount(1);
-            
+
             actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
             actual[0].Message.Should().NotBeNullOrWhiteSpace();
         }
@@ -79,12 +97,12 @@
         {
             var oldItem = new TestClassDefinition();
             var newItem = new TestClassDefinition();
-            var match = new ItemMatch<ITypeDefinition>(oldItem, newItem);
+            var match = new ItemMatch<IBaseTypeDefinition>(oldItem, newItem);
             var options = Model.Create<ComparerOptions>();
             var changeType = Model.Create<SemVerChangeType>();
             var message = Guid.NewGuid().ToString();
             var result = new ComparisonResult(changeType, oldItem, newItem, message);
-            var results = new[] {result};
+            var results = new[] { result };
 
             Service<IClassComparer>()
                 .CompareMatch(Arg.Is<ItemMatch<IClassDefinition>>(x => x.OldItem == oldItem && x.NewItem == newItem),
@@ -95,7 +113,33 @@
             _output.WriteResults(actual);
 
             actual.Should().HaveCount(1);
-            
+
+            actual[0].Should().Be(result);
+        }
+
+        [Fact]
+        public void CompareMatchReturnsEnumComparerResult()
+        {
+            var oldItem = new TestEnumDefinition();
+            var newItem = new TestEnumDefinition();
+            var match = new ItemMatch<IBaseTypeDefinition>(oldItem, newItem);
+            var options = Model.Create<ComparerOptions>();
+            var changeType = Model.Create<SemVerChangeType>();
+            var message = Guid.NewGuid().ToString();
+            var result = new ComparisonResult(changeType, oldItem, newItem, message);
+            var results = new[] { result };
+
+            Service<IEnumComparer>()
+                .CompareMatch(
+                    Arg.Is<ItemMatch<IEnumDefinition>>(x => x.OldItem == oldItem && x.NewItem == newItem), options)
+                .Returns(results);
+
+            var actual = SUT.CompareMatch(match, options).ToList();
+
+            _output.WriteResults(actual);
+
+            actual.Should().HaveCount(1);
+
             actual[0].Should().Be(result);
         }
 
@@ -104,12 +148,12 @@
         {
             var oldItem = new TestInterfaceDefinition();
             var newItem = new TestInterfaceDefinition();
-            var match = new ItemMatch<ITypeDefinition>(oldItem, newItem);
+            var match = new ItemMatch<IBaseTypeDefinition>(oldItem, newItem);
             var options = Model.Create<ComparerOptions>();
             var changeType = Model.Create<SemVerChangeType>();
             var message = Guid.NewGuid().ToString();
             var result = new ComparisonResult(changeType, oldItem, newItem, message);
-            var results = new[] {result};
+            var results = new[] { result };
 
             Service<IInterfaceComparer>()
                 .CompareMatch(
@@ -121,7 +165,7 @@
             _output.WriteResults(actual);
 
             actual.Should().HaveCount(1);
-            
+
             actual[0].Should().Be(result);
         }
 
@@ -130,12 +174,12 @@
         {
             var oldItem = new TestStructDefinition();
             var newItem = new TestStructDefinition();
-            var match = new ItemMatch<ITypeDefinition>(oldItem, newItem);
+            var match = new ItemMatch<IBaseTypeDefinition>(oldItem, newItem);
             var options = Model.Create<ComparerOptions>();
             var changeType = Model.Create<SemVerChangeType>();
             var message = Guid.NewGuid().ToString();
             var result = new ComparisonResult(changeType, oldItem, newItem, message);
-            var results = new[] {result};
+            var results = new[] { result };
 
             Service<IStructComparer>()
                 .CompareMatch(Arg.Is<ItemMatch<IStructDefinition>>(x => x.OldItem == oldItem && x.NewItem == newItem),
@@ -146,7 +190,7 @@
             _output.WriteResults(actual);
 
             actual.Should().HaveCount(1);
-            
+
             actual[0].Should().Be(result);
         }
 
@@ -154,8 +198,8 @@
         public void CompareMatchThrowsExceptionWhenTypedChangedToUnsupportedType()
         {
             var oldItem = new TestStructDefinition();
-            var newItem = Substitute.For<ITypeDefinition>();
-            var match = new ItemMatch<ITypeDefinition>(oldItem, newItem);
+            var newItem = Substitute.For<IBaseTypeDefinition>();
+            var match = new ItemMatch<IBaseTypeDefinition>(oldItem, newItem);
             var options = Model.Create<ComparerOptions>();
 
             Action action = () => SUT.CompareMatch(match, options);
@@ -168,7 +212,7 @@
         {
             var oldItem = new TestClassDefinition();
             var newItem = new TestClassDefinition();
-            var match = new ItemMatch<ITypeDefinition>(oldItem, newItem);
+            var match = new ItemMatch<IBaseTypeDefinition>(oldItem, newItem);
 
             Action action = () => SUT.CompareMatch(match, null!);
 
@@ -188,9 +232,9 @@
         [Fact]
         public void CompareMatchThrowsExceptionWithUnsupportedTypeDefinitions()
         {
-            var oldItem = Substitute.For<ITypeDefinition>();
-            var newItem = Substitute.For<ITypeDefinition>();
-            var match = new ItemMatch<ITypeDefinition>(oldItem, newItem);
+            var oldItem = Substitute.For<IBaseTypeDefinition>();
+            var newItem = Substitute.For<IBaseTypeDefinition>();
+            var match = new ItemMatch<IBaseTypeDefinition>(oldItem, newItem);
             var options = Model.Create<ComparerOptions>();
 
             Action action = () => SUT.CompareMatch(match, options);
@@ -203,9 +247,23 @@
         {
             var interfaceComparer = Substitute.For<IInterfaceComparer>();
             var structComparer = Substitute.For<IStructComparer>();
+            var enumComparer = Substitute.For<IEnumComparer>();
 
             // ReSharper disable once ObjectCreationAsStatement
-            Action action = () => new AggregateTypeComparer(null!, interfaceComparer, structComparer);
+            Action action = () => new AggregateTypeComparer(null!, interfaceComparer, structComparer, enumComparer);
+
+            action.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
+        public void ThrowsExceptionWhenCreatedWithNullEnumComparer()
+        {
+            var classComparer = Substitute.For<IClassComparer>();
+            var interfaceComparer = Substitute.For<IInterfaceComparer>();
+            var structComparer = Substitute.For<IStructComparer>();
+
+            // ReSharper disable once ObjectCreationAsStatement
+            Action action = () => new AggregateTypeComparer(classComparer, interfaceComparer, structComparer, null!);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -215,9 +273,10 @@
         {
             var classComparer = Substitute.For<IClassComparer>();
             var structComparer = Substitute.For<IStructComparer>();
+            var enumComparer = Substitute.For<IEnumComparer>();
 
             // ReSharper disable once ObjectCreationAsStatement
-            Action action = () => new AggregateTypeComparer(classComparer, null!, structComparer);
+            Action action = () => new AggregateTypeComparer(classComparer, null!, structComparer, enumComparer);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -227,9 +286,10 @@
         {
             var interfaceComparer = Substitute.For<IInterfaceComparer>();
             var classComparer = Substitute.For<IClassComparer>();
+            var enumComparer = Substitute.For<IEnumComparer>();
 
             // ReSharper disable once ObjectCreationAsStatement
-            Action action = () => new AggregateTypeComparer(classComparer, interfaceComparer, null!);
+            Action action = () => new AggregateTypeComparer(classComparer, interfaceComparer, null!, enumComparer);
 
             action.Should().Throw<ArgumentNullException>();
         }

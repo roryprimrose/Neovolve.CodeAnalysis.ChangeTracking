@@ -33,7 +33,7 @@
             var result = new ComparisonResult(changeType, null, null, Guid.NewGuid().ToString());
             var results = new List<ComparisonResult> {result};
 
-            var processor = Substitute.For<ITypeMatchProcessor>();
+            var processor = Substitute.For<IBaseTypeMatchProcessor>();
 
             processor.CalculateChanges(oldTypes, newTypes, options).Returns(results);
 
@@ -70,7 +70,7 @@
             var secondResult = new ComparisonResult(secondChangeType, null, null, Guid.NewGuid().ToString());
             var results = new List<ComparisonResult> {firstResult, secondResult};
 
-            var processor = Substitute.For<ITypeMatchProcessor>();
+            var processor = Substitute.For<IBaseTypeMatchProcessor>();
 
             processor.CalculateChanges(oldTypes, newTypes, options).Returns(results);
 
@@ -100,7 +100,7 @@
             var newTypes = Array.Empty<TestClassDefinition>();
             var results = Array.Empty<ComparisonResult>();
 
-            var processor = Substitute.For<ITypeMatchProcessor>();
+            var processor = Substitute.For<IBaseTypeMatchProcessor>();
 
             processor.CalculateChanges(oldTypes, newTypes, options).Returns(results);
 
@@ -118,7 +118,7 @@
             var options = Model.UsingModule<ConfigurationModule>().Create<ComparerOptions>();
             var oldTypes = Array.Empty<TestClassDefinition>();
 
-            var processor = Substitute.For<ITypeMatchProcessor>();
+            var processor = Substitute.For<IBaseTypeMatchProcessor>();
 
             var sut = new ChangeCalculator(processor, _logger);
 
@@ -133,7 +133,7 @@
             var options = Model.UsingModule<ConfigurationModule>().Create<ComparerOptions>();
             var newTypes = Array.Empty<TestClassDefinition>();
 
-            var processor = Substitute.For<ITypeMatchProcessor>();
+            var processor = Substitute.For<IBaseTypeMatchProcessor>();
 
             var sut = new ChangeCalculator(processor, _logger);
 
@@ -149,7 +149,7 @@
             Justification = "The constructor is the target of the test")]
         public void DoesNotThrowExceptionWhenCreatedWithNullLogger()
         {
-            var processor = Substitute.For<ITypeMatchProcessor>();
+            var processor = Substitute.For<IBaseTypeMatchProcessor>();
 
             // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new ChangeCalculator(processor, null);

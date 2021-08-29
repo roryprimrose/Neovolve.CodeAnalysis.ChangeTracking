@@ -42,9 +42,35 @@
             return defaultValue;
         }
 
+        public static EnumAccessModifiers DetermineAccessModifier(this SyntaxTokenList tokenList,
+            EnumAccessModifiers defaultValue)
+        {
+            if (tokenList.HasModifier(SyntaxKind.ProtectedKeyword))
+            {
+                return EnumAccessModifiers.Protected;
+            }
+
+            if (tokenList.HasModifier(SyntaxKind.InternalKeyword))
+            {
+                return EnumAccessModifiers.Internal;
+            }
+
+            if (tokenList.HasModifier(SyntaxKind.PrivateKeyword))
+            {
+                return EnumAccessModifiers.Private;
+            }
+
+            if (tokenList.HasModifier(SyntaxKind.PublicKeyword))
+            {
+                return EnumAccessModifiers.Public;
+            }
+
+            return defaultValue;
+        }
+
         public static bool HasModifier(this SyntaxTokenList tokenList, SyntaxKind kind)
         {
-            return tokenList.Any(x => x.RawKind == (int) kind);
+            return tokenList.Any(x => x.RawKind == (int)kind);
         }
     }
 }

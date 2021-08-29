@@ -1,8 +1,6 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.ChangeTables
 {
-    using System;
-
-    public interface IChangeTable<in T> where T : struct, Enum
+    public interface IChangeTable<in T> where T : notnull
     {
         SemVerChangeType CalculateChange(T oldValue, T newValue);
     }

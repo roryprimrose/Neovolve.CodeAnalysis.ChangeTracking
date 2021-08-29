@@ -10,7 +10,7 @@
     ///     The <see cref="TypeDefinition" />
     ///     class is used to describe a type.
     /// </summary>
-    public abstract class TypeDefinition : ElementDefinition, ITypeDefinition
+    public abstract class TypeDefinition : BaseTypeDefinition<AccessModifiers>, ITypeDefinition
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="TypeDefinition" /> class.
@@ -20,27 +20,16 @@
         {
             node = node ?? throw new ArgumentNullException(nameof(node));
 
-            var name = DetermineName(node);
-            var rawName = node.Identifier.Text;
-
-            DeclaringType = null;
-            Namespace = DetermineNamespace(node);
-
+            AccessModifiers = DetermineAccessModifier(node, DeclaringType);
             IsVisible = DetermineIsVisible(node, DeclaringType);
 
-            AccessModifiers = DetermineAccessModifier(node, DeclaringType);
-            Name = name;
-            RawName = rawName;
-            FullRawName = Namespace + "." + rawName;
-            FullName = Namespace + "." + name;
-
-            ImplementedTypes = DetermineImplementedTypes(node);
             Properties = DetermineProperties(node);
             Methods = DetermineMethods(node);
             ChildClasses = DetermineChildClasses(node);
+            ChildEnums = DetermineChildEnums(node);
             ChildInterfaces = DetermineChildInterfaces(node);
             ChildStructs = DetermineChildStructs(node);
-            ChildTypes = DetermineChildTypes(ChildClasses, ChildInterfaces, ChildStructs);
+            ChildTypes = DetermineChildTypes(ChildClasses, ChildInterfaces, ChildStructs, ChildEnums);
             GenericTypeParameters = DetermineGenericTypeParameters(node);
             GenericConstraints = DetermineGenericConstraints(node);
         }
@@ -50,30 +39,20 @@
         /// </summary>
         /// <param name="declaringType">The parent type that declares this type.</param>
         /// <param name="node">The syntax node that defines the type.</param>
-        protected TypeDefinition(ITypeDefinition declaringType, TypeDeclarationSyntax node) : base(node)
+        protected TypeDefinition(ITypeDefinition declaringType, TypeDeclarationSyntax node) : base(declaringType, node)
         {
-            DeclaringType = declaringType ?? throw new ArgumentNullException(nameof(declaringType));
-
-            var name = DetermineName(node);
-            var rawName = node.Identifier.Text;
-
-            Namespace = DetermineNamespace(node);
             AccessModifiers = DetermineAccessModifier(node, DeclaringType);
-            Name = name;
-            RawName = rawName;
-            FullRawName = DeclaringType.FullRawName + "+" + rawName;
-            FullName = DeclaringType.FullName + "+" + name;
+            IsVisible = DetermineIsVisible(node, DeclaringType);
 
-            ImplementedTypes = DetermineImplementedTypes(node);
             Properties = DetermineProperties(node);
             Methods = DetermineMethods(node);
             ChildClasses = DetermineChildClasses(node);
+            ChildEnums = DetermineChildEnums(node);
             ChildInterfaces = DetermineChildInterfaces(node);
             ChildStructs = DetermineChildStructs(node);
-            ChildTypes = DetermineChildTypes(ChildClasses, ChildInterfaces, ChildStructs);
+            ChildTypes = DetermineChildTypes(ChildClasses, ChildInterfaces, ChildStructs, ChildEnums);
             GenericTypeParameters = DetermineGenericTypeParameters(node);
             GenericConstraints = DetermineGenericConstraints(node);
-            IsVisible = DetermineIsVisible(node, DeclaringType);
         }
 
         /// <inheritdoc />
@@ -98,11 +77,12 @@
             Methods = MergeMembers(Methods, partialType.Methods);
             Properties = MergeMembers(Properties, partialType.Properties);
             ChildClasses = MergeTypes(ChildClasses, partialType.ChildClasses);
+            ChildEnums = MergeTypes(ChildEnums, partialType.ChildEnums);
             ChildInterfaces = MergeTypes(ChildInterfaces, partialType.ChildInterfaces);
             ChildStructs = MergeTypes(ChildStructs, partialType.ChildStructs);
 
             // Rebuild the child types
-            ChildTypes = DetermineChildTypes(ChildClasses, ChildInterfaces, ChildStructs);
+            ChildTypes = DetermineChildTypes(ChildClasses, ChildInterfaces, ChildStructs, ChildEnums);
         }
 
         /// <summary>
@@ -147,7 +127,7 @@
             return members.AsReadOnly();
         }
 
-        private static AccessModifiers DetermineAccessModifier(TypeDeclarationSyntax node,
+        private static AccessModifiers DetermineAccessModifier(BaseTypeDeclarationSyntax node,
             ITypeDefinition? declaringType)
         {
             node = node ?? throw new ArgumentNullException(nameof(node));
@@ -160,14 +140,16 @@
             return node.Modifiers.DetermineAccessModifier(AccessModifiers.Private);
         }
 
-        private static IReadOnlyCollection<ITypeDefinition> DetermineChildTypes(
+        private static IReadOnlyCollection<IBaseTypeDefinition> DetermineChildTypes(
             IReadOnlyCollection<ITypeDefinition> childClasses,
-            IReadOnlyCollection<ITypeDefinition> childInterfaces, IReadOnlyCollection<IStructDefinition> childStructs)
+            IReadOnlyCollection<ITypeDefinition> childInterfaces, IReadOnlyCollection<IStructDefinition> childStructs,
+            IReadOnlyCollection<IEnumDefinition> childEnums)
         {
-            var childTypes = new List<ITypeDefinition>(childClasses);
+            var childTypes = new List<IBaseTypeDefinition>(childClasses);
 
             childTypes.AddRange(childInterfaces);
             childTypes.AddRange(childStructs);
+            childTypes.AddRange(childEnums);
 
             return childTypes;
         }
@@ -204,21 +186,7 @@
             return typeParameters;
         }
 
-        private static IReadOnlyCollection<string> DetermineImplementedTypes(BaseTypeDeclarationSyntax node)
-        {
-            var baseList = node.ChildNodes().OfType<BaseListSyntax>().FirstOrDefault();
-
-            if (baseList == null)
-            {
-                return Array.Empty<string>();
-            }
-
-            var childTypes = baseList.Types.Select(x => x.ToString()).FastToList();
-
-            return childTypes.AsReadOnly();
-        }
-
-        private static bool DetermineIsVisible(TypeDeclarationSyntax node, ITypeDefinition? declaringType)
+        private static bool DetermineIsVisible(BaseTypeDeclarationSyntax node, ITypeDefinition? declaringType)
         {
             node = node ?? throw new ArgumentNullException(nameof(node));
 
@@ -236,56 +204,18 @@
             return accessModifier.IsVisible();
         }
 
-        private static string DetermineName(BaseTypeDeclarationSyntax node)
-        {
-            var name = string.Empty;
-
-            name += node.Identifier.Text;
-
-            var typeParameters = node.ChildNodes().OfType<TypeParameterListSyntax>().FirstOrDefault();
-
-            if (typeParameters == null)
-            {
-                return name;
-            }
-
-            var parameterList = typeParameters.ToString();
-
-            return name + parameterList;
-        }
-
-        /// <summary>
-        ///     Gets the namespace that contains the node.
-        /// </summary>
-        /// <param name="node">The node to evaluate.</param>
-        /// <returns>The namespace that contains the node or <see cref="string.Empty" /> if no namespace is found.</returns>
-        private static string DetermineNamespace(SyntaxNode node)
-        {
-            node = node ?? throw new ArgumentNullException(nameof(node));
-
-            var containerNamespace = node.FirstAncestorOrSelf<NamespaceDeclarationSyntax>(x => x != node);
-
-            if (containerNamespace != null)
-            {
-                var parentNamespace = DetermineNamespace(containerNamespace);
-
-                var namespaceValue = containerNamespace.Name.GetText().ToString().Trim();
-
-                if (string.IsNullOrWhiteSpace(parentNamespace))
-                {
-                    return namespaceValue;
-                }
-
-                return parentNamespace + "." + namespaceValue;
-            }
-
-            return string.Empty;
-        }
-
         private IReadOnlyCollection<IClassDefinition> DetermineChildClasses(SyntaxNode node)
         {
             var childNodes = node.ChildNodes().OfType<ClassDeclarationSyntax>();
             var childTypes = childNodes.Select(childNode => new ClassDefinition(this, childNode)).FastToList();
+
+            return childTypes.AsReadOnly();
+        }
+
+        private IReadOnlyCollection<IEnumDefinition> DetermineChildEnums(SyntaxNode node)
+        {
+            var childNodes = node.ChildNodes().OfType<EnumDeclarationSyntax>();
+            var childTypes = childNodes.Select(childNode => new EnumDefinition(this, childNode)).FastToList();
 
             return childTypes.AsReadOnly();
         }
@@ -324,7 +254,7 @@
 
         private IReadOnlyCollection<T> MergeTypes<T>(
             IReadOnlyCollection<T> currentTypes,
-            IReadOnlyCollection<T> incomingTypes) where T : class, ITypeDefinition
+            IReadOnlyCollection<T> incomingTypes) where T : class, IBaseTypeDefinition
         {
             var types = new List<T>(currentTypes);
 
@@ -339,10 +269,10 @@
         }
 
         /// <inheritdoc />
-        public AccessModifiers AccessModifiers { get; }
+        public IReadOnlyCollection<IClassDefinition> ChildClasses { get; private set; }
 
         /// <inheritdoc />
-        public IReadOnlyCollection<IClassDefinition> ChildClasses { get; private set; }
+        public IReadOnlyCollection<IEnumDefinition> ChildEnums { get; private set; }
 
         /// <inheritdoc />
         public IReadOnlyCollection<IInterfaceDefinition> ChildInterfaces { get; private set; }
@@ -351,16 +281,7 @@
         public IReadOnlyCollection<IStructDefinition> ChildStructs { get; private set; }
 
         /// <inheritdoc />
-        public IReadOnlyCollection<ITypeDefinition> ChildTypes { get; private set; }
-
-        /// <inheritdoc />
-        public ITypeDefinition? DeclaringType { get; set; }
-
-        /// <inheritdoc />
-        public override string FullName { get; }
-
-        /// <inheritdoc />
-        public override string FullRawName { get; }
+        public IReadOnlyCollection<IBaseTypeDefinition> ChildTypes { get; private set; }
 
         /// <inheritdoc />
         public IReadOnlyCollection<IConstraintListDefinition> GenericConstraints { get; protected set; }
@@ -369,24 +290,9 @@
         public IReadOnlyCollection<string> GenericTypeParameters { get; }
 
         /// <inheritdoc />
-        public IReadOnlyCollection<string> ImplementedTypes { get; }
-
-        /// <inheritdoc />
-        public override bool IsVisible { get; }
-
-        /// <inheritdoc />
         public IReadOnlyCollection<IMethodDefinition> Methods { get; private set; }
 
         /// <inheritdoc />
-        public override string Name { get; }
-
-        /// <inheritdoc />
-        public string Namespace { get; set; }
-
-        /// <inheritdoc />
         public IReadOnlyCollection<IPropertyDefinition> Properties { get; private set; }
-
-        /// <inheritdoc />
-        public override string RawName { get; }
     }
 }

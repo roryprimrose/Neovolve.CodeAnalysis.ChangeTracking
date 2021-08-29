@@ -398,6 +398,22 @@ namespace MyNamespace
 }
 ";
 
+        public const string MultipleChildEnums = @"
+namespace MyNamespace 
+{
+    public class MyClass
+    {
+        public enum FirstChild
+        {
+        }
+
+        public enum SecondChild
+        {
+        }
+    }    
+}
+";
+
         public const string MultipleChildStructs = @"
 namespace MyNamespace 
 {
@@ -442,6 +458,14 @@ namespace MyNamespace
         public struct SecondStruct
         {
         }
+
+        public enum FirstEnum
+        {
+        }
+
+        public enum SecondEnum
+        {
+        }
     }    
 }
 ";
@@ -467,6 +491,18 @@ namespace MyNamespace
     public struct MyParentStruct
     {
         public struct MyStruct
+        {
+        }  
+    }   
+}
+";
+
+        public const string EnumInParentClass = @"
+namespace MyNamespace 
+{
+    public class MyParentClass
+    {
+        public enum MyEnum
         {
         }  
     }   
@@ -549,6 +585,15 @@ namespace MyNamespace
 namespace MyNamespace 
 {
     public struct MyClass
+    {
+    }   
+}
+";
+
+        public const string EnumWithoutParent = @"
+namespace MyNamespace 
+{
+    public enum MyEnum
     {
     }   
 }

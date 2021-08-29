@@ -15,7 +15,7 @@
     using Xunit;
     using Xunit.Abstractions;
 
-    public class TypeMatchProcessorTests : Tests<TypeMatchProcessor>
+    public class TypeMatchProcessorTests : Tests<BaseTypeMatchProcessor>
     {
         public TypeMatchProcessorTests(ITestOutputHelper output) : base(output.BuildLogger(LogLevel.Debug))
         {
@@ -40,9 +40,9 @@
                 newFirstItem,
                 newSecondItem
             };
-            var match = new ItemMatch<ITypeDefinition>(oldFirstItem, newFirstItem);
-            var matches = new List<ItemMatch<ITypeDefinition>> {match};
-            var matchResults = new MatchResults<ITypeDefinition>(matches, Array.Empty<IClassDefinition>(),
+            var match = new ItemMatch<IBaseTypeDefinition>(oldFirstItem, newFirstItem);
+            var matches = new List<ItemMatch<IBaseTypeDefinition>> {match};
+            var matchResults = new MatchResults<IBaseTypeDefinition>(matches, Array.Empty<IClassDefinition>(),
                 Array.Empty<IClassDefinition>());
             var message = Guid.NewGuid().ToString();
             var result = new ComparisonResult(SemVerChangeType.Breaking, oldFirstItem, newFirstItem, message);
@@ -54,10 +54,10 @@
             newFirstItem.FullName.Returns(firstTypeName);
             newSecondItem.FullName.Returns(secondTypeName);
 
-            Service<ITypeEvaluator>().FindMatches(
-                Match.On<IEnumerable<ITypeDefinition>>(x => x.Should().BeEquivalentTo(oldItems)),
-                Match.On<IEnumerable<ITypeDefinition>>(x => x.Should().BeEquivalentTo(newItems))).Returns(matchResults);
-            Service<ITypeComparer>().CompareMatch(match, options).Returns(results);
+            Service<IBaseTypeEvaluator>().FindMatches(
+                Match.On<IEnumerable<IBaseTypeDefinition>>(x => x.Should().BeEquivalentTo(oldItems)),
+                Match.On<IEnumerable<IBaseTypeDefinition>>(x => x.Should().BeEquivalentTo(newItems))).Returns(matchResults);
+            Service<IBaseTypeComparer>().CompareMatch(match, options).Returns(results);
 
             var actual = SUT.CalculateChanges(oldItems, newItems, options).ToList();
 
@@ -86,9 +86,9 @@
                 newFirstItem,
                 newSecondItem
             };
-            var match = new ItemMatch<ITypeDefinition>(oldFirstItem, newFirstItem);
-            var matches = new List<ItemMatch<ITypeDefinition>> {match};
-            var matchResults = new MatchResults<ITypeDefinition>(matches, Array.Empty<IClassDefinition>(),
+            var match = new ItemMatch<IBaseTypeDefinition>(oldFirstItem, newFirstItem);
+            var matches = new List<ItemMatch<IBaseTypeDefinition>> {match};
+            var matchResults = new MatchResults<IBaseTypeDefinition>(matches, Array.Empty<IClassDefinition>(),
                 Array.Empty<IClassDefinition>());
             var message = Guid.NewGuid().ToString();
             var result = new ComparisonResult(SemVerChangeType.Breaking, oldFirstItem, newFirstItem, message);
@@ -100,10 +100,10 @@
             newFirstItem.FullName.Returns(typeName);
             newSecondItem.FullName.Returns(typeName);
 
-            Service<ITypeEvaluator>().FindMatches(
-                Match.On<IEnumerable<ITypeDefinition>>(x => x.Should().BeEquivalentTo(oldItems)),
-                Match.On<IEnumerable<ITypeDefinition>>(x => x.Should().BeEquivalentTo(newItems))).Returns(matchResults);
-            Service<ITypeComparer>().CompareMatch(match, options).Returns(results);
+            Service<IBaseTypeEvaluator>().FindMatches(
+                Match.On<IEnumerable<IBaseTypeDefinition>>(x => x.Should().BeEquivalentTo(oldItems)),
+                Match.On<IEnumerable<IBaseTypeDefinition>>(x => x.Should().BeEquivalentTo(newItems))).Returns(matchResults);
+            Service<IBaseTypeComparer>().CompareMatch(match, options).Returns(results);
 
             var actual = SUT.CalculateChanges(oldItems, newItems, options).ToList();
 
@@ -147,16 +147,16 @@
             {
                 newParentItem
             };
-            var childMatch = new ItemMatch<ITypeDefinition>(oldChildItem, newChildItem);
-            var childMatches = new List<ItemMatch<ITypeDefinition>> {childMatch};
-            var childMatchResults = new MatchResults<ITypeDefinition>(childMatches, Array.Empty<IClassDefinition>(),
+            var childMatch = new ItemMatch<IBaseTypeDefinition>(oldChildItem, newChildItem);
+            var childMatches = new List<ItemMatch<IBaseTypeDefinition>> {childMatch};
+            var childMatchResults = new MatchResults<IBaseTypeDefinition>(childMatches, Array.Empty<IClassDefinition>(),
                 Array.Empty<IClassDefinition>());
             var childMessage = Guid.NewGuid().ToString();
             var childResult = new ComparisonResult(SemVerChangeType.Breaking, oldChildItem, newChildItem, childMessage);
             var childResults = new List<ComparisonResult> {childResult};
-            var parentMatch = new ItemMatch<ITypeDefinition>(oldParentItem, newParentItem);
-            var parentMatches = new List<ItemMatch<ITypeDefinition>> {parentMatch};
-            var parentMatchResults = new MatchResults<ITypeDefinition>(parentMatches, Array.Empty<IClassDefinition>(),
+            var parentMatch = new ItemMatch<IBaseTypeDefinition>(oldParentItem, newParentItem);
+            var parentMatches = new List<ItemMatch<IBaseTypeDefinition>> {parentMatch};
+            var parentMatchResults = new MatchResults<IBaseTypeDefinition>(parentMatches, Array.Empty<IClassDefinition>(),
                 Array.Empty<IClassDefinition>());
             var parentMessage = Guid.NewGuid().ToString();
             var parentResult =
@@ -164,16 +164,16 @@
             var parentResults = new List<ComparisonResult> {parentResult};
             var options = ComparerOptions.Default;
 
-            Service<ITypeEvaluator>().FindMatches(
-                    Match.On<IEnumerable<ITypeDefinition>>(x => x.Should().BeEquivalentTo(oldParentItems)),
-                    Match.On<IEnumerable<ITypeDefinition>>(x => x.Should().BeEquivalentTo(newParentItems)))
+            Service<IBaseTypeEvaluator>().FindMatches(
+                    Match.On<IEnumerable<IBaseTypeDefinition>>(x => x.Should().BeEquivalentTo(oldParentItems)),
+                    Match.On<IEnumerable<IBaseTypeDefinition>>(x => x.Should().BeEquivalentTo(newParentItems)))
                 .Returns(parentMatchResults);
-            Service<ITypeComparer>().CompareMatch(parentMatch, options).Returns(parentResults);
-            Service<ITypeEvaluator>().FindMatches(
-                    Match.On<IEnumerable<ITypeDefinition>>(x => x.Should().BeEquivalentTo(oldChildItems)),
-                    Match.On<IEnumerable<ITypeDefinition>>(x => x.Should().BeEquivalentTo(newChildItems)))
+            Service<IBaseTypeComparer>().CompareMatch(parentMatch, options).Returns(parentResults);
+            Service<IBaseTypeEvaluator>().FindMatches(
+                    Match.On<IEnumerable<IBaseTypeDefinition>>(x => x.Should().BeEquivalentTo(oldChildItems)),
+                    Match.On<IEnumerable<IBaseTypeDefinition>>(x => x.Should().BeEquivalentTo(newChildItems)))
                 .Returns(childMatchResults);
-            Service<ITypeComparer>().CompareMatch(childMatch, options).Returns(childResults);
+            Service<IBaseTypeComparer>().CompareMatch(childMatch, options).Returns(childResults);
 
             var actual = SUT.CalculateChanges(oldParentItems, newParentItems, options).ToList();
 
@@ -200,9 +200,9 @@
                 newFirstItem,
                 newSecondItem
             };
-            var match = new ItemMatch<ITypeDefinition>(oldFirstItem, newFirstItem);
-            var matches = new List<ItemMatch<ITypeDefinition>> {match};
-            var matchResults = new MatchResults<ITypeDefinition>(matches, Array.Empty<IClassDefinition>(),
+            var match = new ItemMatch<IBaseTypeDefinition>(oldFirstItem, newFirstItem);
+            var matches = new List<ItemMatch<IBaseTypeDefinition>> {match};
+            var matchResults = new MatchResults<IBaseTypeDefinition>(matches, Array.Empty<IClassDefinition>(),
                 Array.Empty<IClassDefinition>());
             var message = Guid.NewGuid().ToString();
             var result = new ComparisonResult(SemVerChangeType.Breaking, oldFirstItem, newFirstItem, message);
@@ -214,10 +214,10 @@
             newFirstItem.FullName.Returns(typeName);
             newSecondItem.FullName.Returns(typeName);
 
-            Service<ITypeEvaluator>().FindMatches(
-                Match.On<IEnumerable<ITypeDefinition>>(x => x.Should().Contain(oldFirstItem)),
-                Match.On<IEnumerable<ITypeDefinition>>(x => x.Should().Contain(newFirstItem))).Returns(matchResults);
-            Service<ITypeComparer>().CompareMatch(match, options).Returns(results);
+            Service<IBaseTypeEvaluator>().FindMatches(
+                Match.On<IEnumerable<IBaseTypeDefinition>>(x => x.Should().Contain(oldFirstItem)),
+                Match.On<IEnumerable<IBaseTypeDefinition>>(x => x.Should().Contain(newFirstItem))).Returns(matchResults);
+            Service<IBaseTypeComparer>().CompareMatch(match, options).Returns(results);
 
             var actual = SUT.CalculateChanges(oldItems, newItems, options).ToList();
 
@@ -226,7 +226,7 @@
 
             oldFirstItem.Received().MergePartialType(oldSecondItem);
             newFirstItem.Received().MergePartialType(newSecondItem);
-            Service<ITypeEvaluator>().DidNotReceive().FindMatches(
+            Service<IBaseTypeEvaluator>().DidNotReceive().FindMatches(
                 Match.On<IEnumerable<ITypeDefinition>>(x => x.Should().Contain(oldSecondItem)),
                 Match.On<IEnumerable<ITypeDefinition>>(x => x.Should().Contain(newSecondItem)));
         }

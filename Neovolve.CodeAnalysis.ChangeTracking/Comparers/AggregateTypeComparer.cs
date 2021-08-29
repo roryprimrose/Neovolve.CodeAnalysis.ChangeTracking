@@ -4,21 +4,23 @@
     using System.Collections.Generic;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
-    public class AggregateTypeComparer : ITypeComparer
+    public class AggregateTypeComparer : IBaseTypeComparer
     {
         private readonly IClassComparer _classComparer;
+        private readonly IEnumComparer _enumComparer;
         private readonly IInterfaceComparer _interfaceComparer;
         private readonly IStructComparer _structComparer;
 
         public AggregateTypeComparer(IClassComparer classComparer, IInterfaceComparer interfaceComparer,
-            IStructComparer structComparer)
+            IStructComparer structComparer, IEnumComparer enumComparer)
         {
             _classComparer = classComparer ?? throw new ArgumentNullException(nameof(classComparer));
             _interfaceComparer = interfaceComparer ?? throw new ArgumentNullException(nameof(interfaceComparer));
             _structComparer = structComparer ?? throw new ArgumentNullException(nameof(structComparer));
+            _enumComparer = enumComparer ?? throw new ArgumentNullException(nameof(enumComparer));
         }
 
-        public IEnumerable<ComparisonResult> CompareMatch(ItemMatch<ITypeDefinition> match, ComparerOptions options)
+        public IEnumerable<ComparisonResult> CompareMatch(ItemMatch<IBaseTypeDefinition> match, ComparerOptions options)
         {
             match = match ?? throw new ArgumentNullException(nameof(match));
             options = options ?? throw new ArgumentNullException(nameof(options));
@@ -72,11 +74,19 @@
                 return _interfaceComparer.CompareMatch(itemMatch, options);
             }
 
+            if (match.OldItem is IEnumDefinition oldEnum
+                && match.NewItem is IEnumDefinition newEnum)
+            {
+                var itemMatch = new ItemMatch<IEnumDefinition>(oldEnum, newEnum);
+
+                return _enumComparer.CompareMatch(itemMatch, options);
+            }
+
             throw new NotSupportedException(
-                $"There is no {nameof(ITypeComparer<ITypeDefinition>)} implementation for {match.OldItem.GetType()}");
+                $"There is no {nameof(IBaseTypeComparer<IBaseTypeDefinition>)} implementation for {match.OldItem.GetType()}");
         }
 
-        private static string DetermineTypeChangeDescription(ITypeDefinition item)
+        private static string DetermineTypeChangeDescription(IBaseTypeDefinition item)
         {
             if (item is IClassDefinition)
             {
@@ -91,6 +101,11 @@
             if (item is IInterfaceDefinition)
             {
                 return "interface";
+            }
+
+            if (item is IEnumDefinition)
+            {
+                return "enum";
             }
 
             throw new NotSupportedException("Unknown type provided");

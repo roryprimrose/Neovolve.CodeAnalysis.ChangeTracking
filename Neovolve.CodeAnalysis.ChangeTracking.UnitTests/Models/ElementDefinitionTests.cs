@@ -191,7 +191,6 @@
 
             public override string FullName { get; }
             public override string FullRawName { get; }
-            public override bool IsVisible { get; }
             public override string Name { get; }
             public override string RawName { get; }
         }

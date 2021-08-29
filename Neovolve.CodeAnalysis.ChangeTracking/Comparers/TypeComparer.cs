@@ -5,7 +5,7 @@
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
     using Neovolve.CodeAnalysis.ChangeTracking.Processors;
 
-    public abstract class TypeComparer<T> : ElementComparer<T>, ITypeComparer<T> where T : ITypeDefinition
+    public abstract class TypeComparer<T> : ElementComparer<T> where T : ITypeDefinition
     {
         private readonly IAccessModifiersComparer _accessModifiersComparer;
         private readonly IGenericTypeElementComparer _genericTypeElementComparer;

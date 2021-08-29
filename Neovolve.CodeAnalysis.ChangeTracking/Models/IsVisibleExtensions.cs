@@ -20,5 +20,20 @@
                     throw new ArgumentOutOfRangeException(nameof(modifiers), modifiers, null);
             }
         }
+
+        public static bool IsVisible(this EnumAccessModifiers modifiers)
+        {
+            switch (modifiers)
+            {
+                case EnumAccessModifiers.Internal:
+                case EnumAccessModifiers.Private:
+                    return false;
+                case EnumAccessModifiers.Protected:
+                case EnumAccessModifiers.Public:
+                    return true;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(modifiers), modifiers, null);
+            }
+        }
     }
 }

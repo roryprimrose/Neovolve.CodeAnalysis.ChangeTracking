@@ -5,7 +5,7 @@
 
     public interface IChangeCalculator
     {
-        ChangeCalculatorResult CalculateChanges(IEnumerable<ITypeDefinition> oldTypes,
-            IEnumerable<ITypeDefinition> newTypes, ComparerOptions options);
+        ChangeCalculatorResult CalculateChanges(IEnumerable<IBaseTypeDefinition> oldTypes,
+            IEnumerable<IBaseTypeDefinition> newTypes, ComparerOptions options);
     }
 }

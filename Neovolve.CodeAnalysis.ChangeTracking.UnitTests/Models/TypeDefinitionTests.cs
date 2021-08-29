@@ -154,6 +154,39 @@
         }
 
         [Fact]
+        public async Task ChildEnumsReturnsEmptyWhenNoDeclarationsFound()
+        {
+            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithoutParent)
+                .ConfigureAwait(false);
+
+            var sut = new ClassDefinition(node);
+
+            sut.ChildEnums.Should().BeEmpty();
+        }
+
+        [Fact]
+        public async Task ChildEnumsReturnsMultipleEnumDefinitions()
+        {
+            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.MultipleChildEnums)
+                .ConfigureAwait(false);
+
+            var sut = new ClassDefinition(node);
+
+            sut.ChildEnums.Should().HaveCount(2);
+
+            var firstEnum = sut.ChildEnums.First();
+            var secondEnum = sut.ChildEnums.Skip(1).First();
+
+            firstEnum.Name.Should().Be("FirstChild");
+            firstEnum.FullName.Should().Be("MyNamespace.MyClass+FirstChild");
+            firstEnum.DeclaringType.Should().Be(sut);
+
+            secondEnum.Name.Should().Be("SecondChild");
+            secondEnum.FullName.Should().Be("MyNamespace.MyClass+SecondChild");
+            secondEnum.DeclaringType.Should().Be(sut);
+        }
+
+        [Fact]
         public async Task ChildInterfacesReturnsMultipleInterfaceDefinitions()
         {
             var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.MultipleChildInterfaces)
@@ -274,233 +307,12 @@
 
             var sut = new ClassDefinition(node);
 
-            sut.ChildTypes.Should().HaveCount(6);
+            sut.ChildTypes.Should().HaveCount(8);
 
             sut.ChildTypes.OfType<ClassDefinition>().Should().HaveCount(2);
             sut.ChildTypes.OfType<InterfaceDefinition>().Should().HaveCount(2);
             sut.ChildTypes.OfType<StructDefinition>().Should().HaveCount(2);
-        }
-
-        [Fact]
-        public async Task DeclaringTypeReturnsDeclaringClass()
-        {
-            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassInGrandparentClass)
-                .ConfigureAwait(false);
-
-            var sut = new ClassDefinition(node);
-
-            sut.DeclaringType.Should().BeNull();
-
-            var parentClass = sut.ChildClasses.Single();
-
-            parentClass.DeclaringType.Should().Be(sut);
-
-            var childClass = parentClass.ChildClasses.Single();
-
-            childClass.DeclaringType.Should().Be(parentClass);
-        }
-
-        [Fact]
-        public async Task DeclaringTypeReturnsDeclaringStruct()
-        {
-            var node = await TestNode.FindNode<StructDeclarationSyntax>(TypeDefinitionCode.StructInGrandparentStruct)
-                .ConfigureAwait(false);
-
-            var sut = new StructDefinition(node);
-
-            sut.DeclaringType.Should().BeNull();
-
-            var parentStruct = sut.ChildStructs.Single();
-
-            parentStruct.DeclaringType.Should().Be(sut);
-
-            var childStruct = parentStruct.ChildStructs.Single();
-
-            childStruct.DeclaringType.Should().Be(parentStruct);
-        }
-
-        [Fact]
-        public async Task DeclaringTypeReturnsNullWhenNoDeclaringTypeFound()
-        {
-            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithoutParent)
-                .ConfigureAwait(false);
-
-            var sut = new ClassDefinition(node);
-
-            sut.DeclaringType.Should().BeNull();
-        }
-
-        [Fact]
-        public async Task FullNameReturnsNameFromClassCombinedWithDeclaringTypeFullName()
-        {
-            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassInGrandparentClass)
-                .ConfigureAwait(false);
-
-            var sut = new ClassDefinition(node);
-
-            sut.FullName.Should().Be("MyNamespace.MyGrandparentClass");
-
-            var parentClass = sut.ChildClasses.Single();
-
-            parentClass.FullName.Should().Be("MyNamespace.MyGrandparentClass+MyParentClass");
-
-            var childClass = parentClass.ChildClasses.Single();
-
-            childClass.FullName.Should().Be("MyNamespace.MyGrandparentClass+MyParentClass+MyClass");
-        }
-
-        [Fact]
-        public async Task FullNameReturnsNameFromClassCombinedWithDeclaringTypeFullNameAndGenericTypeParameters()
-        {
-            var node = await TestNode
-                .FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithMultipleGenericConstraints)
-                .ConfigureAwait(false);
-
-            var sut = new ClassDefinition(node);
-
-            sut.FullName.Should().Be("MyNamespace.MyClass<TKey, TValue>");
-
-            var child = sut.ChildClasses.Single();
-
-            child.FullName.Should().Be("MyNamespace.MyClass<TKey, TValue>+MyChildClass");
-        }
-
-        [Fact]
-        public async Task FullNameReturnsNameFromInterfaceCombinedWithDeclaringTypeFullNameAndGenericTypeParameters()
-        {
-            var node = await TestNode
-                .FindNode<InterfaceDeclarationSyntax>(TypeDefinitionCode.InterfaceWithMultipleGenericConstraints)
-                .ConfigureAwait(false);
-
-            var sut = new InterfaceDefinition(node);
-
-            sut.FullName.Should().Be("MyNamespace.MyInterface<TKey, TValue>");
-
-            var child = sut.ChildInterfaces.Single();
-
-            child.FullName.Should().Be("MyNamespace.MyInterface<TKey, TValue>+MyChildInterface");
-        }
-
-        [Fact]
-        public async Task FullNameReturnsNameFromStructCombinedWithDeclaringTypeFullName()
-        {
-            var node = await TestNode.FindNode<StructDeclarationSyntax>(TypeDefinitionCode.StructInGrandparentStruct)
-                .ConfigureAwait(false);
-
-            var sut = new StructDefinition(node);
-
-            sut.FullName.Should().Be("MyNamespace.MyGrandparentStruct");
-
-            var parentStruct = sut.ChildStructs.Single();
-
-            parentStruct.FullName.Should().Be("MyNamespace.MyGrandparentStruct+MyParentStruct");
-
-            var childStruct = parentStruct.ChildStructs.Single();
-
-            childStruct.FullName.Should().Be("MyNamespace.MyGrandparentStruct+MyParentStruct+MyStruct");
-        }
-
-        [Fact]
-        public async Task FullNameReturnsNameFromStructCombinedWithDeclaringTypeFullNameAndGenericTypeParameters()
-        {
-            var node = await TestNode
-                .FindNode<StructDeclarationSyntax>(TypeDefinitionCode.StructWithMultipleGenericConstraints)
-                .ConfigureAwait(false);
-
-            var sut = new StructDefinition(node);
-
-            sut.FullName.Should().Be("MyNamespace.MyStruct<TKey, TValue>");
-
-            var child = sut.ChildStructs.Single();
-
-            child.FullName.Should().Be("MyNamespace.MyStruct<TKey, TValue>+MyChildStruct");
-        }
-
-        [Fact]
-        public async Task FullRawNameReturnsNameFromClassCombinedWithDeclaringTypeFullRawName()
-        {
-            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassInGrandparentClass)
-                .ConfigureAwait(false);
-
-            var sut = new ClassDefinition(node);
-
-            sut.FullRawName.Should().Be("MyNamespace.MyGrandparentClass");
-
-            var parentClass = sut.ChildClasses.Single();
-
-            parentClass.FullRawName.Should().Be("MyNamespace.MyGrandparentClass+MyParentClass");
-
-            var childClass = parentClass.ChildClasses.Single();
-
-            childClass.FullRawName.Should().Be("MyNamespace.MyGrandparentClass+MyParentClass+MyClass");
-        }
-
-        [Fact]
-        public async Task FullRawNameReturnsNameFromClassCombinedWithDeclaringTypeFullRawNameAndGenericTypeParameters()
-        {
-            var node = await TestNode
-                .FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithMultipleGenericConstraints)
-                .ConfigureAwait(false);
-
-            var sut = new ClassDefinition(node);
-
-            sut.FullRawName.Should().Be("MyNamespace.MyClass");
-
-            var child = sut.ChildClasses.Single();
-
-            child.FullRawName.Should().Be("MyNamespace.MyClass+MyChildClass");
-        }
-
-        [Fact]
-        public async Task
-            FullRawNameReturnsNameFromInterfaceCombinedWithDeclaringTypeFullRawNameAndGenericTypeParameters()
-        {
-            var node = await TestNode
-                .FindNode<InterfaceDeclarationSyntax>(TypeDefinitionCode.InterfaceWithMultipleGenericConstraints)
-                .ConfigureAwait(false);
-
-            var sut = new InterfaceDefinition(node);
-
-            sut.FullRawName.Should().Be("MyNamespace.MyInterface");
-
-            var child = sut.ChildInterfaces.Single();
-
-            child.FullRawName.Should().Be("MyNamespace.MyInterface+MyChildInterface");
-        }
-
-        [Fact]
-        public async Task FullRawNameReturnsNameFromStructCombinedWithDeclaringTypeFullRawName()
-        {
-            var node = await TestNode.FindNode<StructDeclarationSyntax>(TypeDefinitionCode.StructInGrandparentStruct)
-                .ConfigureAwait(false);
-
-            var sut = new StructDefinition(node);
-
-            sut.FullRawName.Should().Be("MyNamespace.MyGrandparentStruct");
-
-            var parentStruct = sut.ChildStructs.Single();
-
-            parentStruct.FullRawName.Should().Be("MyNamespace.MyGrandparentStruct+MyParentStruct");
-
-            var childStruct = parentStruct.ChildStructs.Single();
-
-            childStruct.FullRawName.Should().Be("MyNamespace.MyGrandparentStruct+MyParentStruct+MyStruct");
-        }
-
-        [Fact]
-        public async Task FullRawNameReturnsNameFromStructCombinedWithDeclaringTypeFullRawNameAndGenericTypeParameters()
-        {
-            var node = await TestNode
-                .FindNode<StructDeclarationSyntax>(TypeDefinitionCode.StructWithMultipleGenericConstraints)
-                .ConfigureAwait(false);
-
-            var sut = new StructDefinition(node);
-
-            sut.FullRawName.Should().Be("MyNamespace.MyStruct");
-
-            var child = sut.ChildStructs.Single();
-
-            child.FullRawName.Should().Be("MyNamespace.MyStruct+MyChildStruct");
+            sut.ChildTypes.OfType<EnumDefinition>().Should().HaveCount(2);
         }
 
         [Fact]
@@ -553,53 +365,17 @@
         }
 
         [Fact]
-        public async Task ImplementedTypesReturnsEmptyWhenNoImplementedTypesDeclared()
+        public async Task IsVisibleReturnsFalseWhenDeclaringTypeIsVisibleReturnsFalse()
         {
-            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithoutParent)
-                .ConfigureAwait(false);
+            var code = TypeDefinitionCode.MultipleChildTypes.Replace("public class MyClass", "class MyClass");
+
+            var node = await TestNode.FindNode<ClassDeclarationSyntax>(code).ConfigureAwait(false);
 
             var sut = new ClassDefinition(node);
 
-            sut.ImplementedTypes.Should().BeEmpty();
-        }
+            var child = sut.ChildClasses.Single(x => x.Name == "FirstClass");
 
-        [Fact]
-        public async Task ImplementedTypesReturnsMultipleImplementedType()
-        {
-            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassImplementsMultipleTypes)
-                .ConfigureAwait(false);
-
-            var sut = new ClassDefinition(node);
-
-            sut.ImplementedTypes.Should().HaveCount(2);
-            sut.ImplementedTypes.First().Should().Be("MyBase");
-            sut.ImplementedTypes.Skip(1).First().Should().Be("IEnumerable<string>");
-        }
-
-        [Fact]
-        public async Task ImplementedTypesReturnsMultipleImplementedTypeWithGenericTypeDefinition()
-        {
-            var node = await TestNode
-                .FindNode<InterfaceDeclarationSyntax>(TypeDefinitionCode.InterfaceImplementsMultipleTypes)
-                .ConfigureAwait(false);
-
-            var sut = new InterfaceDefinition(node);
-
-            sut.ImplementedTypes.Should().HaveCount(2);
-            sut.ImplementedTypes.First().Should().Be("IDisposable");
-            sut.ImplementedTypes.Skip(1).First().Should().Be("IEnumerable<T>");
-        }
-
-        [Fact]
-        public async Task ImplementedTypesReturnsSingleImplementedType()
-        {
-            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassImplementsSingleType)
-                .ConfigureAwait(false);
-
-            var sut = new ClassDefinition(node);
-
-            sut.ImplementedTypes.Should().HaveCount(1);
-            sut.ImplementedTypes.First().Should().Be("MyBase");
+            child.IsVisible.Should().BeFalse();
         }
 
         [Theory]
@@ -608,9 +384,13 @@
         [InlineData("internal", false)]
         [InlineData("protected", true)]
         [InlineData("private protected", true)]
+        [InlineData("protected private", true)]
         [InlineData("protected internal", true)]
+        [InlineData("internal protected", true)]
         [InlineData("public", true)]
-        public async Task IsVisibleReturnsValueBasedOnAccessModifiers(string accessModifiers, bool expected)
+        public async Task IsVisibleReturnsValueBasedOnAccessModifiers(
+            string accessModifiers,
+            bool expected)
         {
             var code = TypeDefinitionCode.BuildClassWithScope(accessModifiers);
 
@@ -619,55 +399,6 @@
             var sut = new ClassDefinition(node);
 
             sut.IsVisible.Should().Be(expected);
-        }
-
-        [Fact]
-        public async Task MergePartialTypeThrowsExceptionWithNullPartialType()
-        {
-            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassInGrandparentClass)
-                .ConfigureAwait(false);
-
-            var sut = new ClassDefinition(node);
-
-            Action action = () => sut.MergePartialType(null!);
-
-            action.Should().Throw<ArgumentNullException>();
-        }
-
-        [Fact]
-        public async Task MergePartialTypeThrowsExceptionWhenPartialTypeIsDifferent()
-        {
-            var classNode = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassInGrandparentClass)
-                .ConfigureAwait(false);
-
-            var classDefinition = new ClassDefinition(classNode);
-
-            var interfaceNode = await TestNode.FindNode<InterfaceDeclarationSyntax>(TypeDefinitionCode.InterfaceWithMethod).ConfigureAwait(false);
-
-            var interfaceDefinition = new InterfaceDefinition(interfaceNode);
-
-            Action action = () => classDefinition.MergePartialType(interfaceDefinition);
-
-            action.Should().Throw<InvalidOperationException>();
-        }
-
-        [Theory]
-        [InlineData("MyClass", "MyOtherClass")]
-        [InlineData("MyNamespace", "MyOtherNamespace")]
-        public async Task MergePartialTypeThrowsExceptionWhenPartialTypeIsDifferentPartialType(string find, string replace)
-        {
-            var classNode = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithoutParent)
-                .ConfigureAwait(false);
-
-            var classDefinition = new ClassDefinition(classNode);
-
-            var otherNode = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithoutParent.Replace(find, replace)).ConfigureAwait(false);
-
-            var otherDefinition = new ClassDefinition(otherNode);
-
-            Action action = () => classDefinition.MergePartialType(otherDefinition);
-
-            action.Should().Throw<InvalidOperationException>();
         }
 
         [Fact]
@@ -689,51 +420,6 @@
             firstDefinition.Attributes.Count.Should().Be(3);
             firstDefinition.Attributes.Should().Contain(x => x.Name == "JsonPropertyName");
             firstDefinition.Attributes.Should().Contain(secondDefinition.Attributes);
-        }
-
-        [Fact]
-        public async Task MergePartialTypeMergesMethods()
-        {
-            var firstClass = TypeDefinitionCode.ClassWithMethod.Replace("class", "partial class");
-            var secondClass = firstClass.Replace("GetValue", "GetOtherValue");
-
-            var firstNode = await TestNode.FindNode<ClassDeclarationSyntax>(firstClass)
-                .ConfigureAwait(false);
-            var secondNode = await TestNode.FindNode<ClassDeclarationSyntax>(secondClass)
-                .ConfigureAwait(false);
-
-            var firstDefinition = new ClassDefinition(firstNode);
-            var secondDefinition = new ClassDefinition(secondNode);
-
-            firstDefinition.MergePartialType(secondDefinition);
-
-            firstDefinition.Methods.Count.Should().Be(2);
-            firstDefinition.Methods.Should().Contain(x => x.Name == "GetValue");
-            firstDefinition.Methods.Should().Contain(secondDefinition.Methods);
-            firstDefinition.Methods.All(x => x.DeclaringType == firstDefinition).Should().BeTrue();
-        }
-
-        [Fact]
-        public async Task MergePartialTypeMergesProperties()
-        {
-            var firstClass = TypeDefinitionCode.ClassWithProperties.Replace("class", "partial class");
-            var secondClass = firstClass.Replace("First", "Third").Replace("Second", "Fourth");
-
-            var firstNode = await TestNode.FindNode<ClassDeclarationSyntax>(firstClass)
-                .ConfigureAwait(false);
-            var secondNode = await TestNode.FindNode<ClassDeclarationSyntax>(secondClass)
-                .ConfigureAwait(false);
-
-            var firstDefinition = new ClassDefinition(firstNode);
-            var secondDefinition = new ClassDefinition(secondNode);
-
-            firstDefinition.MergePartialType(secondDefinition);
-
-            firstDefinition.Properties.Count.Should().Be(4);
-            firstDefinition.Properties.Should().Contain(x => x.Name == "First");
-            firstDefinition.Properties.Should().Contain(x => x.Name == "Second");
-            firstDefinition.Properties.Should().Contain(secondDefinition.Properties);
-            firstDefinition.Properties.All(x => x.DeclaringType == firstDefinition).Should().BeTrue();
         }
 
         [Fact]
@@ -821,15 +507,123 @@
 
             firstDefinition.MergePartialType(secondDefinition);
 
-            firstDefinition.ChildTypes.Count.Should().Be(12);
+            firstDefinition.ChildTypes.Count.Should().Be(16);
             firstDefinition.ChildTypes.Should().Contain(x => x.Name == "FirstClass");
             firstDefinition.ChildTypes.Should().Contain(x => x.Name == "SecondClass");
+            firstDefinition.ChildTypes.Should().Contain(x => x.Name == "ThirdClass");
+            firstDefinition.ChildTypes.Should().Contain(x => x.Name == "FourthClass");
             firstDefinition.ChildTypes.Should().Contain(x => x.Name == "FirstInterface");
             firstDefinition.ChildTypes.Should().Contain(x => x.Name == "SecondInterface");
+            firstDefinition.ChildTypes.Should().Contain(x => x.Name == "ThirdInterface");
+            firstDefinition.ChildTypes.Should().Contain(x => x.Name == "FourthInterface");
             firstDefinition.ChildTypes.Should().Contain(x => x.Name == "FirstStruct");
             firstDefinition.ChildTypes.Should().Contain(x => x.Name == "SecondStruct");
+            firstDefinition.ChildTypes.Should().Contain(x => x.Name == "ThirdStruct");
+            firstDefinition.ChildTypes.Should().Contain(x => x.Name == "FourthStruct");
+            firstDefinition.ChildTypes.Should().Contain(x => x.Name == "FirstEnum");
+            firstDefinition.ChildTypes.Should().Contain(x => x.Name == "SecondEnum");
+            firstDefinition.ChildTypes.Should().Contain(x => x.Name == "ThirdEnum");
+            firstDefinition.ChildTypes.Should().Contain(x => x.Name == "FourthEnum");
             firstDefinition.ChildTypes.Should().Contain(secondDefinition.ChildTypes);
             firstDefinition.ChildTypes.All(x => x.DeclaringType == firstDefinition).Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task MergePartialTypeMergesMethods()
+        {
+            var firstClass = TypeDefinitionCode.ClassWithMethod.Replace("class", "partial class");
+            var secondClass = firstClass.Replace("GetValue", "GetOtherValue");
+
+            var firstNode = await TestNode.FindNode<ClassDeclarationSyntax>(firstClass)
+                .ConfigureAwait(false);
+            var secondNode = await TestNode.FindNode<ClassDeclarationSyntax>(secondClass)
+                .ConfigureAwait(false);
+
+            var firstDefinition = new ClassDefinition(firstNode);
+            var secondDefinition = new ClassDefinition(secondNode);
+
+            firstDefinition.MergePartialType(secondDefinition);
+
+            firstDefinition.Methods.Count.Should().Be(2);
+            firstDefinition.Methods.Should().Contain(x => x.Name == "GetValue");
+            firstDefinition.Methods.Should().Contain(secondDefinition.Methods);
+            firstDefinition.Methods.All(x => x.DeclaringType == firstDefinition).Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task MergePartialTypeMergesProperties()
+        {
+            var firstClass = TypeDefinitionCode.ClassWithProperties.Replace("class", "partial class");
+            var secondClass = firstClass.Replace("First", "Third").Replace("Second", "Fourth");
+
+            var firstNode = await TestNode.FindNode<ClassDeclarationSyntax>(firstClass)
+                .ConfigureAwait(false);
+            var secondNode = await TestNode.FindNode<ClassDeclarationSyntax>(secondClass)
+                .ConfigureAwait(false);
+
+            var firstDefinition = new ClassDefinition(firstNode);
+            var secondDefinition = new ClassDefinition(secondNode);
+
+            firstDefinition.MergePartialType(secondDefinition);
+
+            firstDefinition.Properties.Count.Should().Be(4);
+            firstDefinition.Properties.Should().Contain(x => x.Name == "First");
+            firstDefinition.Properties.Should().Contain(x => x.Name == "Second");
+            firstDefinition.Properties.Should().Contain(secondDefinition.Properties);
+            firstDefinition.Properties.All(x => x.DeclaringType == firstDefinition).Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task MergePartialTypeThrowsExceptionWhenPartialTypeIsDifferent()
+        {
+            var classNode = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassInGrandparentClass)
+                .ConfigureAwait(false);
+
+            var classDefinition = new ClassDefinition(classNode);
+
+            var interfaceNode = await TestNode
+                .FindNode<InterfaceDeclarationSyntax>(TypeDefinitionCode.InterfaceWithMethod).ConfigureAwait(false);
+
+            var interfaceDefinition = new InterfaceDefinition(interfaceNode);
+
+            Action action = () => classDefinition.MergePartialType(interfaceDefinition);
+
+            action.Should().Throw<InvalidOperationException>();
+        }
+
+        [Theory]
+        [InlineData("MyClass", "MyOtherClass")]
+        [InlineData("MyNamespace", "MyOtherNamespace")]
+        public async Task MergePartialTypeThrowsExceptionWhenPartialTypeIsDifferentPartialType(string find,
+            string replace)
+        {
+            var classNode = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithoutParent)
+                .ConfigureAwait(false);
+
+            var classDefinition = new ClassDefinition(classNode);
+
+            var otherNode = await TestNode
+                .FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithoutParent.Replace(find, replace))
+                .ConfigureAwait(false);
+
+            var otherDefinition = new ClassDefinition(otherNode);
+
+            Action action = () => classDefinition.MergePartialType(otherDefinition);
+
+            action.Should().Throw<InvalidOperationException>();
+        }
+
+        [Fact]
+        public async Task MergePartialTypeThrowsExceptionWithNullPartialType()
+        {
+            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassInGrandparentClass)
+                .ConfigureAwait(false);
+
+            var sut = new ClassDefinition(node);
+
+            Action action = () => sut.MergePartialType(null!);
+
+            action.Should().Throw<ArgumentNullException>();
         }
 
         [Fact]
@@ -875,211 +669,6 @@
 
             method.Name.Should().Be("GetValue");
             method.Parameters.Count.Should().Be(3);
-        }
-
-        [Fact]
-        public async Task NameReturnsMultipleGenericTypeDefinitions()
-        {
-            var node = await TestNode
-                .FindNode<InterfaceDeclarationSyntax>(TypeDefinitionCode.InterfaceWithMultipleGenericTypes)
-                .ConfigureAwait(false);
-
-            var sut = new InterfaceDefinition(node);
-
-            sut.Name.Should().Be("IMyInterface<T, V>");
-        }
-
-        [Fact]
-        public async Task NameReturnsNameFromClass()
-        {
-            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassInGrandparentClass)
-                .ConfigureAwait(false);
-
-            var sut = new ClassDefinition(node);
-
-            sut.Name.Should().Be("MyGrandparentClass");
-
-            var parentClass = sut.ChildClasses.Single();
-
-            parentClass.Name.Should().Be("MyParentClass");
-
-            var childClass = parentClass.ChildClasses.Single();
-
-            childClass.Name.Should().Be("MyClass");
-        }
-
-        [Fact]
-        public async Task NameReturnsNameFromClassWithGenericTypeParameters()
-        {
-            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithGenericType)
-                .ConfigureAwait(false);
-
-            var sut = new ClassDefinition(node);
-
-            sut.Name.Should().Be("MyClass<T>");
-        }
-
-        [Fact]
-        public async Task NameReturnsNameFromClassWithParentsAndGenericTypeParameters()
-        {
-            var node = await TestNode
-                .FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithMultipleGenericConstraints)
-                .ConfigureAwait(false);
-
-            var sut = new ClassDefinition(node);
-
-            sut.Name.Should().Be("MyClass<TKey, TValue>");
-
-            var childClass = sut.ChildClasses.Single();
-
-            childClass.Name.Should().Be("MyChildClass");
-        }
-
-        [Fact]
-        public async Task NameReturnsNameFromInterfaceWithGenericTypeParameters()
-        {
-            var node = await TestNode.FindNode<InterfaceDeclarationSyntax>(TypeDefinitionCode.InterfaceWithGenericType)
-                .ConfigureAwait(false);
-
-            var sut = new InterfaceDefinition(node);
-
-            sut.Name.Should().Be("IMyInterface<T>");
-        }
-
-        [Fact]
-        public async Task NameReturnsNameFromInterfaceWithoutDeclaringType()
-        {
-            var node = await TestNode.FindNode<InterfaceDeclarationSyntax>(TypeDefinitionCode.InterfaceWithoutParent)
-                .ConfigureAwait(false);
-
-            var sut = new InterfaceDefinition(node);
-
-            sut.Name.Should().Be("MyInterface");
-        }
-
-        [Fact]
-        public async Task NameReturnsNameFromInterfaceWithParentsAndGenericTypeParameters()
-        {
-            var node = await TestNode
-                .FindNode<InterfaceDeclarationSyntax>(TypeDefinitionCode.InterfaceWithMultipleGenericConstraints)
-                .ConfigureAwait(false);
-
-            var sut = new InterfaceDefinition(node);
-
-            sut.Name.Should().Be("MyInterface<TKey, TValue>");
-
-            var child = sut.ChildInterfaces.Single();
-
-            child.Name.Should().Be("MyChildInterface");
-        }
-
-        [Fact]
-        public async Task NameReturnsNameFromStruct()
-        {
-            var node = await TestNode.FindNode<StructDeclarationSyntax>(TypeDefinitionCode.StructInGrandparentStruct)
-                .ConfigureAwait(false);
-
-            var sut = new StructDefinition(node);
-
-            sut.Name.Should().Be("MyGrandparentStruct");
-
-            var parentStruct = sut.ChildStructs.Single();
-
-            parentStruct.Name.Should().Be("MyParentStruct");
-
-            var childStruct = parentStruct.ChildStructs.Single();
-
-            childStruct.Name.Should().Be("MyStruct");
-        }
-
-        [Fact]
-        public async Task NameReturnsNameFromStructWithGenericTypeParameters()
-        {
-            var node = await TestNode.FindNode<StructDeclarationSyntax>(TypeDefinitionCode.StructWithGenericType)
-                .ConfigureAwait(false);
-
-            var sut = new StructDefinition(node);
-
-            sut.Name.Should().Be("MyStruct<T>");
-        }
-
-        [Fact]
-        public async Task NameReturnsNameFromStructWithParentsAndGenericTypeParameters()
-        {
-            var node = await TestNode
-                .FindNode<StructDeclarationSyntax>(TypeDefinitionCode.StructWithMultipleGenericConstraints)
-                .ConfigureAwait(false);
-
-            var sut = new StructDefinition(node);
-
-            sut.Name.Should().Be("MyStruct<TKey, TValue>");
-
-            var childStruct = sut.ChildStructs.Single();
-
-            childStruct.Name.Should().Be("MyChildStruct");
-        }
-
-        [Fact]
-        public async Task NamespaceReturnsDeclarationWhenInComplexNamespace()
-        {
-            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithComplexNamespace)
-                .ConfigureAwait(false);
-
-            var sut = new ClassDefinition(node);
-
-            sut.Namespace.Should().Be("MyNamespace.OtherNamespace.FinalNamespace");
-        }
-
-        [Fact]
-        public async Task NamespaceReturnsDeclarationWhenInNamespace()
-        {
-            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithoutParent)
-                .ConfigureAwait(false);
-
-            var sut = new ClassDefinition(node);
-
-            sut.Namespace.Should().Be("MyNamespace");
-        }
-
-        [Fact]
-        public async Task NamespaceReturnsDeclarationWhenInNestedNamespace()
-        {
-            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithNestedNamespace)
-                .ConfigureAwait(false);
-
-            var sut = new ClassDefinition(node);
-
-            sut.Namespace.Should().Be("MyNamespace.ChildNamespace");
-        }
-
-        [Fact]
-        public async Task NamespaceReturnsEmptyWhenNotInNamespace()
-        {
-            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithoutNamespace)
-                .ConfigureAwait(false);
-
-            var sut = new ClassDefinition(node);
-
-            sut.Namespace.Should().BeEmpty();
-        }
-
-        [Fact]
-        public async Task NamespaceReturnsSameValueOnChildClasses()
-        {
-            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassInGrandparentClass)
-                .ConfigureAwait(false);
-
-            var sut = new ClassDefinition(node);
-
-            sut.Namespace.Should().Be("MyNamespace");
-
-            var parentClass = sut.ChildClasses.Single();
-
-            parentClass.Namespace.Should().Be("MyNamespace");
-
-            var childClass = parentClass.ChildClasses.Single();
-
-            childClass.Namespace.Should().Be("MyNamespace");
         }
 
         [Fact]
@@ -1137,136 +726,6 @@
             var second = sut.Properties.Skip(1).First();
 
             second.Name.Should().Be("Second");
-        }
-
-        [Fact]
-        public async Task RawNameReturnsNameFromClass()
-        {
-            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassInGrandparentClass)
-                .ConfigureAwait(false);
-
-            var sut = new ClassDefinition(node);
-
-            sut.RawName.Should().Be("MyGrandparentClass");
-
-            var parentClass = sut.ChildClasses.Single();
-
-            parentClass.RawName.Should().Be("MyParentClass");
-
-            var childClass = parentClass.ChildClasses.Single();
-
-            childClass.RawName.Should().Be("MyClass");
-        }
-
-        [Fact]
-        public async Task RawNameReturnsNameFromClassWithoutGenericTypeParameters()
-        {
-            var node = await TestNode.FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithGenericType)
-                .ConfigureAwait(false);
-
-            var sut = new ClassDefinition(node);
-
-            sut.RawName.Should().Be("MyClass");
-        }
-
-        [Fact]
-        public async Task RawNameReturnsNameFromClassWithParentsAndGenericTypeParameters()
-        {
-            var node = await TestNode
-                .FindNode<ClassDeclarationSyntax>(TypeDefinitionCode.ClassWithMultipleGenericConstraints)
-                .ConfigureAwait(false);
-
-            var sut = new ClassDefinition(node);
-
-            sut.RawName.Should().Be("MyClass");
-
-            var childClass = sut.ChildClasses.Single();
-
-            childClass.RawName.Should().Be("MyChildClass");
-        }
-
-        [Fact]
-        public async Task RawNameReturnsNameFromInterfaceWithoutDeclaringType()
-        {
-            var node = await TestNode.FindNode<InterfaceDeclarationSyntax>(TypeDefinitionCode.InterfaceWithoutParent)
-                .ConfigureAwait(false);
-
-            var sut = new InterfaceDefinition(node);
-
-            sut.RawName.Should().Be("MyInterface");
-        }
-
-        [Fact]
-        public async Task RawNameReturnsNameFromInterfaceWithoutGenericTypeParameters()
-        {
-            var node = await TestNode.FindNode<InterfaceDeclarationSyntax>(TypeDefinitionCode.InterfaceWithGenericType)
-                .ConfigureAwait(false);
-
-            var sut = new InterfaceDefinition(node);
-
-            sut.RawName.Should().Be("IMyInterface");
-        }
-
-        [Fact]
-        public async Task RawNameReturnsNameFromInterfaceWithParentsAndGenericTypeParameters()
-        {
-            var node = await TestNode
-                .FindNode<InterfaceDeclarationSyntax>(TypeDefinitionCode.InterfaceWithMultipleGenericConstraints)
-                .ConfigureAwait(false);
-
-            var sut = new InterfaceDefinition(node);
-
-            sut.RawName.Should().Be("MyInterface");
-
-            var child = sut.ChildInterfaces.Single();
-
-            child.RawName.Should().Be("MyChildInterface");
-        }
-
-        [Fact]
-        public async Task RawNameReturnsNameFromStruct()
-        {
-            var node = await TestNode.FindNode<StructDeclarationSyntax>(TypeDefinitionCode.StructInGrandparentStruct)
-                .ConfigureAwait(false);
-
-            var sut = new StructDefinition(node);
-
-            sut.RawName.Should().Be("MyGrandparentStruct");
-
-            var parentStruct = sut.ChildStructs.Single();
-
-            parentStruct.RawName.Should().Be("MyParentStruct");
-
-            var childStruct = parentStruct.ChildStructs.Single();
-
-            childStruct.RawName.Should().Be("MyStruct");
-        }
-
-        [Fact]
-        public async Task RawNameReturnsNameFromStructWithoutGenericTypeParameters()
-        {
-            var node = await TestNode.FindNode<StructDeclarationSyntax>(TypeDefinitionCode.StructWithGenericType)
-                .ConfigureAwait(false);
-
-            var sut = new StructDefinition(node);
-
-            sut.RawName.Should().Be("MyStruct");
-        }
-
-        [Fact]
-        public async Task RawNameReturnsNameFromStructWithParentsAndGenericTypeParameters()
-        {
-            var node = await TestNode
-                .FindNode<StructDeclarationSyntax>(TypeDefinitionCode.StructWithMultipleGenericConstraints)
-                .ConfigureAwait(false);
-
-            var sut = new StructDefinition(node);
-
-            sut.RawName.Should().Be("MyStruct");
-
-            var childStruct = sut.ChildStructs.Single();
-
-            childStruct.RawName.Should().Be("MyChildStruct");
         }
 
         [Fact]

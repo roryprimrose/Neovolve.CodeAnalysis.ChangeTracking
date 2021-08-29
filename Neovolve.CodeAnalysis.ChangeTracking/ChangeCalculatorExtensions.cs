@@ -83,9 +83,9 @@
             return tasks.Select(x => x.Result);
         }
 
-        private static IEnumerable<ITypeDefinition> ResolveDeclaredTypes(IEnumerable<SyntaxNode> nodes)
+        private static IEnumerable<IBaseTypeDefinition> ResolveDeclaredTypes(IEnumerable<SyntaxNode> nodes)
         {
-            var resolvedTypes = new List<ITypeDefinition>();
+            var resolvedTypes = new List<IBaseTypeDefinition>();
 
             foreach (var node in nodes)
             {
@@ -100,9 +100,9 @@
             return resolvedTypes;
         }
 
-        private static IList<ITypeDefinition> ResolveDeclaredTypes(SyntaxNode node)
+        private static IList<IBaseTypeDefinition> ResolveDeclaredTypes(SyntaxNode node)
         {
-            List<ITypeDefinition> resolvedTypes = new();
+            List<IBaseTypeDefinition> resolvedTypes = new();
 
             if (node is ClassDeclarationSyntax classNode)
             {
@@ -119,6 +119,12 @@
             else if (node is InterfaceDeclarationSyntax interfaceNode)
             {
                 var typeDefinition = new InterfaceDefinition(interfaceNode);
+
+                resolvedTypes.Add(typeDefinition);
+            }
+            else if (node is EnumDeclarationSyntax enumNode)
+            {
+                var typeDefinition = new EnumDefinition(enumNode);
 
                 resolvedTypes.Add(typeDefinition);
             }
