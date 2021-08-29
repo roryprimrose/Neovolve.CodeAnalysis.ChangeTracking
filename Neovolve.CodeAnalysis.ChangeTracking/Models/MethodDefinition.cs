@@ -11,13 +11,15 @@
         {
             var name = DetermineName(node);
             var rawName = DetermineRawName(node);
-
+            
             Modifiers = DetermineModifiers(node);
             ReturnType = node.ReturnType.ToString();
             Name = name;
             RawName = rawName;
             FullName = DeclaringType.FullName + "." + name;
             FullRawName = DeclaringType.FullRawName + "." + rawName;
+
+            HasBody = node.Body != null;
 
             GenericTypeParameters = DetermineGenericTypeParameters(node);
             GenericConstraints = DetermineGenericConstraints(node);
@@ -162,6 +164,9 @@
 
         /// <inheritdoc />
         public IReadOnlyCollection<IParameterDefinition> Parameters { get; }
+
+        /// <inheritdoc />
+        public bool HasBody { get; }
 
         /// <inheritdoc />
         public override string RawName { get; }

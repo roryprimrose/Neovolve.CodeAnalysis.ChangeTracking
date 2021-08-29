@@ -32,6 +32,25 @@
             sut.Attributes.Skip(1).First().Arguments.Should().HaveCount(4);
         }
 
+        [Theory]
+        [InlineData(MethodDefinitionCode.InterfaceWithDefaultMethod, true)]
+        [InlineData(MethodDefinitionCode.InterfaceWithMethod, false)]
+        public async Task HasBodyReturnsWhetherMethodHasBody(string code, bool expected)
+        {
+            var parentFullName = Guid.NewGuid().ToString();
+
+            var declaringType = Substitute.For<IClassDefinition>();
+
+            declaringType.FullName.Returns(parentFullName);
+
+            var node = await TestNode.FindNode<MethodDeclarationSyntax>(code)
+                .ConfigureAwait(false);
+
+            var sut = new MethodDefinition(declaringType, node);
+
+            sut.HasBody.Should().Be(expected);
+        }
+
         [Fact]
         public async Task AttributesReturnsEmptyWhenNonDeclared()
         {

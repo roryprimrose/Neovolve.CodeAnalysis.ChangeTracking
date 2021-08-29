@@ -76,8 +76,10 @@
             actual[0].ChangeType.Should().Be(expected);
         }
 
-        [Fact]
-        public void CalculateChangesReturnsBreakingWhenAddingMethodToInterface()
+        [Theory]
+        [InlineData(false, SemVerChangeType.Breaking)]
+        [InlineData(true, SemVerChangeType.Feature)]
+        public void CalculateChangesReturnsResultWhenAddingMethodToInterface(bool hasBody, SemVerChangeType expected)
         {
             var declaringType = new TestInterfaceDefinition();
             var oldItems = Array.Empty<IMethodDefinition>();
@@ -85,6 +87,7 @@
             {
                 x.IsVisible = true;
                 x.DeclaringType = declaringType;
+                x.HasBody = hasBody;
             });
             var newItems = new List<IMethodDefinition>
             {
@@ -99,7 +102,7 @@
             var actual = SUT.CalculateChanges(oldItems, newItems, options).ToList();
 
             actual.Should().HaveCount(1);
-            actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
+            actual[0].ChangeType.Should().Be(expected);
         }
 
         [Fact]

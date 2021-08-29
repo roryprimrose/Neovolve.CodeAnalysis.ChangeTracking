@@ -8,5 +8,10 @@
         ///     Gets the parameters declared on the method.
         /// </summary>
         IReadOnlyCollection<IParameterDefinition> Parameters { get; }
+
+        /// <summary>
+        /// Gets whether this method has a body defined for it.
+        /// </summary>
+        public bool HasBody { get; }
     }
 }

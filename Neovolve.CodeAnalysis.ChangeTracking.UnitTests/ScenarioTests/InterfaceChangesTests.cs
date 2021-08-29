@@ -13,6 +13,71 @@
 
     public class InterfaceChangesTests
     {
+        public const string EmptyInterface =
+            @"
+namespace MyNamespace 
+{
+    [InterfaceAttribute(123, false, myName: ""on the interface"")]
+    public interface MyInterface
+    {
+    }  
+}
+";
+
+        public const string InterfaceWithDefaultMethod =
+            @"
+namespace MyNamespace 
+{
+    [InterfaceAttribute(123, false, myName: ""on the interface"")]
+    public interface MyInterface
+    {
+        void DoSomething() { System.Diagnostics.Debug.WriteLine(""IA.M""); }
+    }  
+}
+";
+
+        public const string InterfaceWithMethod =
+            @"
+namespace MyNamespace 
+{
+    [InterfaceAttribute(123, false, myName: ""on the interface"")]
+    public interface MyInterface
+    {
+        [MethodAttribute(23, false, myName: ""on the method"")]
+        DateTime MyMethod(int first, bool second, string third);
+    }  
+}
+";
+
+        public const string InterfaceWithProperty =
+            @"
+namespace MyNamespace 
+{
+    [InterfaceAttribute(123, false, myName: ""on the interface"")]
+    public interface MyInterface
+    {
+        [PropertyAttribute(344, true, myName: ""on the property"")]
+        string MyProperty { get; set; }
+    }  
+}
+";
+
+        public const string SingleInterface =
+            @"
+namespace MyNamespace 
+{
+    [InterfaceAttribute(123, false, myName: ""on the interface"")]
+    public interface MyInterface
+    {
+        [PropertyAttribute(344, true, myName: ""on the property"")]
+        string MyProperty { get; set; }
+
+        [MethodAttribute(23, false, myName: ""on the method"")]
+        DateTime MyMethod(int first, bool second, string third);
+    }  
+}
+";
+
         private readonly IChangeCalculator _calculator;
 
         public InterfaceChangesTests(ITestOutputHelper output)
@@ -48,8 +113,10 @@
             result.ChangeType.Should().Be(expected);
         }
 
-        [Fact]
-        public async Task ReturnsBreakingWhenInterfaceAddsMethod()
+        [Theory]
+        [InlineData(InterfaceWithMethod, SemVerChangeType.Breaking)]
+        [InlineData(InterfaceWithDefaultMethod, SemVerChangeType.Feature)]
+        public async Task ReturnsBreakingWhenInterfaceAddsMethod(string code, SemVerChangeType expected)
         {
             var oldCode = new List<CodeSource>
             {
@@ -57,7 +124,7 @@
             };
             var newCode = new List<CodeSource>
             {
-                new(InterfaceWithMethod)
+                new(code)
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -65,7 +132,7 @@
             var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
                 .ConfigureAwait(false);
 
-            result.ChangeType.Should().Be(SemVerChangeType.Breaking);
+            result.ChangeType.Should().Be(expected);
         }
 
         [Fact]
@@ -275,58 +342,5 @@
 
             result.ChangeType.Should().Be(expected);
         }
-
-        public string EmptyInterface =>
-            @"
-namespace MyNamespace 
-{
-    [InterfaceAttribute(123, false, myName: ""on the interface"")]
-    public interface MyInterface
-    {
-    }  
-}
-";
-
-        public string InterfaceWithMethod =>
-            @"
-namespace MyNamespace 
-{
-    [InterfaceAttribute(123, false, myName: ""on the interface"")]
-    public interface MyInterface
-    {
-        [MethodAttribute(23, false, myName: ""on the method"")]
-        DateTime MyMethod(int first, bool second, string third);
-    }  
-}
-";
-
-        public string InterfaceWithProperty =>
-            @"
-namespace MyNamespace 
-{
-    [InterfaceAttribute(123, false, myName: ""on the interface"")]
-    public interface MyInterface
-    {
-        [PropertyAttribute(344, true, myName: ""on the property"")]
-        string MyProperty { get; set; }
-    }  
-}
-";
-
-        public string SingleInterface =>
-            @"
-namespace MyNamespace 
-{
-    [InterfaceAttribute(123, false, myName: ""on the interface"")]
-    public interface MyInterface
-    {
-        [PropertyAttribute(344, true, myName: ""on the property"")]
-        string MyProperty { get; set; }
-
-        [MethodAttribute(23, false, myName: ""on the method"")]
-        DateTime MyMethod(int first, bool second, string third);
-    }  
-}
-";
     }
 }
