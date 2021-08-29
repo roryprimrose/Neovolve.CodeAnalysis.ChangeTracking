@@ -318,6 +318,16 @@ namespace MyNamespace
     }
 }";
 
+        public const string InterfaceWithMethodAndDefaultMethod = @"
+namespace MyNamespace
+{
+    public interface MyInterface
+    {
+        string GetValue(string first, bool second, int third);
+        void DoSomething() { System.Diagnostics.Debug.WriteLine(""IA.M""); }
+    }
+}";
+
         public const string InterfaceWithMultipleGenericConstraints = @"
 namespace MyNamespace
 {

@@ -168,6 +168,18 @@ namespace MyNamespace
     }
 }";
 
+        public const string InterfaceWithDefaultMethod = @"
+namespace MyNamespace
+{
+    using System.Collections.Generic;
+    using System.IO;
+
+    public interface MyClass
+    {
+        void DoSomething() { System.Diagnostics.Debug.WriteLine(""IA.M""); }
+    }
+}";
+
         public const string StructWithMethod = @"
 namespace MyNamespace
 {

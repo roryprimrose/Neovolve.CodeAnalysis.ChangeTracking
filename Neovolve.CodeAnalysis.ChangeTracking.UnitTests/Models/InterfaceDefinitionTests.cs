@@ -38,6 +38,25 @@
         }
 
         [Fact]
+        public async Task CanParseInterfaceMethodAndDefaultMethod()
+        {
+            var node = await TestNode.FindNode<InterfaceDeclarationSyntax>(TypeDefinitionCode.InterfaceWithMethodAndDefaultMethod)
+                .ConfigureAwait(false);
+
+            var sut = new InterfaceDefinition(node);
+
+            sut.Methods.Should().HaveCount(2);
+            
+            var normalMethod = sut.Methods.First(x => x.Name == "GetValue");
+
+            normalMethod.HasBody.Should().BeFalse();
+
+            var defaultMethod = sut.Methods.First(x => x.Name == "DoSomething");
+
+            defaultMethod.HasBody.Should().BeTrue();
+        }
+
+        [Fact]
         public async Task GenericConstraintsReturnsDeclaredConstraints()
         {
             var node = await TestNode

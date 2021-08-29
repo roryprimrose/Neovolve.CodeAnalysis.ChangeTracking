@@ -22,6 +22,7 @@
         public MethodModifiers Modifiers { get; set; } = MethodModifiers.None;
         public string Name { get; set; } = Guid.NewGuid().ToString();
         public IReadOnlyCollection<IParameterDefinition> Parameters { get; set; } = new List<TestParameterDefinition>();
+        public bool HasBody { get; set; } = true;
         public string RawName { get; set; } = Guid.NewGuid().ToString();
         public string ReturnType { get; set; } = Guid.NewGuid().ToString();
     }
