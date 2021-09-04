@@ -154,7 +154,8 @@
             var oldNode = await TestNode
                 .FindNode<AttributeSyntax>(AttributeDefinitionCode.SimpleAttribute.Replace("SimpleAttribute", oldCode))
                 .ConfigureAwait(false);
-            var oldAttribute = new AttributeDefinition(oldNode);
+            var declaringElement = new TestClassDefinition();
+            var oldAttribute = new AttributeDefinition(oldNode, declaringElement);
             var oldAttributes = new[]
             {
                 oldAttribute
@@ -162,7 +163,7 @@
             var newNode = await TestNode
                 .FindNode<AttributeSyntax>(AttributeDefinitionCode.SimpleAttribute.Replace("SimpleAttribute", newCode))
                 .ConfigureAwait(false);
-            var newAttribute = new AttributeDefinition(newNode);
+            var newAttribute = new AttributeDefinition(newNode, declaringElement);
             var newAttributes = new[]
             {
                 newAttribute

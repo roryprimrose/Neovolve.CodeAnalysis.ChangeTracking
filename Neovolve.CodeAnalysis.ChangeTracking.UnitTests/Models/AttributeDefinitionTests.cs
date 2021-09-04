@@ -1,24 +1,41 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Models
 {
     using System;
-    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Threading.Tasks;
     using FluentAssertions;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
+    using Neovolve.CodeAnalysis.ChangeTracking.UnitTests.TestModels;
     using Xunit;
 
     public class AttributeDefinitionTests
     {
+        [Fact]
+        public async Task ArgumentsContainReferenceToAttribute()
+        {
+            var node = await TestNode
+                .FindNode<AttributeSyntax>(AttributeDefinitionCode.AttributeWithMixedOrdinalAndNamedArguments)
+                .ConfigureAwait(false);
+            var declaringElement = new TestClassDefinition();
+
+            var sut = new AttributeDefinition(node, declaringElement);
+
+            foreach (var argument in sut.Arguments)
+            {
+                argument.DeclaringAttribute.Should().Be(sut);
+            }
+        }
+
         [Theory]
         [InlineData(AttributeDefinitionCode.SimpleAttribute)]
         [InlineData(AttributeDefinitionCode.SimpleAttributeWithBrackets)]
         public async Task ArgumentsReturnsEmptyWhenNoParametersDefined(string code)
         {
             var node = await TestNode.FindNode<AttributeSyntax>(code).ConfigureAwait(false);
+            var declaringElement = new TestClassDefinition();
 
-            var sut = new AttributeDefinition(node);
+            var sut = new AttributeDefinition(node, declaringElement);
 
             sut.Arguments.Should().BeEmpty();
         }
@@ -29,8 +46,9 @@
             var node = await TestNode
                 .FindNode<AttributeSyntax>(AttributeDefinitionCode.AttributeWithMixedOrdinalAndNamedArguments)
                 .ConfigureAwait(false);
+            var declaringElement = new TestClassDefinition();
 
-            var sut = new AttributeDefinition(node);
+            var sut = new AttributeDefinition(node, declaringElement);
 
             sut.Arguments.Should().HaveCount(4);
 
@@ -72,8 +90,9 @@
         {
             var node = await TestNode.FindNode<AttributeSyntax>(AttributeDefinitionCode.AttributeWithNamedArguments)
                 .ConfigureAwait(false);
+            var declaringElement = new TestClassDefinition();
 
-            var sut = new AttributeDefinition(node);
+            var sut = new AttributeDefinition(node, declaringElement);
 
             sut.Arguments.Should().HaveCount(3);
 
@@ -104,8 +123,9 @@
         {
             var node = await TestNode.FindNode<AttributeSyntax>(AttributeDefinitionCode.AttributeWithOrdinalArguments)
                 .ConfigureAwait(false);
+            var declaringElement = new TestClassDefinition();
 
-            var sut = new AttributeDefinition(node);
+            var sut = new AttributeDefinition(node, declaringElement);
 
             sut.Arguments.Should().HaveCount(3);
 
@@ -134,6 +154,19 @@
             thirdArgument.ArgumentType.Should().Be(ArgumentType.Ordinal);
         }
 
+        [Fact]
+        public async Task DeclaringElementReturnsConstructorValue()
+        {
+            var node = await TestNode
+                .FindNode<AttributeSyntax>(AttributeDefinitionCode.AttributeWithMixedOrdinalAndNamedArguments)
+                .ConfigureAwait(false);
+            var declaringElement = new TestClassDefinition();
+
+            var sut = new AttributeDefinition(node, declaringElement);
+
+            sut.DeclaringElement.Should().Be(declaringElement);
+        }
+
         [Theory]
         [InlineData("SimpleAttribute", "Simple")]
         [InlineData("Simple", "Simple")]
@@ -142,8 +175,9 @@
             var node = await TestNode
                 .FindNode<AttributeSyntax>(AttributeDefinitionCode.SimpleAttribute.Replace("SimpleAttribute", name))
                 .ConfigureAwait(false);
+            var declaringElement = new TestClassDefinition();
 
-            var sut = new AttributeDefinition(node);
+            var sut = new AttributeDefinition(node, declaringElement);
 
             sut.Name.Should().Be(expected);
         }
@@ -154,8 +188,9 @@
             var node = await TestNode
                 .FindNode<AttributeSyntax>(AttributeDefinitionCode.AttributeWithMixedOrdinalAndNamedArguments)
                 .ConfigureAwait(false);
+            var declaringElement = new TestClassDefinition();
 
-            var sut = new AttributeDefinition(node);
+            var sut = new AttributeDefinition(node, declaringElement);
 
             sut.Name.Should().Be("Simple");
         }
@@ -165,21 +200,33 @@
         {
             var node = await TestNode.FindNode<AttributeSyntax>(AttributeDefinitionCode.SimpleAttributeWithBrackets)
                 .ConfigureAwait(false);
+            var declaringElement = new TestClassDefinition();
 
-            var sut = new AttributeDefinition(node);
+            var sut = new AttributeDefinition(node, declaringElement);
 
             sut.Name.Should().Be("Simple");
         }
 
         [Fact]
-        [SuppressMessage(
-            "Usage",
-            "CA1806:Do not ignore method results",
-            Justification = "The constructor is the target of the test")]
+        public async Task ThrowsExceptionWhenCreatedWithNullDeclaringElement()
+        {
+            var node = await TestNode
+                .FindNode<AttributeSyntax>(AttributeDefinitionCode.AttributeWithMixedOrdinalAndNamedArguments)
+                .ConfigureAwait(false);
+
+            // ReSharper disable once ObjectCreationAsStatement
+            Action action = () => new AttributeDefinition(node, null!);
+
+            action.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
         public void ThrowsExceptionWhenCreatedWithNullNode()
         {
+            var declaringElement = new TestClassDefinition();
+
             // ReSharper disable once ObjectCreationAsStatement
-            Action action = () => new AttributeDefinition(null!);
+            Action action = () => new AttributeDefinition(null!, declaringElement);
 
             action.Should().Throw<ArgumentNullException>();
         }

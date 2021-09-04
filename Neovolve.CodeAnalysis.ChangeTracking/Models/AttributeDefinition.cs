@@ -14,16 +14,21 @@
         ///     Initializes a new instance of the <see cref="AttributeDefinition" /> class.
         /// </summary>
         /// <param name="node">The node that describes the attribute.</param>
+        /// <param name="declaringElement">The element that declares the attribute.</param>
         /// <exception cref="ArgumentNullException">The <paramref name="node" /> parameter is <c>null</c>.</exception>
-        public AttributeDefinition(AttributeSyntax node) : base(node)
+        /// <exception cref="ArgumentNullException">The <paramref name="declaringElement" /> parameter is <c>null</c>.</exception>
+        public AttributeDefinition(AttributeSyntax node, IElementDefinition declaringElement) : base(node)
         {
             node = node ?? throw new ArgumentNullException(nameof(node));
+            declaringElement = declaringElement ?? throw new ArgumentNullException(nameof(declaringElement));
 
+            DeclaringElement = declaringElement;
             Name = node.GetRawName();
-            Arguments = DetermineParameters(node);
+            Arguments = DetermineParameters(node, this);
         }
 
-        private static IReadOnlyCollection<IArgumentDefinition> DetermineParameters(AttributeSyntax node)
+        private static IReadOnlyCollection<IArgumentDefinition> DetermineParameters(AttributeSyntax node,
+            IAttributeDefinition attribute)
         {
             var arguments = node.ArgumentList;
 
@@ -38,7 +43,7 @@
 
             foreach (var argument in arguments.Arguments)
             {
-                var definition = new ArgumentDefinition(argument, index);
+                var definition = new ArgumentDefinition(argument, index, attribute);
 
                 definitions.Add(definition);
                 index++;
@@ -49,6 +54,9 @@
 
         /// <inheritdoc />
         public IReadOnlyCollection<IArgumentDefinition> Arguments { get; }
+
+        /// <inheritdoc />
+        public IElementDefinition DeclaringElement { get; }
 
         /// <inheritdoc />
         public override string Name { get; }

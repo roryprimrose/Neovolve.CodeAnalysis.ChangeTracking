@@ -7,6 +7,7 @@
     {
         public ArgumentType ArgumentType { get; set; } = ArgumentType.Ordinal;
         public string Declaration { get; set; } = Guid.NewGuid().ToString();
+        public IAttributeDefinition DeclaringAttribute { get; set; } = new TestAttributeDefinition();
         public DefinitionLocation Location { get; set; } = new(string.Empty, 0, 0);
         public string Name { get; set; } = Guid.NewGuid().ToString();
         public int? OrdinalIndex { get; set; } = null;

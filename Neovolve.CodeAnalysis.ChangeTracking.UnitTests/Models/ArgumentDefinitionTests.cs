@@ -5,6 +5,7 @@
     using FluentAssertions;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
+    using Neovolve.CodeAnalysis.ChangeTracking.UnitTests.TestModels;
     using Xunit;
 
     public class ArgumentDefinitionTests
@@ -14,8 +15,9 @@
         {
             var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.NamedArgument)
                 .ConfigureAwait(false);
+            var attribute = new TestAttributeDefinition();
 
-            var sut = new ArgumentDefinition(node, null);
+            var sut = new ArgumentDefinition(node, null, attribute);
 
             sut.ArgumentType.Should().Be(ArgumentType.Named);
         }
@@ -25,8 +27,9 @@
         {
             var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.OrdinalArgument)
                 .ConfigureAwait(false);
+            var attribute = new TestAttributeDefinition();
 
-            var sut = new ArgumentDefinition(node, 1);
+            var sut = new ArgumentDefinition(node, 1, attribute);
 
             sut.ArgumentType.Should().Be(ArgumentType.Ordinal);
         }
@@ -36,8 +39,9 @@
         {
             var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.NamedArgument)
                 .ConfigureAwait(false);
+            var attribute = new TestAttributeDefinition();
 
-            var sut = new ArgumentDefinition(node, null);
+            var sut = new ArgumentDefinition(node, 1, attribute);
 
             sut.Declaration.Should().Be("first: 123");
         }
@@ -47,10 +51,23 @@
         {
             var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.OrdinalArgument)
                 .ConfigureAwait(false);
+            var attribute = new TestAttributeDefinition();
 
-            var sut = new ArgumentDefinition(node, 1);
+            var sut = new ArgumentDefinition(node, 1, attribute);
 
             sut.Declaration.Should().Be("123");
+        }
+
+        [Fact]
+        public async Task DeclaringAttributeReturnsConstructorValue()
+        {
+            var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.NamedArgument)
+                .ConfigureAwait(false);
+            var attribute = new TestAttributeDefinition();
+
+            var sut = new ArgumentDefinition(node, null, attribute);
+
+            sut.DeclaringAttribute.Should().Be(attribute);
         }
 
         [Fact]
@@ -58,8 +75,9 @@
         {
             var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.NamedArgument)
                 .ConfigureAwait(false);
+            var attribute = new TestAttributeDefinition();
 
-            var sut = new ArgumentDefinition(node, null);
+            var sut = new ArgumentDefinition(node, 1, attribute);
 
             sut.Name.Should().Be("first");
         }
@@ -69,8 +87,9 @@
         {
             var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.OrdinalArgument)
                 .ConfigureAwait(false);
+            var attribute = new TestAttributeDefinition();
 
-            var sut = new ArgumentDefinition(node, 1);
+            var sut = new ArgumentDefinition(node, 1, attribute);
 
             sut.Name.Should().Be("123");
         }
@@ -80,8 +99,9 @@
         {
             var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.NamedArgument)
                 .ConfigureAwait(false);
+            var attribute = new TestAttributeDefinition();
 
-            var sut = new ArgumentDefinition(node, 1);
+            var sut = new ArgumentDefinition(node, 1, attribute);
 
             sut.OrdinalIndex.Should().NotHaveValue();
         }
@@ -93,8 +113,9 @@
 
             var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.OrdinalArgument)
                 .ConfigureAwait(false);
+            var attribute = new TestAttributeDefinition();
 
-            var sut = new ArgumentDefinition(node, index);
+            var sut = new ArgumentDefinition(node, index, attribute);
 
             sut.OrdinalIndex.Should().Be(index);
         }
@@ -104,8 +125,9 @@
         {
             var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.OrdinalArgument)
                 .ConfigureAwait(false);
+            var attribute = new TestAttributeDefinition();
 
-            var sut = new ArgumentDefinition(node, 1);
+            var sut = new ArgumentDefinition(node, 1, attribute);
 
             sut.ParameterName.Should().BeEmpty();
         }
@@ -115,16 +137,32 @@
         {
             var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.NamedArgument)
                 .ConfigureAwait(false);
+            var attribute = new TestAttributeDefinition();
 
-            var sut = new ArgumentDefinition(node, null);
+            var sut = new ArgumentDefinition(node, 1, attribute);
 
             sut.Name.Should().Be("first");
         }
 
         [Fact]
+        public async Task ThrowsExceptionWhenCreatedWithNullAttribute()
+        {
+            var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.NamedArgument)
+                .ConfigureAwait(false);
+
+            // ReSharper disable once ObjectCreationAsStatement
+            Action action = () => new ArgumentDefinition(node, 1, null!);
+
+            action.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
         public void ThrowsExceptionWhenCreatedWithNullNode()
         {
-            Action action = () => new ArgumentDefinition(null!, 1);
+            var attribute = new TestAttributeDefinition();
+
+            // ReSharper disable once ObjectCreationAsStatement
+            Action action = () => new ArgumentDefinition(null!, 1, attribute);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -134,8 +172,9 @@
         {
             var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.NamedArgument)
                 .ConfigureAwait(false);
+            var attribute = new TestAttributeDefinition();
 
-            var sut = new ArgumentDefinition(node, 1);
+            var sut = new ArgumentDefinition(node, 1, attribute);
 
             sut.Value.Should().Be("123");
         }
@@ -145,8 +184,9 @@
         {
             var node = await TestNode.FindNode<AttributeArgumentSyntax>(ArgumentDefinitionCode.OrdinalArgument)
                 .ConfigureAwait(false);
+            var attribute = new TestAttributeDefinition();
 
-            var sut = new ArgumentDefinition(node, 1);
+            var sut = new ArgumentDefinition(node, 1, attribute);
 
             sut.Value.Should().Be("123");
         }

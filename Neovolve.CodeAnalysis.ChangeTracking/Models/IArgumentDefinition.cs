@@ -17,6 +17,11 @@
         public string Declaration { get; }
 
         /// <summary>
+        ///     Gets the attribute that declares this argument.
+        /// </summary>
+        IAttributeDefinition DeclaringAttribute { get; }
+
+        /// <summary>
         ///     Gets the ordinal index for where the argument exists in the list of arguments.
         /// </summary>
         public int? OrdinalIndex { get; }

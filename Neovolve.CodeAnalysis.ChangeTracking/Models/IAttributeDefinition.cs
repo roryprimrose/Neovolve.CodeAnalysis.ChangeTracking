@@ -12,5 +12,10 @@
         ///     Gets the arguments supplied to the attribute.
         /// </summary>
         IReadOnlyCollection<IArgumentDefinition> Arguments { get; }
+
+        /// <summary>
+        ///     Gets the element that declares this attribute.
+        /// </summary>
+        IElementDefinition DeclaringElement { get; }
     }
 }
