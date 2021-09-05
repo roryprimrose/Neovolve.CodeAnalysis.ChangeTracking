@@ -106,7 +106,7 @@
                         "{DefinitionType} {Identifier} has been removed",
                         oldArgument.ParameterName, null, null);
 
-                    var message = options.MessageFormatter.FormatItemRemovedMessage(oldArgument, args);
+                    var message = options.MessageFormatter.FormatItem(oldArgument, ItemFormatType.ItemRemoved, args);
 
                     var result = new ComparisonResult(SemVerChangeType.Breaking, oldArgument, null, message);
 

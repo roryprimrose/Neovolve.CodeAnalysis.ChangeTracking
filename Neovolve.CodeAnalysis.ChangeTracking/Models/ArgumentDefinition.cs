@@ -36,9 +36,11 @@
             }
             else
             {
+                var argumentName = node.NameColon.Name.ToString();
+
                 OrdinalIndex = null;
-                ParameterName = node.NameColon.Name.ToString();
-                Name = ParameterName;
+                ParameterName = argumentName;
+                Name = argumentName;
                 ArgumentType = ArgumentType.Named;
             }
         }

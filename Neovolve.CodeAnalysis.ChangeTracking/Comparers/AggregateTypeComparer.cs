@@ -36,7 +36,7 @@
                     null,
                     newType);
 
-                var message = options.MessageFormatter.FormatItemChangedMessage(match, args);
+                var message = options.MessageFormatter.FormatMatch(match, ItemFormatType.ItemChanged, args);
 
                 var result = new ComparisonResult(
                     SemVerChangeType.Breaking,

@@ -4,9 +4,10 @@
     using FluentAssertions;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
     using Neovolve.CodeAnalysis.ChangeTracking.UnitTests.TestModels;
+    using NSubstitute;
     using Xunit;
 
-    public class GitHubMarkdownMessageFormatterTests
+    public class GitHubMarkdownMessageFormatterTests : Tests<GitHubMarkdownMessageFormatter>
     {
         [Fact]
         public void FormatItemChangedMessageFormatsMessageWithMarkup()
@@ -18,9 +19,9 @@
             var arguments = new FormatArguments("{DefinitionType} {Identifier} {OldValue} {NewValue}", identifier,
                 oldValue, newValue);
 
-            var sut = new GitHubMarkdownMessageFormatter();
+            Service<IIdentifierFormatter>().FormatIdentifier(match.NewItem, ItemFormatType.ItemChanged).Returns(identifier);
 
-            var actual = sut.FormatItemChangedMessage(match, arguments);
+            var actual = SUT.FormatMatch(match, ItemFormatType.ItemChanged, arguments);
 
             actual.Should().Be($"Property `{identifier}` `{oldValue}` `{newValue}`");
         }

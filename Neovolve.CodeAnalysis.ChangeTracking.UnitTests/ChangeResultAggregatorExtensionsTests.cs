@@ -24,7 +24,7 @@
             var aggregator = Substitute.For<IChangeResultAggregator>();
             var formatter = Substitute.For<IMessageFormatter>();
 
-            formatter.FormatItemChangedMessage(match, arguments).Returns(message);
+            formatter.FormatMatch(match, ItemFormatType.ItemChanged, arguments).Returns(message);
 
             aggregator.AddElementChangedResult(changeType, match, formatter, arguments);
 

@@ -17,7 +17,7 @@
             messageFormatter = messageFormatter ?? throw new ArgumentNullException(nameof(messageFormatter));
             arguments = arguments ?? throw new ArgumentNullException(nameof(arguments));
 
-            var message = messageFormatter.FormatItemChangedMessage(match, arguments);
+            var message = messageFormatter.FormatMatch(match, ItemFormatType.ItemChanged, arguments);
 
             var result = new ComparisonResult(
                 changeType,

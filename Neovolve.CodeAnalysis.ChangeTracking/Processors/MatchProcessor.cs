@@ -47,7 +47,7 @@
                 {
                     var args = new FormatArguments("{DefinitionType} {Identifier} has been added", name, null, null);
 
-                    var message = options.MessageFormatter.FormatItemAddedMessage(memberAdded, args);
+                    var message = options.MessageFormatter.FormatItem(memberAdded, ItemFormatType.ItemAdded, args);
 
                     var changeType = GetItemAddedChangeType(memberAdded);
 
@@ -61,7 +61,7 @@
                     var args = new FormatArguments("{DefinitionType} {Identifier} has been added but is not visible",
                         name, null, null);
 
-                    var message = options.MessageFormatter.FormatItemAddedMessage(memberAdded, args);
+                    var message = options.MessageFormatter.FormatItem(memberAdded, ItemFormatType.ItemAdded, args);
 
                     _logger.LogDebug(message);
                 }
@@ -83,7 +83,7 @@
                 {
                     var args = new FormatArguments("{DefinitionType} {Identifier} has been removed", name, null, null);
 
-                    var message = options.MessageFormatter.FormatItemRemovedMessage(memberRemoved, args);
+                    var message = options.MessageFormatter.FormatItem(memberRemoved, ItemFormatType.ItemRemoved, args);
 
                     var result = new ComparisonResult(SemVerChangeType.Breaking, memberRemoved, null, message);
 
@@ -95,7 +95,7 @@
                     var args = new FormatArguments("{DefinitionType} {Identifier} has been removed but is not visible",
                         name, null, null);
 
-                    var message = options.MessageFormatter.FormatItemAddedMessage(memberRemoved, args);
+                    var message = options.MessageFormatter.FormatItem(memberRemoved, ItemFormatType.ItemRemoved, args);
 
                     _logger.LogDebug(message);
                 }
