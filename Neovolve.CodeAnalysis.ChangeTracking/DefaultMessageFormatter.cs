@@ -14,7 +14,7 @@
         }
 
         public virtual string FormatItem(IItemDefinition definition, ItemFormatType formatType,
-            FormatArguments arguments)
+            IFormatArguments arguments)
         {
             definition = definition ?? throw new ArgumentNullException(nameof(definition));
             arguments = arguments ?? throw new ArgumentNullException(nameof(arguments));
@@ -43,7 +43,7 @@
             return message;
         }
 
-        public virtual string FormatMatch<T>(ItemMatch<T> match, ItemFormatType formatType, FormatArguments arguments)
+        public virtual string FormatMatch<T>(ItemMatch<T> match, ItemFormatType formatType, IFormatArguments arguments)
             where T : IItemDefinition
         {
             return FormatItem(match.NewItem, formatType, arguments);
@@ -147,7 +147,7 @@
         }
 
         [Conditional("DEBUG")]
-        private static void ValidateMessageMarkers(FormatArguments arguments)
+        private static void ValidateMessageMarkers(IFormatArguments arguments)
         {
             if (arguments.MessageFormat.Contains(MessagePart.DefinitionType) == false)
             {
