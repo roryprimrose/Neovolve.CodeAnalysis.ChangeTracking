@@ -33,7 +33,7 @@
                 // One or more generic type parameters have been removed
                 var suffix = shiftAmount == 1 ? "" : "s";
                 var args = new FormatArguments(
-                    $"{{DefinitionType}} {{Identifier}} has {changeLabel} {shiftAmount} generic type parameter{suffix}",
+                    $"has {changeLabel} {shiftAmount} generic type parameter{suffix}",
                     match.NewItem.FullName,
                     null,
                     null);
@@ -87,7 +87,7 @@
                 }
 
                 var args = new FormatArguments(
-                    $"{{DefinitionType}} {{Identifier}} has added {newConstraintCount} generic type constraint{suffix}",
+                    $"has added {newConstraintCount} generic type constraint{suffix}",
                     match.NewItem.FullName,
                     null,
                     null);
@@ -109,7 +109,7 @@
                 }
 
                 var args = new FormatArguments(
-                    $"{{DefinitionType}} {{Identifier}} has removed {oldConstraintCount} generic type constraint{suffix}",
+                    $"has removed {oldConstraintCount} generic type constraint{suffix}",
                     match.NewItem.FullName,
                     null,
                     null);
@@ -126,7 +126,7 @@
             foreach (var constraint in removedConstraints)
             {
                 var args = new FormatArguments(
-                    "{DefinitionType} {Identifier} has removed the {OldValue} generic type constraint",
+                    "has removed the {OldValue} generic type constraint",
                     match.NewItem.FullName,
                     constraint,
                     null);
@@ -140,7 +140,7 @@
             foreach (var constraint in addedConstraints)
             {
                 var args = new FormatArguments(
-                    "{DefinitionType} {Identifier} has added the {NewValue} generic type constraint",
+                    "has added the {NewValue} generic type constraint",
                     match.NewItem.FullName,
                     null,
                     constraint);

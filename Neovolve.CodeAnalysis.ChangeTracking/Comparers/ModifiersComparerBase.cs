@@ -44,7 +44,7 @@
                 }
 
                 var args = new FormatArguments(
-                    $"{{DefinitionType}} {{Identifier}} has added the {{NewValue}} {ModifierLabel}{suffix}",
+                    $"has added the {{NewValue}} {ModifierLabel}{suffix}",
                     match.NewItem.FullName,
                     null,
                     newModifiers);
@@ -70,7 +70,7 @@
                 }
 
                 var args = new FormatArguments(
-                    $"{{DefinitionType}} {{Identifier}} has removed the {{OldValue}} {ModifierLabel}{suffix}",
+                    $"has removed the {{OldValue}} {ModifierLabel}{suffix}",
                     match.NewItem.FullName,
                     oldModifiers,
                     null);
@@ -97,7 +97,7 @@
                 }
 
                 var args = new FormatArguments(
-                    $"{{DefinitionType}} {{Identifier}} has changed the {ModifierLabel}{suffix} from {{OldValue}} to {{NewValue}}",
+                    $"has changed the {ModifierLabel}{suffix} from {{OldValue}} to {{NewValue}}",
                     match.NewItem.FullName,
                     oldModifiers,
                     newModifiers);

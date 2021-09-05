@@ -81,7 +81,7 @@
             if (match.OldItem.Namespace != match.NewItem.Namespace)
             {
                 var args = new FormatArguments(
-                    "{DefinitionType} {Identifier} has changed namespace from {OldValue} to {NewValue}",
+                    "has changed namespace from {OldValue} to {NewValue}",
                     match.OldItem.FullName, match.OldItem.Namespace, match.NewItem.Namespace);
 
                 aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
@@ -99,7 +99,7 @@
             foreach (var removedType in removedTypes)
             {
                 var args = new FormatArguments(
-                    "{DefinitionType} {Identifier} has removed the implemented type {OldValue}",
+                    "has removed the implemented type {OldValue}",
                     match.NewItem.FullName, removedType, null);
 
                 aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
@@ -111,7 +111,7 @@
             foreach (var addedType in addedTypes)
             {
                 var args = new FormatArguments(
-                    "{DefinitionType} {Identifier} has added the implemented type {NewValue}",
+                    "has added the implemented type {NewValue}",
                     match.NewItem.FullName, null, addedType);
 
                 aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);

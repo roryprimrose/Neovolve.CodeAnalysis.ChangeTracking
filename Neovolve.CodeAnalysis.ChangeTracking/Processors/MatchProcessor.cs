@@ -45,7 +45,7 @@
 
                 if (isVisible)
                 {
-                    var args = new FormatArguments("{DefinitionType} {Identifier} has been added", name, null, null);
+                    var args = new FormatArguments("has been added", name, null, null);
 
                     var message = options.MessageFormatter.FormatItem(memberAdded, ItemFormatType.ItemAdded, args);
 
@@ -58,7 +58,7 @@
                 else if (_logger != null
                          && _logger.IsEnabled(LogLevel.Debug))
                 {
-                    var args = new FormatArguments("{DefinitionType} {Identifier} has been added but is not visible",
+                    var args = new FormatArguments("has been added but is not visible",
                         name, null, null);
 
                     var message = options.MessageFormatter.FormatItem(memberAdded, ItemFormatType.ItemAdded, args);
@@ -81,7 +81,7 @@
 
                 if (isVisible)
                 {
-                    var args = new FormatArguments("{DefinitionType} {Identifier} has been removed", name, null, null);
+                    var args = new FormatArguments("has been removed", name, null, null);
 
                     var message = options.MessageFormatter.FormatItem(memberRemoved, ItemFormatType.ItemRemoved, args);
 
@@ -92,7 +92,7 @@
                 else if (_logger != null
                          && _logger.IsEnabled(LogLevel.Debug))
                 {
-                    var args = new FormatArguments("{DefinitionType} {Identifier} has been removed but is not visible",
+                    var args = new FormatArguments("has been removed but is not visible",
                         name, null, null);
 
                     var message = options.MessageFormatter.FormatItem(memberRemoved, ItemFormatType.ItemRemoved, args);

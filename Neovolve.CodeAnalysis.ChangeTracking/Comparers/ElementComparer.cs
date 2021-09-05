@@ -43,7 +43,7 @@
                 var newAccessModifiers = match.NewItem.GetDeclaredAccessModifiers();
 
                 var formatArguments = new FormatArguments(
-                    "{DefinitionType} {Identifier} access modifiers have changed from {OldValue} to {NewValue}",
+                    "access modifiers have changed from {OldValue} to {NewValue}",
                     match.NewItem.FullName,
                     oldAccessModifiers,
                     newAccessModifiers);

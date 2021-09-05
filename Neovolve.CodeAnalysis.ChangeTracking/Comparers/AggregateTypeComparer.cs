@@ -31,7 +31,7 @@
                 var newType = DetermineTypeChangeDescription(match.NewItem);
 
                 var args = new FormatArguments(
-                    "{DefinitionType} {Identifier} has changed to {NewValue}",
+                    "has changed to {NewValue}",
                     match.OldItem.FullName,
                     null,
                     newType);
