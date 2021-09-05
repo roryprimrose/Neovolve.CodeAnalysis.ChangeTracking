@@ -52,7 +52,6 @@
                 // A default value has been added, this is technically a feature because the consuming assembly can treat it like an overload
                 var args = new FormatArguments(
                     "has added the default value {NewValue}",
-                    match.NewItem.FullName,
                     null,
                     newItem.DefaultValue);
 
@@ -66,7 +65,6 @@
                 // however it does cause a breaking change for compiling existing applications against this API
                 var args = new FormatArguments(
                     "has removed the default value {OldValue}",
-                    match.NewItem.FullName,
                     oldItem.DefaultValue,
                     null);
 
@@ -94,7 +92,6 @@
             {
                 var args = new FormatArguments(
                     "has change type from {OldValue} to {NewValue}",
-                    match.NewItem.FullName,
                     oldType,
                     newType);
 

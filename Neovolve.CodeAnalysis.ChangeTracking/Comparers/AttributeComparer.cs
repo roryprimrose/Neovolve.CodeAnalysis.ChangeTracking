@@ -44,8 +44,7 @@
 
                 var suffix = shiftAmount == 1 ? "" : "s";
                 var args = new FormatArguments(
-                    $"has {changeLabel} {shiftAmount} argument{suffix}",
-                    match.NewItem.Name, null, null);
+                    $"has {changeLabel} {shiftAmount} argument{suffix}", null, null);
 
                 aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
 
@@ -103,8 +102,7 @@
                 {
                     // This argument has been removed
                     var args = new FormatArguments(
-                        "has been removed",
-                        oldArgument.ParameterName, null, null);
+                        "has been removed", null, null);
 
                     var message = options.MessageFormatter.FormatItem(oldArgument, ItemFormatType.ItemRemoved, args);
 
@@ -119,8 +117,7 @@
                 {
                     // There is a match on the parameter names but the value has changed
                     var args = new FormatArguments(
-                        "has changed value from {OldValue} to {NewValue}",
-                        oldArgument.ParameterName, oldArgument.Value, newArgument.Value);
+                        "has changed value from {OldValue} to {NewValue}", oldArgument.Value, newArgument.Value);
 
                     // Create a match for the arguments
                     var argumentMatch = new ItemMatch<IArgumentDefinition>(oldArgument, newArgument);
@@ -148,8 +145,7 @@
                 if (oldArgument.Value != newArgument.Value)
                 {
                     var args = new FormatArguments(
-                        "has changed value from {OldValue} to {NewValue}",
-                        (index + 1).ToString(), oldArgument.Value, newArgument.Value);
+                        "has changed value from {OldValue} to {NewValue}", oldArgument.Value, newArgument.Value);
 
                     // Create a match for the arguments
                     var argumentMatch = new ItemMatch<IArgumentDefinition>(oldArgument, newArgument);
@@ -181,8 +177,7 @@
                 // One or more arguments have been added or removed
                 var suffix = shiftAmount == 1 ? "" : "s";
                 var args = new FormatArguments(
-                    $"has {changeLabel} {shiftAmount} ordinal argument{suffix}",
-                    match.NewItem.Name, null, null);
+                    $"has {changeLabel} {shiftAmount} ordinal argument{suffix}", null, null);
 
                 aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
 

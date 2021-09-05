@@ -16,7 +16,7 @@
             var oldValue = Guid.NewGuid().ToString();
             var newValue = Guid.NewGuid().ToString();
             var match = new ItemMatch<IPropertyDefinition>(new TestPropertyDefinition(), new TestPropertyDefinition());
-            var arguments = new FormatArguments("{DefinitionType} {Identifier} {OldValue} {NewValue}", identifier,
+            var arguments = new FormatArguments("{DefinitionType} {Identifier} {OldValue} {NewValue}",
                 oldValue, newValue);
 
             Service<IIdentifierFormatter>().FormatIdentifier(match.NewItem, ItemFormatType.ItemChanged).Returns(identifier);

@@ -39,7 +39,7 @@
             var identifier = Guid.NewGuid().ToString();
             var oldValue = Guid.NewGuid().ToString();
             var newValue = Guid.NewGuid().ToString();
-            var arguments = new FormatArguments(messageFormat, identifier, oldValue, newValue);
+            var arguments = new FormatArguments(messageFormat, oldValue, newValue);
 
             var firstDefinition = Substitute.For<IClassDefinition>();
             var secondDefinition = Substitute.For<IClassDefinition>();
@@ -61,7 +61,7 @@
         {
             const string? messageFormat = "{DefinitionType} {Identifier}";
             var identifier = Guid.NewGuid().ToString();
-            var arguments = new FormatArguments(messageFormat, identifier, null, null);
+            var arguments = new FormatArguments(messageFormat, null, null);
 
             var definition = Substitute.For<IArgumentDefinition>();
 
@@ -93,7 +93,7 @@
         {
             const string? messageFormat = "{DefinitionType} {Identifier}";
             var identifier = Guid.NewGuid().ToString();
-            var arguments = new FormatArguments(messageFormat, identifier, null, null);
+            var arguments = new FormatArguments(messageFormat, null, null);
 
             var definition = (IItemDefinition) Substitute.For(new[] {definitionType}, Array.Empty<object>());
 
@@ -111,7 +111,7 @@
             var identifier = Guid.NewGuid().ToString();
             var oldValue = Guid.NewGuid().ToString();
             var newValue = Guid.NewGuid().ToString();
-            var arguments = new FormatArguments(messageFormat, identifier, oldValue, newValue);
+            var arguments = new FormatArguments(messageFormat, oldValue, newValue);
 
             var definition = Substitute.For<IClassDefinition>();
 
@@ -128,7 +128,7 @@
         {
             const string? messageFormat = "{DefinitionType} {Identifier}";
             var identifier = Guid.NewGuid().ToString();
-            var arguments = new FormatArguments(messageFormat, identifier, null, null);
+            var arguments = new FormatArguments(messageFormat, null, null);
 
             var definition = (IItemDefinition) Substitute.For(new[] {definitionType}, Array.Empty<object>());
 

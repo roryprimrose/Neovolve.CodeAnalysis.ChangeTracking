@@ -6,34 +6,33 @@
     {
         public const string DefaultPrefix = MessagePart.DefinitionType + " " + MessagePart.Identifier + " ";
 
-        public FormatArguments(string messageFormat, string identifier, string? oldValue, string? newValue)
+        public FormatArguments(string messageFormat, string? oldValue, string? newValue)
         {
-            messageFormat = messageFormat ?? throw new ArgumentNullException(nameof(messageFormat));
-            Identifier = identifier ?? throw new ArgumentNullException(nameof(identifier));
             MessageFormat = ApplyMessageFormatPrefix(messageFormat);
             OldValue = oldValue;
             NewValue = newValue;
         }
 
-        private static string ApplyMessageFormatPrefix(string format)
+        private static string ApplyMessageFormatPrefix(string messageFormat)
         {
-            if (format.Contains(MessagePart.DefinitionType))
+            messageFormat = messageFormat ?? throw new ArgumentNullException(nameof(messageFormat));
+
+            if (messageFormat.Contains(MessagePart.DefinitionType))
             {
-                return format;
+                return messageFormat;
             }
 
-            if (format.Contains(MessagePart.Identifier))
+            if (messageFormat.Contains(MessagePart.Identifier))
             {
-                return format;
+                return messageFormat;
             }
 
             // The message format doesn't contain either the definition type of identifier so we will add it via the default prefix
-            var existingFormat = format.Trim();
+            var existingFormat = messageFormat.Trim();
 
             return DefaultPrefix + existingFormat;
         }
 
-        public string Identifier { get; }
         public string MessageFormat { get; }
         public string? NewValue { get; }
         public string? OldValue { get; }

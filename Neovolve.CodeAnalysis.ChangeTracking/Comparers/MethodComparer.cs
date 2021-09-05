@@ -60,7 +60,6 @@
 
             var args = new FormatArguments(
                 "has been renamed to {NewValue}",
-                match.OldItem.FullName,
                 null,
                 match.NewItem.Name);
 
@@ -116,7 +115,6 @@
                 var suffix = shiftAmount == 1 ? "" : "s";
                 var args = new FormatArguments(
                     $"has {changeLabel} {shiftAmount} parameter{suffix}",
-                    match.NewItem.FullName,
                     null,
                     null);
 

@@ -32,7 +32,6 @@
 
                 var args = new FormatArguments(
                     "has changed to {NewValue}",
-                    match.OldItem.FullName,
                     null,
                     newType);
 

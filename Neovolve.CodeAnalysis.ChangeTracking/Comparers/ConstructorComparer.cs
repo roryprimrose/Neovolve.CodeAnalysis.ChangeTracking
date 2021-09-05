@@ -44,7 +44,6 @@
                 // The constructor was an instance constructor but is now a static
                 var args = new FormatArguments(
                     $"has added the {{NewValue}} modifier",
-                    match.NewItem.FullName,
                     null,
                     "static");
 
@@ -55,7 +54,6 @@
                 // The constructor was a static constructor but is now an instance
                 var args = new FormatArguments(
                     $"has removed the {{OldValue}} modifier",
-                    match.NewItem.FullName,
                     "static",
                     null);
 
@@ -99,7 +97,6 @@
                 var suffix = shiftAmount == 1 ? "" : "s";
                 var args = new FormatArguments(
                     $"has {changeLabel} {shiftAmount} parameter{suffix}",
-                    match.NewItem.FullName,
                     null,
                     null);
 

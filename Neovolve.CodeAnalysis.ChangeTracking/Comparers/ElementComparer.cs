@@ -44,7 +44,6 @@
 
                 var formatArguments = new FormatArguments(
                     "access modifiers have changed from {OldValue} to {NewValue}",
-                    match.NewItem.FullName,
                     oldAccessModifiers,
                     newAccessModifiers);
 

@@ -26,7 +26,6 @@
                 // The underlying value of this member will most likely have changed
                 var args = new FormatArguments(
                     "has been renamed to {NewValue}",
-                    match.NewItem.FullName,
                     null,
                     match.NewItem.Name);
 
@@ -40,7 +39,6 @@
                 // The underlying value of this member will most likely have changed
                 var args = new FormatArguments(
                     "has an implicit value and has changed index position from {OldValue} to {NewValue}",
-                    match.NewItem.FullName,
                     match.OldItem.Index.ToString(),
                     match.NewItem.Index.ToString());
 
@@ -67,7 +65,6 @@
                 // We need to assume that this is a breaking change
                 var args = new FormatArguments(
                     "has redefined the underlying value from an implicit value to the explicit value of {NewValue}",
-                    match.NewItem.FullName,
                     null,
                     match.NewItem.Value);
 
@@ -80,7 +77,6 @@
                 // We need to assume that this is a breaking change
                 var args = new FormatArguments(
                     "has redefined the underlying value from the explicit value of {OldValue} to an implicit value",
-                    match.NewItem.FullName,
                     match.OldItem.Value,
                     null);
 
@@ -109,7 +105,6 @@
             // Both members have values so the value of the enum member has changed
             var args = new FormatArguments(
                 "has changed the underlying value from {OldValue} to {NewValue}",
-                match.NewItem.FullName,
                 match.OldItem.Value,
                 match.NewItem.Value);
 

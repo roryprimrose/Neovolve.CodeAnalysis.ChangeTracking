@@ -36,16 +36,10 @@
             foreach (var memberAdded in matchingNodes.ItemsAdded)
             {
                 var isVisible = IsVisible(memberAdded);
-                var name = memberAdded.Name;
-
-                if (memberAdded is IElementDefinition element)
-                {
-                    name = element.FullName;
-                }
 
                 if (isVisible)
                 {
-                    var args = new FormatArguments("has been added", name, null, null);
+                    var args = new FormatArguments("has been added", null, null);
 
                     var message = options.MessageFormatter.FormatItem(memberAdded, ItemFormatType.ItemAdded, args);
 
@@ -58,8 +52,7 @@
                 else if (_logger != null
                          && _logger.IsEnabled(LogLevel.Debug))
                 {
-                    var args = new FormatArguments("has been added but is not visible",
-                        name, null, null);
+                    var args = new FormatArguments("has been added but is not visible", null, null);
 
                     var message = options.MessageFormatter.FormatItem(memberAdded, ItemFormatType.ItemAdded, args);
 
@@ -72,16 +65,10 @@
             foreach (var memberRemoved in matchingNodes.ItemsRemoved)
             {
                 var isVisible = IsVisible(memberRemoved);
-                var name = memberRemoved.Name;
-
-                if (memberRemoved is IElementDefinition element)
-                {
-                    name = element.FullName;
-                }
 
                 if (isVisible)
                 {
-                    var args = new FormatArguments("has been removed", name, null, null);
+                    var args = new FormatArguments("has been removed", null, null);
 
                     var message = options.MessageFormatter.FormatItem(memberRemoved, ItemFormatType.ItemRemoved, args);
 
@@ -92,8 +79,7 @@
                 else if (_logger != null
                          && _logger.IsEnabled(LogLevel.Debug))
                 {
-                    var args = new FormatArguments("has been removed but is not visible",
-                        name, null, null);
+                    var args = new FormatArguments("has been removed but is not visible", null, null);
 
                     var message = options.MessageFormatter.FormatItem(memberRemoved, ItemFormatType.ItemRemoved, args);
 

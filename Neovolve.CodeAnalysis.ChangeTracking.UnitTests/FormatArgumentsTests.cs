@@ -19,7 +19,7 @@
             var oldValue = Guid.NewGuid().ToString();
             var newValue = Guid.NewGuid().ToString();
 
-            var sut = new FormatArguments(format, identifier, oldValue, newValue);
+            var sut = new FormatArguments(format, oldValue, newValue);
 
             sut.MessageFormat.Should().Be(expected);
         }
@@ -33,10 +33,9 @@
             var oldValue = Guid.NewGuid().ToString();
             var newValue = Guid.NewGuid().ToString();
 
-            var sut = new FormatArguments(messageFormat, identifier, oldValue, newValue);
+            var sut = new FormatArguments(messageFormat, oldValue, newValue);
 
             sut.MessageFormat.Should().Be(messageFormat);
-            sut.Identifier.Should().Be(identifier);
             sut.OldValue.Should().Be(oldValue);
             sut.NewValue.Should().Be(newValue);
         }
@@ -49,7 +48,7 @@
             var newValue = Guid.NewGuid().ToString();
 
             // ReSharper disable once ObjectCreationAsStatement
-            Action action = () => new FormatArguments(messageFormat, null!, oldValue, newValue);
+            Action action = () => new FormatArguments(messageFormat, oldValue, newValue);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -62,7 +61,7 @@
             var newValue = Guid.NewGuid().ToString();
 
             // ReSharper disable once ObjectCreationAsStatement
-            Action action = () => new FormatArguments(null!, identifier, oldValue, newValue);
+            Action action = () => new FormatArguments(null!, oldValue, newValue);
 
             action.Should().Throw<ArgumentNullException>();
         }

@@ -34,7 +34,6 @@
                 var suffix = shiftAmount == 1 ? "" : "s";
                 var args = new FormatArguments(
                     $"has {changeLabel} {shiftAmount} generic type parameter{suffix}",
-                    match.NewItem.FullName,
                     null,
                     null);
 
@@ -88,7 +87,6 @@
 
                 var args = new FormatArguments(
                     $"has added {newConstraintCount} generic type constraint{suffix}",
-                    match.NewItem.FullName,
                     null,
                     null);
 
@@ -110,7 +108,6 @@
 
                 var args = new FormatArguments(
                     $"has removed {oldConstraintCount} generic type constraint{suffix}",
-                    match.NewItem.FullName,
                     null,
                     null);
 
@@ -127,7 +124,6 @@
             {
                 var args = new FormatArguments(
                     "has removed the {OldValue} generic type constraint",
-                    match.NewItem.FullName,
                     constraint,
                     null);
 
@@ -141,7 +137,6 @@
             {
                 var args = new FormatArguments(
                     "has added the {NewValue} generic type constraint",
-                    match.NewItem.FullName,
                     null,
                     constraint);
 

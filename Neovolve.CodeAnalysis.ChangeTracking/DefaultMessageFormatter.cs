@@ -155,12 +155,10 @@
                     "The message format arguments does not include " + MessagePart.DefinitionType);
             }
 
-            if (string.IsNullOrWhiteSpace(arguments.Identifier) == false
-                && arguments.MessageFormat.Contains(MessagePart.Identifier) == false)
+            if (arguments.MessageFormat.Contains(MessagePart.Identifier) == false)
             {
                 throw new InvalidOperationException(
-                    "The message format arguments provide an identifier but the message format does not include "
-                    + MessagePart.Identifier);
+                    "The message format arguments does not include " + MessagePart.Identifier);
             }
 
             if (string.IsNullOrWhiteSpace(arguments.OldValue) == false
