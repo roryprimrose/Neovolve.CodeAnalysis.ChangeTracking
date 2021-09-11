@@ -11,31 +11,12 @@
 
     public class DefaultMessageFormatterTests : Tests<DefaultMessageFormatter>
     {
-        public static IEnumerable<object[]> KnownDefinitionTypeDataSet()
+        [Theory]
+        [InlineData("type reference", "Type reference")]
+        [InlineData("Type reference", "Type reference")]
+        public void FormatItemChangedMessageFormatsMessageWithProvidedArguments(string prefix, string expectedPrefix)
         {
-            var baseType = typeof(IItemDefinition);
-            var types = baseType.Assembly.GetTypes();
-            var definitionTypes = types.Where(x => x.IsInterface
-
-                                                   // Ignore interfaces that are implemented by other definition interfaces
-                                                   && x != baseType
-                                                   && x != typeof(IElementDefinition)
-                                                   && x != typeof(IGenericTypeElement)
-                                                   && x != typeof(IMemberDefinition)
-                                                   && x != typeof(IBaseTypeDefinition)
-                                                   && x != typeof(IBaseTypeDefinition<>)
-                                                   && x != typeof(ITypeDefinition)
-                                                   && x != typeof(IModifiersElement<>)
-                                                   && x != typeof(IAccessModifiersElement<>)
-                                                   && baseType.IsAssignableFrom(x));
-
-            return definitionTypes.Select(x => new[] {x});
-        }
-
-        [Fact]
-        public void FormatItemChangedMessageFormatsMessageWithProvidedArguments()
-        {
-            const string? messageFormat = "{DefinitionType} - {Identifier} - {OldValue} - {NewValue}";
+            const string? messageFormat = "{Identifier} - {OldValue} - {NewValue}";
             var identifier = Guid.NewGuid().ToString();
             var oldValue = Guid.NewGuid().ToString();
             var newValue = Guid.NewGuid().ToString();
@@ -46,68 +27,19 @@
             var match = new ItemMatch<IClassDefinition>(firstDefinition, secondDefinition);
 
             Service<IIdentifierFormatter>().FormatIdentifier(match.NewItem, ItemFormatType.ItemChanged)
-                .Returns(identifier);
+                .Returns(prefix + " " + identifier);
 
             var actual = SUT.FormatMatch(match, ItemFormatType.ItemChanged, arguments);
 
-            actual.Should().Be($"Class - {identifier} - {oldValue} - {newValue}");
+            actual.Should().Be($"{expectedPrefix} {identifier} - {oldValue} - {newValue}");
         }
 
         [Theory]
-        [InlineData(ArgumentType.Ordinal, "Ordinal argument")]
-        [InlineData(ArgumentType.Named, "Named argument")]
-        public void FormatItemDeterminesDefinitionTypeBasedOnArgumentType(ArgumentType argumentType,
-            string expected)
+        [InlineData("type reference", "Type reference")]
+        [InlineData("Type reference", "Type reference")]
+        public void FormatItemFormatsMessageWithProvidedArguments(string prefix, string expectedPrefix)
         {
-            const string? messageFormat = "{DefinitionType} {Identifier}";
-            var identifier = Guid.NewGuid().ToString();
-            var arguments = new FormatArguments(messageFormat, null, null);
-
-            var definition = Substitute.For<IArgumentDefinition>();
-
-            definition.ArgumentType.Returns(argumentType);
-            Service<IIdentifierFormatter>().FormatIdentifier(definition, ItemFormatType.ItemAdded).Returns(identifier);
-
-            var actual = SUT.FormatItem(definition, ItemFormatType.ItemAdded, arguments);
-
-            actual.Should().Be($"{expected} {identifier}");
-        }
-
-        [Theory]
-        [InlineData(typeof(IClassDefinition), "Class")]
-        [InlineData(typeof(IInterfaceDefinition), "Interface")]
-        [InlineData(typeof(IEnumDefinition), "Enum")]
-        [InlineData(typeof(IEnumMemberDefinition), "Enum Member")]
-        [InlineData(typeof(IStructDefinition), "Struct")]
-        [InlineData(typeof(IConstraintListDefinition), "Generic constraint")]
-        [InlineData(typeof(IFieldDefinition), "Field")]
-        [InlineData(typeof(IConstructorDefinition), "Constructor")]
-        [InlineData(typeof(IMethodDefinition), "Method")]
-        [InlineData(typeof(IPropertyDefinition), "Property")]
-        [InlineData(typeof(IPropertyAccessorDefinition), "Property accessor")]
-        [InlineData(typeof(IParameterDefinition), "Parameter")]
-        [InlineData(typeof(IAttributeDefinition), "Attribute")]
-        [InlineData(typeof(IItemDefinition), "Element")]
-        public void FormatItemDeterminesDefinitionTypeBasedOnDefinitionType(Type definitionType,
-            string expected)
-        {
-            const string? messageFormat = "{DefinitionType} {Identifier}";
-            var identifier = Guid.NewGuid().ToString();
-            var arguments = new FormatArguments(messageFormat, null, null);
-
-            var definition = (IItemDefinition) Substitute.For(new[] {definitionType}, Array.Empty<object>());
-
-            Service<IIdentifierFormatter>().FormatIdentifier(definition, ItemFormatType.ItemAdded).Returns(identifier);
-
-            var actual = SUT.FormatItem(definition, ItemFormatType.ItemAdded, arguments);
-
-            actual.Should().Be($"{expected} {identifier}");
-        }
-
-        [Fact]
-        public void FormatItemFormatsMessageWithProvidedArguments()
-        {
-            const string? messageFormat = "{DefinitionType} - {Identifier} - {OldValue} - {NewValue}";
+            const string? messageFormat = "{Identifier} - {OldValue} - {NewValue}";
             var identifier = Guid.NewGuid().ToString();
             var oldValue = Guid.NewGuid().ToString();
             var newValue = Guid.NewGuid().ToString();
@@ -115,28 +47,11 @@
 
             var definition = Substitute.For<IClassDefinition>();
 
-            Service<IIdentifierFormatter>().FormatIdentifier(definition, ItemFormatType.ItemAdded).Returns(identifier);
+            Service<IIdentifierFormatter>().FormatIdentifier(definition, ItemFormatType.ItemAdded).Returns(prefix + " " + identifier);
 
             var actual = SUT.FormatItem(definition, ItemFormatType.ItemAdded, arguments);
 
-            actual.Should().Be($"Class - {identifier} - {oldValue} - {newValue}");
-        }
-
-        [Theory]
-        [MemberData(nameof(KnownDefinitionTypeDataSet))]
-        public void FormatItemMapsKnownDefinitionTypes(Type definitionType)
-        {
-            const string? messageFormat = "{DefinitionType} {Identifier}";
-            var identifier = Guid.NewGuid().ToString();
-            var arguments = new FormatArguments(messageFormat, null, null);
-
-            var definition = (IItemDefinition) Substitute.For(new[] {definitionType}, Array.Empty<object>());
-
-            Service<IIdentifierFormatter>().FormatIdentifier(definition, ItemFormatType.ItemAdded).Returns(identifier);
-
-            var actual = SUT.FormatItem(definition, ItemFormatType.ItemAdded, arguments);
-
-            actual.Should().NotStartWith("Element ");
+            actual.Should().Be($"{expectedPrefix} {identifier} - {oldValue} - {newValue}");
         }
 
         [Fact]

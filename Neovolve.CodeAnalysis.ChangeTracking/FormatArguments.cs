@@ -8,12 +8,12 @@
     /// </summary>
     /// <remarks>
     ///     This class will default <see cref="MessageFormat" /> to use <see cref="DefaultPrefix" /> if
-    ///     <see cref="MessagePart.DefinitionType" /> or <see cref="MessagePart.Identifier" /> is not found in the format
+    ///     <see cref="MessagePart.Identifier" /> is not found in the format
     ///     value.
     /// </remarks>
     public class FormatArguments : IFormatArguments
     {
-        public const string DefaultPrefix = MessagePart.DefinitionType + " " + MessagePart.Identifier + " ";
+        public const string DefaultPrefix = MessagePart.Identifier + " ";
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="FormatArguments" /> class.
@@ -31,12 +31,7 @@
         private static string ApplyMessageFormatPrefix(string messageFormat)
         {
             messageFormat = messageFormat ?? throw new ArgumentNullException(nameof(messageFormat));
-
-            if (messageFormat.Contains(MessagePart.DefinitionType))
-            {
-                return messageFormat;
-            }
-
+            
             if (messageFormat.Contains(MessagePart.Identifier))
             {
                 return messageFormat;

@@ -7,15 +7,13 @@
     public class FormatArgumentsTests
     {
         [Theory]
-        [InlineData("this", "{DefinitionType} {Identifier} this")]
-        [InlineData(" this ", "{DefinitionType} {Identifier} this")]
-        [InlineData("{DefinitionType} this", "{DefinitionType} this")]
+        [InlineData("this", "{Identifier} this")]
+        [InlineData(" this ", "{Identifier} this")]
         [InlineData("this {Identifier}", "this {Identifier}")]
-        [InlineData("this {Identifier} and {DefinitionType} that", "this {Identifier} and {DefinitionType} that")]
+        [InlineData("this {Identifier} and that", "this {Identifier} and that")]
         public void MessageFormatIncludesPrefixWhenNeitherDefinitionTypeNorIdentityIncluded(string format,
             string expected)
         {
-            var identifier = Guid.NewGuid().ToString();
             var oldValue = Guid.NewGuid().ToString();
             var newValue = Guid.NewGuid().ToString();
 
@@ -27,9 +25,8 @@
         [Fact]
         public void PropertiesReturnConstructorParameters()
         {
-            const string messageFormat = MessagePart.DefinitionType + " " + MessagePart.Identifier + " from "
+            const string messageFormat = MessagePart.Identifier + " from "
                                          + MessagePart.OldValue + " to " + MessagePart.NewValue;
-            var identifier = Guid.NewGuid().ToString();
             var oldValue = Guid.NewGuid().ToString();
             var newValue = Guid.NewGuid().ToString();
 
@@ -43,7 +40,6 @@
         [Fact]
         public void ThrowsExceptionWithNullMessageFormat()
         {
-            var identifier = Guid.NewGuid().ToString();
             var oldValue = Guid.NewGuid().ToString();
             var newValue = Guid.NewGuid().ToString();
 

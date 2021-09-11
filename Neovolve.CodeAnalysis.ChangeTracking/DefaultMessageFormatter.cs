@@ -19,7 +19,6 @@
             definition = definition ?? throw new ArgumentNullException(nameof(definition));
             arguments = arguments ?? throw new ArgumentNullException(nameof(arguments));
 
-            var definitionType = FormatDefinitionType(definition, formatType);
             var identifier = FormatIdentifier(definition, formatType);
             var oldValue = FormatOldValue(definition, formatType, arguments.OldValue);
             var newValue = FormatNewValue(definition, formatType, arguments.NewValue);
@@ -28,17 +27,19 @@
 
             // The message format is expected to have markers for each of the above values
             var message = arguments.MessageFormat
-#if NETSTANDARD2_1_OR_GREATER
-                .Replace(MessagePart.DefinitionType, definitionType, StringComparison.Ordinal)
                 .Replace(MessagePart.Identifier, identifier, StringComparison.Ordinal)
                 .Replace(MessagePart.OldValue, oldValue, StringComparison.Ordinal)
                 .Replace(MessagePart.NewValue, newValue, StringComparison.Ordinal);
-#else
-                .Replace(MessagePart.DefinitionType, definitionType)
-                .Replace(MessagePart.Identifier, identifier)
-                .Replace(MessagePart.OldValue, oldValue)
-                .Replace(MessagePart.NewValue, newValue);
-#endif
+
+            // If the first character is a-z then make it upper case
+            var firstCharacter = message[0];
+
+            if (firstCharacter is >= 'a' and <= 'z')
+            {
+                var convertedCharacter = char.ToUpper(firstCharacter);
+
+                message = convertedCharacter + message[1..];
+            }
 
             return message;
         }
@@ -47,88 +48,6 @@
             where T : IItemDefinition
         {
             return FormatItem(match.NewItem, formatType, arguments);
-        }
-
-        protected virtual string FormatDefinitionType(IItemDefinition definition, ItemFormatType formatType)
-        {
-            definition = definition ?? throw new ArgumentNullException(nameof(definition));
-
-            if (definition is IClassDefinition)
-            {
-                return "Class";
-            }
-
-            if (definition is IInterfaceDefinition)
-            {
-                return "Interface";
-            }
-
-            if (definition is IEnumDefinition)
-            {
-                return "Enum";
-            }
-
-            if (definition is IEnumMemberDefinition)
-            {
-                return "Enum Member";
-            }
-
-            if (definition is IStructDefinition)
-            {
-                return "Struct";
-            }
-
-            if (definition is IConstraintListDefinition)
-            {
-                return "Generic constraint";
-            }
-
-            if (definition is IFieldDefinition)
-            {
-                return "Field";
-            }
-
-            if (definition is IConstructorDefinition)
-            {
-                return "Constructor";
-            }
-
-            if (definition is IMethodDefinition)
-            {
-                return "Method";
-            }
-
-            if (definition is IPropertyDefinition)
-            {
-                return "Property";
-            }
-
-            if (definition is IPropertyAccessorDefinition)
-            {
-                return "Property accessor";
-            }
-
-            if (definition is IParameterDefinition)
-            {
-                return "Parameter";
-            }
-
-            if (definition is IAttributeDefinition)
-            {
-                return "Attribute";
-            }
-
-            if (definition is IArgumentDefinition argument)
-            {
-                if (argument.ArgumentType == ArgumentType.Named)
-                {
-                    return "Named argument";
-                }
-
-                return "Ordinal argument";
-            }
-
-            return "Element";
         }
 
         protected virtual string FormatIdentifier(IItemDefinition definition, ItemFormatType formatType)
@@ -149,12 +68,6 @@
         [Conditional("DEBUG")]
         private static void ValidateMessageMarkers(IFormatArguments arguments)
         {
-            if (arguments.MessageFormat.Contains(MessagePart.DefinitionType) == false)
-            {
-                throw new InvalidOperationException(
-                    "The message format arguments does not include " + MessagePart.DefinitionType);
-            }
-
             if (arguments.MessageFormat.Contains(MessagePart.Identifier) == false)
             {
                 throw new InvalidOperationException(

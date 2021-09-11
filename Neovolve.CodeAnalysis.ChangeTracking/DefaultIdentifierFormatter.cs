@@ -9,7 +9,101 @@
         {
             definition = definition ?? throw new ArgumentNullException(nameof(definition));
 
-            return FormatItemByType(definition, formatType);
+            var message =  FormatItemByType(definition, formatType);
+
+            // If the first character is a-z then make it upper case
+            var firstCharacter = message[0];
+
+            if (firstCharacter is >= 'a' and <= 'z')
+            {
+                var convertedCharacter = char.ToUpper(firstCharacter);
+
+                message = convertedCharacter + message[1..];
+            }
+
+            return message;
+        }
+
+        protected virtual string FormatDefinitionType(IItemDefinition definition, ItemFormatType formatType)
+        {
+            definition = definition ?? throw new ArgumentNullException(nameof(definition));
+
+            if (definition is IClassDefinition)
+            {
+                return "class";
+            }
+
+            if (definition is IInterfaceDefinition)
+            {
+                return "interface";
+            }
+
+            if (definition is IEnumDefinition)
+            {
+                return "enum";
+            }
+
+            if (definition is IEnumMemberDefinition)
+            {
+                return "enum member";
+            }
+
+            if (definition is IStructDefinition)
+            {
+                return "struct";
+            }
+
+            if (definition is IConstraintListDefinition)
+            {
+                return "generic constraint";
+            }
+
+            if (definition is IFieldDefinition)
+            {
+                return "field";
+            }
+
+            if (definition is IConstructorDefinition)
+            {
+                return "constructor";
+            }
+
+            if (definition is IMethodDefinition)
+            {
+                return "method";
+            }
+
+            if (definition is IPropertyDefinition)
+            {
+                return "property";
+            }
+
+            if (definition is IPropertyAccessorDefinition)
+            {
+                return "property accessor";
+            }
+
+            if (definition is IParameterDefinition)
+            {
+                return "parameter";
+            }
+
+            if (definition is IAttributeDefinition)
+            {
+                return "attribute";
+            }
+
+            if (definition is IArgumentDefinition argument)
+            {
+                if (argument.ArgumentType == ArgumentType.Named)
+                {
+                    return "named argument";
+                }
+
+                return "ordinal argument";
+            }
+
+            return "element";
         }
 
         protected virtual string FormatItem(IItemDefinition definition, ItemFormatType formatType)
@@ -46,13 +140,15 @@
         {
             definition = definition ?? throw new ArgumentNullException(nameof(definition));
 
+            var definitionType = FormatDefinitionType(definition, formatType);
+
             if (definition is IAttributeDefinition attribute)
             {
                 // Format this as {attribute.Name} on {declaringElement}
                 var attributeName = FormatItem(attribute, formatType);
                 var declaringElement = FormatItemByType(attribute.DeclaringElement, ItemFormatType.None);
 
-                return attributeName + " on " + declaringElement;
+                return definitionType + " " + attributeName + " on " + declaringElement;
             }
 
             if (definition is IArgumentDefinition argument)
@@ -61,7 +157,7 @@
                 var argumentIdentifier = FormatItem(argument, formatType);
                 var declaringElement = FormatItemByType(argument.DeclaringAttribute, ItemFormatType.None);
 
-                return argumentIdentifier + " in " + declaringElement;
+                return definitionType + " " + argumentIdentifier + " in " + declaringElement;
             }
 
             if (definition is IParameterDefinition parameter)
@@ -70,11 +166,11 @@
                 var parameterName = FormatItem(parameter, formatType);
                 var declaringMember = FormatItemByType(parameter.DeclaringMember, ItemFormatType.None);
 
-                return parameterName + " in " + declaringMember;
+                return definitionType + " " + parameterName + " in " + declaringMember;
             }
 
             // Format the item using the default logic
-            return FormatItem(definition, formatType);
+            return definitionType + " " + FormatItem(definition, formatType);
         }
     }
 }

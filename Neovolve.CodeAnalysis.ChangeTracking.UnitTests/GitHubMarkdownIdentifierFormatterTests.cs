@@ -17,7 +17,7 @@
 
             var argument = Substitute.For<IArgumentDefinition>();
             var attribute = Substitute.For<IAttributeDefinition>();
-            var element = Substitute.For<IElementDefinition>();
+            var element = Substitute.For<IInterfaceDefinition>();
 
             argument.ArgumentType.Returns(ArgumentType.Named);
             argument.ParameterName.Returns(argumentName);
@@ -30,7 +30,7 @@
 
             var actual = sut.FormatIdentifier(argument, ItemFormatType.None);
 
-            actual.Should().Be($"`{argumentName}` in `{attributeName}` on `{elementFullName}`");
+            actual.Should().Be($"Named argument `{argumentName}` in attribute `{attributeName}` on interface `{elementFullName}`");
         }
     }
 }

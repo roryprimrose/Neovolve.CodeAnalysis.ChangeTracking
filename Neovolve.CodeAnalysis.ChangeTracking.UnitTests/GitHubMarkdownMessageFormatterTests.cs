@@ -9,21 +9,23 @@
 
     public class GitHubMarkdownMessageFormatterTests : Tests<GitHubMarkdownMessageFormatter>
     {
-        [Fact]
-        public void FormatItemChangedMessageFormatsMessageWithMarkup()
+        [Theory]
+        [InlineData("Identifier", "Identifier")]
+        [InlineData("identifier", "Identifier")]
+        public void FormatItemChangedMessageFormatsMessageWithMarkup(string prefix, string expectedPrefix)
         {
             var identifier = Guid.NewGuid().ToString();
             var oldValue = Guid.NewGuid().ToString();
             var newValue = Guid.NewGuid().ToString();
             var match = new ItemMatch<IPropertyDefinition>(new TestPropertyDefinition(), new TestPropertyDefinition());
-            var arguments = new FormatArguments("{DefinitionType} {Identifier} {OldValue} {NewValue}",
+            var arguments = new FormatArguments("{Identifier} {OldValue} {NewValue}",
                 oldValue, newValue);
 
-            Service<IIdentifierFormatter>().FormatIdentifier(match.NewItem, ItemFormatType.ItemChanged).Returns(identifier);
+            Service<IIdentifierFormatter>().FormatIdentifier(match.NewItem, ItemFormatType.ItemChanged).Returns(prefix + " " + identifier);
 
             var actual = SUT.FormatMatch(match, ItemFormatType.ItemChanged, arguments);
 
-            actual.Should().Be($"Property {identifier} `{oldValue}` `{newValue}`");
+            actual.Should().Be($"{expectedPrefix} {identifier} `{oldValue}` `{newValue}`");
         }
     }
 }
