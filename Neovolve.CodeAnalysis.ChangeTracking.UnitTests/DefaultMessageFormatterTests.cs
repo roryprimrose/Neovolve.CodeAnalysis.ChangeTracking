@@ -152,7 +152,7 @@
         [Fact]
         public void FormatItemThrowsExceptionWithNullDefinition()
         {
-            var arguments = Model.UsingModule<ConfigurationModule>().Create<FormatArguments>();
+            var arguments = Model.Create<FormatArguments>();
 
             Action action = () => SUT.FormatItem(null!, ItemFormatType.ItemChanged, arguments);
 

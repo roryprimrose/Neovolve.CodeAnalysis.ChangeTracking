@@ -2,7 +2,6 @@
 {
     using System;
     using FluentAssertions;
-    using ModelBuilder;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
     using Xunit;
 
@@ -11,8 +10,8 @@
         [Fact]
         public void CanCreateWithEmptyFilePath()
         {
-            var lineIndex = Math.Abs(Model.UsingModule<ConfigurationModule>().Create<int>());
-            var characterIndex = Math.Abs(Model.UsingModule<ConfigurationModule>().Create<int>());
+            var lineIndex = Math.Abs(Environment.TickCount);
+            var characterIndex = Math.Abs(Environment.TickCount);
 
             var sut = new DefinitionLocation(string.Empty, lineIndex, characterIndex);
 
@@ -22,8 +21,8 @@
         [Fact]
         public void FilePathTrimsProvidedValue()
         {
-            var lineIndex = Math.Abs(Model.UsingModule<ConfigurationModule>().Create<int>());
-            var characterIndex = Math.Abs(Model.UsingModule<ConfigurationModule>().Create<int>());
+            var lineIndex = Math.Abs(Environment.TickCount);
+            var characterIndex = Math.Abs(Environment.TickCount);
             var expected = Guid.NewGuid().ToString();
             var filePath = "  " + expected + "  ";
 
@@ -35,8 +34,8 @@
         [Fact]
         public void PropertiesReturnProvidedParameters()
         {
-            var lineIndex = Math.Abs(Model.UsingModule<ConfigurationModule>().Create<int>());
-            var characterIndex = Math.Abs(Model.UsingModule<ConfigurationModule>().Create<int>());
+            var lineIndex = Math.Abs(Environment.TickCount);
+            var characterIndex = Math.Abs(Environment.TickCount);
             var filePath = Guid.NewGuid().ToString();
 
             var sut = new DefinitionLocation(filePath, lineIndex, characterIndex);
@@ -49,9 +48,10 @@
         [Fact]
         public void ThrowsExceptionWithNullFilePath()
         {
-            var lineIndex = Math.Abs(Model.UsingModule<ConfigurationModule>().Create<int>());
-            var characterIndex = Math.Abs(Model.UsingModule<ConfigurationModule>().Create<int>());
+            var lineIndex = Math.Abs(Environment.TickCount);
+            var characterIndex = Math.Abs(Environment.TickCount);
 
+            // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new DefinitionLocation(null!, lineIndex, characterIndex);
 
             action.Should().Throw<ArgumentNullException>();

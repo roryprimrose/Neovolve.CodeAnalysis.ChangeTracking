@@ -2,7 +2,6 @@
 {
     using System.Linq;
     using FluentAssertions;
-    using ModelBuilder;
     using Neovolve.CodeAnalysis.ChangeTracking.Evaluators;
     using Neovolve.CodeAnalysis.ChangeTracking.UnitTests.TestModels;
     using NSubstitute;
@@ -13,14 +12,8 @@
         [Fact]
         public void FindMatchesIdentifiesEnumMembersMatchingOnIndex()
         {
-            var executeStrategy = Model.UsingModule<ConfigurationModule>()
-                .Ignoring<TestEnumMemberDefinition>(x => x.DeclaringType)
-                .Ignoring<TestEnumMemberDefinition>(x => x.Attributes);
-            var oldEnumMember = executeStrategy.Create<TestEnumMemberDefinition>();
-            var newEnumMember = executeStrategy.Create<TestEnumMemberDefinition>().Set(x =>
-            {
-                x.Index = oldEnumMember.Index;
-            });
+            var oldEnumMember = new TestEnumMemberDefinition();
+            var newEnumMember = new TestEnumMemberDefinition {Index = oldEnumMember.Index};
             var oldEnumMembers = new[]
             {
                 oldEnumMember
@@ -44,14 +37,8 @@
         [Fact]
         public void FindMatchesIdentifiesEnumMembersMatchingOnName()
         {
-            var executeStrategy = Model.UsingModule<ConfigurationModule>()
-                .Ignoring<TestEnumMemberDefinition>(x => x.DeclaringType)
-                .Ignoring<TestEnumMemberDefinition>(x => x.Attributes);
-            var oldEnumMember = executeStrategy.Create<TestEnumMemberDefinition>();
-            var newEnumMember = executeStrategy.Create<TestEnumMemberDefinition>().Set(x =>
-            {
-                x.Name = oldEnumMember.Name;
-            });
+            var oldEnumMember = new TestEnumMemberDefinition();
+            var newEnumMember = new TestEnumMemberDefinition {Name = oldEnumMember.Name};
             var oldEnumMembers = new[]
             {
                 oldEnumMember
@@ -75,14 +62,8 @@
         [Fact]
         public void FindMatchesIdentifiesEnumMembersMatchingOnValue()
         {
-            var executeStrategy = Model.UsingModule<ConfigurationModule>()
-                .Ignoring<TestEnumMemberDefinition>(x => x.DeclaringType)
-                .Ignoring<TestEnumMemberDefinition>(x => x.Attributes);
-            var oldEnumMember = executeStrategy.Create<TestEnumMemberDefinition>();
-            var newEnumMember = executeStrategy.Create<TestEnumMemberDefinition>().Set(x =>
-            {
-                x.Value = oldEnumMember.Value;
-            });
+            var oldEnumMember = new TestEnumMemberDefinition();
+            var newEnumMember = new TestEnumMemberDefinition {Value = oldEnumMember.Value};
             var oldEnumMembers = new[]
             {
                 oldEnumMember
@@ -104,16 +85,13 @@
         }
 
         [Theory]
-        [InlineData("", "")]
         [InlineData("123", "")]
         [InlineData("", "123")]
+        [InlineData("234", "123")]
         public void FindMatchesIdentifiesEnumMembersNotMatching(string oldValue, string newValue)
         {
-            var executeStrategy = Model.UsingModule<ConfigurationModule>()
-                .Ignoring<TestEnumMemberDefinition>(x => x.DeclaringType)
-                .Ignoring<TestEnumMemberDefinition>(x => x.Attributes);
-            var oldEnumMember = executeStrategy.Create<TestEnumMemberDefinition>().Set(x => x.Value = oldValue);
-            var newEnumMember = executeStrategy.Create<TestEnumMemberDefinition>().Set(x => x.Value = newValue);
+            var oldEnumMember = new TestEnumMemberDefinition {Value = oldValue};
+            var newEnumMember = new TestEnumMemberDefinition {Value = newValue};
             var oldEnumMembers = new[]
             {
                 oldEnumMember

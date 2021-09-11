@@ -5,7 +5,6 @@
     using System.Linq;
     using FluentAssertions;
     using Microsoft.Extensions.Logging;
-    using ModelBuilder;
     using Neovolve.CodeAnalysis.ChangeTracking.Comparers;
     using Neovolve.CodeAnalysis.ChangeTracking.Evaluators;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
@@ -29,8 +28,8 @@
         [Fact]
         public void CalculateChangesReturnsEmptyWhenAttributeComparisonSkipped()
         {
-            var oldItems = Model.UsingModule<ConfigurationModule>().Create<List<IAttributeDefinition>>();
-            var newItems = Model.UsingModule<ConfigurationModule>().Create<List<IAttributeDefinition>>();
+            var oldItems = new List<IAttributeDefinition> {new TestAttributeDefinition()};
+            var newItems = new List<IAttributeDefinition> {new TestAttributeDefinition()};
             var options = ComparerOptions.Default;
 
             options.CompareAttributes = AttributeCompareOption.Skip;
@@ -48,13 +47,15 @@
         [Fact]
         public void CalculateChangesReturnsMatchResultsWhenComparingAllAttributes()
         {
-            var oldItems = Model.UsingModule<ConfigurationModule>().Create<List<IAttributeDefinition>>();
-            var newItems = Model.UsingModule<ConfigurationModule>().Create<List<IAttributeDefinition>>();
+            var oldItems = new List<IAttributeDefinition> {new TestAttributeDefinition()};
+            var newItems = new List<IAttributeDefinition> {new TestAttributeDefinition()};
             var options = ComparerOptions.Default;
-            var matchingItems =
-                Model.UsingModule<ConfigurationModule>().Create<List<ItemMatch<IAttributeDefinition>>>();
-            var itemsRemoved = Model.UsingModule<ConfigurationModule>().Create<List<IAttributeDefinition>>();
-            var itemsAdded = Model.UsingModule<ConfigurationModule>().Create<List<IAttributeDefinition>>();
+            var matchingItems = new List<ItemMatch<IAttributeDefinition>>
+            {
+                new(new TestAttributeDefinition(), new TestAttributeDefinition())
+            };
+            var itemsRemoved = new List<IAttributeDefinition> {new TestAttributeDefinition()};
+            var itemsAdded = new List<IAttributeDefinition> {new TestAttributeDefinition()};
             var matchResults = new MatchResults<IAttributeDefinition>(matchingItems, itemsRemoved, itemsAdded);
 
             options.CompareAttributes = AttributeCompareOption.All;
@@ -80,15 +81,37 @@
         [Fact]
         public void CalculateChangesReturnsMatchResultsWhenComparingAttributesMatchingOptions()
         {
-            var oldItems = Model.UsingModule<ConfigurationModule>().Create<List<TestAttributeDefinition>>()
-                .Set(x => x[3].Name = "System.Text.Json.Serialization.JsonPropertyName");
-            var newItems = Model.UsingModule<ConfigurationModule>().Create<List<TestAttributeDefinition>>()
-                .Set(x => x[5].Name = "JsonIgnoreAttribute");
+            var oldItems = new List<TestAttributeDefinition>
+            {
+                new(),
+                new(),
+                new(),
+                new()
+                {
+                    Name = "System.Text.Json.Serialization.JsonPropertyName"
+                },
+                new(),
+                new()
+            };
+            var newItems = new List<TestAttributeDefinition>
+            {
+                new(),
+                new(),
+                new(),
+                new(),
+                new(),
+                new()
+                {
+                    Name = "JsonIgnoreAttribute"
+                }
+            };
             var options = ComparerOptions.Default;
-            var matchingItems =
-                Model.UsingModule<ConfigurationModule>().Create<List<ItemMatch<IAttributeDefinition>>>();
-            var itemsRemoved = Model.UsingModule<ConfigurationModule>().Create<List<IAttributeDefinition>>();
-            var itemsAdded = Model.UsingModule<ConfigurationModule>().Create<List<IAttributeDefinition>>();
+            var matchingItems = new List<ItemMatch<IAttributeDefinition>>
+            {
+                new(new TestAttributeDefinition(), new TestAttributeDefinition())
+            };
+            var itemsRemoved = new List<IAttributeDefinition> {new TestAttributeDefinition()};
+            var itemsAdded = new List<IAttributeDefinition> {new TestAttributeDefinition()};
             var matchResults = new MatchResults<IAttributeDefinition>(matchingItems, itemsRemoved, itemsAdded);
 
             var comparer = Substitute.For<IAttributeComparer>();
@@ -108,13 +131,17 @@
                 _output.WriteLine(result.Message);
             }
 
+            evaluator.Received().FindMatches(
+                Arg.Is<IEnumerable<IAttributeDefinition>>(x => x.Single() == oldItems[3]),
+                Arg.Is<IEnumerable<IAttributeDefinition>>(x => x.Single() == newItems[5]));
+
             actual.Should().NotBeEmpty();
         }
 
         [Fact]
         public void CalculateChangesThrowsExceptionWithNullNewItems()
         {
-            var oldItems = Model.UsingModule<ConfigurationModule>().Create<List<IAttributeDefinition>>();
+            var oldItems = new List<IAttributeDefinition> {new TestAttributeDefinition()};
             var options = ComparerOptions.Default;
 
             var comparer = Substitute.For<IAttributeComparer>();
@@ -130,7 +157,7 @@
         [Fact]
         public void CalculateChangesThrowsExceptionWithNullOldItems()
         {
-            var newItems = Model.UsingModule<ConfigurationModule>().Create<List<IAttributeDefinition>>();
+            var newItems = new List<IAttributeDefinition> {new TestAttributeDefinition()};
             var options = ComparerOptions.Default;
 
             var comparer = Substitute.For<IAttributeComparer>();
@@ -146,8 +173,8 @@
         [Fact]
         public void CalculateChangesThrowsExceptionWithNullOptions()
         {
-            var oldItems = Model.UsingModule<ConfigurationModule>().Create<List<IAttributeDefinition>>();
-            var newItems = Model.UsingModule<ConfigurationModule>().Create<List<IAttributeDefinition>>();
+            var oldItems = new List<IAttributeDefinition> {new TestAttributeDefinition()};
+            var newItems = new List<IAttributeDefinition> {new TestAttributeDefinition()};
 
             var comparer = Substitute.For<IAttributeComparer>();
             var evaluator = Substitute.For<IAttributeEvaluator>();
@@ -162,12 +189,12 @@
         [Fact]
         public void EvaluateMatchReturnsComparerResult()
         {
-            var oldItem = Model.UsingModule<ConfigurationModule>().Create<IAttributeDefinition>();
-            var newItem = Model.UsingModule<ConfigurationModule>().Create<IAttributeDefinition>();
+            var oldItem = new TestAttributeDefinition();
+            var newItem = new TestAttributeDefinition();
             var match = new ItemMatch<IAttributeDefinition>(oldItem, newItem);
             var options = ComparerOptions.Default;
             var result = new ComparisonResult(SemVerChangeType.Breaking, oldItem, newItem, Guid.NewGuid().ToString());
-            var expected = new List<ComparisonResult> { result };
+            var expected = new List<ComparisonResult> {result};
 
             var comparer = Substitute.For<IAttributeComparer>();
             var evaluator = Substitute.For<IAttributeEvaluator>();
@@ -199,8 +226,8 @@
         [Fact]
         public void EvaluateMatchThrowsExceptionWithNullOptions()
         {
-            var oldItem = Model.UsingModule<ConfigurationModule>().Create<IAttributeDefinition>();
-            var newItem = Model.UsingModule<ConfigurationModule>().Create<IAttributeDefinition>();
+            var oldItem = new TestAttributeDefinition();
+            var newItem = new TestAttributeDefinition();
             var match = new ItemMatch<IAttributeDefinition>(oldItem, newItem);
 
             var comparer = Substitute.For<IAttributeComparer>();
@@ -216,7 +243,7 @@
         [Fact]
         public void IsVisibleReturnsTrue()
         {
-            var item = Model.UsingModule<ConfigurationModule>().Create<IAttributeDefinition>();
+            var item = new TestAttributeDefinition();
 
             var comparer = Substitute.For<IAttributeComparer>();
             var evaluator = Substitute.For<IAttributeEvaluator>();

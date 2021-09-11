@@ -5,7 +5,6 @@
     using System.Threading.Tasks;
     using FluentAssertions;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using ModelBuilder;
     using Neovolve.CodeAnalysis.ChangeTracking.Evaluators;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
     using Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Models;
@@ -25,19 +24,18 @@
         [Fact]
         public void FindMatchesIdentifiesAttributesNotMatching()
         {
-            var oldAttribute = Model.UsingModule<ConfigurationModule>().Create<IAttributeDefinition>();
-            var newAttribute = Model.UsingModule<ConfigurationModule>().Create<IAttributeDefinition>();
-            var oldMatchingAttribute = Model.UsingModule<ConfigurationModule>().Create<IAttributeDefinition>();
+            var oldAttribute = new TestAttributeDefinition();
+            var newAttribute = new TestAttributeDefinition();
+            var oldMatchingAttribute = new TestAttributeDefinition();
             var oldAttributes = new[]
             {
                 oldAttribute, oldMatchingAttribute
             };
-            var newMatchingAttribute = Model.UsingModule<ConfigurationModule>().Create<TestAttributeDefinition>()
-                .Set(x =>
-                {
-                    x.Name = oldMatchingAttribute.Name;
-                    x.Arguments = oldMatchingAttribute.Arguments;
-                });
+            var newMatchingAttribute = new TestAttributeDefinition
+            {
+                Name = oldMatchingAttribute.Name,
+                Arguments = oldMatchingAttribute.Arguments
+            };
             var newAttributes = new[]
             {
                 newMatchingAttribute, newAttribute
@@ -57,95 +55,35 @@
         }
 
         [Theory]
-        [InlineData("MyName", "MyName", true)]
-        [InlineData("MyNameAttribute", "MyNameAttribute", true)]
-        [InlineData("MyNameAttribute", "MyName", true)]
-        [InlineData("MyName", "MyNameAttribute", true)]
-        [InlineData("MyName", "myname", false)]
-        [InlineData("MyName", "SomeOtherName", false)]
-        public void FindMatchesReturnsSingleAttributeMatchingByName(string firstName, string secondName, bool expected)
-        {
-            var oldAttribute = Model.UsingModule<ConfigurationModule>().Create<TestAttributeDefinition>()
-                .Set(x => x.Name = firstName);
-            var oldAttributes = new[]
-            {
-                oldAttribute
-            };
-            var newAttribute = Model.UsingModule<ConfigurationModule>().Create<TestAttributeDefinition>()
-                .Set(x => { x.Name = secondName; });
-            var newAttributes = new[]
-            {
-                newAttribute
-            };
-
-            var sut = new AttributeEvaluator();
-
-            var results = sut.FindMatches(oldAttributes, newAttributes);
-
-            if (expected)
-            {
-                results.MatchingItems.Should().HaveCount(1);
-                results.MatchingItems.First().OldItem.Should().Be(oldAttribute);
-                results.MatchingItems.First().NewItem.Should().Be(newAttribute);
-                results.ItemsAdded.Should().BeEmpty();
-                results.ItemsRemoved.Should().BeEmpty();
-            }
-            else
-            {
-                results.MatchingItems.Should().BeEmpty();
-            }
-        }
-
-        [Fact]
-        public void FindMatchesReturnsSingleAttributeMatchingByNameIgnoringAttributeSuffix()
-        {
-            var oldAttribute = Model.UsingModule<ConfigurationModule>().Create<TestAttributeDefinition>()
-                .Set(x => x.Name = "SomethingAttribute");
-            var oldAttributes = new[]
-            {
-                oldAttribute
-            };
-            var newAttribute = Model.UsingModule<ConfigurationModule>().Create<TestAttributeDefinition>()
-                .Set(x => x.Name = "Something");
-            var newAttributes = new[]
-            {
-                newAttribute
-            };
-
-            var sut = new AttributeEvaluator();
-
-            var results = sut.FindMatches(oldAttributes, newAttributes);
-
-            results.MatchingItems.Should().HaveCount(1);
-            results.MatchingItems.First().OldItem.Should().Be(oldAttribute);
-            results.MatchingItems.First().NewItem.Should().Be(newAttribute);
-            results.ItemsAdded.Should().BeEmpty();
-            results.ItemsRemoved.Should().BeEmpty();
-        }
-
-        [Theory]
         [InlineData("SimpleAttribute(\"stringValue\", 123, first: true, second: \"anothervalue\")",
             "SimpleAttribute(\"stringValue\", 123, first: true, second: \"anothervalue\")", true, "Arguments match")]
         [InlineData("SimpleAttribute(\"stringValue\", 123, first: true, second: \"anothervalue\")",
-            "SimpleAttribute(\"stringValue\", 123, first: true, second: \"changed\")", true, "Changed named argument value")]
+            "SimpleAttribute(\"stringValue\", 123, first: true, second: \"changed\")", true,
+            "Changed named argument value")]
         [InlineData("SimpleAttribute(\"stringValue\", 123, first: true, second: \"anothervalue\")",
-            "SimpleAttribute(\"stringValue\", 123, first: true, third: \"anothervalue\")", true, "Changed named argument parameter name")]
+            "SimpleAttribute(\"stringValue\", 123, first: true, third: \"anothervalue\")", true,
+            "Changed named argument parameter name")]
         [InlineData("SimpleAttribute(\"stringValue\", 123, first: true, third: \"anothervalue\")",
             "SimpleAttribute(\"stringValue\", 123, first: true", true, "Removed named parameter")]
         [InlineData("SimpleAttribute(\"stringValue\", 123, first: true)",
-            "SimpleAttribute(\"stringValue\", 123, first: true, second: \"anothervalue\")", true, "Added named argument")]
+            "SimpleAttribute(\"stringValue\", 123, first: true, second: \"anothervalue\")", true,
+            "Added named argument")]
         [InlineData("SimpleAttribute(\"changed\", 123, first: true, second: \"anothervalue\")",
-            "SimpleAttribute(\"stringValue\", 123, first: true, second: \"anothervalue\"", true, "Changed ordinal argument value")]
+            "SimpleAttribute(\"stringValue\", 123, first: true, second: \"anothervalue\"", true,
+            "Changed ordinal argument value")]
         [InlineData("SimpleAttribute(\"stringValue\", 123, first: true, second: \"anothervalue\")",
-            "OtherAttribute(\"stringValue\", 123, first: true, second: \"anothervalue\")", false, "Different attribute name")]
+            "OtherAttribute(\"stringValue\", 123, first: true, second: \"anothervalue\")", false,
+            "Different attribute name")]
         [InlineData("SimpleAttribute(123, first: true, second: \"anothervalue\")",
-            "SimpleAttribute(\"stringValue\", 123, first: true, second: \"anothervalue\")", true, "Added ordinal argument")]
+            "SimpleAttribute(\"stringValue\", 123, first: true, second: \"anothervalue\")", true,
+            "Added ordinal argument")]
         [InlineData("SimpleAttribute(\"stringValue\", 123, first: true, second: \"anothervalue\")",
             "SimpleAttribute(123, first: true, second: \"anothervalue\"", true, "Removed ordinal argument")]
         [InlineData("SimpleAttribute(\"stringValue\", first: true, second: \"anothervalue\")",
             "SimpleAttribute(\"stringValue\", 123, first: true)", true, "Added ordinal, removed named argument")]
         [InlineData("SimpleAttribute(\"stringValue\", 123, first: true, second: \"anothervalue\")",
-            "SimpleAttribute(\"stringValue\", first: true, second: \"anothervalue\", third: 554)", true, "Removed ordinal, added named argument")]
+            "SimpleAttribute(\"stringValue\", first: true, second: \"anothervalue\", third: 554)", true,
+            "Removed ordinal, added named argument")]
         public async Task FindMatchesReturnsMatchesByArguments(string oldCode, string newCode,
             bool expected, string scenario)
         {
@@ -185,6 +123,69 @@
             {
                 results.MatchingItems.Should().BeEmpty();
             }
+        }
+
+        [Theory]
+        [InlineData("MyName", "MyName", true)]
+        [InlineData("MyNameAttribute", "MyNameAttribute", true)]
+        [InlineData("MyNameAttribute", "MyName", true)]
+        [InlineData("MyName", "MyNameAttribute", true)]
+        [InlineData("MyName", "myname", false)]
+        [InlineData("MyName", "SomeOtherName", false)]
+        public void FindMatchesReturnsSingleAttributeMatchingByName(string firstName, string secondName, bool expected)
+        {
+            var oldAttribute = new TestAttributeDefinition {Name = firstName};
+            var oldAttributes = new[]
+            {
+                oldAttribute
+            };
+            var newAttribute = new TestAttributeDefinition {Name = secondName};
+            var newAttributes = new[]
+            {
+                newAttribute
+            };
+
+            var sut = new AttributeEvaluator();
+
+            var results = sut.FindMatches(oldAttributes, newAttributes);
+
+            if (expected)
+            {
+                results.MatchingItems.Should().HaveCount(1);
+                results.MatchingItems.First().OldItem.Should().Be(oldAttribute);
+                results.MatchingItems.First().NewItem.Should().Be(newAttribute);
+                results.ItemsAdded.Should().BeEmpty();
+                results.ItemsRemoved.Should().BeEmpty();
+            }
+            else
+            {
+                results.MatchingItems.Should().BeEmpty();
+            }
+        }
+
+        [Fact]
+        public void FindMatchesReturnsSingleAttributeMatchingByNameIgnoringAttributeSuffix()
+        {
+            var oldAttribute = new TestAttributeDefinition {Name = "SomethingAttribute"};
+            var oldAttributes = new[]
+            {
+                oldAttribute
+            };
+            var newAttribute = new TestAttributeDefinition {Name = "Something"};
+            var newAttributes = new[]
+            {
+                newAttribute
+            };
+
+            var sut = new AttributeEvaluator();
+
+            var results = sut.FindMatches(oldAttributes, newAttributes);
+
+            results.MatchingItems.Should().HaveCount(1);
+            results.MatchingItems.First().OldItem.Should().Be(oldAttribute);
+            results.MatchingItems.First().NewItem.Should().Be(newAttribute);
+            results.ItemsAdded.Should().BeEmpty();
+            results.ItemsRemoved.Should().BeEmpty();
         }
 
         [Fact]

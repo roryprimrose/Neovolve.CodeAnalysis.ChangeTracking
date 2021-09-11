@@ -19,7 +19,7 @@
             var arguments = new FormatArguments(Guid.NewGuid().ToString(), oldItem.Name,
                 newItem.Name);
             var message = Guid.NewGuid().ToString();
-            var changeType = Model.UsingModule<ConfigurationModule>().Create<SemVerChangeType>();
+            var changeType = Model.Create<SemVerChangeType>();
 
             var aggregator = Substitute.For<IChangeResultAggregator>();
             var formatter = Substitute.For<IMessageFormatter>();

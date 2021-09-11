@@ -39,20 +39,7 @@
             sut.OldValue.Should().Be(oldValue);
             sut.NewValue.Should().Be(newValue);
         }
-
-        [Fact]
-        public void ThrowsExceptionWithNullIdentifier()
-        {
-            var messageFormat = Guid.NewGuid().ToString();
-            var oldValue = Guid.NewGuid().ToString();
-            var newValue = Guid.NewGuid().ToString();
-
-            // ReSharper disable once ObjectCreationAsStatement
-            Action action = () => new FormatArguments(messageFormat, oldValue, newValue);
-
-            action.Should().Throw<ArgumentNullException>();
-        }
-
+        
         [Fact]
         public void ThrowsExceptionWithNullMessageFormat()
         {
