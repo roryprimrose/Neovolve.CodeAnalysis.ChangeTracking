@@ -29,10 +29,11 @@
             if (match.OldItem.GetType() != match.NewItem.GetType())
             {
                 var newType = DetermineTypeChangeDescription(match.NewItem);
+                var oldType = DetermineTypeChangeDescription(match.OldItem);
 
                 var args = new FormatArguments(
-                    "has changed to {NewValue}",
-                    null,
+                    "has changed type definition from {OldValue} to {NewValue}",
+                    oldType,
                     newType);
 
                 var message = options.MessageFormatter.FormatMatch(match, ItemFormatType.ItemChanged, args);

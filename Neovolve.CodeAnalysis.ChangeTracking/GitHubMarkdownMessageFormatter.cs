@@ -7,12 +7,7 @@
         public GitHubMarkdownMessageFormatter(IIdentifierFormatter identifierFormatter) : base(identifierFormatter)
         {
         }
-
-        protected override string FormatIdentifier(IItemDefinition definition, ItemFormatType formatType)
-        {
-            return "`" + base.FormatIdentifier(definition, formatType) + "`";
-        }
-
+        
         protected override string FormatNewValue(IItemDefinition definition, ItemFormatType formatType, string? value)
         {
             return "`" + base.FormatNewValue(definition, formatType, value) + "`";

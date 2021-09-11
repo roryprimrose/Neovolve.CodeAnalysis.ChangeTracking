@@ -23,7 +23,7 @@
 
             var actual = SUT.FormatMatch(match, ItemFormatType.ItemChanged, arguments);
 
-            actual.Should().Be($"Property `{identifier}` `{oldValue}` `{newValue}`");
+            actual.Should().Be($"Property {identifier} `{oldValue}` `{newValue}`");
         }
     }
 }
