@@ -107,7 +107,7 @@
             sut.FullName.Should().Be(declaringType.FullName + "." + expected);
             sut.FullRawName.Should().Be(declaringType.FullRawName + "." + expected);
         }
-
+        
         [Theory]
         [InlineData("", "ctor")]
         [InlineData("static", "cctor")]
@@ -198,7 +198,7 @@ namespace MyNamespace
     }  
 }
 ";
-
+        
         private static string ParameterConstructor => @"
 namespace MyNamespace 
 {

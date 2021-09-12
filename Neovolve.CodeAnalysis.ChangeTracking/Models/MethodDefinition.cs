@@ -100,20 +100,24 @@
             return value;
         }
 
-        private static string DetermineName(MethodDeclarationSyntax node)
+        private string DetermineName(MethodDeclarationSyntax node)
         {
             var name = DetermineRawName(node);
 
             var typeParameters = node.ChildNodes().OfType<TypeParameterListSyntax>().FirstOrDefault();
 
-            if (typeParameters == null)
+            if (typeParameters != null)
             {
-                return name;
+                var typeParameterList = typeParameters.ToString();
+
+                name += typeParameterList;
             }
 
-            var parameterList = typeParameters.ToString();
+            var parameterList = BuildParameterTypeList(node);
 
-            return name + parameterList;
+            name += "(" + parameterList + ")";
+
+            return name;
         }
 
         private static string DetermineRawName(MethodDeclarationSyntax node)
