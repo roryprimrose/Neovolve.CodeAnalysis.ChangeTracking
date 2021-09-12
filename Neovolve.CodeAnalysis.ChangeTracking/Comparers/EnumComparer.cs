@@ -101,8 +101,8 @@
             {
                 // Underlying type has been added
                 var args = new FormatArguments(
-                    "has added the {NewValue} underlying type",
-                    null,
+                    "has changed the underlying type from (implicit) {OldValue} to {NewValue} ",
+                    "int",
                     newBaseType);
 
                 var message = options.MessageFormatter.FormatMatch(match, ItemFormatType.ItemChanged, args);
@@ -118,9 +118,9 @@
             {
                 // Underlying type has been removed
                 var args = new FormatArguments(
-                    "has removed the {OldValue} underlying type",
+                    "has changed the underlying type from {OldValue} to (implicit) {NewValue}",
                     oldBaseType,
-                    null);
+                    "int");
 
                 var message = options.MessageFormatter.FormatMatch(match, ItemFormatType.ItemChanged, args);
 

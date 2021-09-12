@@ -36,6 +36,18 @@ namespace MyNamespace
 }
 ";
 
+        private const string EnumMembersWithImplicitValues = @"
+namespace MyNamespace 
+{
+    public enum MyEnum
+    {
+        First,
+        Second,
+        Third
+    }   
+}
+";
+
         private readonly IChangeCalculator _calculator;
 
         public EnumChangesTests(ITestOutputHelper output)
@@ -94,11 +106,11 @@ namespace MyNamespace
         {
             var oldCode = new List<CodeSource>
             {
-                new(EnumMembersWithExplicitValues)
+                new(EnumMembersWithImplicitValues)
             };
             var newCode = new List<CodeSource>
             {
-                new(EnumMembersWithExplicitValues.Replace("First", "First = 123"))
+                new(EnumMembersWithImplicitValues.Replace("First", "First = 123"))
             };
 
             var options = OptionsFactory.BuildOptions();

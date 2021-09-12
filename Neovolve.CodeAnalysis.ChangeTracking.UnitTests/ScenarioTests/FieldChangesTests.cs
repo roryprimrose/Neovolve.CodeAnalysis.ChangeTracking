@@ -1,6 +1,5 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.ScenarioTests
 {
-    using System;
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
@@ -157,9 +156,12 @@
         {
             var oldCode = new List<CodeSource>
             {
+                new(SingleField.Replace("public string MyField;", "public string MyField;public bool OtherField;"))
+            };
+            var newCode = new List<CodeSource>
+            {
                 new(SingleField)
             };
-            var newCode = Array.Empty<CodeSource>();
 
             var options = OptionsFactory.BuildOptions();
 
@@ -192,10 +194,13 @@
         [Fact]
         public async Task ReturnsFeatureWhenFieldAdded()
         {
-            var oldCode = Array.Empty<CodeSource>();
-            var newCode = new List<CodeSource>
+            var oldCode = new List<CodeSource>
             {
                 new(SingleField)
+            };
+            var newCode = new List<CodeSource>
+            {
+                new(SingleField.Replace("public string MyField;", "public string MyField;public bool OtherField;"))
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -271,7 +276,7 @@
 
             result.ChangeType.Should().Be(expected);
         }
-        
+
         public string FieldOnTypeWithMultipleGenericTypeParameters => @"
 namespace MyNamespace 
 {
