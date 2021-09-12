@@ -27,7 +27,7 @@
         [InlineData(SemVerChangeType.None, 0)]
         public void CalculateChangesReturnsChangeTypeFromSingleResult(SemVerChangeType changeType, int expected)
         {
-            var options = Model.UsingModule<ConfigurationModule>().Create<ComparerOptions>();
+            var options = Model.Create<ComparerOptions>();
             var oldTypes = Array.Empty<TestClassDefinition>();
             var newTypes = Array.Empty<TestClassDefinition>();
             var result = new ComparisonResult(changeType, null, null, Guid.NewGuid().ToString());
@@ -63,7 +63,7 @@
         public void CalculateChangesReturnsGreatestChangeTypeFromMultipleResult(SemVerChangeType firstChangeType,
             SemVerChangeType secondChangeType, SemVerChangeType expected, int resultCount)
         {
-            var options = Model.UsingModule<ConfigurationModule>().Create<ComparerOptions>();
+            var options = Model.Create<ComparerOptions>();
             var oldTypes = Array.Empty<TestClassDefinition>();
             var newTypes = Array.Empty<TestClassDefinition>();
             var firstResult = new ComparisonResult(firstChangeType, null, null, Guid.NewGuid().ToString());
@@ -95,7 +95,7 @@
         [Fact]
         public void CalculateChangesReturnsNoneWhenNoResultsReturned()
         {
-            var options = Model.UsingModule<ConfigurationModule>().Create<ComparerOptions>();
+            var options = Model.Create<ComparerOptions>();
             var oldTypes = Array.Empty<TestClassDefinition>();
             var newTypes = Array.Empty<TestClassDefinition>();
             var results = Array.Empty<ComparisonResult>();
@@ -115,7 +115,7 @@
         [Fact]
         public void CalculateChangesThrowsExceptionWithNullNewTypes()
         {
-            var options = Model.UsingModule<ConfigurationModule>().Create<ComparerOptions>();
+            var options = Model.Create<ComparerOptions>();
             var oldTypes = Array.Empty<TestClassDefinition>();
 
             var processor = Substitute.For<IBaseTypeMatchProcessor>();
@@ -130,7 +130,7 @@
         [Fact]
         public void CalculateChangesThrowsExceptionWithNullOldTypes()
         {
-            var options = Model.UsingModule<ConfigurationModule>().Create<ComparerOptions>();
+            var options = Model.Create<ComparerOptions>();
             var newTypes = Array.Empty<TestClassDefinition>();
 
             var processor = Substitute.For<IBaseTypeMatchProcessor>();

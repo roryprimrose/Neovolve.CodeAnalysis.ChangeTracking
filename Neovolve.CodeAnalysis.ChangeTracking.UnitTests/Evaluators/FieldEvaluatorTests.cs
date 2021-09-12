@@ -3,7 +3,6 @@
     using System;
     using System.Linq;
     using FluentAssertions;
-    using ModelBuilder;
     using Neovolve.CodeAnalysis.ChangeTracking.Evaluators;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
     using Neovolve.CodeAnalysis.ChangeTracking.UnitTests.TestModels;
@@ -14,17 +13,15 @@
         [Fact]
         public void FindMatchesIdentifiesFieldsNotMatching()
         {
-            var executeStrategy = Model.UsingModule<ConfigurationModule>()
-                .Ignoring<TestFieldDefinition>(x => x.DeclaringType).Ignoring<TestFieldDefinition>(x => x.Attributes);
-            var oldField = executeStrategy.Create<TestFieldDefinition>();
-            var newField = executeStrategy.Create<TestFieldDefinition>();
-            var oldMatchingField = executeStrategy.Create<TestFieldDefinition>();
+            var oldField = new TestFieldDefinition();
+            var newField = new TestFieldDefinition();
+            var oldMatchingField = new TestFieldDefinition();
             var oldFields = new[]
             {
                 oldField, oldMatchingField
             };
             var newMatchingField =
-                executeStrategy.Create<TestFieldDefinition>().Set(x => x.Name = oldMatchingField.Name);
+                new TestFieldDefinition {Name = oldMatchingField.Name};
             var newFields = new[]
             {
                 newMatchingField, newField
@@ -49,14 +46,12 @@
         [InlineData("MyName", "SomeOtherName", false)]
         public void FindMatchesReturnsSingleFieldMatchingByName(string firstName, string secondName, bool expected)
         {
-            var executeStrategy = Model.UsingModule<ConfigurationModule>()
-                .Ignoring<TestFieldDefinition>(x => x.DeclaringType).Ignoring<TestFieldDefinition>(x => x.Attributes);
-            var oldField = executeStrategy.Create<TestFieldDefinition>().Set(x => x.Name = firstName);
+            var oldField = new TestFieldDefinition {Name = firstName};
             var oldFields = new[]
             {
                 oldField
             };
-            var newField = executeStrategy.Create<TestFieldDefinition>().Set(x => x.Name = secondName);
+            var newField = new TestFieldDefinition {Name = secondName};
             var newFields = new[]
             {
                 newField

@@ -21,7 +21,7 @@
         public void CanCreateWithNullNewItem()
         {
             var message = Guid.NewGuid().ToString();
-            var changeType = Model.UsingModule<ConfigurationModule>().Create<SemVerChangeType>();
+            var changeType = Model.Create<SemVerChangeType>();
 
             var oldItem = Substitute.For<IPropertyDefinition>();
 
@@ -41,7 +41,7 @@
         public void CanCreateWithNullOldItem()
         {
             var message = Guid.NewGuid().ToString();
-            var changeType = Model.UsingModule<ConfigurationModule>().Create<SemVerChangeType>();
+            var changeType = Model.Create<SemVerChangeType>();
 
             var newItem = Substitute.For<IPropertyDefinition>();
 
@@ -83,7 +83,7 @@
         [Fact]
         public void ThrowsExceptionWhenCreatedWithNullMessage()
         {
-            var changeType = Model.UsingModule<ConfigurationModule>().Create<SemVerChangeType>();
+            var changeType = Model.Create<SemVerChangeType>();
 
             var newItem = Substitute.For<IPropertyDefinition>();
             var oldItem = Substitute.For<IPropertyDefinition>();

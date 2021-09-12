@@ -68,8 +68,7 @@
             if (match.OldItem.Namespace != match.NewItem.Namespace)
             {
                 var args = new FormatArguments(
-                    "{DefinitionType} {Identifier} has changed namespace from {OldValue} to {NewValue}",
-                    match.OldItem.FullName, match.OldItem.Namespace, match.NewItem.Namespace);
+                    "has changed namespace from {OldValue} to {NewValue}", match.OldItem.Namespace, match.NewItem.Namespace);
 
                 aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
             }
@@ -102,12 +101,11 @@
             {
                 // Underlying type has been added
                 var args = new FormatArguments(
-                    "{DefinitionType} {Identifier} has added the {NewValue} underlying type",
-                    match.NewItem.FullName,
-                    null,
+                    "has changed the underlying type from (implicit) {OldValue} to {NewValue} ",
+                    "int",
                     newBaseType);
 
-                var message = options.MessageFormatter.FormatItemChangedMessage(match, args);
+                var message = options.MessageFormatter.FormatMatch(match, ItemFormatType.ItemChanged, args);
 
                 var result = new ComparisonResult(
                     change,
@@ -120,12 +118,11 @@
             {
                 // Underlying type has been removed
                 var args = new FormatArguments(
-                    "{DefinitionType} {Identifier} has removed the {OldValue} underlying type",
-                    match.NewItem.FullName,
+                    "has changed the underlying type from {OldValue} to (implicit) {NewValue}",
                     oldBaseType,
-                    null);
+                    "int");
 
-                var message = options.MessageFormatter.FormatItemChangedMessage(match, args);
+                var message = options.MessageFormatter.FormatMatch(match, ItemFormatType.ItemChanged, args);
 
                 var result = new ComparisonResult(
                     change,
@@ -138,12 +135,11 @@
             {
                 // Underlying type has been changed
                 var args = new FormatArguments(
-                    "{DefinitionType} {Identifier} has changed the underlying type from {OldValue} to {NewValue}",
-                    match.NewItem.FullName,
+                    "has changed the underlying type from {OldValue} to {NewValue}",
                     oldBaseType,
                     newBaseType);
 
-                var message = options.MessageFormatter.FormatItemChangedMessage(match, args);
+                var message = options.MessageFormatter.FormatMatch(match, ItemFormatType.ItemChanged, args);
 
                 var result = new ComparisonResult(
                     change,

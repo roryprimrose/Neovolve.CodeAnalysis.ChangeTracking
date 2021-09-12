@@ -40,9 +40,23 @@
             bool secondItemVisible, SemVerChangeType changeType, bool attributesEvaluated)
         {
             var firstItem = Substitute.For<IClassDefinition>();
-            var firstItemAttributes = Model.UsingModule<ConfigurationModule>().Create<List<TestAttributeDefinition>>();
+            var firstItemAttributes = new List<TestAttributeDefinition>
+            {
+                new(),
+                new(),
+                new(),
+                new(),
+                new()
+            };
             var secondItem = Substitute.For<IClassDefinition>();
-            var secondItemAttributes = Model.UsingModule<ConfigurationModule>().Create<List<TestAttributeDefinition>>();
+            var secondItemAttributes = new List<TestAttributeDefinition>
+            {
+                new(),
+                new(),
+                new(),
+                new(),
+                new()
+            };
             var itemResult = new ComparisonResult(changeType, firstItem, secondItem, Guid.NewGuid().ToString());
             var attributeResult = new ComparisonResult(changeType, firstItemAttributes.Last(),
                 secondItemAttributes.Last(), Guid.NewGuid().ToString());

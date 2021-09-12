@@ -4,7 +4,8 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
     {
         public static ComparerOptions BuildOptions()
         {
-            var messageFormatter = new GitHubMarkdownMessageFormatter();
+            var identifierFormatter = new GitHubMarkdownIdentifierFormatter();
+            var messageFormatter = new GitHubMarkdownMessageFormatter(identifierFormatter);
 
             var options = ComparerOptions.Default;
 

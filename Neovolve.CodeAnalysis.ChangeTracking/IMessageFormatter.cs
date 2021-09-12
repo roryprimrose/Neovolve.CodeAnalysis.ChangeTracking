@@ -4,8 +4,9 @@
 
     public interface IMessageFormatter
     {
-        string FormatItemAddedMessage(IItemDefinition definition, FormatArguments arguments);
-        string FormatItemChangedMessage<T>(ItemMatch<T> match, FormatArguments arguments) where T : IItemDefinition;
-        string FormatItemRemovedMessage(IItemDefinition definition, FormatArguments arguments);
+        string FormatItem(IItemDefinition definition, ItemFormatType formatType, IFormatArguments arguments);
+
+        string FormatMatch<T>(ItemMatch<T> match, ItemFormatType formatType, IFormatArguments arguments)
+            where T : IItemDefinition;
     }
 }

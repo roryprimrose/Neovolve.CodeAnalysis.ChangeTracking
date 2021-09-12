@@ -43,8 +43,7 @@
             {
                 // The constructor was an instance constructor but is now a static
                 var args = new FormatArguments(
-                    $"{{DefinitionType}} {{Identifier}} has added the {{NewValue}} modifier",
-                    match.NewItem.FullName,
+                    $"has added the {{NewValue}} modifier",
                     null,
                     "static");
 
@@ -54,8 +53,7 @@
             {
                 // The constructor was a static constructor but is now an instance
                 var args = new FormatArguments(
-                    $"{{DefinitionType}} {{Identifier}} has removed the {{OldValue}} modifier",
-                    match.NewItem.FullName,
+                    $"has removed the {{OldValue}} modifier",
                     "static",
                     null);
 
@@ -98,8 +96,7 @@
                 // One or more generic type parameters have been added or removed
                 var suffix = shiftAmount == 1 ? "" : "s";
                 var args = new FormatArguments(
-                    $"{{DefinitionType}} {{Identifier}} has {changeLabel} {shiftAmount} parameter{suffix}",
-                    match.NewItem.FullName,
+                    $"has {changeLabel} {shiftAmount} parameter{suffix}",
                     null,
                     null);
 

@@ -14,11 +14,16 @@
         /// </summary>
         /// <param name="node">The node that defines the argument.</param>
         /// <param name="ordinalIndex">The ordinal index where the argument exists in the list of arguments.</param>
+        /// <param name="attribute">The attribute that declares the argument.</param>
         /// <exception cref="ArgumentNullException">The <paramref name="node" /> parameter is <c>null</c>.</exception>
-        public ArgumentDefinition(AttributeArgumentSyntax node, int? ordinalIndex) : base(node)
+        /// <exception cref="ArgumentNullException">The <paramref name="attribute" /> parameter is <c>null</c>.</exception>
+        public ArgumentDefinition(AttributeArgumentSyntax node, int? ordinalIndex, IAttributeDefinition attribute) :
+            base(node)
         {
             node = node ?? throw new ArgumentNullException(nameof(node));
+            attribute = attribute ?? throw new ArgumentNullException(nameof(attribute));
 
+            DeclaringAttribute = attribute;
             Declaration = node.ToFullString();
             Value = node.Expression.ToString();
 
@@ -31,9 +36,11 @@
             }
             else
             {
+                var argumentName = node.NameColon.Name.ToString();
+
                 OrdinalIndex = null;
-                ParameterName = node.NameColon.Name.ToString();
-                Name = ParameterName;
+                ParameterName = argumentName;
+                Name = argumentName;
                 ArgumentType = ArgumentType.Named;
             }
         }
@@ -43,6 +50,9 @@
 
         /// <inheritdoc />
         public string Declaration { get; }
+
+        /// <inheritdoc />
+        public IAttributeDefinition DeclaringAttribute { get; }
 
         /// <inheritdoc />
         public override string Name { get; }

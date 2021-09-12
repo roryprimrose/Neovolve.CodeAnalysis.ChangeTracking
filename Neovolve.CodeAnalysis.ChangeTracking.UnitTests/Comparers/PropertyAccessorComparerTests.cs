@@ -4,7 +4,6 @@
     using System.Collections.Generic;
     using System.Linq;
     using FluentAssertions;
-    using ModelBuilder;
     using Neovolve.CodeAnalysis.ChangeTracking.Comparers;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
     using Neovolve.CodeAnalysis.ChangeTracking.UnitTests.TestModels;
@@ -24,14 +23,14 @@
         [Fact]
         public void CompareReturnsExpectedResultFromPropertyAccessorAccessModifierComparer()
         {
-            var oldItem = Model.UsingModule<ConfigurationModule>().Create<TestPropertyAccessorDefinition>().Set(x =>
+            var oldItem = new TestPropertyAccessorDefinition
             {
-                x.IsVisible = true;
-            });
-            var newItem = Model.UsingModule<ConfigurationModule>().Create<TestPropertyAccessorDefinition>().Set(x =>
+                IsVisible = true
+            };
+            var newItem = new TestPropertyAccessorDefinition
             {
-                x.IsVisible = true;
-            });
+                IsVisible = true
+            };
             var match = new ItemMatch<IPropertyAccessorDefinition>(oldItem, newItem);
             var options = ComparerOptions.Default;
             var message = Guid.NewGuid().ToString();

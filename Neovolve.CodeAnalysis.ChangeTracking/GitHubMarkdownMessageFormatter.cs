@@ -4,19 +4,18 @@
 
     public class GitHubMarkdownMessageFormatter : DefaultMessageFormatter
     {
-        protected override string FormatIdentifier(IItemDefinition definition, string identifier)
+        public GitHubMarkdownMessageFormatter(IIdentifierFormatter identifierFormatter) : base(identifierFormatter)
         {
-            return "`" + base.FormatIdentifier(definition, identifier) + "`";
+        }
+        
+        protected override string FormatNewValue(IItemDefinition definition, ItemFormatType formatType, string? value)
+        {
+            return "`" + base.FormatNewValue(definition, formatType, value) + "`";
         }
 
-        protected override string FormatNewValue(IItemDefinition definition, string? value)
+        protected override string FormatOldValue(IItemDefinition definition, ItemFormatType formatType, string? value)
         {
-            return "`" + base.FormatNewValue(definition, value) + "`";
-        }
-
-        protected override string FormatOldValue(IItemDefinition definition, string? value)
-        {
-            return "`" + base.FormatOldValue(definition, value) + "`";
+            return "`" + base.FormatOldValue(definition, formatType, value) + "`";
         }
     }
 }

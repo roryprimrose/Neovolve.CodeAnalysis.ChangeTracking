@@ -63,7 +63,7 @@
             {
                 foreach (var attribute in list.Attributes)
                 {
-                    var definition = new AttributeDefinition(attribute);
+                    var definition = new AttributeDefinition(attribute, declaringItem);
 
                     definitions.Add(definition);
                 }

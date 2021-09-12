@@ -44,12 +44,11 @@
                 }
 
                 var args = new FormatArguments(
-                    $"{{DefinitionType}} {{Identifier}} has added the {{NewValue}} {ModifierLabel}{suffix}",
-                    match.NewItem.FullName,
+                    $"has added the {{NewValue}} {ModifierLabel}{suffix}",
                     null,
                     newModifiers);
 
-                var message = options.MessageFormatter.FormatItemChangedMessage(match, args);
+                var message = options.MessageFormatter.FormatMatch(match, ItemFormatType.ItemChanged, args);
 
                 var result = new ComparisonResult(
                     change,
@@ -70,12 +69,11 @@
                 }
 
                 var args = new FormatArguments(
-                    $"{{DefinitionType}} {{Identifier}} has removed the {{OldValue}} {ModifierLabel}{suffix}",
-                    match.NewItem.FullName,
+                    $"has removed the {{OldValue}} {ModifierLabel}{suffix}",
                     oldModifiers,
                     null);
 
-                var message = options.MessageFormatter.FormatItemChangedMessage(match, args);
+                var message = options.MessageFormatter.FormatMatch(match, ItemFormatType.ItemChanged, args);
 
                 var result = new ComparisonResult(
                     change,
@@ -97,12 +95,11 @@
                 }
 
                 var args = new FormatArguments(
-                    $"{{DefinitionType}} {{Identifier}} has changed the {ModifierLabel}{suffix} from {{OldValue}} to {{NewValue}}",
-                    match.NewItem.FullName,
+                    $"has changed the {ModifierLabel}{suffix} from {{OldValue}} to {{NewValue}}",
                     oldModifiers,
                     newModifiers);
 
-                var message = options.MessageFormatter.FormatItemChangedMessage(match, args);
+                var message = options.MessageFormatter.FormatMatch(match, ItemFormatType.ItemChanged, args);
 
                 var result = new ComparisonResult(
                     change,

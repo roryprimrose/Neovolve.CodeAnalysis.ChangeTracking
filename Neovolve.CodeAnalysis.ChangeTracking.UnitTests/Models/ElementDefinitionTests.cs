@@ -46,6 +46,11 @@
 
             sut.Attributes.First().Name.Should().Be("First");
             sut.Attributes.Skip(1).First().Name.Should().Be("Second");
+
+            foreach (var attribute in sut.Attributes)
+            {
+                attribute.DeclaringElement.Should().Be(sut);
+            }
         }
 
         [Fact]
@@ -63,6 +68,11 @@
             sut.Attributes.Skip(1).First().Name.Should().Be("Second");
             sut.Attributes.Skip(2).First().Name.Should().Be("Third");
             sut.Attributes.Skip(3).First().Name.Should().Be("Fourth");
+
+            foreach (var attribute in sut.Attributes)
+            {
+                attribute.DeclaringElement.Should().Be(sut);
+            }
         }
 
         [Fact]
@@ -81,6 +91,11 @@
             sut.Attributes.Skip(1).First().Name.Should().Be("Second");
             sut.Attributes.Skip(2).First().Name.Should().Be("Third");
             sut.Attributes.Skip(3).First().Name.Should().Be("Fourth");
+
+            foreach (var attribute in sut.Attributes)
+            {
+                attribute.DeclaringElement.Should().Be(sut);
+            }
         }
 
         [Fact]
@@ -102,6 +117,11 @@
             attributes.Skip(1).First().Name.Should().Be("Second");
             attributes.Skip(2).First().Name.Should().Be("Third");
             attributes.Skip(3).First().Name.Should().Be("Fourth");
+
+            foreach (var attribute in sut.Attributes)
+            {
+                attribute.DeclaringElement.Should().Be(sut);
+            }
         }
 
         [Fact]
@@ -117,6 +137,11 @@
 
             sut.Attributes.First().Name.Should().Be("First");
             sut.Attributes.Skip(1).First().Name.Should().Be("Second");
+
+            foreach (var attribute in sut.Attributes)
+            {
+                attribute.DeclaringElement.Should().Be(sut);
+            }
         }
 
         [Fact]
@@ -130,6 +155,11 @@
             sut.Attributes.Should().HaveCount(1);
 
             sut.Attributes.First().Name.Should().Be("My");
+
+            foreach (var attribute in sut.Attributes)
+            {
+                attribute.DeclaringElement.Should().Be(sut);
+            }
         }
 
         [Theory]

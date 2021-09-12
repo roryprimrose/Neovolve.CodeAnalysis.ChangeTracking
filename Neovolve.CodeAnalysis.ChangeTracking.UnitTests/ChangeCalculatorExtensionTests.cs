@@ -18,7 +18,7 @@
         public void CalculateChangesThrowsExceptionWithNullNewCodeSource()
         {
             var calculator = Substitute.For<IChangeCalculator>();
-            var oldCode = Model.UsingModule<ConfigurationModule>().Create<List<CodeSource>>();
+            var oldCode = Model.Create<List<CodeSource>>();
 
             Func<Task> action = async () => await calculator.CalculateChanges(oldCode, null!, CancellationToken.None)
                 .ConfigureAwait(false);
@@ -30,7 +30,7 @@
         public void CalculateChangesThrowsExceptionWithNullOldCodeSource()
         {
             var calculator = Substitute.For<IChangeCalculator>();
-            var newCode = Model.UsingModule<ConfigurationModule>().Create<List<CodeSource>>();
+            var newCode = Model.Create<List<CodeSource>>();
 
             Func<Task> action = async () => await calculator.CalculateChanges(null!, newCode, CancellationToken.None)
                 .ConfigureAwait(false);
@@ -121,8 +121,8 @@
         [Fact]
         public void CalculateChangesWithCodeSourceThrowsExceptionWithNullCalculator()
         {
-            var oldCode = Model.UsingModule<ConfigurationModule>().Create<List<CodeSource>>();
-            var newCode = Model.UsingModule<ConfigurationModule>().Create<List<CodeSource>>();
+            var oldCode = Model.Create<List<CodeSource>>();
+            var newCode = Model.Create<List<CodeSource>>();
 
             Func<Task> action = async () => await ChangeCalculatorExtensions
                 .CalculateChanges(null!, oldCode, newCode, CancellationToken.None).ConfigureAwait(false);

@@ -29,14 +29,14 @@
             if (match.OldItem.GetType() != match.NewItem.GetType())
             {
                 var newType = DetermineTypeChangeDescription(match.NewItem);
+                var oldType = DetermineTypeChangeDescription(match.OldItem);
 
                 var args = new FormatArguments(
-                    "{DefinitionType} {Identifier} has changed to {NewValue}",
-                    match.OldItem.FullName,
-                    null,
+                    "has changed type definition from {OldValue} to {NewValue}",
+                    oldType,
                     newType);
 
-                var message = options.MessageFormatter.FormatItemChangedMessage(match, args);
+                var message = options.MessageFormatter.FormatMatch(match, ItemFormatType.ItemChanged, args);
 
                 var result = new ComparisonResult(
                     SemVerChangeType.Breaking,

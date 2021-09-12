@@ -99,6 +99,6 @@
         /// <summary>
         ///     Gets or sets the message formatter creates the type change messages.
         /// </summary>
-        public IMessageFormatter MessageFormatter { get; set; } = new DefaultMessageFormatter();
+        public IMessageFormatter MessageFormatter { get; set; } = new DefaultMessageFormatter(new DefaultIdentifierFormatter());
     }
 }

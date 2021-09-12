@@ -16,15 +16,15 @@
             var oldItem = new TestClassDefinition();
             var newItem = new TestClassDefinition();
             var match = new ItemMatch<IClassDefinition>(oldItem, newItem);
-            var arguments = new FormatArguments(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), oldItem.Name,
+            var arguments = new FormatArguments(Guid.NewGuid().ToString(), oldItem.Name,
                 newItem.Name);
             var message = Guid.NewGuid().ToString();
-            var changeType = Model.UsingModule<ConfigurationModule>().Create<SemVerChangeType>();
+            var changeType = Model.Create<SemVerChangeType>();
 
             var aggregator = Substitute.For<IChangeResultAggregator>();
             var formatter = Substitute.For<IMessageFormatter>();
 
-            formatter.FormatItemChangedMessage(match, arguments).Returns(message);
+            formatter.FormatMatch(match, ItemFormatType.ItemChanged, arguments).Returns(message);
 
             aggregator.AddElementChangedResult(changeType, match, formatter, arguments);
 
@@ -41,7 +41,7 @@
             var oldItem = new TestClassDefinition();
             var newItem = new TestClassDefinition();
             var match = new ItemMatch<IClassDefinition>(oldItem, newItem);
-            var arguments = new FormatArguments(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), oldItem.Name,
+            var arguments = new FormatArguments(Guid.NewGuid().ToString(), oldItem.Name,
                 newItem.Name);
 
             var formatter = Substitute.For<IMessageFormatter>();
@@ -75,7 +75,7 @@
         {
             var oldItem = new TestClassDefinition();
             var newItem = new TestClassDefinition();
-            var arguments = new FormatArguments(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), oldItem.Name,
+            var arguments = new FormatArguments(Guid.NewGuid().ToString(), oldItem.Name,
                 newItem.Name);
 
             var aggregator = Substitute.For<IChangeResultAggregator>();
@@ -94,7 +94,7 @@
             var oldItem = new TestClassDefinition();
             var newItem = new TestClassDefinition();
             var match = new ItemMatch<IClassDefinition>(oldItem, newItem);
-            var arguments = new FormatArguments(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), oldItem.Name,
+            var arguments = new FormatArguments(Guid.NewGuid().ToString(), oldItem.Name,
                 newItem.Name);
 
             var aggregator = Substitute.For<IChangeResultAggregator>();

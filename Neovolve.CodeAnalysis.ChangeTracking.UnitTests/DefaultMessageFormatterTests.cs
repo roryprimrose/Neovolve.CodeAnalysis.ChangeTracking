@@ -9,274 +9,77 @@
     using NSubstitute;
     using Xunit;
 
-    public class DefaultMessageFormatterTests
+    public class DefaultMessageFormatterTests : Tests<DefaultMessageFormatter>
     {
-        public static IEnumerable<object[]> KnownDefinitionTypeDataSet()
-        {
-            var baseType = typeof(IItemDefinition);
-            var types = baseType.Assembly.GetTypes();
-            var definitionTypes = types.Where(x => x.IsInterface 
-
-                                                   // Ignore interfaces that are implemented by other definition interfaces
-                                                   && x != baseType
-                                                   && x != typeof(IElementDefinition)
-                                                   && x != typeof(IGenericTypeElement)
-                                                   && x != typeof(IMemberDefinition)
-                                                   && x != typeof(IBaseTypeDefinition)
-                                                   && x != typeof(IBaseTypeDefinition<>)
-                                                   && x != typeof(ITypeDefinition)
-                                                   && x != typeof(IModifiersElement<>)
-                                                   && x != typeof(IAccessModifiersElement<>)
-                                                   && baseType.IsAssignableFrom(x));
-
-            return definitionTypes.Select(x => new[] {x});
-        }
-
         [Theory]
-        [InlineData(ArgumentType.Ordinal, "Ordinal argument")]
-        [InlineData(ArgumentType.Named, "Named argument")]
-        public void FormatItemAddedMessageDeterminesDefinitionTypeBasedOnArgumentType(ArgumentType argumentType,
-            string expected)
+        [InlineData("type reference", "Type reference")]
+        [InlineData("Type reference", "Type reference")]
+        public void FormatItemChangedMessageFormatsMessageWithProvidedArguments(string prefix, string expectedPrefix)
         {
-            const string? messageFormat = "{DefinitionType} {Identifier}";
-            var identifier = Guid.NewGuid().ToString();
-            var arguments = new FormatArguments(messageFormat, identifier, null, null);
-
-            var definition = Substitute.For<IArgumentDefinition>();
-
-            definition.ArgumentType.Returns(argumentType);
-
-            var sut = new DefaultMessageFormatter();
-
-            var actual = sut.FormatItemAddedMessage(definition, arguments!);
-
-            actual.Should().Be($"{expected} {identifier}");
-        }
-
-        [Theory]
-        [InlineData(typeof(IClassDefinition), "Class")]
-        [InlineData(typeof(IInterfaceDefinition), "Interface")]
-        [InlineData(typeof(IConstraintListDefinition), "Generic constraint")]
-        [InlineData(typeof(IPropertyDefinition), "Property")]
-        [InlineData(typeof(IPropertyAccessorDefinition), "Property accessor")]
-        [InlineData(typeof(IFieldDefinition), "Field")]
-        [InlineData(typeof(IAttributeDefinition), "Attribute")]
-        [InlineData(typeof(IItemDefinition), "Element")]
-        public void FormatItemAddedMessageDeterminesDefinitionTypeBasedOnDefinitionType(Type definitionType,
-            string expected)
-        {
-            const string? messageFormat = "{DefinitionType} {Identifier}";
-            var identifier = Guid.NewGuid().ToString();
-            var arguments = new FormatArguments(messageFormat, identifier, null, null);
-
-            var definition = (IItemDefinition) Substitute.For(new[] {definitionType}, Array.Empty<object>());
-
-            var sut = new DefaultMessageFormatter();
-
-            var actual = sut.FormatItemAddedMessage(definition, arguments!);
-
-            actual.Should().Be($"{expected} {identifier}");
-        }
-
-        [Fact]
-        public void FormatItemAddedMessageFormatsMessageWithProvidedArguments()
-        {
-            const string? messageFormat = "{DefinitionType} - {Identifier} - {OldValue} - {NewValue}";
+            const string? messageFormat = "{Identifier} - {OldValue} - {NewValue}";
             var identifier = Guid.NewGuid().ToString();
             var oldValue = Guid.NewGuid().ToString();
             var newValue = Guid.NewGuid().ToString();
-            var arguments = new FormatArguments(messageFormat, identifier, oldValue, newValue);
-
-            var definition = Substitute.For<IClassDefinition>();
-
-            var sut = new DefaultMessageFormatter();
-
-            var actual = sut.FormatItemAddedMessage(definition, arguments!);
-
-            actual.Should().Be($"Class - {identifier} - {oldValue} - {newValue}");
-        }
-
-        [Theory]
-        [MemberData(nameof(KnownDefinitionTypeDataSet))]
-        public void FormatItemAddedMessageMapsKnownDefinitionTypes(Type definitionType)
-        {
-            const string? messageFormat = "{DefinitionType} {Identifier}";
-            var identifier = Guid.NewGuid().ToString();
-            var arguments = new FormatArguments(messageFormat, identifier, null, null);
-
-            var definition = (IItemDefinition) Substitute.For(new[] {definitionType}, Array.Empty<object>());
-
-            var sut = new DefaultMessageFormatter();
-
-            var actual = sut.FormatItemAddedMessage(definition, arguments!);
-
-            actual.Should().NotStartWith("Element ");
-        }
-
-        [Fact]
-        public void FormatItemAddedMessageThrowsExceptionWithNullArguments()
-        {
-            var definition = Substitute.For<IItemDefinition>();
-
-            var sut = new DefaultMessageFormatter();
-
-            Action action = () => sut.FormatItemAddedMessage(definition, null!);
-
-            action.Should().Throw<ArgumentNullException>();
-        }
-
-        [Fact]
-        public void FormatItemAddedMessageThrowsExceptionWithNullDefinition()
-        {
-            var arguments = Model.UsingModule<ConfigurationModule>().Create<FormatArguments>();
-
-            var sut = new DefaultMessageFormatter();
-
-            Action action = () => sut.FormatItemAddedMessage(null!, arguments);
-
-            action.Should().Throw<ArgumentNullException>();
-        }
-
-        [Theory]
-        [InlineData(ArgumentType.Ordinal, "Ordinal argument")]
-        [InlineData(ArgumentType.Named, "Named argument")]
-        public void FormatItemChangedMessageDeterminesDefinitionTypeBasedOnArgumentType(ArgumentType argumentType,
-            string expected)
-        {
-            const string? messageFormat = "{DefinitionType} {Identifier}";
-            var identifier = Guid.NewGuid().ToString();
-            var arguments = new FormatArguments(messageFormat, identifier, null, null);
-
-            var firstDefinition = Substitute.For<IArgumentDefinition>();
-            var secondDefinition = Substitute.For<IArgumentDefinition>();
-            var match = new ItemMatch<IArgumentDefinition>(firstDefinition, secondDefinition);
-
-            firstDefinition.ArgumentType.Returns(argumentType);
-            secondDefinition.ArgumentType.Returns(argumentType);
-
-            var sut = new DefaultMessageFormatter();
-
-            var actual = sut.FormatItemChangedMessage(match, arguments!);
-
-            actual.Should().Be($"{expected} {identifier}");
-        }
-
-        [Fact]
-        public void FormatItemChangedMessageFormatsMessageWithProvidedArguments()
-        {
-            const string? messageFormat = "{DefinitionType} - {Identifier} - {OldValue} - {NewValue}";
-            var identifier = Guid.NewGuid().ToString();
-            var oldValue = Guid.NewGuid().ToString();
-            var newValue = Guid.NewGuid().ToString();
-            var arguments = new FormatArguments(messageFormat, identifier, oldValue, newValue);
+            var arguments = new FormatArguments(messageFormat, oldValue, newValue);
 
             var firstDefinition = Substitute.For<IClassDefinition>();
             var secondDefinition = Substitute.For<IClassDefinition>();
             var match = new ItemMatch<IClassDefinition>(firstDefinition, secondDefinition);
 
-            var sut = new DefaultMessageFormatter();
+            Service<IIdentifierFormatter>().FormatIdentifier(match.NewItem, ItemFormatType.ItemChanged)
+                .Returns(prefix + " " + identifier);
 
-            var actual = sut.FormatItemChangedMessage(match, arguments!);
+            var actual = SUT.FormatMatch(match, ItemFormatType.ItemChanged, arguments);
 
-            actual.Should().Be($"Class - {identifier} - {oldValue} - {newValue}");
+            actual.Should().Be($"{expectedPrefix} {identifier} - {oldValue} - {newValue}");
         }
 
         [Theory]
-        [MemberData(nameof(KnownDefinitionTypeDataSet))]
-        public void FormatItemChangedMessageMapsKnownDefinitionTypes(Type definitionType)
+        [InlineData("type reference", "Type reference")]
+        [InlineData("Type reference", "Type reference")]
+        public void FormatItemFormatsMessageWithProvidedArguments(string prefix, string expectedPrefix)
         {
-            const string? messageFormat = "{DefinitionType} {Identifier}";
-            var identifier = Guid.NewGuid().ToString();
-            var arguments = new FormatArguments(messageFormat, identifier, null, null);
-
-            var definition = (IItemDefinition) Substitute.For(new[] {definitionType}, Array.Empty<object>());
-
-            var sut = new DefaultMessageFormatter();
-
-            var actual = sut.FormatItemRemovedMessage(definition, arguments!);
-
-            actual.Should().NotStartWith("Element ");
-        }
-
-        [Theory]
-        [InlineData(ArgumentType.Ordinal, "Ordinal argument")]
-        [InlineData(ArgumentType.Named, "Named argument")]
-        public void FormatItemRemovedMessageDeterminesDefinitionTypeBasedOnArgumentType(ArgumentType argumentType,
-            string expected)
-        {
-            const string? messageFormat = "{DefinitionType} {Identifier}";
-            var identifier = Guid.NewGuid().ToString();
-            var arguments = new FormatArguments(messageFormat, identifier, null, null);
-
-            var definition = Substitute.For<IArgumentDefinition>();
-
-            definition.ArgumentType.Returns(argumentType);
-
-            var sut = new DefaultMessageFormatter();
-
-            var actual = sut.FormatItemRemovedMessage(definition, arguments!);
-
-            actual.Should().Be($"{expected} {identifier}");
-        }
-
-        [Theory]
-        [InlineData(typeof(IClassDefinition), "Class")]
-        [InlineData(typeof(IInterfaceDefinition), "Interface")]
-        [InlineData(typeof(IConstraintListDefinition), "Generic constraint")]
-        [InlineData(typeof(IPropertyDefinition), "Property")]
-        [InlineData(typeof(IPropertyAccessorDefinition), "Property accessor")]
-        [InlineData(typeof(IFieldDefinition), "Field")]
-        [InlineData(typeof(IAttributeDefinition), "Attribute")]
-        [InlineData(typeof(IItemDefinition), "Element")]
-        public void FormatItemRemovedMessageDeterminesDefinitionTypeBasedOnDefinitionType(Type definitionType,
-            string expected)
-        {
-            const string? messageFormat = "{DefinitionType} {Identifier}";
-            var identifier = Guid.NewGuid().ToString();
-            var arguments = new FormatArguments(messageFormat, identifier, null, null);
-
-            var definition = (IItemDefinition) Substitute.For(new[] {definitionType}, Array.Empty<object>());
-
-            var sut = new DefaultMessageFormatter();
-
-            var actual = sut.FormatItemRemovedMessage(definition, arguments!);
-
-            actual.Should().Be($"{expected} {identifier}");
-        }
-
-        [Fact]
-        public void FormatItemRemovedMessageFormatsMessageWithProvidedArguments()
-        {
-            const string? messageFormat = "{DefinitionType} - {Identifier} - {OldValue} - {NewValue}";
+            const string? messageFormat = "{Identifier} - {OldValue} - {NewValue}";
             var identifier = Guid.NewGuid().ToString();
             var oldValue = Guid.NewGuid().ToString();
             var newValue = Guid.NewGuid().ToString();
-            var arguments = new FormatArguments(messageFormat, identifier, oldValue, newValue);
+            var arguments = new FormatArguments(messageFormat, oldValue, newValue);
 
             var definition = Substitute.For<IClassDefinition>();
 
-            var sut = new DefaultMessageFormatter();
+            Service<IIdentifierFormatter>().FormatIdentifier(definition, ItemFormatType.ItemAdded).Returns(prefix + " " + identifier);
 
-            var actual = sut.FormatItemRemovedMessage(definition, arguments!);
+            var actual = SUT.FormatItem(definition, ItemFormatType.ItemAdded, arguments);
 
-            actual.Should().Be($"Class - {identifier} - {oldValue} - {newValue}");
+            actual.Should().Be($"{expectedPrefix} {identifier} - {oldValue} - {newValue}");
         }
 
-        [Theory]
-        [MemberData(nameof(KnownDefinitionTypeDataSet))]
-        public void FormatItemRemovedMessageMapsKnownDefinitionTypes(Type definitionType)
+        [Fact]
+        public void FormatItemThrowsExceptionWithNullArguments()
         {
-            const string? messageFormat = "{DefinitionType} {Identifier}";
-            var identifier = Guid.NewGuid().ToString();
-            var arguments = new FormatArguments(messageFormat, identifier, null, null);
+            var definition = Substitute.For<IItemDefinition>();
 
-            var definition = (IItemDefinition) Substitute.For(new[] {definitionType}, Array.Empty<object>());
+            Action action = () => SUT.FormatItem(definition, ItemFormatType.ItemAdded, null!);
 
-            var sut = new DefaultMessageFormatter();
+            action.Should().Throw<ArgumentNullException>();
+        }
 
-            var actual = sut.FormatItemRemovedMessage(definition, arguments!);
+        [Fact]
+        public void FormatItemThrowsExceptionWithNullDefinition()
+        {
+            var arguments = Model.Create<FormatArguments>();
 
-            actual.Should().NotStartWith("Element ");
+            Action action = () => SUT.FormatItem(null!, ItemFormatType.ItemChanged, arguments);
+
+            action.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
+        public void ThrowsExceptionWhenCreatedWithNullIdentifyFormatter()
+        {
+            Action action = () => new DefaultMessageFormatter(null!);
+
+            action.Should().Throw<ArgumentNullException>();
         }
     }
 }

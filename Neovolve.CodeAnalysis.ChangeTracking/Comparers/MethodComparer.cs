@@ -59,8 +59,7 @@
             }
 
             var args = new FormatArguments(
-                "{DefinitionType} {Identifier} has been renamed to {NewValue}",
-                match.OldItem.FullName,
+                "has been renamed to {NewValue}",
                 null,
                 match.NewItem.Name);
 
@@ -115,8 +114,7 @@
                 // One or more generic type parameters have been added or removed
                 var suffix = shiftAmount == 1 ? "" : "s";
                 var args = new FormatArguments(
-                    $"{{DefinitionType}} {{Identifier}} has {changeLabel} {shiftAmount} parameter{suffix}",
-                    match.NewItem.FullName,
+                    $"has {changeLabel} {shiftAmount} parameter{suffix}",
                     null,
                     null);
 
