@@ -69,12 +69,13 @@
         }
 
         [Theory]
-        [InlineData(MethodDefinitionCode.ClassWithMethod, "GetValue")]
-        [InlineData(MethodDefinitionCode.InterfaceWithMethod, "GetValue")]
-        [InlineData(MethodDefinitionCode.StructWithMethod, "GetValue")]
-        [InlineData(MethodDefinitionCode.ClassWithMethodInGenericType, "GetValue")]
-        [InlineData(MethodDefinitionCode.ClassWithGenericMethod, "GetValue<T>")]
-        [InlineData(MethodDefinitionCode.ClassWithExplicitInterfaceMethod, "IDisposable.Dispose")]
+        [InlineData(MethodDefinitionCode.ClassWithMethod, "GetValue()")]
+        [InlineData(MethodDefinitionCode.InterfaceWithMethod, "GetValue()")]
+        [InlineData(MethodDefinitionCode.StructWithMethod, "GetValue()")]
+        [InlineData(MethodDefinitionCode.ClassWithMethodInGenericType, "GetValue()")]
+        [InlineData(MethodDefinitionCode.ClassWithGenericMethod, "GetValue<T>()")]
+        [InlineData(MethodDefinitionCode.ClassWithExplicitInterfaceMethod, "IDisposable.Dispose()")]
+        [InlineData(MethodDefinitionCode.MethodWithMultipleParameters, "GetValue<T, V>(V, object[])")]
         public async Task FullNameReturnsNameFromMethodAndDeclaringType(string code, string expected)
         {
             var parentFullName = Guid.NewGuid().ToString();
@@ -243,12 +244,13 @@
         }
 
         [Theory]
-        [InlineData(MethodDefinitionCode.ClassWithMethod, "GetValue")]
-        [InlineData(MethodDefinitionCode.InterfaceWithMethod, "GetValue")]
-        [InlineData(MethodDefinitionCode.StructWithMethod, "GetValue")]
-        [InlineData(MethodDefinitionCode.ClassWithMethodInGenericType, "GetValue")]
-        [InlineData(MethodDefinitionCode.ClassWithGenericMethod, "GetValue<T>")]
-        [InlineData(MethodDefinitionCode.ClassWithExplicitInterfaceMethod, "IDisposable.Dispose")]
+        [InlineData(MethodDefinitionCode.ClassWithMethod, "GetValue()")]
+        [InlineData(MethodDefinitionCode.InterfaceWithMethod, "GetValue()")]
+        [InlineData(MethodDefinitionCode.StructWithMethod, "GetValue()")]
+        [InlineData(MethodDefinitionCode.ClassWithMethodInGenericType, "GetValue()")]
+        [InlineData(MethodDefinitionCode.ClassWithGenericMethod, "GetValue<T>()")]
+        [InlineData(MethodDefinitionCode.ClassWithExplicitInterfaceMethod, "IDisposable.Dispose()")]
+        [InlineData(MethodDefinitionCode.MethodWithMultipleParameters, "GetValue<T, V>(V, object[])")]
         public async Task NameReturnsNameFromMethod(string code, string expected)
         {
             var parentFullName = Guid.NewGuid().ToString();

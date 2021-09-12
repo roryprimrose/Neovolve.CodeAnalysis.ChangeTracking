@@ -47,11 +47,11 @@
 
             sut.Methods.Should().HaveCount(2);
             
-            var normalMethod = sut.Methods.First(x => x.Name == "GetValue");
+            var normalMethod = sut.Methods.First(x => x.Name == "GetValue(string, bool, int)");
 
             normalMethod.HasBody.Should().BeFalse();
 
-            var defaultMethod = sut.Methods.First(x => x.Name == "DoSomething");
+            var defaultMethod = sut.Methods.First(x => x.Name == "DoSomething()");
 
             defaultMethod.HasBody.Should().BeTrue();
         }

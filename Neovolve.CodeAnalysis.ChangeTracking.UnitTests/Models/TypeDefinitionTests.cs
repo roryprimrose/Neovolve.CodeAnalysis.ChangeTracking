@@ -545,7 +545,7 @@
             firstDefinition.MergePartialType(secondDefinition);
 
             firstDefinition.Methods.Count.Should().Be(2);
-            firstDefinition.Methods.Should().Contain(x => x.Name == "GetValue");
+            firstDefinition.Methods.Should().Contain(x => x.Name == "GetValue(string, bool, int)");
             firstDefinition.Methods.Should().Contain(secondDefinition.Methods);
             firstDefinition.Methods.All(x => x.DeclaringType == firstDefinition).Should().BeTrue();
         }
@@ -637,7 +637,7 @@
 
             var method = sut.Methods.Single();
 
-            method.Name.Should().Be("GetValue");
+            method.Name.Should().Be("GetValue(string, bool, int)");
             method.Parameters.Count.Should().Be(3);
         }
 
@@ -652,7 +652,7 @@
 
             var method = sut.Methods.Single();
 
-            method.Name.Should().Be("GetValue");
+            method.Name.Should().Be("GetValue(string, bool, int)");
             method.Parameters.Count.Should().Be(3);
         }
 
@@ -667,7 +667,7 @@
 
             var method = sut.Methods.Single();
 
-            method.Name.Should().Be("GetValue");
+            method.Name.Should().Be("GetValue(string, bool, int)");
             method.Parameters.Count.Should().Be(3);
         }
 

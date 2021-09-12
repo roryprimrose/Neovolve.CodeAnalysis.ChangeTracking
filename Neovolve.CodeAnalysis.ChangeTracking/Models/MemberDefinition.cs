@@ -73,5 +73,24 @@
 
         /// <inheritdoc />
         public abstract string ReturnType { get; }
+
+        protected string BuildParameterTypeList(BaseMethodDeclarationSyntax node)
+        {
+            var parameterList = string.Empty;
+
+            // We can't reference the parameters list here because it hasn't been built by the time we need to calculate the name
+            // The reason for this is because building the parameter models needs a reference to the constructor name which we are building here
+            foreach (var parameter in node.ParameterList.Parameters)
+            {
+                if (parameterList.Length > 0)
+                {
+                    parameterList += ", ";
+                }
+
+                parameterList += parameter.Type?.ToString() ?? parameter.Identifier.Text;
+            }
+
+            return parameterList;
+        }
     }
 }
