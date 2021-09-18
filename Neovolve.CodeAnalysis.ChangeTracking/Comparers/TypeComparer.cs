@@ -26,6 +26,18 @@
             _methodProcessor = methodProcessor ?? throw new ArgumentNullException(nameof(methodProcessor));
         }
 
+        protected override void EvaluateAccessModifierChanges(
+            ItemMatch<T> match,
+            ComparerOptions options,
+            IChangeResultAggregator aggregator)
+        {
+            var convertedMatch = new ItemMatch<IAccessModifiersElement<AccessModifiers>>(match.OldItem, match.NewItem);
+
+            var results = _accessModifiersComparer.CompareMatch(convertedMatch, options);
+
+            aggregator.AddResults(results);
+        }
+
         protected override void EvaluateChildElementChanges(ItemMatch<T> match, ComparerOptions options,
             IChangeResultAggregator aggregator)
         {
@@ -37,18 +49,7 @@
             RunComparisonStep(EvaluateMethodChanges, match, options, aggregator);
             RunComparisonStep(EvaluatePropertyChanges, match, options, aggregator);
         }
-
-        protected override void EvaluateModifierChanges(ItemMatch<T> match, ComparerOptions options,
-            IChangeResultAggregator aggregator)
-        {
-            match = match ?? throw new ArgumentNullException(nameof(match));
-            options = options ?? throw new ArgumentNullException(nameof(options));
-
-            base.EvaluateModifierChanges(match, options, aggregator);
-
-            RunComparisonStep(EvaluateAccessModifierChanges, match, options, aggregator, true);
-        }
-
+        
         protected override void EvaluateSignatureChanges(ItemMatch<T> match, ComparerOptions options,
             IChangeResultAggregator aggregator)
         {
@@ -81,7 +82,8 @@
             if (match.OldItem.Namespace != match.NewItem.Namespace)
             {
                 var args = new FormatArguments(
-                    "has changed namespace from {OldValue} to {NewValue}", match.OldItem.Namespace, match.NewItem.Namespace);
+                    "has changed namespace from {OldValue} to {NewValue}", match.OldItem.Namespace,
+                    match.NewItem.Namespace);
 
                 aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
             }
@@ -113,18 +115,6 @@
 
                 aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
             }
-        }
-
-        private void EvaluateAccessModifierChanges(
-            ItemMatch<T> match,
-            ComparerOptions options,
-            IChangeResultAggregator aggregator)
-        {
-            var convertedMatch = new ItemMatch<IAccessModifiersElement<AccessModifiers>>(match.OldItem, match.NewItem);
-
-            var results = _accessModifiersComparer.CompareMatch(convertedMatch, options);
-
-            aggregator.AddResults(results);
         }
 
         private void EvaluateGenericTypeDefinitionChanges(

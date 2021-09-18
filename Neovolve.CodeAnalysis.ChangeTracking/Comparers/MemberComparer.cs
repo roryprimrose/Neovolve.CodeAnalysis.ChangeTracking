@@ -16,15 +16,16 @@
                                        ?? throw new ArgumentNullException(nameof(accessModifiersComparer));
         }
 
-        protected override void EvaluateModifierChanges(ItemMatch<T> match, ComparerOptions options,
+        protected override void EvaluateAccessModifierChanges(
+            ItemMatch<T> match,
+            ComparerOptions options,
             IChangeResultAggregator aggregator)
         {
-            match = match ?? throw new ArgumentNullException(nameof(match));
-            options = options ?? throw new ArgumentNullException(nameof(options));
+            var convertedMatch = new ItemMatch<IAccessModifiersElement<AccessModifiers>>(match.OldItem, match.NewItem);
 
-            base.EvaluateModifierChanges(match, options, aggregator);
+            var results = _accessModifiersComparer.CompareMatch(convertedMatch, options);
 
-            RunComparisonStep(EvaluateAccessModifierChanges, match, options, aggregator, true);
+            aggregator.AddResults(results);
         }
 
         protected override void EvaluateSignatureChanges(ItemMatch<T> match, ComparerOptions options,
@@ -76,21 +77,10 @@
             var changeType = oldMappedType == "void" ? SemVerChangeType.Feature : SemVerChangeType.Breaking;
 
             var args = new FormatArguments(
-                "return type has changed from {OldValue} to {NewValue}", match.OldItem.ReturnType, match.NewItem.ReturnType);
+                "return type has changed from {OldValue} to {NewValue}", match.OldItem.ReturnType,
+                match.NewItem.ReturnType);
 
             aggregator.AddElementChangedResult(changeType, match, options.MessageFormatter, args);
-        }
-
-        private void EvaluateAccessModifierChanges(
-            ItemMatch<T> match,
-            ComparerOptions options,
-            IChangeResultAggregator aggregator)
-        {
-            var convertedMatch = new ItemMatch<IAccessModifiersElement<AccessModifiers>>(match.OldItem, match.NewItem);
-
-            var results = _accessModifiersComparer.CompareMatch(convertedMatch, options);
-
-            aggregator.AddResults(results);
         }
     }
 }

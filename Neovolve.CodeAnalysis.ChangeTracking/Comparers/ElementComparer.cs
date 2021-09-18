@@ -21,42 +21,16 @@
 
             var aggregator = new ChangeResultAggregator();
 
-            // We don't want this member to be virtual because we need to ensure that the evaluation of IsVisible occurs before any other evaluation in derived classes
-            // If this method was virtual, a derived class could run evaluations that push results onto the aggregator before the logic here has a chance to ignore changes
-            // on elements based on their visibility
-
-            // Neither element is visible so don't bother evaluating changes
-            if (match.OldItem.IsVisible == false
-                && match.NewItem.IsVisible == false)
-            {
-                // It doesn't matter if there is a change to the element because it isn't visible anyway
-                // No need to check for further changes
-                return aggregator.Results;
-            }
-
-            // If the member was previously hidden but is now visible then we need to record this as a feature change even if other comparison checks look like a breaking change
-            // For example, changing the return type is still a feature change if the element is moving from private to public
-            // If the member was previously visible but is now hidden then this is a breaking change and further comparison checks are not required
-            if (match.OldItem.IsVisible != match.NewItem.IsVisible)
-            {
-                var oldAccessModifiers = match.OldItem.GetDeclaredAccessModifiers();
-                var newAccessModifiers = match.NewItem.GetDeclaredAccessModifiers();
-
-                var formatArguments = new FormatArguments(
-                    "access modifiers have changed from {OldValue} to {NewValue}",
-                    oldAccessModifiers,
-                    newAccessModifiers);
-
-                var changeType = match.OldItem.IsVisible ? SemVerChangeType.Breaking : SemVerChangeType.Feature;
-
-                aggregator.AddElementChangedResult(changeType, match, options.MessageFormatter, formatArguments);
-
-                return aggregator.Results;
-            }
-
             EvaluateElementMatch(match, options, aggregator);
 
             return aggregator.Results;
+        }
+
+        protected virtual void EvaluateAccessModifierChanges(
+            ItemMatch<T> match,
+            ComparerOptions options,
+            IChangeResultAggregator aggregator)
+        {
         }
 
         protected virtual void EvaluateChildElementChanges(
@@ -71,6 +45,7 @@
             ComparerOptions options,
             IChangeResultAggregator aggregator)
         {
+            RunComparisonStep(EvaluateAccessModifierChanges, match, options, aggregator, true);
             RunComparisonStep(EvaluateTypeDefinitionChanges, match, options, aggregator, true);
             RunComparisonStep(EvaluateModifierChanges, match, options, aggregator, true);
             RunComparisonStep(EvaluateSignatureChanges, match, options, aggregator, true);

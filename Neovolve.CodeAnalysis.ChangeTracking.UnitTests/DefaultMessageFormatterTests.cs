@@ -1,8 +1,6 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using FluentAssertions;
     using ModelBuilder;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;

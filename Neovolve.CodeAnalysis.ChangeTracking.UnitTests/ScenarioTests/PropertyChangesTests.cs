@@ -506,7 +506,7 @@ namespace MyNamespace
 }
 ";
 
-        public string SingleProperty => @"
+        public const string SingleProperty = @"
 namespace MyNamespace 
 {
     [ClassAttribute(123, false, myName: ""on the class"")]
