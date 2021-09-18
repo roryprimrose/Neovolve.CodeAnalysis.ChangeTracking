@@ -25,6 +25,19 @@
                                         ?? throw new ArgumentNullException(nameof(enumMemberMatchProcessor));
         }
 
+        protected override void EvaluateAccessModifierChanges(
+            ItemMatch<IEnumDefinition> match,
+            ComparerOptions options,
+            IChangeResultAggregator aggregator)
+        {
+            var convertedMatch =
+                new ItemMatch<IAccessModifiersElement<EnumAccessModifiers>>(match.OldItem, match.NewItem);
+
+            var results = _enumAccessModifiersComparer.CompareMatch(convertedMatch, options);
+
+            aggregator.AddResults(results);
+        }
+
         protected override void EvaluateChildElementChanges(ItemMatch<IEnumDefinition> match, ComparerOptions options,
             IChangeResultAggregator aggregator)
         {
@@ -35,18 +48,7 @@
 
             aggregator.AddResults(results);
         }
-
-        protected override void EvaluateModifierChanges(ItemMatch<IEnumDefinition> match, ComparerOptions options,
-            IChangeResultAggregator aggregator)
-        {
-            match = match ?? throw new ArgumentNullException(nameof(match));
-            options = options ?? throw new ArgumentNullException(nameof(options));
-
-            base.EvaluateModifierChanges(match, options, aggregator);
-
-            RunComparisonStep(EvaluateAccessModifierChanges, match, options, aggregator, true);
-        }
-
+        
         protected override void EvaluateTypeDefinitionChanges(ItemMatch<IEnumDefinition> match, ComparerOptions options,
             IChangeResultAggregator aggregator)
         {
@@ -68,7 +70,8 @@
             if (match.OldItem.Namespace != match.NewItem.Namespace)
             {
                 var args = new FormatArguments(
-                    "has changed namespace from {OldValue} to {NewValue}", match.OldItem.Namespace, match.NewItem.Namespace);
+                    "has changed namespace from {OldValue} to {NewValue}", match.OldItem.Namespace,
+                    match.NewItem.Namespace);
 
                 aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
             }
@@ -148,19 +151,6 @@
 
                 aggregator.AddResult(result);
             }
-        }
-
-        private void EvaluateAccessModifierChanges(
-            ItemMatch<IEnumDefinition> match,
-            ComparerOptions options,
-            IChangeResultAggregator aggregator)
-        {
-            var convertedMatch =
-                new ItemMatch<IAccessModifiersElement<EnumAccessModifiers>>(match.OldItem, match.NewItem);
-
-            var results = _enumAccessModifiersComparer.CompareMatch(convertedMatch, options);
-
-            aggregator.AddResults(results);
         }
     }
 }

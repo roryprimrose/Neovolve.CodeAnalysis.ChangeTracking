@@ -17,18 +17,7 @@
                                                            nameof(propertyAccessorAccessModifiersComparer));
         }
 
-        protected override void EvaluateModifierChanges(ItemMatch<IPropertyAccessorDefinition> match,
-            ComparerOptions options, IChangeResultAggregator aggregator)
-        {
-            match = match ?? throw new ArgumentNullException(nameof(match));
-            options = options ?? throw new ArgumentNullException(nameof(options));
-
-            base.EvaluateModifierChanges(match, options, aggregator);
-
-            RunComparisonStep(EvaluateAccessModifierChanges, match, options, aggregator, true);
-        }
-
-        private void EvaluateAccessModifierChanges(
+        protected override void EvaluateAccessModifierChanges(
             ItemMatch<IPropertyAccessorDefinition> match,
             ComparerOptions options,
             IChangeResultAggregator aggregator)

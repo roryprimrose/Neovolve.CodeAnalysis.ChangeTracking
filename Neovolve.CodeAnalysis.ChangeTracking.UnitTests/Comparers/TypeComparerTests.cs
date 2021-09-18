@@ -13,7 +13,7 @@
     using Xunit;
     using Xunit.Abstractions;
 
-    public class TypeComparerTests : Tests<TypeComparer<IClassDefinition>>
+    public class TypeComparerTests : TestsPartOf<TypeComparer<IClassDefinition>>
     {
         private readonly ITestOutputHelper _output;
 
