@@ -31,28 +31,72 @@
         private static bool EvaluateArgumentCount(ItemMatch<IAttributeDefinition> match, ComparerOptions options,
             IChangeResultAggregator aggregator)
         {
-            var oldArguments = match.OldItem.Arguments.Count;
-            var newArguments = match.NewItem.Arguments.Count;
+            var oldArguments = match.OldItem.Arguments;
+            var oldArgumentCount = oldArguments.Count;
+            var newArguments = match.NewItem.Arguments;
+            var newArgumentCount = newArguments.Count;
 
-            var argumentShift = oldArguments - newArguments;
+            var argumentShift = oldArgumentCount - newArgumentCount;
 
-            if (argumentShift != 0)
+            if (argumentShift == 0)
             {
-                // One or more arguments have been added or removed
-                var changeLabel = argumentShift > 0 ? "removed" : "added";
-                var shiftAmount = Math.Abs(argumentShift);
-
-                var suffix = shiftAmount == 1 ? "" : "s";
-                var args = new FormatArguments(
-                    $"has {changeLabel} {shiftAmount} argument{suffix}", null, null);
-
-                aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
-
-                // No need to look into how the attribute has changed
-                return true;
+                return false;
             }
 
-            return false;
+            // One or more arguments have been added or removed
+            var changeLabel = argumentShift > 0 ? "removed" : "added";
+            var shiftAmount = Math.Abs(argumentShift);
+            var suffix = shiftAmount == 1 ? "" : "s";
+            var args = new FormatArguments(
+                $"has {changeLabel} {shiftAmount} argument{suffix}", null, null);
+
+            var oldNamedArguments = oldArguments.Where(x => x.ArgumentType == ArgumentType.Named).ToList();
+            var newNamedArguments = newArguments.Where(x => x.ArgumentType == ArgumentType.Named).ToList();
+
+            if (shiftAmount == 1
+                && oldNamedArguments.Count != newNamedArguments.Count)
+            {
+                // Attempt to be more specific about the argument change
+                // In this case there is a named argument that has been 
+                var oldNames = oldNamedArguments.Select(x => x.ParameterName).ToList();
+                var newNames = newNamedArguments.Select(x => x.ParameterName).ToList();
+
+                var union = oldNames.Union(newNames);
+                var intersection = oldNames.Intersect(newNames);
+                var differences = union.Except(intersection).ToList();
+
+                if (differences.Count == 1)
+                {
+                    var parameterName = differences[0];
+
+                    // We have a change to just one named argument so we can make the change message more specific
+                    if (argumentShift > 0)
+                    {
+                        // Old named argument has been removed
+                        // Find the old named argument
+                        var oldArgument = oldNamedArguments.First(x => x.ParameterName == parameterName);
+
+                        aggregator.AddElementRemovedResult(SemVerChangeType.Breaking, oldArgument,
+                            options.MessageFormatter);
+
+                        return true;
+                    }
+
+                    // New named argument has been added
+                    // Find the new named argument
+                    var newArgument = newNamedArguments.First(x => x.ParameterName == parameterName);
+
+                    aggregator.AddElementAddedResult(SemVerChangeType.Breaking, newArgument,
+                        options.MessageFormatter);
+
+                    return true;
+                }
+            }
+
+            aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
+
+            // No need to look into how the attribute has changed
+            return true;
         }
 
         private static void EvaluateArgumentDefinitionChanges(

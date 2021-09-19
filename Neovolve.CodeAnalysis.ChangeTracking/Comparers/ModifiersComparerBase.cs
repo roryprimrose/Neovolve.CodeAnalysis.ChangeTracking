@@ -44,7 +44,7 @@
                 }
 
                 var args = new FormatArguments(
-                    $"has added the {{NewValue}} {ModifierLabel}{suffix}",
+                    $"has added the {MessagePart.NewValue} {ModifierLabel}{suffix}",
                     null,
                     newModifiers);
 
@@ -69,7 +69,7 @@
                 }
 
                 var args = new FormatArguments(
-                    $"has removed the {{OldValue}} {ModifierLabel}{suffix}",
+                    $"has removed the {MessagePart.OldValue} {ModifierLabel}{suffix}",
                     oldModifiers,
                     null);
 
@@ -95,7 +95,7 @@
                 }
 
                 var args = new FormatArguments(
-                    $"has changed the {ModifierLabel}{suffix} from {{OldValue}} to {{NewValue}}",
+                    $"has changed the {ModifierLabel}{suffix} from {MessagePart.OldValue} to {MessagePart.NewValue}",
                     oldModifiers,
                     newModifiers);
 

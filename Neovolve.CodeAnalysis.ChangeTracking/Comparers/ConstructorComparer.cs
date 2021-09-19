@@ -43,7 +43,7 @@
             {
                 // The constructor was an instance constructor but is now a static
                 var args = new FormatArguments(
-                    $"has added the {{NewValue}} modifier",
+                    $"has added the {MessagePart.NewValue} modifier",
                     null,
                     "static");
 
@@ -53,7 +53,7 @@
             {
                 // The constructor was a static constructor but is now an instance
                 var args = new FormatArguments(
-                    $"has removed the {{OldValue}} modifier",
+                    $"has removed the {MessagePart.OldValue} modifier",
                     "static",
                     null);
 
