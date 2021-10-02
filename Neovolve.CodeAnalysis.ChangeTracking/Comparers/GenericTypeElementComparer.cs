@@ -37,6 +37,34 @@
                     null,
                     null);
 
+                if (shiftAmount == 1)
+                {
+                    // Attempt to find the exact named generic type added or removed
+                    var union = oldTypeParameters.Union(newTypeParameters);
+                    var intersection = oldTypeParameters.Intersect(newTypeParameters);
+                    var differences = union.Except(intersection).ToList();
+                    Test this
+                    if (differences.Count == 1)
+                    {
+                        var genericTypeNameChanged = differences[0];
+
+                        // We have a change to just one named argument so we can make the change message more specific
+                        if (typeParameterShift > 0)
+                        {
+                            // A generic type parameter has been removed
+                            args = new FormatArguments($"has removed the {MessagePart.OldValue} generic type parameter",
+                                genericTypeNameChanged, null);
+                        }
+                        else
+                        {
+                            // A generic type parameter has been added
+                            args = new FormatArguments($"has added the {MessagePart.NewValue} generic type parameter",
+                                null,
+                                genericTypeNameChanged);
+                        }
+                    }
+                }
+
                 aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
 
                 // No need to look into how the generic type has changed
