@@ -48,7 +48,7 @@
             var oldItem = new TestStructDefinition();
             var newItem = oldItem.JsonClone();
             var match = new ItemMatch<IStructDefinition>(oldItem, newItem);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
             var changeType = Model.Create<SemVerChangeType>();
             var message = Guid.NewGuid().ToString();
             var result = new ComparisonResult(changeType, oldItem, newItem, message);
@@ -73,7 +73,7 @@
             var oldItem = new TestStructDefinition();
             var newItem = oldItem.JsonClone();
             var match = new ItemMatch<IStructDefinition>(oldItem, newItem);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
             var changeType = Model.Create<SemVerChangeType>();
             var message = Guid.NewGuid().ToString();
             var result = new ComparisonResult(changeType, oldItem, newItem, message);
@@ -97,7 +97,7 @@
         {
             var item = new TestStructDefinition();
             var match = new ItemMatch<IStructDefinition>(item, item);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
             var changeType = Model.Create<SemVerChangeType>();
             var message = Guid.NewGuid().ToString();
             var result = new ComparisonResult(changeType, item, item, message);

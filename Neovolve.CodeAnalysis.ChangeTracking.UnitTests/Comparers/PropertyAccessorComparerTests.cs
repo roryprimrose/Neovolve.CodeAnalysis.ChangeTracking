@@ -32,7 +32,7 @@
                 IsVisible = true
             };
             var match = new ItemMatch<IPropertyAccessorDefinition>(oldItem, newItem);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
             var message = Guid.NewGuid().ToString();
             var result = new ComparisonResult(SemVerChangeType.Breaking, oldItem, newItem, message);
             var results = new List<ComparisonResult> {result};

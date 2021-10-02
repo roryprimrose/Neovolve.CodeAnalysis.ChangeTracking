@@ -31,7 +31,7 @@
             var oldItem = new TestConstructorDefinition().Set(x => x.Modifiers = oldModifer);
             var newItem = oldItem.JsonClone().Set(x => x.Modifiers = newModifer);
             var match = new ItemMatch<IConstructorDefinition>(oldItem, newItem);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             var actual = SUT.CompareMatch(match, options).ToList();
 
@@ -52,7 +52,7 @@
             var oldItem = new TestConstructorDefinition();
             var newItem = oldItem.JsonClone().Set(x => x.Parameters = parameters);
             var match = new ItemMatch<IConstructorDefinition>(oldItem, newItem);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             var actual = SUT.CompareMatch(match, options).ToList();
 
@@ -72,7 +72,7 @@
             var oldItem = new TestConstructorDefinition().Set(x => x.Parameters = parameters);
             var newItem = oldItem.JsonClone().Set(x => x.Parameters = Array.Empty<IParameterDefinition>());
             var match = new ItemMatch<IConstructorDefinition>(oldItem, newItem);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             var actual = SUT.CompareMatch(match, options).ToList();
 
@@ -90,7 +90,7 @@
             var oldItem = new TestConstructorDefinition();
             var newItem = oldItem.JsonClone();
             var match = new ItemMatch<IConstructorDefinition>(oldItem, newItem);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             var actual = SUT.CompareMatch(match, options).ToList();
 
@@ -113,7 +113,7 @@
             var message = Guid.NewGuid().ToString();
             var result = new ComparisonResult(changeType, oldItem, newItem, message);
             var results = new[] {result};
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             Service<IParameterComparer>()
                 .CompareMatch(

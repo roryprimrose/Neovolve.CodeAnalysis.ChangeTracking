@@ -64,7 +64,7 @@
             {
                 newItem
             };
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
             var matchResults = new MatchResults<IMethodDefinition>(Array.Empty<IMethodDefinition>(),
                 newItems);
 
@@ -93,7 +93,7 @@
             {
                 newItem
             };
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
             var matchResults = new MatchResults<IMethodDefinition>(Array.Empty<IMethodDefinition>(),
                 newItems);
 

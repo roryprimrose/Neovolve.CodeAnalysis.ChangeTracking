@@ -28,7 +28,7 @@
             var oldItem = new TestMethodDefinition();
             var newItem = oldItem.JsonClone();
             var match = new ItemMatch<IMethodDefinition>(oldItem, newItem);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
             const SemVerChangeType changeType = SemVerChangeType.Breaking;
             var message = Guid.NewGuid().ToString();
             var result = new ComparisonResult(changeType, oldItem, newItem, message);
@@ -57,7 +57,7 @@
             var oldItem = new TestMethodDefinition();
             var newItem = oldItem.JsonClone();
             var match = new ItemMatch<IMethodDefinition>(oldItem, newItem);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
             const SemVerChangeType changeType = SemVerChangeType.Breaking;
             var message = Guid.NewGuid().ToString();
             var result = new ComparisonResult(changeType, oldItem, newItem, message);
@@ -92,7 +92,7 @@
                 x.RawName = "Renamed";
             });
             var match = new ItemMatch<IMethodDefinition>(oldItem, newItem);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             var actual = SUT.CompareMatch(match, options).ToList();
 
@@ -120,7 +120,7 @@
                 x.RawName = "Renamed";
             });
             var match = new ItemMatch<IMethodDefinition>(oldItem, newItem);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             var actual = SUT.CompareMatch(match, options).ToList();
 
@@ -150,7 +150,7 @@
                 x.RawName = "Renamed";
             });
             var match = new ItemMatch<IMethodDefinition>(oldItem, newItem);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             var actual = SUT.CompareMatch(match, options).ToList();
 
@@ -169,7 +169,7 @@
             var oldItem = new TestMethodDefinition();
             var newItem = oldItem.JsonClone().Set(x => x.Parameters = parameters);
             var match = new ItemMatch<IMethodDefinition>(oldItem, newItem);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             var actual = SUT.CompareMatch(match, options).ToList();
 
@@ -189,7 +189,7 @@
             var oldItem = new TestMethodDefinition().Set(x => x.Parameters = parameters);
             var newItem = oldItem.JsonClone().Set(x => x.Parameters = Array.Empty<IParameterDefinition>());
             var match = new ItemMatch<IMethodDefinition>(oldItem, newItem);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             var actual = SUT.CompareMatch(match, options).ToList();
 
@@ -225,7 +225,7 @@
                 x.GenericTypeParameters = newTypeParameters;
             });
             var match = new ItemMatch<IMethodDefinition>(oldItem, newItem);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             var actual = SUT.CompareMatch(match, options).ToList();
 
@@ -240,7 +240,7 @@
             var oldItem = new TestMethodDefinition();
             var newItem = oldItem.JsonClone();
             var match = new ItemMatch<IMethodDefinition>(oldItem, newItem);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             var actual = SUT.CompareMatch(match, options).ToList();
 
@@ -254,7 +254,7 @@
         {
             var item = new TestMethodDefinition();
             var match = new ItemMatch<IMethodDefinition>(item, item);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
             var changeType = Model.Create<SemVerChangeType>();
             var message = Guid.NewGuid().ToString();
             var result = new ComparisonResult(changeType, item, item, message);
@@ -278,7 +278,7 @@
         {
             var item = new TestMethodDefinition();
             var match = new ItemMatch<IMethodDefinition>(item, item);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
             var changeType = Model.Create<SemVerChangeType>();
             var message = Guid.NewGuid().ToString();
             var result = new ComparisonResult(changeType, item, item, message);
@@ -311,7 +311,7 @@
             var message = Guid.NewGuid().ToString();
             var result = new ComparisonResult(changeType, oldItem, newItem, message);
             var results = new[] {result};
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             Service<IParameterComparer>()
                 .CompareMatch(

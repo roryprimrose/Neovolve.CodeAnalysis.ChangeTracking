@@ -32,7 +32,7 @@
             var oldItem = new TestEnumDefinition().Set(x => x.ImplementedTypes = new[] { "byte" });
             var newItem = oldItem.JsonClone().Set(x => x.ImplementedTypes = new[] { "ushort" });
             var match = new ItemMatch<IEnumDefinition>(oldItem, newItem);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             Service<IEnumUnderlyingTypeChangeTable>()
                 .CalculateChange(oldItem.ImplementedTypes.First(),
@@ -59,7 +59,7 @@
             var oldItem = new TestEnumDefinition();
             var newItem = oldItem.JsonClone().Set(x => x.Namespace = Guid.NewGuid().ToString());
             var match = new ItemMatch<IEnumDefinition>(oldItem, newItem);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             var actual = SUT.CompareMatch(match, options).ToList();
 
@@ -77,7 +77,7 @@
             var oldItem = new TestEnumDefinition();
             var newItem = oldItem.JsonClone();
             var match = new ItemMatch<IEnumDefinition>(oldItem, newItem);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
             var changeType = Model.Create<SemVerChangeType>();
             var message = Guid.NewGuid().ToString();
             var result = new ComparisonResult(changeType, oldItem, newItem, message);
@@ -119,7 +119,7 @@
             }
 
             var match = new ItemMatch<IEnumDefinition>(oldItem, newItem);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             Service<IEnumUnderlyingTypeChangeTable>().CalculateChange(oldValue, newValue).Returns(expected);
 

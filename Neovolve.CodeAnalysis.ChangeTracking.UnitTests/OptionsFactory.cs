@@ -7,7 +7,7 @@ namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests
             var identifierFormatter = new GitHubMarkdownIdentifierFormatter();
             var messageFormatter = new GitHubMarkdownMessageFormatter(identifierFormatter);
 
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             options.MessageFormatter = messageFormatter;
 

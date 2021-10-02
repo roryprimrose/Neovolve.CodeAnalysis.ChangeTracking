@@ -28,7 +28,7 @@
             var oldMember = new TestMethodDefinition();
             var newMember = oldMember.JsonClone();
             var match = new ItemMatch<TestMethodDefinition>(oldMember, newMember);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             var actual = SUT.CompareMatch(match, options).ToList();
 
@@ -57,7 +57,7 @@
                 x.ReturnType = "DateTime";
             });
             var match = new ItemMatch<TestMethodDefinition>(oldMember, newMember);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             var actual = SUT.CompareMatch(match, options).ToList();
 
@@ -87,7 +87,7 @@
                 x.ReturnType = "TNew";
             });
             var match = new ItemMatch<TestPropertyDefinition>(oldMember, newMember);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             var accessModifiersComparer = Substitute.For<IAccessModifiersComparer>();
             var attributeProcessor = Substitute.For<IAttributeMatchProcessor>();
@@ -120,7 +120,7 @@
                 x.ReturnType = "TNew";
             });
             var match = new ItemMatch<TestMethodDefinition>(oldMember, newMember);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             var actual = SUT.CompareMatch(match, options).ToList();
 
@@ -148,7 +148,7 @@
                 x.GenericTypeParameters = new List<string> {"TNew"}.AsReadOnly();
             });
             var match = new ItemMatch<TestMethodDefinition>(oldMember, newMember);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             var actual = SUT.CompareMatch(match, options).ToList();
 
@@ -177,7 +177,7 @@
                 x.ReturnType = "TNew";
             });
             var match = new ItemMatch<TestMethodDefinition>(oldMember, newMember);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             var actual = SUT.CompareMatch(match, options).ToList();
 
@@ -197,7 +197,7 @@
                 .Set(x => x.ReturnType = oldValue);
             var newMember = oldMember.JsonClone().Set(x => x.ReturnType = newValue);
             var match = new ItemMatch<TestMethodDefinition>(oldMember, newMember);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             var actual = SUT.CompareMatch(match, options).ToList();
 
@@ -219,7 +219,7 @@
             var oldMember = new TestMethodDefinition();
             var newMember = oldMember.JsonClone();
             var match = new ItemMatch<TestMethodDefinition>(oldMember, newMember);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
             var changeType = Model.Create<SemVerChangeType>();
             var message = Guid.NewGuid().ToString();
             var result = new ComparisonResult(changeType, oldMember, newMember, message);
@@ -241,7 +241,7 @@
         [Fact]
         public void CompareThrowsExceptionWithNullMatch()
         {
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             Action action = () => SUT.CompareMatch(null!, options);
 

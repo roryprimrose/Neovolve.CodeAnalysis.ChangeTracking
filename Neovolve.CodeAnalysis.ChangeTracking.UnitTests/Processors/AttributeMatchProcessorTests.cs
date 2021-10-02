@@ -30,7 +30,7 @@
         {
             var oldItems = new List<IAttributeDefinition> {new TestAttributeDefinition()};
             var newItems = new List<IAttributeDefinition> {new TestAttributeDefinition()};
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             options.CompareAttributes = AttributeCompareOption.Skip;
 
@@ -49,7 +49,7 @@
         {
             var oldItems = new List<IAttributeDefinition> {new TestAttributeDefinition()};
             var newItems = new List<IAttributeDefinition> {new TestAttributeDefinition()};
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
             var matchingItems = new List<ItemMatch<IAttributeDefinition>>
             {
                 new(new TestAttributeDefinition(), new TestAttributeDefinition())
@@ -105,7 +105,7 @@
                     Name = "JsonIgnoreAttribute"
                 }
             };
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
             var matchingItems = new List<ItemMatch<IAttributeDefinition>>
             {
                 new(new TestAttributeDefinition(), new TestAttributeDefinition())
@@ -142,7 +142,7 @@
         public void CalculateChangesThrowsExceptionWithNullNewItems()
         {
             var oldItems = new List<IAttributeDefinition> {new TestAttributeDefinition()};
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             var comparer = Substitute.For<IAttributeComparer>();
             var evaluator = Substitute.For<IAttributeEvaluator>();
@@ -158,7 +158,7 @@
         public void CalculateChangesThrowsExceptionWithNullOldItems()
         {
             var newItems = new List<IAttributeDefinition> {new TestAttributeDefinition()};
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             var comparer = Substitute.For<IAttributeComparer>();
             var evaluator = Substitute.For<IAttributeEvaluator>();
@@ -192,7 +192,7 @@
             var oldItem = new TestAttributeDefinition();
             var newItem = new TestAttributeDefinition();
             var match = new ItemMatch<IAttributeDefinition>(oldItem, newItem);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
             var result = new ComparisonResult(SemVerChangeType.Breaking, oldItem, newItem, Guid.NewGuid().ToString());
             var expected = new List<ComparisonResult> {result};
 
@@ -211,7 +211,7 @@
         [Fact]
         public void EvaluateMatchThrowsExceptionWithNullMatch()
         {
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             var comparer = Substitute.For<IAttributeComparer>();
             var evaluator = Substitute.For<IAttributeEvaluator>();

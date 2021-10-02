@@ -28,7 +28,7 @@
             {
                 newItem
             };
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
             var matchResults = new MatchResults<IClassDefinition>(Array.Empty<IClassDefinition>(),
                 newItems);
 

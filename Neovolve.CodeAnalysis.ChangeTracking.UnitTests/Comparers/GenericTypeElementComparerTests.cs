@@ -24,13 +24,13 @@
         [Fact]
         public void CompareMatchReturnsBreakingWhenGenericConstraintsAdded()
         {
-            var parameters = new List<string> {"T"}.AsReadOnly();
+            var parameters = new List<string> { "T" }.AsReadOnly();
             var newConstraintList = new TestConstraintListDefinition
             {
                 Name = "T",
-                Constraints = new List<string> {"struct", "Enum"}.AsReadOnly()
+                Constraints = new List<string> { "struct", "Enum" }.AsReadOnly()
             };
-            var newConstraints = new List<IConstraintListDefinition> {newConstraintList}.AsReadOnly();
+            var newConstraints = new List<IConstraintListDefinition> { newConstraintList }.AsReadOnly();
             var oldItem = new TestClassDefinition().Set(x => { x.GenericTypeParameters = parameters; });
             var newItem = new TestClassDefinition().Set(x =>
             {
@@ -38,25 +38,7 @@
                 x.GenericConstraints = newConstraints;
             });
             var match = new ItemMatch<IGenericTypeElement>(oldItem, newItem);
-            var options = ComparerOptions.Default;
-
-            var actual = SUT.CompareMatch(match, options).ToList();
-
-            _output.WriteResults(actual);
-
-            actual.Should().HaveCount(1);
-            actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
-            actual[0].Message.Should().Contain("added");
-        }
-
-        [Fact]
-        public void CompareMatchReturnsBreakingWhenGenericTypeParameterAdded()
-        {
-            var parameters = new List<string> {"TKey", "TValue"}.AsReadOnly();
-            var oldItem = new TestClassDefinition();
-            var newItem = new TestClassDefinition().Set(x => x.GenericTypeParameters = parameters);
-            var match = new ItemMatch<IGenericTypeElement>(oldItem, newItem);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             var actual = SUT.CompareMatch(match, options).ToList();
 
@@ -70,13 +52,13 @@
         [Fact]
         public void CompareMatchReturnsBreakingWhenGenericTypeParameterAddedWithGenericConstraints()
         {
-            var parameters = new List<string> {"T"}.AsReadOnly();
+            var parameters = new List<string> { "T" }.AsReadOnly();
             var constraintList = new TestConstraintListDefinition
             {
                 Name = "T",
-                Constraints = new List<string> {"struct", "Enum"}.AsReadOnly()
+                Constraints = new List<string> { "struct", "Enum" }.AsReadOnly()
             };
-            var constraints = new List<IConstraintListDefinition> {constraintList}.AsReadOnly();
+            var constraints = new List<IConstraintListDefinition> { constraintList }.AsReadOnly();
             var oldItem = new TestClassDefinition();
             var newItem = new TestClassDefinition().Set(x =>
             {
@@ -84,7 +66,7 @@
                 x.GenericConstraints = constraints;
             });
             var match = new ItemMatch<IGenericTypeElement>(oldItem, newItem);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             var actual = SUT.CompareMatch(match, options).ToList();
 
@@ -96,33 +78,15 @@
         }
 
         [Fact]
-        public void CompareMatchReturnsBreakingWhenGenericTypeParameterRemoved()
-        {
-            var parameters = new List<string> {"T"}.AsReadOnly();
-            var oldItem = new TestClassDefinition().Set(x => x.GenericTypeParameters = parameters);
-            var newItem = new TestClassDefinition();
-            var match = new ItemMatch<IGenericTypeElement>(oldItem, newItem);
-            var options = ComparerOptions.Default;
-
-            var actual = SUT.CompareMatch(match, options).ToList();
-
-            _output.WriteResults(actual);
-
-            actual.Should().HaveCount(1);
-            actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
-            actual[0].Message.Should().Contain("removed");
-        }
-
-        [Fact]
         public void CompareMatchReturnsBreakingWhenGenericTypeParameterRemovedWithGenericConstraints()
         {
-            var parameters = new List<string> {"T"}.AsReadOnly();
+            var parameters = new List<string> { "T" }.AsReadOnly();
             var constraintList = new TestConstraintListDefinition
             {
                 Name = "T",
-                Constraints = new List<string> {"struct", "Enum"}.AsReadOnly()
+                Constraints = new List<string> { "struct", "Enum" }.AsReadOnly()
             };
-            var constraints = new List<IConstraintListDefinition> {constraintList}.AsReadOnly();
+            var constraints = new List<IConstraintListDefinition> { constraintList }.AsReadOnly();
             var oldItem = new TestClassDefinition().Set(x =>
             {
                 x.GenericTypeParameters = parameters;
@@ -130,7 +94,7 @@
             });
             var newItem = new TestClassDefinition();
             var match = new ItemMatch<IGenericTypeElement>(oldItem, newItem);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             var actual = SUT.CompareMatch(match, options).ToList();
 
@@ -142,22 +106,98 @@
         }
 
         [Fact]
+        public void CompareMatchReturnsBreakingWhenMultipleGenericTypeParameterAdded()
+        {
+            var parameters = new List<string> { "TKey", "TValue" }.AsReadOnly();
+            var oldItem = new TestClassDefinition();
+            var newItem = new TestClassDefinition().Set(x => x.GenericTypeParameters = parameters);
+            var match = new ItemMatch<IGenericTypeElement>(oldItem, newItem);
+            var options = TestComparerOptions.Default;
+
+            var actual = SUT.CompareMatch(match, options).ToList();
+
+            _output.WriteResults(actual);
+
+            actual.Should().HaveCount(1);
+            actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
+            actual[0].Message.Should().Contain("added");
+            actual[0].Message.Should().Contain("2");
+        }
+
+        [Fact]
+        public void CompareMatchReturnsBreakingWhenMultipleGenericTypeParameterRemoved()
+        {
+            var parameters = new List<string> { "TKey", "TValue" }.AsReadOnly();
+            var oldItem = new TestClassDefinition().Set(x => x.GenericTypeParameters = parameters);
+            var newItem = new TestClassDefinition();
+            var match = new ItemMatch<IGenericTypeElement>(oldItem, newItem);
+            var options = TestComparerOptions.Default;
+
+            var actual = SUT.CompareMatch(match, options).ToList();
+
+            _output.WriteResults(actual);
+
+            actual.Should().HaveCount(1);
+            actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
+            actual[0].Message.Should().Contain("removed");
+            actual[0].Message.Should().Contain("2");
+        }
+
+        [Fact]
+        public void CompareMatchReturnsBreakingWhenSingleGenericTypeParameterAdded()
+        {
+            var parameters = new List<string> { "TValue" }.AsReadOnly();
+            var oldItem = new TestClassDefinition();
+            var newItem = new TestClassDefinition().Set(x => x.GenericTypeParameters = parameters);
+            var match = new ItemMatch<IGenericTypeElement>(oldItem, newItem);
+            var options = TestComparerOptions.Default;
+
+            var actual = SUT.CompareMatch(match, options).ToList();
+
+            _output.WriteResults(actual);
+
+            actual.Should().HaveCount(1);
+            actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
+            actual[0].Message.Should().Contain("added");
+            actual[0].Message.Should().Contain("TValue");
+        }
+
+        [Fact]
+        public void CompareMatchReturnsBreakingWhenSingleGenericTypeParameterRemoved()
+        {
+            var parameters = new List<string> { "TValue" }.AsReadOnly();
+            var oldItem = new TestClassDefinition().Set(x => x.GenericTypeParameters = parameters);
+            var newItem = new TestClassDefinition();
+            var match = new ItemMatch<IGenericTypeElement>(oldItem, newItem);
+            var options = TestComparerOptions.Default;
+
+            var actual = SUT.CompareMatch(match, options).ToList();
+
+            _output.WriteResults(actual);
+
+            actual.Should().HaveCount(1);
+            actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
+            actual[0].Message.Should().Contain("removed");
+            actual[0].Message.Should().Contain("TValue");
+        }
+
+        [Fact]
         public void CompareMatchReturnsBreakingWhenSomeGenericConstraintsAdded()
         {
-            var oldParameters = new List<string> {"T"}.AsReadOnly();
-            var newParameters = new List<string> {"T"}.AsReadOnly();
+            var oldParameters = new List<string> { "T" }.AsReadOnly();
+            var newParameters = new List<string> { "T" }.AsReadOnly();
             var oldConstraintList = new TestConstraintListDefinition
             {
                 Name = "T",
-                Constraints = new List<string> {"Enum"}.AsReadOnly()
+                Constraints = new List<string> { "Enum" }.AsReadOnly()
             };
             var newConstraintList = new TestConstraintListDefinition
             {
                 Name = "T",
-                Constraints = new List<string> {"struct", "Enum"}.AsReadOnly()
+                Constraints = new List<string> { "struct", "Enum" }.AsReadOnly()
             };
-            var oldConstraints = new List<IConstraintListDefinition> {oldConstraintList}.AsReadOnly();
-            var newConstraints = new List<IConstraintListDefinition> {newConstraintList}.AsReadOnly();
+            var oldConstraints = new List<IConstraintListDefinition> { oldConstraintList }.AsReadOnly();
+            var newConstraints = new List<IConstraintListDefinition> { newConstraintList }.AsReadOnly();
             var oldItem = new TestClassDefinition().Set(x =>
             {
                 x.GenericTypeParameters = oldParameters;
@@ -169,7 +209,7 @@
                 x.GenericConstraints = newConstraints;
             });
             var match = new ItemMatch<IGenericTypeElement>(oldItem, newItem);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             var actual = SUT.CompareMatch(match, options).ToList();
 
@@ -186,7 +226,7 @@
             var oldItem = new TestClassDefinition();
             var newItem = new TestClassDefinition();
             var match = new ItemMatch<IGenericTypeElement>(oldItem, newItem);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             var actual = SUT.CompareMatch(match, options).ToList();
 
@@ -196,13 +236,13 @@
         [Fact]
         public void CompareMatchReturnsEmptyWhenGenericTypeConstraintsMatch()
         {
-            var parameters = new List<string> {"T"}.AsReadOnly();
+            var parameters = new List<string> { "T" }.AsReadOnly();
             var constraintList = new TestConstraintListDefinition
             {
                 Name = "T",
-                Constraints = new List<string> {"struct", "Enum"}.AsReadOnly()
+                Constraints = new List<string> { "struct", "Enum" }.AsReadOnly()
             };
-            var constraints = new List<IConstraintListDefinition> {constraintList}.AsReadOnly();
+            var constraints = new List<IConstraintListDefinition> { constraintList }.AsReadOnly();
             var oldItem = new TestClassDefinition().Set(x =>
             {
                 x.GenericTypeParameters = parameters;
@@ -214,7 +254,7 @@
                 x.GenericConstraints = constraints;
             });
             var match = new ItemMatch<IGenericTypeElement>(oldItem, newItem);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             var actual = SUT.CompareMatch(match, options).ToList();
 
@@ -226,11 +266,11 @@
         [Fact]
         public void CompareMatchReturnsEmptyWhenGenericTypeParametersHaveNoConstraints()
         {
-            var parameters = new List<string> {"T"}.AsReadOnly();
+            var parameters = new List<string> { "T" }.AsReadOnly();
             var oldItem = new TestClassDefinition().Set(x => x.GenericTypeParameters = parameters);
             var newItem = new TestClassDefinition().Set(x => x.GenericTypeParameters = parameters);
             var match = new ItemMatch<IGenericTypeElement>(oldItem, newItem);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             var actual = SUT.CompareMatch(match, options).ToList();
 
@@ -240,20 +280,20 @@
         [Fact]
         public void CompareMatchReturnsEmptyWhenRenamedGenericTypeConstraintsMatch()
         {
-            var oldParameters = new List<string> {"TOld"}.AsReadOnly();
-            var newParameters = new List<string> {"TNew"}.AsReadOnly();
+            var oldParameters = new List<string> { "TOld" }.AsReadOnly();
+            var newParameters = new List<string> { "TNew" }.AsReadOnly();
             var oldConstraintList = new TestConstraintListDefinition
             {
                 Name = "TOld",
-                Constraints = new List<string> {"struct", "Enum"}.AsReadOnly()
+                Constraints = new List<string> { "struct", "Enum" }.AsReadOnly()
             };
             var newConstraintList = new TestConstraintListDefinition
             {
                 Name = "TNew",
-                Constraints = new List<string> {"struct", "Enum"}.AsReadOnly()
+                Constraints = new List<string> { "struct", "Enum" }.AsReadOnly()
             };
-            var oldConstraints = new List<IConstraintListDefinition> {oldConstraintList}.AsReadOnly();
-            var newConstraints = new List<IConstraintListDefinition> {newConstraintList}.AsReadOnly();
+            var oldConstraints = new List<IConstraintListDefinition> { oldConstraintList }.AsReadOnly();
+            var newConstraints = new List<IConstraintListDefinition> { newConstraintList }.AsReadOnly();
             var oldItem = new TestClassDefinition().Set(x =>
             {
                 x.GenericTypeParameters = oldParameters;
@@ -265,7 +305,7 @@
                 x.GenericConstraints = newConstraints;
             });
             var match = new ItemMatch<IGenericTypeElement>(oldItem, newItem);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             var actual = SUT.CompareMatch(match, options).ToList();
 
@@ -277,13 +317,13 @@
         [Fact]
         public void CompareMatchReturnsFeatureWhenGenericConstraintsRemoved()
         {
-            var parameters = new List<string> {"T"}.AsReadOnly();
+            var parameters = new List<string> { "T" }.AsReadOnly();
             var oldConstraintList = new TestConstraintListDefinition
             {
                 Name = "T",
-                Constraints = new List<string> {"struct", "Enum"}.AsReadOnly()
+                Constraints = new List<string> { "struct", "Enum" }.AsReadOnly()
             };
-            var oldConstraints = new List<IConstraintListDefinition> {oldConstraintList}.AsReadOnly();
+            var oldConstraints = new List<IConstraintListDefinition> { oldConstraintList }.AsReadOnly();
             var oldItem = new TestClassDefinition().Set(x =>
             {
                 x.GenericTypeParameters = parameters;
@@ -291,7 +331,7 @@
             });
             var newItem = new TestClassDefinition().Set(x => { x.GenericTypeParameters = parameters; });
             var match = new ItemMatch<IGenericTypeElement>(oldItem, newItem);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             var actual = SUT.CompareMatch(match, options).ToList();
 
@@ -305,20 +345,20 @@
         [Fact]
         public void CompareMatchReturnsFeatureWhenSomeGenericConstraintsRemoved()
         {
-            var oldParameters = new List<string> {"T"}.AsReadOnly();
-            var newParameters = new List<string> {"T"}.AsReadOnly();
+            var oldParameters = new List<string> { "T" }.AsReadOnly();
+            var newParameters = new List<string> { "T" }.AsReadOnly();
             var oldConstraintList = new TestConstraintListDefinition
             {
                 Name = "T",
-                Constraints = new List<string> {"struct", "Enum"}.AsReadOnly()
+                Constraints = new List<string> { "struct", "Enum" }.AsReadOnly()
             };
             var newConstraintList = new TestConstraintListDefinition
             {
                 Name = "T",
-                Constraints = new List<string> {"Enum"}.AsReadOnly()
+                Constraints = new List<string> { "Enum" }.AsReadOnly()
             };
-            var oldConstraints = new List<IConstraintListDefinition> {oldConstraintList}.AsReadOnly();
-            var newConstraints = new List<IConstraintListDefinition> {newConstraintList}.AsReadOnly();
+            var oldConstraints = new List<IConstraintListDefinition> { oldConstraintList }.AsReadOnly();
+            var newConstraints = new List<IConstraintListDefinition> { newConstraintList }.AsReadOnly();
             var oldItem = new TestClassDefinition().Set(x =>
             {
                 x.GenericTypeParameters = oldParameters;
@@ -330,7 +370,7 @@
                 x.GenericConstraints = newConstraints;
             });
             var match = new ItemMatch<IGenericTypeElement>(oldItem, newItem);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             var actual = SUT.CompareMatch(match, options).ToList();
 
@@ -344,7 +384,7 @@
         [Fact]
         public void CompareMatchThrowsExceptionWithNullMatch()
         {
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             Action action = () => SUT.CompareMatch(null!, options);
 

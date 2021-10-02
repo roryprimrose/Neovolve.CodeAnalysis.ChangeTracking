@@ -28,7 +28,7 @@
             var secondItem = Substitute.For<IClassDefinition>();
             var result = new ComparisonResult(SemVerChangeType.Breaking, firstItem, secondItem,
                 Guid.NewGuid().ToString());
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             var attributeProcessor = Substitute.For<IAttributeMatchProcessor>();
 
