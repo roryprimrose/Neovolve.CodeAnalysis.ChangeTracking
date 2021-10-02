@@ -43,7 +43,7 @@
                     var union = oldTypeParameters.Union(newTypeParameters);
                     var intersection = oldTypeParameters.Intersect(newTypeParameters);
                     var differences = union.Except(intersection).ToList();
-                    Test this
+
                     if (differences.Count == 1)
                     {
                         var genericTypeNameChanged = differences[0];
@@ -66,21 +66,20 @@
                 }
 
                 aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
-
-                // No need to look into how the generic type has changed
-                return aggregator.Results;
             }
-
-            // We have the same number of generic types, evaluate the constraints
-            for (var index = 0; index < oldTypeParameters.Count; index++)
+            else
             {
-                var oldName = oldTypeParameters[index];
-                var newName = newTypeParameters[index];
+                // We have the same number of generic types, evaluate the constraints
+                for (var index = 0; index < oldTypeParameters.Count; index++)
+                {
+                    var oldName = oldTypeParameters[index];
+                    var newName = newTypeParameters[index];
 
-                var oldConstraints = match.OldItem.GenericConstraints.FirstOrDefault(x => x.Name == oldName);
-                var newConstraints = match.NewItem.GenericConstraints.FirstOrDefault(x => x.Name == newName);
+                    var oldConstraints = match.OldItem.GenericConstraints.FirstOrDefault(x => x.Name == oldName);
+                    var newConstraints = match.NewItem.GenericConstraints.FirstOrDefault(x => x.Name == newName);
 
-                EvaluateGenericConstraints(match, oldConstraints, newConstraints, options, aggregator);
+                    EvaluateGenericConstraints(match, oldConstraints, newConstraints, options, aggregator);
+                }
             }
 
             return aggregator.Results;
@@ -93,82 +92,78 @@
             ComparerOptions options,
             IChangeResultAggregator aggregator)
         {
-            var oldConstraintCount = oldConstraintList?.Constraints.Count ?? 0;
-            var newConstraintCount = newConstraintList?.Constraints.Count ?? 0;
+            var oldConstraints = oldConstraintList?.Constraints ?? new List<string>();
+            var newConstraints = newConstraintList?.Constraints ?? new List<string>();
 
-            if (oldConstraintCount == 0
-                && newConstraintCount == 0)
+            if (oldConstraints.Count == 0
+                && newConstraints.Count == 0)
             {
                 // There are no generic constraints defined on either type
                 return;
             }
 
-            if (oldConstraintCount == 0)
+            // Calculate the constraints added and removed
+            var removedConstraints = oldConstraints.Except(newConstraints).ToList();
+            var addedConstraints = newConstraints.Except(oldConstraints).ToList();
+
+            var constraintShift = removedConstraints.Count + addedConstraints.Count;
+
+            if (constraintShift == 0)
+            {
+                // The constraints match
+                return;
+            }
+
+            if (addedConstraints.Count > 0)
             {
                 var suffix = string.Empty;
 
-                if (newConstraintCount != 1)
+                if (addedConstraints.Count != 1)
                 {
                     // There is more than one modifier
                     suffix = "s";
                 }
 
                 var args = new FormatArguments(
-                    $"has added {newConstraintCount} generic type constraint{suffix}",
+                    $"has added {addedConstraints.Count} generic type constraint{suffix}",
                     null,
                     null);
 
-                aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
+                if (addedConstraints.Count == 1)
+                {
+                    // A generic type parameter has been added
+                    args = new FormatArguments($"has added the {MessagePart.NewValue} generic type constraint",
+                        null,
+                        addedConstraints[0]);
+                }
 
-                // No need to look into the constraints themselves
-                return;
+                aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
             }
 
-            if (newConstraintCount == 0)
+            if (removedConstraints.Count > 0)
             {
                 var suffix = string.Empty;
 
-                if (oldConstraintCount != 1)
+                if (removedConstraints.Count != 1)
                 {
                     // There is more than one modifier
                     suffix = "s";
                 }
 
                 var args = new FormatArguments(
-                    $"has removed {oldConstraintCount} generic type constraint{suffix}",
+                    $"has removed {removedConstraints.Count} generic type constraint{suffix}",
                     null,
                     null);
 
-                aggregator.AddElementChangedResult(SemVerChangeType.Feature, match, options.MessageFormatter, args);
-
-                // No need to look into the constraints themselves
-                return;
-            }
-
-            // Find the old constraints that have been removed
-            var removedConstraints = oldConstraintList!.Constraints.Except(newConstraintList!.Constraints);
-
-            foreach (var constraint in removedConstraints)
-            {
-                var args = new FormatArguments(
-                    "has removed the {OldValue} generic type constraint",
-                    constraint,
-                    null);
+                if (removedConstraints.Count == 1)
+                {
+                    // A generic type parameter has been added
+                    args = new FormatArguments($"has removed the {MessagePart.NewValue} generic type constraint",
+                        null,
+                        removedConstraints[0]);
+                }
 
                 aggregator.AddElementChangedResult(SemVerChangeType.Feature, match, options.MessageFormatter, args);
-            }
-
-            // Find the new constraints that have been added
-            var addedConstraints = newConstraintList!.Constraints.Except(oldConstraintList!.Constraints);
-
-            foreach (var constraint in addedConstraints)
-            {
-                var args = new FormatArguments(
-                    "has added the {NewValue} generic type constraint",
-                    null,
-                    constraint);
-
-                aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
             }
         }
     }

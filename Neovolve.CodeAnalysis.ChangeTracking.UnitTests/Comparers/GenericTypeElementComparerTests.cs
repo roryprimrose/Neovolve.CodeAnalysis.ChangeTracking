@@ -22,20 +22,30 @@
         }
 
         [Fact]
-        public void CompareMatchReturnsBreakingWhenGenericConstraintsAdded()
+        public void CompareMatchReturnsBreakingWhenDifferentGenericConstraintsAddedAndRemoved()
         {
             var parameters = new List<string> { "T" }.AsReadOnly();
             var newConstraintList = new TestConstraintListDefinition
             {
                 Name = "T",
-                Constraints = new List<string> { "struct", "Enum" }.AsReadOnly()
+                Constraints = new List<string> { "class", "Stream" }.AsReadOnly()
             };
             var newConstraints = new List<IConstraintListDefinition> { newConstraintList }.AsReadOnly();
-            var oldItem = new TestClassDefinition().Set(x => { x.GenericTypeParameters = parameters; });
             var newItem = new TestClassDefinition().Set(x =>
             {
                 x.GenericTypeParameters = parameters;
                 x.GenericConstraints = newConstraints;
+            });
+            var oldConstraintList = new TestConstraintListDefinition
+            {
+                Name = "T",
+                Constraints = new List<string> { "class", "new" }.AsReadOnly()
+            };
+            var oldConstraints = new List<IConstraintListDefinition> { oldConstraintList }.AsReadOnly();
+            var oldItem = new TestClassDefinition().Set(x =>
+            {
+                x.GenericTypeParameters = parameters;
+                x.GenericConstraints = oldConstraints;
             });
             var match = new ItemMatch<IGenericTypeElement>(oldItem, newItem);
             var options = TestComparerOptions.Default;
@@ -43,10 +53,9 @@
             var actual = SUT.CompareMatch(match, options).ToList();
 
             _output.WriteResults(actual);
-
-            actual.Should().HaveCount(1);
-            actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
-            actual[0].Message.Should().Contain("added");
+            
+            actual.Where(x => x.ChangeType == SemVerChangeType.Breaking).Should().HaveCount(1);
+            actual.Where(x => x.ChangeType == SemVerChangeType.Feature).Should().HaveCount(1);
         }
 
         [Fact]
@@ -106,6 +115,37 @@
         }
 
         [Fact]
+        public void CompareMatchReturnsBreakingWhenMultipleGenericConstraintsAdded()
+        {
+            var parameters = new List<string> { "T" }.AsReadOnly();
+            var newConstraintList = new TestConstraintListDefinition
+            {
+                Name = "T",
+                Constraints = new List<string> { "struct", "Enum" }.AsReadOnly()
+            };
+            var newConstraints = new List<IConstraintListDefinition> { newConstraintList }.AsReadOnly();
+            var oldItem = new TestClassDefinition().Set(x => { x.GenericTypeParameters = parameters; });
+            var newItem = new TestClassDefinition().Set(x =>
+            {
+                x.GenericTypeParameters = parameters;
+                x.GenericConstraints = newConstraints;
+            });
+            var match = new ItemMatch<IGenericTypeElement>(oldItem, newItem);
+            var options = TestComparerOptions.Default;
+
+            var actual = SUT.CompareMatch(match, options).ToList();
+
+            _output.WriteResults(actual);
+
+            actual.Should().HaveCount(1);
+            actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
+            actual[0].Message.Should().Contain("added");
+            actual[0].Message.Should().NotContain("struct");
+            actual[0].Message.Should().NotContain("Enum");
+            actual[0].Message.Should().Contain(" 2 ");
+        }
+
+        [Fact]
         public void CompareMatchReturnsBreakingWhenMultipleGenericTypeParameterAdded()
         {
             var parameters = new List<string> { "TKey", "TValue" }.AsReadOnly();
@@ -121,7 +161,9 @@
             actual.Should().HaveCount(1);
             actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
             actual[0].Message.Should().Contain("added");
-            actual[0].Message.Should().Contain("2");
+            actual[0].Message.Should().NotContain("TKey");
+            actual[0].Message.Should().NotContain("TValue");
+            actual[0].Message.Should().Contain(" 2 ");
         }
 
         [Fact]
@@ -140,7 +182,39 @@
             actual.Should().HaveCount(1);
             actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
             actual[0].Message.Should().Contain("removed");
-            actual[0].Message.Should().Contain("2");
+            actual[0].Message.Should().NotContain("TKey");
+            actual[0].Message.Should().NotContain("TValue");
+            actual[0].Message.Should().Contain(" 2 ");
+        }
+
+        [Fact]
+        public void CompareMatchReturnsBreakingWhenSingleGenericConstraintsAdded()
+        {
+            var parameters = new List<string> { "T" }.AsReadOnly();
+            var newConstraintList = new TestConstraintListDefinition
+            {
+                Name = "T",
+                Constraints = new List<string> { "Enum" }.AsReadOnly()
+            };
+            var newConstraints = new List<IConstraintListDefinition> { newConstraintList }.AsReadOnly();
+            var oldItem = new TestClassDefinition().Set(x => { x.GenericTypeParameters = parameters; });
+            var newItem = new TestClassDefinition().Set(x =>
+            {
+                x.GenericTypeParameters = parameters;
+                x.GenericConstraints = newConstraints;
+            });
+            var match = new ItemMatch<IGenericTypeElement>(oldItem, newItem);
+            var options = TestComparerOptions.Default;
+
+            var actual = SUT.CompareMatch(match, options).ToList();
+
+            _output.WriteResults(actual);
+
+            actual.Should().HaveCount(1);
+            actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
+            actual[0].Message.Should().Contain("added");
+            actual[0].Message.Should().Contain("Enum");
+            actual[0].Message.Should().NotContain(" 1 ");
         }
 
         [Fact]
@@ -160,6 +234,7 @@
             actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
             actual[0].Message.Should().Contain("added");
             actual[0].Message.Should().Contain("TValue");
+            actual[0].Message.Should().NotContain(" 1 ");
         }
 
         [Fact]
@@ -179,6 +254,7 @@
             actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
             actual[0].Message.Should().Contain("removed");
             actual[0].Message.Should().Contain("TValue");
+            actual[0].Message.Should().NotContain(" 1 ");
         }
 
         [Fact]
@@ -315,7 +391,7 @@
         }
 
         [Fact]
-        public void CompareMatchReturnsFeatureWhenGenericConstraintsRemoved()
+        public void CompareMatchReturnsFeatureWhenMultipleGenericConstraintsRemoved()
         {
             var parameters = new List<string> { "T" }.AsReadOnly();
             var oldConstraintList = new TestConstraintListDefinition
@@ -340,6 +416,39 @@
             actual.Should().HaveCount(1);
             actual[0].ChangeType.Should().Be(SemVerChangeType.Feature);
             actual[0].Message.Should().Contain("removed");
+            actual[0].Message.Should().NotContain("struct");
+            actual[0].Message.Should().NotContain("Enum");
+            actual[0].Message.Should().Contain(" 2 ");
+        }
+
+        [Fact]
+        public void CompareMatchReturnsFeatureWhenSingleGenericConstraintsRemoved()
+        {
+            var parameters = new List<string> { "T" }.AsReadOnly();
+            var oldConstraintList = new TestConstraintListDefinition
+            {
+                Name = "T",
+                Constraints = new List<string> { "Enum" }.AsReadOnly()
+            };
+            var oldConstraints = new List<IConstraintListDefinition> { oldConstraintList }.AsReadOnly();
+            var oldItem = new TestClassDefinition().Set(x =>
+            {
+                x.GenericTypeParameters = parameters;
+                x.GenericConstraints = oldConstraints;
+            });
+            var newItem = new TestClassDefinition().Set(x => { x.GenericTypeParameters = parameters; });
+            var match = new ItemMatch<IGenericTypeElement>(oldItem, newItem);
+            var options = TestComparerOptions.Default;
+
+            var actual = SUT.CompareMatch(match, options).ToList();
+
+            _output.WriteResults(actual);
+
+            actual.Should().HaveCount(1);
+            actual[0].ChangeType.Should().Be(SemVerChangeType.Feature);
+            actual[0].Message.Should().Contain("removed");
+            actual[0].Message.Should().Contain("Enum");
+            actual[0].Message.Should().NotContain(" 1 ");
         }
 
         [Fact]
