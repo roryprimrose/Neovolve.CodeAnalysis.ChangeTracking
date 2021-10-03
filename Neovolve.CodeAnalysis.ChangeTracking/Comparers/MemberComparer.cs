@@ -77,7 +77,7 @@
             var changeType = oldMappedType == "void" ? SemVerChangeType.Feature : SemVerChangeType.Breaking;
 
             var args = new FormatArguments(
-                "return type has changed from {OldValue} to {NewValue}", match.OldItem.ReturnType,
+                $"return type has changed from {MessagePart.OldValue} to {MessagePart.NewValue}", match.OldItem.ReturnType,
                 match.NewItem.ReturnType);
 
             aggregator.AddElementChangedResult(changeType, match, options.MessageFormatter, args);

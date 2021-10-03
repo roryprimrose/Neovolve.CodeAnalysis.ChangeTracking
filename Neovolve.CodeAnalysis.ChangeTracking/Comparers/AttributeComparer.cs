@@ -161,7 +161,7 @@
                 {
                     // There is a match on the parameter names but the value has changed
                     var args = new FormatArguments(
-                        "has changed value from {OldValue} to {NewValue}", oldArgument.Value, newArgument.Value);
+                        $"has changed value from {MessagePart.OldValue} to {MessagePart.NewValue}", oldArgument.Value, newArgument.Value);
 
                     // Create a match for the arguments
                     var argumentMatch = new ItemMatch<IArgumentDefinition>(oldArgument, newArgument);
@@ -189,7 +189,7 @@
                 if (oldArgument.Value != newArgument.Value)
                 {
                     var args = new FormatArguments(
-                        "has changed value from {OldValue} to {NewValue}", oldArgument.Value, newArgument.Value);
+                        $"has changed value from {MessagePart.OldValue} to {MessagePart.NewValue}", oldArgument.Value, newArgument.Value);
 
                     // Create a match for the arguments
                     var argumentMatch = new ItemMatch<IArgumentDefinition>(oldArgument, newArgument);

@@ -51,7 +51,7 @@
             {
                 // A default value has been added, this is technically a feature because the consuming assembly can treat it like an overload
                 var args = new FormatArguments(
-                    "has added the default value {NewValue}",
+                    $"has added the default value {MessagePart.NewValue}",
                     null,
                     newItem.DefaultValue);
 
@@ -64,7 +64,7 @@
                 // This will not be a breaking change for existing applications that happen to use a new binary without recompilation
                 // however it does cause a breaking change for compiling existing applications against this API
                 var args = new FormatArguments(
-                    "has removed the default value {OldValue}",
+                    $"has removed the default value {MessagePart.OldValue}",
                     oldItem.DefaultValue,
                     null);
 
@@ -91,7 +91,7 @@
             if (oldMappedType != newType)
             {
                 var args = new FormatArguments(
-                    "has change type from {OldValue} to {NewValue}",
+                    $"has change type from {MessagePart.OldValue} to {MessagePart.NewValue}",
                     oldType,
                     newType);
 

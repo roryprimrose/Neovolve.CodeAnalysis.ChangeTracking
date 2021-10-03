@@ -60,7 +60,7 @@
             }
 
             var args = new FormatArguments(
-                "has been renamed to {NewValue}",
+                $"has been renamed to {MessagePart.NewValue}",
                 null,
                 match.NewItem.Name);
 

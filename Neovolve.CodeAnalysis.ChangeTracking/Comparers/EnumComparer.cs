@@ -70,7 +70,7 @@
             if (match.OldItem.Namespace != match.NewItem.Namespace)
             {
                 var args = new FormatArguments(
-                    "has changed namespace from {OldValue} to {NewValue}", match.OldItem.Namespace,
+                    $"has changed namespace from {MessagePart.OldValue} to {MessagePart.NewValue}", match.OldItem.Namespace,
                     match.NewItem.Namespace);
 
                 aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
@@ -104,7 +104,7 @@
             {
                 // Underlying type has been added
                 var args = new FormatArguments(
-                    "has changed the underlying type from (implicit) {OldValue} to {NewValue} ",
+                    $"has changed the underlying type from (implicit) {MessagePart.OldValue} to {MessagePart.NewValue} ",
                     "int",
                     newBaseType);
 
@@ -121,7 +121,7 @@
             {
                 // Underlying type has been removed
                 var args = new FormatArguments(
-                    "has changed the underlying type from {OldValue} to (implicit) {NewValue}",
+                    $"has changed the underlying type from {MessagePart.OldValue} to (implicit) {MessagePart.NewValue}",
                     oldBaseType,
                     "int");
 
@@ -138,7 +138,7 @@
             {
                 // Underlying type has been changed
                 var args = new FormatArguments(
-                    "has changed the underlying type from {OldValue} to {NewValue}",
+                    $"has changed the underlying type from {MessagePart.OldValue} to {MessagePart.NewValue}",
                     oldBaseType,
                     newBaseType);
 
