@@ -9,18 +9,23 @@
 
     <Title>Contract comparer for C# projects</Title>
     <Authors>rprimrose</Authors>
-    <Description>This library provides contract comparison between versions of c# code.</Description>
+    <Description>This library provides Semantic Versioning impact analysis between two versions of c# code.</Description>
     <PackageProjectUrl>https://github.com/roryprimrose/Neovolve.CodeAnalysis.ChangeTracking</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/roryprimrose/Neovolve.CodeAnalysis.ChangeTracking</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>Analysis</PackageTags>
+    <PackageTags>Analysis;SemVer;Semantic Versioning;C#;Code Analysis</PackageTags>
     <Version>1.0.0-alpha</Version>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.11.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.9" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="../readme.md" Pack="true" PackagePath="/"/>
   </ItemGroup>
 
 </Project>
