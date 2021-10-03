@@ -25,7 +25,7 @@
                 // This enum has an implicit value assigned by the compiler but has changed position
                 // The underlying value of this member will most likely have changed
                 var args = new FormatArguments(
-                    "has been renamed to {NewValue}",
+                    $"has been renamed to {MessagePart.NewValue}",
                     null,
                     match.NewItem.Name);
 
@@ -38,7 +38,7 @@
                 // This enum has an implicit value assigned by the compiler but has changed position
                 // The underlying value of this member will most likely have changed
                 var args = new FormatArguments(
-                    "has an implicit value and has changed index position from {OldValue} to {NewValue}",
+                    $"has an implicit value and has changed index position from {MessagePart.OldValue} to {MessagePart.NewValue}",
                     match.OldItem.Index.ToString(),
                     match.NewItem.Index.ToString());
 
@@ -64,7 +64,7 @@
                 // This has changed from an implicit compile time assigned value to an explicit value
                 // We need to assume that this is a breaking change
                 var args = new FormatArguments(
-                    "has redefined the underlying value from an implicit value to the explicit value of {NewValue}",
+                    $"has redefined the underlying value from an implicit value to the explicit value of {MessagePart.NewValue}",
                     null,
                     match.NewItem.Value);
 
@@ -76,7 +76,7 @@
                 // This has changed from an explicit value to an implicit compile time assigned value
                 // We need to assume that this is a breaking change
                 var args = new FormatArguments(
-                    "has redefined the underlying value from the explicit value of {OldValue} to an implicit value",
+                    $"has redefined the underlying value from the explicit value of {MessagePart.OldValue} to an implicit value",
                     match.OldItem.Value,
                     null);
 
@@ -104,7 +104,7 @@
 
             // Both members have values so the value of the enum member has changed
             var args = new FormatArguments(
-                "has changed the underlying value from {OldValue} to {NewValue}",
+                $"has changed the underlying value from {MessagePart.OldValue} to {MessagePart.NewValue}",
                 match.OldItem.Value,
                 match.NewItem.Value);
 

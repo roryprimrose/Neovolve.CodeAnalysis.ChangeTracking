@@ -26,7 +26,7 @@
         {
             var item = new TestClassDefinition();
             var match = new ItemMatch<IClassDefinition>(item, item);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
             var changeType = Model.Create<SemVerChangeType>();
             var message = Guid.NewGuid().ToString();
             var result = new ComparisonResult(changeType, item, item, message);
@@ -51,7 +51,7 @@
             var oldItem = new TestClassDefinition();
             var newItem = oldItem.JsonClone();
             var match = new ItemMatch<IClassDefinition>(oldItem, newItem);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
             var changeType = Model.Create<SemVerChangeType>();
             var message = Guid.NewGuid().ToString();
             var result = new ComparisonResult(changeType, oldItem, newItem, message);
@@ -76,7 +76,7 @@
             var oldItem = new TestClassDefinition();
             var newItem = oldItem.JsonClone();
             var match = new ItemMatch<IClassDefinition>(oldItem, newItem);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
             var changeType = Model.Create<SemVerChangeType>();
             var message = Guid.NewGuid().ToString();
             var result = new ComparisonResult(changeType, oldItem, newItem, message);

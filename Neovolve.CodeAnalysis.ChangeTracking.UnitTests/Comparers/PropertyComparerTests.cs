@@ -29,7 +29,7 @@
             var oldMember = new TestPropertyDefinition();
             var newMember = oldMember.JsonClone();
             var match = new ItemMatch<IPropertyDefinition>(oldMember, newMember);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             var actual = SUT.CompareMatch(match, options).ToList();
 
@@ -44,7 +44,7 @@
             var oldItem = new TestPropertyDefinition().Set(x => x.SetAccessor = null);
             var newItem = oldItem.JsonClone();
             var match = new ItemMatch<IPropertyDefinition>(oldItem, newItem);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
             var changeType = Model.Create<SemVerChangeType>();
             var message = Guid.NewGuid().ToString();
             var result = new ComparisonResult(changeType, oldItem, newItem, message);
@@ -73,7 +73,7 @@
             var oldItem = new TestPropertyDefinition();
             var newItem = oldItem.JsonClone();
             var match = new ItemMatch<IPropertyDefinition>(oldItem, newItem);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
             var changeType = Model.Create<SemVerChangeType>();
             var message = Guid.NewGuid().ToString();
             var result = new ComparisonResult(changeType, oldItem, newItem, message);
@@ -109,7 +109,7 @@
                 x.SetAccessor = new TestPropertyAccessorDefinition();
             });
             var match = new ItemMatch<IPropertyDefinition>(oldItem, newItem);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
             var changeType = Model.Create<SemVerChangeType>();
             var message = Guid.NewGuid().ToString();
             var result = new ComparisonResult(changeType, oldItem, newItem, message);
@@ -142,7 +142,7 @@
             });
             var newItem = oldItem.JsonClone();
             var match = new ItemMatch<IPropertyDefinition>(oldItem, newItem);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
             var changeType = Model.Create<SemVerChangeType>();
             var message = Guid.NewGuid().ToString();
             var result = new ComparisonResult(changeType, oldItem, newItem, message);
@@ -170,7 +170,7 @@
             var oldItem = new TestPropertyDefinition().Set(x => x.GetAccessor = null);
             var newItem = oldItem.JsonClone();
             var match = new ItemMatch<IPropertyDefinition>(oldItem, newItem);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
             var changeType = Model.Create<SemVerChangeType>();
             var message = Guid.NewGuid().ToString();
             var result = new ComparisonResult(changeType, oldItem, newItem, message);
@@ -197,7 +197,7 @@
         {
             var item = new TestPropertyDefinition();
             var match = new ItemMatch<IPropertyDefinition>(item, item);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
             var changeType = Model.Create<SemVerChangeType>();
             var message = Guid.NewGuid().ToString();
             var result = new ComparisonResult(changeType, item, item, message);

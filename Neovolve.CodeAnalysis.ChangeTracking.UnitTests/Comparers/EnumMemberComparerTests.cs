@@ -25,7 +25,7 @@
         [Fact]
         public void CompareMatchReturnsBreakingWhenMemberChangesName()
         {
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
             var oldItem = new TestEnumMemberDefinition();
             var newItem = oldItem.JsonClone().Set(x => x.Name = Guid.NewGuid().ToString());
             var match = new ItemMatch<IEnumMemberDefinition>(oldItem, newItem);
@@ -52,7 +52,7 @@
         [InlineData("First | Second", "123")]
         public void CompareMatchReturnsBreakingWhenMemberValueChanged(string oldValue, string newValue)
         {
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
             var oldItem = new TestEnumMemberDefinition().Set(x => x.Value = oldValue);
             var newItem = oldItem.JsonClone().Set(x => x.Value = newValue);
             var match = new ItemMatch<IEnumMemberDefinition>(oldItem, newItem);
@@ -74,7 +74,7 @@
         [Fact]
         public void CompareMatchReturnsBreakingWhenMemberWithImplicitValueChangesIndex()
         {
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
             var oldItem = new TestEnumMemberDefinition().Set(x => x.Value = string.Empty);
             var newItem = oldItem.JsonClone().Set(x => x.Index = oldItem.Index + 1);
             var match = new ItemMatch<IEnumMemberDefinition>(oldItem, newItem);
@@ -101,7 +101,7 @@
         public void CompareMatchReturnsEmptyResultsWhenBitwiseWhitespaceOrOrderingChanges(string oldValue,
             string newValue)
         {
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
             var oldItem = new TestEnumMemberDefinition().Set(x => x.Value = oldValue);
             var newItem = oldItem.JsonClone().Set(x => x.Value = newValue);
             var match = new ItemMatch<IEnumMemberDefinition>(oldItem, newItem);
@@ -114,7 +114,7 @@
         [Fact]
         public void CompareMatchReturnsEmptyResultsWhenItemsMatch()
         {
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
             var oldItem = new TestEnumMemberDefinition();
             var newItem = oldItem.JsonClone();
             var match = new ItemMatch<IEnumMemberDefinition>(oldItem, newItem);
@@ -127,7 +127,7 @@
         [Fact]
         public void CompareMatchReturnsResultsFromAttributeMatch()
         {
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
             var oldItem = new TestEnumMemberDefinition();
             var newItem = oldItem.JsonClone();
             var match = new ItemMatch<IEnumMemberDefinition>(oldItem, newItem);

@@ -14,7 +14,7 @@
         [InlineData("Type reference", "Type reference")]
         public void FormatItemChangedMessageFormatsMessageWithProvidedArguments(string prefix, string expectedPrefix)
         {
-            const string? messageFormat = "{Identifier} - {OldValue} - {NewValue}";
+            var messageFormat = $"{MessagePart.Identifier} - {MessagePart.OldValue} - {MessagePart.NewValue}";
             var identifier = Guid.NewGuid().ToString();
             var oldValue = Guid.NewGuid().ToString();
             var newValue = Guid.NewGuid().ToString();
@@ -37,7 +37,7 @@
         [InlineData("Type reference", "Type reference")]
         public void FormatItemFormatsMessageWithProvidedArguments(string prefix, string expectedPrefix)
         {
-            const string? messageFormat = "{Identifier} - {OldValue} - {NewValue}";
+            var messageFormat = $"{MessagePart.Identifier} - {MessagePart.OldValue} - {MessagePart.NewValue}";
             var identifier = Guid.NewGuid().ToString();
             var oldValue = Guid.NewGuid().ToString();
             var newValue = Guid.NewGuid().ToString();

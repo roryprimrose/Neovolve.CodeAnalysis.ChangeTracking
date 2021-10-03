@@ -32,7 +32,7 @@
                 var oldType = DetermineTypeChangeDescription(match.OldItem);
 
                 var args = new FormatArguments(
-                    "has changed type definition from {OldValue} to {NewValue}",
+                    $"has changed type definition from {MessagePart.OldValue} to {MessagePart.NewValue}",
                     oldType,
                     newType);
 

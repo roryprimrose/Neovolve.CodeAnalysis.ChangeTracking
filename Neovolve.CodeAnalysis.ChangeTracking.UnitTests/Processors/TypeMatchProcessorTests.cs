@@ -47,7 +47,7 @@
             var message = Guid.NewGuid().ToString();
             var result = new ComparisonResult(SemVerChangeType.Breaking, oldFirstItem, newFirstItem, message);
             var results = new List<ComparisonResult> {result};
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             oldFirstItem.FullName.Returns(firstTypeName);
             oldSecondItem.FullName.Returns(secondTypeName);
@@ -93,7 +93,7 @@
             var message = Guid.NewGuid().ToString();
             var result = new ComparisonResult(SemVerChangeType.Breaking, oldFirstItem, newFirstItem, message);
             var results = new List<ComparisonResult> {result};
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             oldFirstItem.FullName.Returns(typeName);
             oldSecondItem.FullName.Returns(typeName);
@@ -162,7 +162,7 @@
             var parentResult =
                 new ComparisonResult(SemVerChangeType.Breaking, oldParentItem, newParentItem, parentMessage);
             var parentResults = new List<ComparisonResult> {parentResult};
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             Service<IBaseTypeEvaluator>().FindMatches(
                     Match.On<IEnumerable<IBaseTypeDefinition>>(x => x.Should().BeEquivalentTo(oldParentItems)),
@@ -207,7 +207,7 @@
             var message = Guid.NewGuid().ToString();
             var result = new ComparisonResult(SemVerChangeType.Breaking, oldFirstItem, newFirstItem, message);
             var results = new List<ComparisonResult> {result};
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             oldFirstItem.FullName.Returns(typeName);
             oldSecondItem.FullName.Returns(typeName);

@@ -38,7 +38,7 @@
             {
                 newItem
             };
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
             var matchResults = new MatchResults<IPropertyDefinition>(Array.Empty<IPropertyDefinition>(),
                 newItems);
 
@@ -77,7 +77,7 @@
             {
                 newItem
             };
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
             var matchResults = new MatchResults<IPropertyDefinition>(Array.Empty<IPropertyDefinition>(),
                 newItems);
 

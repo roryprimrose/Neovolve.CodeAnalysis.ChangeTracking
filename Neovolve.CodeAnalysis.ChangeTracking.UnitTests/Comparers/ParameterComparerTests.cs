@@ -27,7 +27,7 @@
             var oldItem = new TestParameterDefinition();
             var newItem = oldItem.JsonClone().Set(x => x.Type = "NewType");
             var match = new ItemMatch<IParameterDefinition>(oldItem, newItem);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             var actual = SUT.CompareMatch(match, options).ToList();
 
@@ -43,7 +43,7 @@
             var oldItem = new TestParameterDefinition();
             var newItem = oldItem.JsonClone();
             var match = new ItemMatch<IParameterDefinition>(oldItem, newItem);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             var actual = SUT.CompareMatch(match, options).ToList();
 
@@ -70,7 +70,7 @@
             var oldItem = new TestParameterDefinition().Set(x => x.DefaultValue = oldValue);
             var newItem = oldItem.JsonClone().Set(x => x.DefaultValue = newValue);
             var match = new ItemMatch<IParameterDefinition>(oldItem, newItem);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             var actual = SUT.CompareMatch(match, options).ToList();
 
@@ -92,7 +92,7 @@
         {
             var item = new TestParameterDefinition();
             var match = new ItemMatch<IParameterDefinition>(item, item);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
             var changeType = Model.Create<SemVerChangeType>();
             var message = Guid.NewGuid().ToString();
             var result = new ComparisonResult(changeType, item, item, message);

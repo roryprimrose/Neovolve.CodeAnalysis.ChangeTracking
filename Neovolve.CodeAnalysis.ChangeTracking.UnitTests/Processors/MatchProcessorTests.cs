@@ -27,7 +27,7 @@
         {
             var oldItems = Array.Empty<IClassDefinition>();
             var newItems = Array.Empty<IClassDefinition>();
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
             var matches = new MatchResults<IClassDefinition>(oldItems, newItems);
 
             Service<IEvaluator<IClassDefinition>>().FindMatches(oldItems, newItems).Returns(matches);
@@ -55,7 +55,7 @@
             };
             var match = new ItemMatch<IClassDefinition>(oldItem, newItem);
             var matches = new List<ItemMatch<IClassDefinition>> {match};
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
             var matchResults = new MatchResults<IClassDefinition>(matches, Array.Empty<IClassDefinition>(),
                 Array.Empty<IClassDefinition>());
             var message = Guid.NewGuid().ToString();
@@ -88,7 +88,7 @@
             {
                 newItem
             };
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
             var matchResults = new MatchResults<IClassDefinition>(Array.Empty<IClassDefinition>(),
                 newItems);
 
@@ -118,7 +118,7 @@
                 oldItem
             };
             var newItems = Array.Empty<IClassDefinition>();
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
             var matchResults = new MatchResults<IClassDefinition>(oldItems,
                 Array.Empty<IClassDefinition>());
 
@@ -141,7 +141,7 @@
         public void CalculateChangesThrowsExceptionWithNullNewItems()
         {
             var oldItems = Array.Empty<IClassDefinition>();
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             Action action = () => SUT.CalculateChanges(oldItems, null!, options).ForceEnumeration();
 
@@ -152,7 +152,7 @@
         public void CalculateChangesThrowsExceptionWithNullOldItems()
         {
             var newItems = Array.Empty<IClassDefinition>();
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             Action action = () => SUT.CalculateChanges(null!, newItems, options).ForceEnumeration();
 

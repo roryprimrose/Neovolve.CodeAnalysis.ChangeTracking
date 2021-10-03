@@ -65,7 +65,7 @@
                 x.ReturnType = oldItem.ReturnType;
             });
             var match = new ItemMatch<IFieldDefinition>(oldItem, newItem);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
             var result = new ComparisonResult(expected, oldItem, newItem, "Some message");
 
             var accessModifiersComparer = Substitute.For<IAccessModifiersComparer>();
@@ -101,7 +101,7 @@
         {
             var field = new TestFieldDefinition();
             var match = new ItemMatch<IFieldDefinition>(field, field);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
 
             var accessModifiersComparer = Substitute.For<IAccessModifiersComparer>();
             var modifiersComparer = Substitute.For<IFieldModifiersComparer>();
@@ -120,7 +120,7 @@
             var oldItem = new TestFieldDefinition();
             var newItem = new TestFieldDefinition().Set(x => x.AccessModifiers = AccessModifiers.Private);
             var match = new ItemMatch<IFieldDefinition>(oldItem, newItem);
-            var options = ComparerOptions.Default;
+            var options = TestComparerOptions.Default;
             var modifierResult = new ComparisonResult(SemVerChangeType.Breaking, oldItem, newItem, "Different modifier");
             var accessModifierResult = new ComparisonResult(SemVerChangeType.Breaking, oldItem, newItem, "Different access modifier");
 

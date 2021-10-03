@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using FluentAssertions;
+    using ModelBuilder;
     using Neovolve.CodeAnalysis.ChangeTracking.Comparers;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
     using Neovolve.CodeAnalysis.ChangeTracking.UnitTests.TestModels;
@@ -20,13 +21,14 @@
         }
 
         [Fact]
-        public void CompareMatchReturnsBreakingWhenArgumentsAdded()
+        public void CompareMatchReturnsBreakingWhenMultipleArgumentsAdded()
         {
             var oldItem = new TestAttributeDefinition
             {
                 Arguments = new[]
                 {
-                    new TestArgumentDefinition()
+                    new TestArgumentDefinition().Set(x => x.ArgumentType = ArgumentType.Named),
+                    new TestArgumentDefinition().Set(x => x.ArgumentType = ArgumentType.Ordinal)
                 }
             };
             var newItem = oldItem.JsonClone();
@@ -50,18 +52,146 @@
         }
 
         [Fact]
-        public void CompareMatchReturnsBreakingWhenArgumentsRemoved()
+        public void CompareMatchReturnsBreakingWhenMultipleArgumentsRemoved()
         {
             var oldItem = new TestAttributeDefinition
             {
                 Arguments = new[]
                 {
-                    new TestArgumentDefinition()
+                    new TestArgumentDefinition().Set(x => x.ArgumentType = ArgumentType.Named),
+                    new TestArgumentDefinition().Set(x => x.ArgumentType = ArgumentType.Ordinal)
                 }
             };
             var newItem = oldItem.JsonClone();
 
             newItem.Arguments = new List<IArgumentDefinition>();
+
+            var match = new ItemMatch<IAttributeDefinition>(oldItem, newItem);
+            var options = OptionsFactory.BuildOptions();
+
+            var sut = new AttributeComparer();
+
+            var actual = sut.CompareMatch(match, options).ToList();
+
+            _output.WriteResults(actual);
+
+            actual.Should().HaveCount(1);
+
+            actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
+            actual[0].OldItem.Should().Be(oldItem);
+            actual[0].NewItem.Should().Be(newItem);
+        }
+
+        [Fact]
+        public void CompareMatchReturnsBreakingWhenMultipleNamedArgumentsAdded()
+        {
+            var oldItem = new TestAttributeDefinition
+            {
+                Arguments = new[]
+                {
+                    new TestArgumentDefinition().Set(x => x.ArgumentType = ArgumentType.Named),
+                    new TestArgumentDefinition().Set(x => x.ArgumentType = ArgumentType.Named)
+                }
+            };
+            var newItem = oldItem.JsonClone();
+
+            oldItem.Arguments = new List<IArgumentDefinition>();
+
+            var match = new ItemMatch<IAttributeDefinition>(oldItem, newItem);
+            var options = OptionsFactory.BuildOptions();
+
+            var sut = new AttributeComparer();
+
+            var actual = sut.CompareMatch(match, options).ToList();
+
+            _output.WriteResults(actual);
+
+            actual.Should().HaveCount(1);
+
+            actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
+            actual[0].OldItem.Should().Be(oldItem);
+            actual[0].NewItem.Should().Be(newItem);
+        }
+
+        [Fact]
+        public void CompareMatchReturnsBreakingWhenMultipleNamedArgumentsRemoved()
+        {
+            var oldItem = new TestAttributeDefinition
+            {
+                Arguments = new[]
+                {
+                    new TestArgumentDefinition().Set(x => x.ArgumentType = ArgumentType.Named),
+                    new TestArgumentDefinition().Set(x => x.ArgumentType = ArgumentType.Named)
+                }
+            };
+            var newItem = oldItem.JsonClone();
+
+            newItem.Arguments = new List<IArgumentDefinition>();
+
+            var match = new ItemMatch<IAttributeDefinition>(oldItem, newItem);
+            var options = OptionsFactory.BuildOptions();
+
+            var sut = new AttributeComparer();
+
+            var actual = sut.CompareMatch(match, options).ToList();
+
+            _output.WriteResults(actual);
+
+            actual.Should().HaveCount(1);
+
+            actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
+            actual[0].OldItem.Should().Be(oldItem);
+            actual[0].NewItem.Should().Be(newItem);
+        }
+
+        [Fact]
+        public void CompareMatchReturnsBreakingWhenNamedArgumentAdded()
+        {
+            var oldItem = new TestAttributeDefinition
+            {
+                Arguments = new[]
+                {
+                    new TestArgumentDefinition().Set(x => x.ArgumentType = ArgumentType.Named)
+                }
+            };
+            var newItem = oldItem.JsonClone();
+
+            oldItem.Arguments = new List<IArgumentDefinition>();
+
+            var match = new ItemMatch<IAttributeDefinition>(oldItem, newItem);
+            var options = OptionsFactory.BuildOptions();
+
+            var sut = new AttributeComparer();
+
+            var actual = sut.CompareMatch(match, options).ToList();
+
+            _output.WriteResults(actual);
+
+            actual.Should().HaveCount(1);
+
+            actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
+            actual[0].OldItem.Should().BeNull();
+            actual[0].NewItem.As<IArgumentDefinition>().ParameterName.Should()
+                .Be(newItem.Arguments.First().ParameterName);
+        }
+
+        [Fact]
+        public void CompareMatchReturnsBreakingWhenNamedArgumentAddedAndOtherNamedArgumentRenamed()
+        {
+            var oldItem = new TestAttributeDefinition
+            {
+                Arguments = new[]
+                {
+                    new TestArgumentDefinition().Set(x => x.ArgumentType = ArgumentType.Named),
+                    new TestArgumentDefinition().Set(x => x.ArgumentType = ArgumentType.Named)
+                }
+            };
+            var newItem = oldItem.JsonClone();
+
+            oldItem.Arguments = new List<IArgumentDefinition>
+            {
+                new TestArgumentDefinition().Set(x => x.ArgumentType = ArgumentType.Named)
+            };
 
             var match = new ItemMatch<IAttributeDefinition>(oldItem, newItem);
             var options = OptionsFactory.BuildOptions();
@@ -112,6 +242,71 @@
             actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
             actual[0].OldItem.Should().BeAssignableTo<IArgumentDefinition>();
             actual[0].NewItem.Should().BeNull();
+        }
+
+        [Fact]
+        public void CompareMatchReturnsBreakingWhenNamedArgumentRemoved()
+        {
+            var oldItem = new TestAttributeDefinition
+            {
+                Arguments = new[]
+                {
+                    new TestArgumentDefinition().Set(x => x.ArgumentType = ArgumentType.Named)
+                }
+            };
+            var newItem = oldItem.JsonClone();
+
+            newItem.Arguments = new List<IArgumentDefinition>();
+
+            var match = new ItemMatch<IAttributeDefinition>(oldItem, newItem);
+            var options = OptionsFactory.BuildOptions();
+
+            var sut = new AttributeComparer();
+
+            var actual = sut.CompareMatch(match, options).ToList();
+
+            _output.WriteResults(actual);
+
+            actual.Should().HaveCount(1);
+
+            actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
+            actual[0].OldItem.As<IArgumentDefinition>().ParameterName.Should()
+                .Be(oldItem.Arguments.First().ParameterName);
+            actual[0].NewItem.Should().BeNull();
+        }
+
+        [Fact]
+        public void CompareMatchReturnsBreakingWhenNamedArgumentRemovedAndOtherNamedArgumentRenamed()
+        {
+            var oldItem = new TestAttributeDefinition
+            {
+                Arguments = new[]
+                {
+                    new TestArgumentDefinition().Set(x => x.ArgumentType = ArgumentType.Named),
+                    new TestArgumentDefinition().Set(x => x.ArgumentType = ArgumentType.Named)
+                }
+            };
+            var newItem = oldItem.JsonClone();
+
+            newItem.Arguments = new List<IArgumentDefinition>
+            {
+                new TestArgumentDefinition().Set(x => x.ArgumentType = ArgumentType.Named)
+            };
+
+            var match = new ItemMatch<IAttributeDefinition>(oldItem, newItem);
+            var options = OptionsFactory.BuildOptions();
+
+            var sut = new AttributeComparer();
+
+            var actual = sut.CompareMatch(match, options).ToList();
+
+            _output.WriteResults(actual);
+
+            actual.Should().HaveCount(1);
+
+            actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
+            actual[0].OldItem.Should().Be(oldItem);
+            actual[0].NewItem.Should().Be(newItem);
         }
 
         [Fact]
