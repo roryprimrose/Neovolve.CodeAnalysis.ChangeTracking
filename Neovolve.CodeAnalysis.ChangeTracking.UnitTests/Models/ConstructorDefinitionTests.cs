@@ -10,6 +10,44 @@
 
     public class ConstructorDefinitionTests
     {
+        private const string ConstructorWithAttributes = @"
+namespace MyNamespace 
+{
+    public class MyClass
+    {
+        [First]
+        [Second(""here"", true, 123)]
+        public MyClass()
+        {
+        }
+    }  
+}
+";
+
+        private const string DefaultConstructor = @"
+namespace MyNamespace 
+{
+    public class MyClass
+    {
+        public MyClass()
+        {
+        }
+    }  
+}
+";
+
+        private const string ParameterConstructor = @"
+namespace MyNamespace 
+{
+    public class MyClass
+    {
+        public MyClass(string first, bool second, int third)
+        {
+        }
+    }  
+}
+";
+
         [Theory]
         [InlineData("", AccessModifiers.Private)]
         [InlineData("public", AccessModifiers.Public)]
@@ -107,7 +145,7 @@
             sut.FullName.Should().Be(declaringType.FullName + "." + expected);
             sut.FullRawName.Should().Be(declaringType.FullRawName + "." + expected);
         }
-        
+
         [Theory]
         [InlineData("", "ctor")]
         [InlineData("static", "cctor")]
@@ -141,10 +179,13 @@
             sut.Parameters.Should().HaveCount(3);
             sut.Parameters.First().Type.Should().Be("string");
             sut.Parameters.First().Name.Should().Be("first");
+            sut.Parameters.First().DeclaredIndex.Should().Be(0);
             sut.Parameters.Skip(1).First().Type.Should().Be("bool");
             sut.Parameters.Skip(1).First().Name.Should().Be("second");
+            sut.Parameters.Skip(1).First().DeclaredIndex.Should().Be(1);
             sut.Parameters.Skip(2).First().Type.Should().Be("int");
             sut.Parameters.Skip(2).First().Name.Should().Be("third");
+            sut.Parameters.Skip(2).First().DeclaredIndex.Should().Be(2);
         }
 
         [Fact]
@@ -172,43 +213,5 @@
 
             sut.ReturnType.Should().BeEmpty();
         }
-
-        private static string ConstructorWithAttributes => @"
-namespace MyNamespace 
-{
-    public class MyClass
-    {
-        [First]
-        [Second(""here"", true, 123)]
-        public MyClass()
-        {
-        }
-    }  
-}
-";
-
-        private static string DefaultConstructor => @"
-namespace MyNamespace 
-{
-    public class MyClass
-    {
-        public MyClass()
-        {
-        }
-    }  
-}
-";
-        
-        private static string ParameterConstructor => @"
-namespace MyNamespace 
-{
-    public class MyClass
-    {
-        public MyClass(string first, bool second, int third)
-        {
-        }
-    }  
-}
-";
     }
 }

@@ -303,9 +303,11 @@
             sut.Parameters.Should().HaveCount(2);
             sut.Parameters.First().Type.Should().Be("V");
             sut.Parameters.First().Name.Should().Be("value");
+            sut.Parameters.First().DeclaredIndex.Should().Be(0);
             sut.Parameters.First().Modifiers.Should().Be(ParameterModifiers.None);
             sut.Parameters.Skip(1).First().Type.Should().Be("object[]");
             sut.Parameters.Skip(1).First().Name.Should().Be("otherValues");
+            sut.Parameters.Skip(1).First().DeclaredIndex.Should().Be(1);
             sut.Parameters.Skip(1).First().Modifiers.Should().Be(ParameterModifiers.Params);
         }
 

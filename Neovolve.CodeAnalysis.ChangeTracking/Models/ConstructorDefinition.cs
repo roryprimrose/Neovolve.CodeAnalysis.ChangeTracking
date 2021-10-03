@@ -27,7 +27,7 @@
             FullRawName = DeclaringType.FullRawName + "." + name;
             ReturnType = string.Empty;
 
-            Parameters = DetermineParameters(node);
+            Parameters = DetermineParameters(node.ParameterList);
         }
 
         private static ConstructorModifiers DetermineModifiers(ConstructorDeclarationSyntax node)

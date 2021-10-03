@@ -23,7 +23,7 @@
 
             GenericTypeParameters = DetermineGenericTypeParameters(node);
             GenericConstraints = DetermineGenericConstraints(node);
-            Parameters = DetermineParameters(node);
+            Parameters = DetermineParameters(node.ParameterList);
         }
 
         private static IReadOnlyCollection<IConstraintListDefinition> DetermineGenericConstraints(
@@ -132,20 +132,6 @@
             }
 
             return name;
-        }
-
-        private IReadOnlyCollection<IParameterDefinition> DetermineParameters(MethodDeclarationSyntax node)
-        {
-            var parameters = new List<IParameterDefinition>();
-
-            foreach (var declaredParameter in node.ParameterList.Parameters)
-            {
-                var parameter = new ParameterDefinition(this, declaredParameter);
-
-                parameters.Add(parameter);
-            }
-
-            return parameters;
         }
 
         /// <inheritdoc />
