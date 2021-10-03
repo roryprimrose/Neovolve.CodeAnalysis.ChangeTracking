@@ -1,6 +1,7 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.Comparers
 {
     using System;
+    using System.Linq;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
     using Neovolve.CodeAnalysis.ChangeTracking.Processors;
 
@@ -100,22 +101,53 @@
                     null,
                     null);
 
-                aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
+                if (shiftAmount == 1)
+                {
+                    // Check if we can find a single parameter added or removed
+                    var oldParameterNames = oldParameters.Select(x => x.Name).ToList();
+                    var newParameterNames = newParameters.Select(x => x.Name).ToList();
+                    var removedParameters = oldParameterNames.Except(newParameterNames).ToList();
+                    var addedParameters = newParameterNames.Except(oldParameterNames).ToList();
 
-                // No need to look into how the generic type has changed
-                return;
+                    if (removedParameters.Count == 1
+                        && addedParameters.Count == 0)
+                    {
+                        // A single parameter has been removed
+                        var removedParameter = oldParameters.Single(x => x.Name == removedParameters[0]);
+
+                        aggregator.AddElementRemovedResult(SemVerChangeType.Breaking, removedParameter, options.MessageFormatter);
+                    }
+                    else if (removedParameters.Count == 0
+                             && addedParameters.Count == 1)
+                    {
+                        // A single parameter has been added
+                        var addedParameter = newParameters.Single(x => x.Name == addedParameters[0]);
+
+                        aggregator.AddElementAddedResult(SemVerChangeType.Breaking, addedParameter, options.MessageFormatter);
+                    }
+                    else
+                    {
+                        aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
+                    }
+                }
+                else
+                {
+                    aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
+                }
             }
-
-            // We have the same number of parameters, compare them
-            for (var index = 0; index < oldParameters.Count; index++)
+            else
             {
-                var oldParameter = oldParameters[index];
-                var newParameter = newParameters[index];
-                var parameterMatch = new ItemMatch<IParameterDefinition>(oldParameter, newParameter);
+                // We have the same number of parameters, compare them
+                for (var index = 0; index < oldParameters.Count; index++)
+                {
+                    var oldParameter = oldParameters[index];
+                    var newParameter = newParameters[index];
+                    var parameterMatch = new ItemMatch<IParameterDefinition>(oldParameter, newParameter);
 
-                var parameterChanges = _parameterComparer.CompareMatch(parameterMatch, options);
+                    var parameterChanges = _parameterComparer.CompareMatch(parameterMatch, options);
 
-                aggregator.AddResults(parameterChanges);
+                    aggregator.AddResults(parameterChanges);
+                }
             }
         }
     }
