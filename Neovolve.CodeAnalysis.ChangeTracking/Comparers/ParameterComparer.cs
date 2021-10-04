@@ -34,8 +34,29 @@
 
             base.EvaluateSignatureChanges(match, options, aggregator);
 
+            RunComparisonStep(EvaluateDeclaredIndexChanges, match, options, aggregator, true);
+            RunComparisonStep(EvaluateParameterTypeAndNameChanges, match, options, aggregator, true);
             RunComparisonStep(EvaluateParameterTypeChanges, match, options, aggregator, true);
             RunComparisonStep(EvaluateDefaultValueChanges, match, options, aggregator);
+        }
+
+        private static void EvaluateDeclaredIndexChanges(
+            ItemMatch<IParameterDefinition> match,
+            ComparerOptions options,
+            IChangeResultAggregator aggregator)
+        {
+            var oldDeclaredIndex = match.OldItem.DeclaredIndex + 1;
+            var newDeclaredIndex = match.NewItem.DeclaredIndex + 1;
+
+            if (oldDeclaredIndex != newDeclaredIndex)
+            {
+                var args = new FormatArguments(
+                    $"has moved from position {oldDeclaredIndex} to {newDeclaredIndex}",
+                    null,
+                    null);
+
+                aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
+            }
         }
 
         private static void EvaluateDefaultValueChanges(
@@ -72,6 +93,37 @@
             }
         }
 
+        private static void EvaluateParameterTypeAndNameChanges(
+            ItemMatch<IParameterDefinition> match,
+            ComparerOptions options,
+            IChangeResultAggregator aggregator)
+        {
+            var oldType = match.OldItem.Type;
+            var newType = match.NewItem.Type;
+
+            string oldMappedType = oldType;
+
+            if (match.OldItem.DeclaringMember is IGenericTypeElement oldGenericMember
+                && match.NewItem.DeclaringMember is IGenericTypeElement newGenericMember)
+            {
+                oldMappedType = oldGenericMember.GetMatchingGenericType(oldType, newGenericMember);
+            }
+
+            var oldName = match.OldItem.Name;
+            var newName = match.NewItem.Name;
+
+            if (oldMappedType != newType
+                && oldName != newName)
+            {
+                var args = new FormatArguments(
+                    $"has replaced parameter {MessagePart.OldValue}",
+                    oldType + " " + oldName,
+                    null);
+
+                aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
+            }
+        }
+
         private static void EvaluateParameterTypeChanges(
             ItemMatch<IParameterDefinition> match,
             ComparerOptions options,
@@ -87,11 +139,11 @@
             {
                 oldMappedType = oldGenericMember.GetMatchingGenericType(oldType, newGenericMember);
             }
-            
+
             if (oldMappedType != newType)
             {
                 var args = new FormatArguments(
-                    $"has change type from {MessagePart.OldValue} to {MessagePart.NewValue}",
+                    $"has changed type from {MessagePart.OldValue} to {MessagePart.NewValue}",
                     oldType,
                     newType);
 

@@ -9,7 +9,7 @@
         protected MemberDefinition(MemberDeclarationSyntax node, ITypeDefinition declaringType) : base(node)
         {
             DeclaringType = declaringType ?? throw new ArgumentNullException(nameof(declaringType));
-
+            
             AccessModifiers = DetermineAccessModifier(node, DeclaringType);
 
             if (declaringType.IsVisible == false)
@@ -23,15 +23,18 @@
             }
         }
 
-        protected IReadOnlyCollection<IParameterDefinition> DetermineParameters(ConstructorDeclarationSyntax node)
+        protected IReadOnlyCollection<IParameterDefinition> DetermineParameters(ParameterListSyntax parameterList)
         {
             var parameters = new List<IParameterDefinition>();
 
-            foreach (var declaredParameter in node.ParameterList.Parameters)
+            var index = 0;
+
+            foreach (var declaredParameter in parameterList.Parameters)
             {
-                var parameter = new ParameterDefinition(this, declaredParameter);
+                var parameter = new ParameterDefinition(declaredParameter, index, this);
 
                 parameters.Add(parameter);
+                index++;
             }
 
             return parameters;

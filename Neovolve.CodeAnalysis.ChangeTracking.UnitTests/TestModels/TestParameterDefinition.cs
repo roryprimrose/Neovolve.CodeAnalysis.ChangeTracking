@@ -7,6 +7,7 @@
     public class TestParameterDefinition : IParameterDefinition
     {
         public IReadOnlyCollection<IAttributeDefinition> Attributes { get; set; } = new List<TestAttributeDefinition>();
+        public int DeclaredIndex { get; set; } = 0;
         public string DeclaredModifiers { get; set; } = Guid.NewGuid().ToString();
         public IMemberDefinition DeclaringMember { get; set; } = new TestMethodDefinition();
         public string DefaultValue { get; set; } = Guid.NewGuid().ToString();

@@ -107,84 +107,6 @@
         }
 
         [Fact]
-        public void CompareMatchReturnsBreakingWhenMultipleParametersAdded()
-        {
-            var oldItem = new TestMethodDefinition();
-            var firstParameter = new TestParameterDefinition().Set(x => x.DeclaringMember = oldItem);
-            var secondParameter = new TestParameterDefinition().Set(x => x.DeclaringMember = oldItem);
-            var parameters = new List<IParameterDefinition> { firstParameter, secondParameter }.AsReadOnly();
-            var newItem = oldItem.JsonClone().Set(x => x.Parameters = parameters);
-            var match = new ItemMatch<IMethodDefinition>(oldItem, newItem);
-            var options = TestComparerOptions.Default;
-
-            var actual = SUT.CompareMatch(match, options).ToList();
-
-            _output.WriteResults(actual);
-
-            actual.Should().HaveCount(1);
-            actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
-            actual[0].Message.Should().Contain("added");
-            actual[0].Message.Should().Contain("parameters");
-            actual[0].Message.Should().NotContain(firstParameter.Name);
-            actual[0].Message.Should().NotContain(secondParameter.Name);
-            actual[0].Message.Should().Contain(" 2 ");
-        }
-
-        [Fact]
-        public void CompareMatchReturnsBreakingWhenMultipleParametersAddedAndRemoved()
-        {
-            var firstParameter = new TestParameterDefinition();
-            var secondParameter = new TestParameterDefinition();
-            var oldParameters = new List<IParameterDefinition> { firstParameter, secondParameter }.AsReadOnly();
-            var oldItem = new TestMethodDefinition().Set(x => x.Parameters = oldParameters);
-            var thirdParameter = new TestParameterDefinition();
-            var fourthParameter = new TestParameterDefinition();
-            var fifthParameter = new TestParameterDefinition();
-            var newParameters = new List<IParameterDefinition> { thirdParameter, fourthParameter, fifthParameter }
-                .AsReadOnly();
-            var newItem = oldItem.JsonClone().Set(x => x.Parameters = newParameters);
-            var match = new ItemMatch<IMethodDefinition>(oldItem, newItem);
-            var options = TestComparerOptions.Default;
-
-            var actual = SUT.CompareMatch(match, options).ToList();
-
-            _output.WriteResults(actual);
-
-            actual[0].Message.Should().Contain("added");
-            actual[0].Message.Should().Contain("parameter");
-            actual[0].Message.Should().NotContain(firstParameter.Name);
-            actual[0].Message.Should().NotContain(secondParameter.Name);
-            actual[0].Message.Should().NotContain(thirdParameter.Name);
-            actual[0].Message.Should().NotContain(fourthParameter.Name);
-            actual[0].Message.Should().NotContain(fifthParameter.Name);
-            actual[0].Message.Should().Contain(" 1 ");
-        }
-
-        [Fact]
-        public void CompareMatchReturnsBreakingWhenMultipleParametersRemoved()
-        {
-            var firstParameter = new TestParameterDefinition();
-            var secondParameter = new TestParameterDefinition();
-            var parameters = new List<IParameterDefinition> { firstParameter, secondParameter }.AsReadOnly();
-            var oldItem = new TestMethodDefinition().Set(x => x.Parameters = parameters);
-            var newItem = oldItem.JsonClone().Set(x => x.Parameters = Array.Empty<IParameterDefinition>());
-            var match = new ItemMatch<IMethodDefinition>(oldItem, newItem);
-            var options = TestComparerOptions.Default;
-
-            var actual = SUT.CompareMatch(match, options).ToList();
-
-            _output.WriteResults(actual);
-
-            actual.Should().HaveCount(1);
-            actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
-            actual[0].Message.Should().Contain("removed");
-            actual[0].Message.Should().Contain("parameters");
-            actual[0].Message.Should().NotContain(firstParameter.Name);
-            actual[0].Message.Should().NotContain(secondParameter.Name);
-            actual[0].Message.Should().Contain(" 2 ");
-        }
-
-        [Fact]
         public void CompareMatchReturnsBreakingWhenNameChanged()
         {
             var oldItem = new TestMethodDefinition().Set(x =>
@@ -237,50 +159,6 @@
 
             actual.Should().HaveCount(1);
             actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
-        }
-
-        [Fact]
-        public void CompareMatchReturnsBreakingWhenSingleParameterAdded()
-        {
-            var oldItem = new TestMethodDefinition();
-            var parameter = new TestParameterDefinition().Set(x => x.DeclaringMember = oldItem);
-            var parameters = new List<IParameterDefinition> { parameter }.AsReadOnly();
-            var newItem = oldItem.JsonClone().Set(x => x.Parameters = parameters);
-            var match = new ItemMatch<IMethodDefinition>(oldItem, newItem);
-            var options = TestComparerOptions.Default;
-
-            var actual = SUT.CompareMatch(match, options).ToList();
-
-            _output.WriteResults(actual);
-
-            actual.Should().HaveCount(1);
-            actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
-            actual[0].Message.Should().Contain("added");
-            actual[0].Message.Should().Contain("Parameter");
-            actual[0].Message.Should().Contain(parameter.Name);
-            actual[0].Message.Should().NotContain(" 1 ");
-        }
-
-        [Fact]
-        public void CompareMatchReturnsBreakingWhenSingleParameterRemoved()
-        {
-            var parameter = new TestParameterDefinition();
-            var parameters = new List<IParameterDefinition> { parameter }.AsReadOnly();
-            var oldItem = new TestMethodDefinition().Set(x => x.Parameters = parameters);
-            var newItem = oldItem.JsonClone().Set(x => x.Parameters = Array.Empty<IParameterDefinition>());
-            var match = new ItemMatch<IMethodDefinition>(oldItem, newItem);
-            var options = TestComparerOptions.Default;
-
-            var actual = SUT.CompareMatch(match, options).ToList();
-
-            _output.WriteResults(actual);
-
-            actual.Should().HaveCount(1);
-            actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
-            actual[0].Message.Should().Contain("removed");
-            actual[0].Message.Should().Contain("Parameter");
-            actual[0].Message.Should().Contain(parameter.Name);
-            actual[0].Message.Should().NotContain(" 1 ");
         }
 
         [Fact]
@@ -380,7 +258,7 @@
         }
 
         [Fact]
-        public void CompareMatchReturnsResultFromParameterComparer()
+        public void CompareMatchReturnsResultFromParameterProcessor()
         {
             var oldParameter = new TestParameterDefinition();
             var oldParameters = new List<IParameterDefinition> { oldParameter }.AsReadOnly();
@@ -395,10 +273,8 @@
             var results = new[] { result };
             var options = TestComparerOptions.Default;
 
-            Service<IParameterComparer>()
-                .CompareMatch(
-                    Arg.Is<ItemMatch<IParameterDefinition>>(x =>
-                        x.OldItem == oldParameter && x.NewItem == newParameter), options).Returns(results);
+            Service<IParameterMatchProcessor>()
+                .CalculateChanges(oldItem.Parameters, newItem.Parameters, options).Returns(results);
 
             var actual = SUT.CompareMatch(match, options).ToList();
 
@@ -413,12 +289,12 @@
         {
             var accessModifiersComparer = Substitute.For<IAccessModifiersComparer>();
             var methodModifiersComparer = Substitute.For<IMethodModifiersComparer>();
-            var parameterComparer = Substitute.For<IParameterComparer>();
+            var parameterProcessor = Substitute.For<IParameterMatchProcessor>();
             var attributeProcessor = Substitute.For<IAttributeMatchProcessor>();
 
             // ReSharper disable once ObjectCreationAsStatement
             Action action = () =>
-                new MethodComparer(accessModifiersComparer, methodModifiersComparer, null!, parameterComparer,
+                new MethodComparer(accessModifiersComparer, methodModifiersComparer, null!, parameterProcessor,
                     attributeProcessor);
 
             action.Should().Throw<ArgumentNullException>();
@@ -429,12 +305,12 @@
         {
             var accessModifiersComparer = Substitute.For<IAccessModifiersComparer>();
             var genericTypeElementComparer = Substitute.For<IGenericTypeElementComparer>();
-            var parameterComparer = Substitute.For<IParameterComparer>();
+            var parameterProcessor = Substitute.For<IParameterMatchProcessor>();
             var attributeProcessor = Substitute.For<IAttributeMatchProcessor>();
 
             // ReSharper disable once ObjectCreationAsStatement
             Action action = () =>
-                new MethodComparer(accessModifiersComparer, null!, genericTypeElementComparer, parameterComparer,
+                new MethodComparer(accessModifiersComparer, null!, genericTypeElementComparer, parameterProcessor,
                     attributeProcessor);
 
             action.Should().Throw<ArgumentNullException>();

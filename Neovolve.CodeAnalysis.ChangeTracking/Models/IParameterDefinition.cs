@@ -13,6 +13,11 @@
         string DefaultValue { get; }
 
         /// <summary>
+        ///     Gets the declared index of the parameter in the declaring member.
+        /// </summary>
+        public int DeclaredIndex { get; }
+
+        /// <summary>
         ///     Gets the parameter type.
         /// </summary>
         string Type { get; }

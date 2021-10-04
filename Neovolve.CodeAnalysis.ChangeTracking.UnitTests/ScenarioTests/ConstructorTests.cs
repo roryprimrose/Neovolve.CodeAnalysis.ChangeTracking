@@ -160,6 +160,28 @@ namespace MyNamespace
         }
 
         [Fact]
+        public async Task ReturnsBreakingWhenClassConstructorChangesParameterTypeAndName()
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new(ClassWithDefaultConstructorAndParameterConstructor)
+            };
+            var newCode = new List<CodeSource>
+            {
+                new(ClassWithDefaultConstructorAndParameterConstructor.Replace("DateTimeOffset fourth", "Stream other"))
+            };
+
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            _output.WriteResult(result);
+
+            result.ChangeType.Should().Be(SemVerChangeType.Breaking);
+        }
+
+        [Fact]
         public async Task ReturnsBreakingWhenClassConstructorRemovesParameter()
         {
             var oldCode = new List<CodeSource>
@@ -169,6 +191,29 @@ namespace MyNamespace
             var newCode = new List<CodeSource>
             {
                 new(ClassWithDefaultConstructorAndParameterConstructor.Replace(", DateTimeOffset fourth", string.Empty))
+            };
+
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            _output.WriteResult(result);
+
+            result.ChangeType.Should().Be(SemVerChangeType.Breaking);
+        }
+
+        [Fact]
+        public async Task ReturnsBreakingWhenClassConstructorReordersParameters()
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new(ClassWithDefaultConstructorAndParameterConstructor)
+            };
+            var newCode = new List<CodeSource>
+            {
+                new(ClassWithDefaultConstructorAndParameterConstructor.Replace(", bool third, DateTimeOffset fourth",
+                    ", DateTimeOffset fourth, bool third"))
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -273,6 +318,29 @@ namespace MyNamespace
         }
 
         [Fact]
+        public async Task ReturnsBreakingWhenStructConstructorChangesParameterTypeAndName()
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new(StructWithDefaultConstructorAndParameterConstructor)
+            };
+            var newCode = new List<CodeSource>
+            {
+                new(StructWithDefaultConstructorAndParameterConstructor.Replace("DateTimeOffset fourth",
+                    "Stream other"))
+            };
+
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            _output.WriteResult(result);
+
+            result.ChangeType.Should().Be(SemVerChangeType.Breaking);
+        }
+
+        [Fact]
         public async Task ReturnsBreakingWhenStructConstructorRemovesParameter()
         {
             var oldCode = new List<CodeSource>
@@ -283,6 +351,29 @@ namespace MyNamespace
             {
                 new(StructWithDefaultConstructorAndParameterConstructor.Replace(", DateTimeOffset fourth",
                     string.Empty))
+            };
+
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            _output.WriteResult(result);
+
+            result.ChangeType.Should().Be(SemVerChangeType.Breaking);
+        }
+
+        [Fact]
+        public async Task ReturnsBreakingWhenStructConstructorReordersParameters()
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new(StructWithDefaultConstructorAndParameterConstructor)
+            };
+            var newCode = new List<CodeSource>
+            {
+                new(StructWithDefaultConstructorAndParameterConstructor.Replace(", bool third, DateTimeOffset fourth",
+                    ", DateTimeOffset fourth, bool third"))
             };
 
             var options = OptionsFactory.BuildOptions();

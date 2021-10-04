@@ -21,11 +21,25 @@
                     "[Tagger(123, true, \"abc\")]string value"))
                 .ConfigureAwait(false);
 
-            var sut = new ParameterDefinition(declaringMethod, node);
+            var sut = new ParameterDefinition(node, 0, declaringMethod);
 
             sut.Attributes.Should().HaveCount(1);
             sut.Attributes.First().Name.Should().Be("Tagger");
             sut.Attributes.First().Arguments.Should().HaveCount(3);
+        }
+
+        [Fact]
+        public async Task DeclaredIndexReturnsConstructorValue()
+        {
+            var declaredIndex = Environment.TickCount;
+            var declaringMethod = Substitute.For<IMethodDefinition>();
+
+            var node = await TestNode.FindNode<ParameterSyntax>(ParameterDefinitionCode.SingleParameter)
+                .ConfigureAwait(false);
+
+            var sut = new ParameterDefinition(node, declaredIndex, declaringMethod);
+
+            sut.DeclaredIndex.Should().Be(declaredIndex);
         }
 
         [Fact]
@@ -36,7 +50,7 @@
             var node = await TestNode.FindNode<ParameterSyntax>(ParameterDefinitionCode.SingleParameter)
                 .ConfigureAwait(false);
 
-            var sut = new ParameterDefinition(declaringMethod, node);
+            var sut = new ParameterDefinition(node, 0, declaringMethod);
 
             sut.DeclaringMember.Should().Be(declaringMethod);
         }
@@ -61,7 +75,7 @@
                 .FindNode<ParameterSyntax>(code)
                 .ConfigureAwait(false);
 
-            var sut = new ParameterDefinition(declaringMethod, node);
+            var sut = new ParameterDefinition(node, 0, declaringMethod);
 
             sut.DefaultValue.Should().Be(defaultValue);
         }
@@ -78,7 +92,7 @@
             var node = await TestNode.FindNode<ParameterSyntax>(ParameterDefinitionCode.SingleParameter)
                 .ConfigureAwait(false);
 
-            var sut = new ParameterDefinition(declaringMethod, node);
+            var sut = new ParameterDefinition(node, 0, declaringMethod);
 
             sut.FullName.Should().Be(fullName + "_value");
         }
@@ -95,7 +109,7 @@
             var node = await TestNode.FindNode<ParameterSyntax>(ParameterDefinitionCode.SingleParameter)
                 .ConfigureAwait(false);
 
-            var sut = new ParameterDefinition(declaringMethod, node);
+            var sut = new ParameterDefinition(node, 0, declaringMethod);
 
             sut.FullRawName.Should().Be(fullRawName + "_value");
         }
@@ -112,7 +126,7 @@
             var node = await TestNode.FindNode<ParameterSyntax>(ParameterDefinitionCode.SingleParameter)
                 .ConfigureAwait(false);
 
-            var sut = new ParameterDefinition(declaringMethod, node);
+            var sut = new ParameterDefinition(node, 0, declaringMethod);
 
             sut.IsVisible.Should().Be(value);
         }
@@ -132,7 +146,7 @@
                     ParameterDefinitionCode.SingleParameter.Replace("string value", modifiers + " string value"))
                 .ConfigureAwait(false);
 
-            var sut = new ParameterDefinition(declaringMethod, node);
+            var sut = new ParameterDefinition(node, 0, declaringMethod);
 
             sut.DeclaredModifiers.Should().Be(modifiers);
             sut.Modifiers.Should().Be(expected);
@@ -146,7 +160,7 @@
             var node = await TestNode.FindNode<ParameterSyntax>(ParameterDefinitionCode.SingleParameter)
                 .ConfigureAwait(false);
 
-            var sut = new ParameterDefinition(declaringMethod, node);
+            var sut = new ParameterDefinition(node, 0, declaringMethod);
 
             sut.Name.Should().Be("value");
         }
@@ -159,7 +173,7 @@
             var node = await TestNode.FindNode<ParameterSyntax>(ParameterDefinitionCode.SingleParameter)
                 .ConfigureAwait(false);
 
-            var sut = new ParameterDefinition(declaringMethod, node);
+            var sut = new ParameterDefinition(node, 0, declaringMethod);
 
             sut.RawName.Should().Be("value");
         }
@@ -171,7 +185,7 @@
                 .ConfigureAwait(false);
 
             // ReSharper disable once ObjectCreationAsStatement
-            Action action = () => new ParameterDefinition(null!, node);
+            Action action = () => new ParameterDefinition(node, 0, null!);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -182,7 +196,7 @@
             var declaringMethod = Substitute.For<IMethodDefinition>();
 
             // ReSharper disable once ObjectCreationAsStatement
-            Action action = () => new ParameterDefinition(declaringMethod, null!);
+            Action action = () => new ParameterDefinition(null!, 0, declaringMethod);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -201,7 +215,7 @@
                 .FindNode<ParameterSyntax>(ParameterDefinitionCode.SingleParameter.Replace("string", typeName))
                 .ConfigureAwait(false);
 
-            var sut = new ParameterDefinition(declaringMethod, node);
+            var sut = new ParameterDefinition(node, 0, declaringMethod);
 
             sut.Type.Should().Be(typeName);
         }
