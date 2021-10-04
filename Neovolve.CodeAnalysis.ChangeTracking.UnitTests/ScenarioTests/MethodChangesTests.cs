@@ -268,6 +268,7 @@
         [InlineData("()", "()", SemVerChangeType.None)]
         [InlineData("<T>(T first)", "<V>(V first)", SemVerChangeType.None)]
         [InlineData("<T, V>(T first, V second)", "<T, V>(T first, V second)", SemVerChangeType.None)]
+        [InlineData("<T, V>(T first, V second)", "<T, TValue>(T first, TValue second)", SemVerChangeType.None)]
         [InlineData("(string first, bool second, int third)", "(string first, bool second, int third)",
             SemVerChangeType.None)]
         [InlineData("(string first, bool second)", "(string first, bool second, int third)", SemVerChangeType.Breaking)]
@@ -275,6 +276,10 @@
         [InlineData("(string first, bool second, int third)", "(DateTime first, bool second, int third)",
             SemVerChangeType.Breaking)]
         [InlineData("(string first, bool second, int third)", "(DateTime? first, bool second, int third)",
+            SemVerChangeType.Breaking)]
+        [InlineData("(string first, bool second, int third)", "(DateTime? first, int third, bool second)",
+            SemVerChangeType.Breaking)]
+        [InlineData("(string first, bool second, int third)", "(DateTime? first, int third, Guid fourth, bool second)",
             SemVerChangeType.Breaking)]
         [InlineData("(string first, bool second)", "(string first, bool second, int third = 0)",
             SemVerChangeType.Breaking)]

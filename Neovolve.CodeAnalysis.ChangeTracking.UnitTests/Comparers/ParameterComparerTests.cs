@@ -22,6 +22,38 @@
         }
 
         [Fact]
+        public void CompareMatchReturnsBreakingWhenDeclaredIndexChanged()
+        {
+            var oldItem = new TestParameterDefinition();
+            var newItem = oldItem.JsonClone().Set(x => x.DeclaredIndex = oldItem.DeclaredIndex + 1);
+            var match = new ItemMatch<IParameterDefinition>(oldItem, newItem);
+            var options = TestComparerOptions.Default;
+
+            var actual = SUT.CompareMatch(match, options).ToList();
+
+            _output.WriteResults(actual);
+
+            actual.Should().HaveCount(1);
+            actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
+        }
+
+        [Fact]
+        public void CompareMatchReturnsBreakingWhenTypeAndNameChanged()
+        {
+            var oldItem = new TestParameterDefinition();
+            var newItem = new TestParameterDefinition();
+            var match = new ItemMatch<IParameterDefinition>(oldItem, newItem);
+            var options = TestComparerOptions.Default;
+
+            var actual = SUT.CompareMatch(match, options).ToList();
+
+            _output.WriteResults(actual);
+
+            actual.Should().HaveCount(1);
+            actual[0].ChangeType.Should().Be(SemVerChangeType.Breaking);
+        }
+
+        [Fact]
         public void CompareMatchReturnsBreakingWhenTypeChanged()
         {
             var oldItem = new TestParameterDefinition();
@@ -96,7 +128,7 @@
             var changeType = Model.Create<SemVerChangeType>();
             var message = Guid.NewGuid().ToString();
             var result = new ComparisonResult(changeType, item, item, message);
-            var results = new[] {result};
+            var results = new[] { result };
 
             Service<IParameterModifiersComparer>()
                 .CompareMatch(

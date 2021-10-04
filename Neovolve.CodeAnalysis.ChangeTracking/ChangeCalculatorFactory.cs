@@ -35,9 +35,11 @@
             var parameterModifiersChangeTable = new ParameterModifiersChangeTable();
             var parameterModifiersComparer = new ParameterModifiersComparer(parameterModifiersChangeTable);
             var parameterComparer = new ParameterComparer(parameterModifiersComparer, attributeProcessor);
+            var parameterEvaluator = new ParameterEvaluator();
+            var parameterProcessor = new ParameterMatchProcessor(parameterEvaluator, parameterComparer, logger);
 
             var constructorComparer =
-                new ConstructorComparer(accessModifiersComparer, parameterComparer, attributeProcessor);
+                new ConstructorComparer(accessModifiersComparer, parameterProcessor, attributeProcessor);
             var constructorMatcher = new ConstructorEvaluator();
             var constructorProcessor = new ConstructorMatchProcessor(constructorMatcher, constructorComparer, logger);
 
@@ -58,7 +60,7 @@
             var methodModifiersChangeTable = new MethodModifiersChangeTable();
             var methodModifiersComparer = new MethodModifiersComparer(methodModifiersChangeTable);
             var methodComparer = new MethodComparer(accessModifiersComparer, methodModifiersComparer,
-                genericTypeElementComparer, parameterComparer, attributeProcessor);
+                genericTypeElementComparer, parameterProcessor, attributeProcessor);
             var methodProcessor = new MethodMatchProcessor(methodEvaluator, methodComparer, logger);
 
             var classModifiersChangeTable = new ClassModifiersChangeTable();
