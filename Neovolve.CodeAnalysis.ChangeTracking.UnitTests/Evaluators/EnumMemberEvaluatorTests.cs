@@ -2,6 +2,7 @@
 {
     using System.Linq;
     using FluentAssertions;
+    using ModelBuilder;
     using Neovolve.CodeAnalysis.ChangeTracking.Evaluators;
     using Neovolve.CodeAnalysis.ChangeTracking.UnitTests.TestModels;
     using NSubstitute;
@@ -84,14 +85,11 @@
             results.ItemsRemoved.Should().BeEmpty();
         }
 
-        [Theory]
-        [InlineData("123", "")]
-        [InlineData("", "123")]
-        [InlineData("234", "123")]
-        public void FindMatchesIdentifiesEnumMembersNotMatching(string oldValue, string newValue)
+        [Fact]
+        public void FindMatchesIdentifiesEnumMembersNotMatching()
         {
-            var oldEnumMember = new TestEnumMemberDefinition {Value = oldValue};
-            var newEnumMember = new TestEnumMemberDefinition {Value = newValue};
+            var oldEnumMember = new TestEnumMemberDefinition();
+            var newEnumMember = new TestEnumMemberDefinition().Set(x => x.Index = oldEnumMember.Index + 1);
             var oldEnumMembers = new[]
             {
                 oldEnumMember
