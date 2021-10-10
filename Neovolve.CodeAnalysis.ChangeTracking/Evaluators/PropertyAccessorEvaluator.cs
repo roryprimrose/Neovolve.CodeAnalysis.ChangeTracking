@@ -11,12 +11,22 @@
 
         private static bool PropertyAccessorName(IPropertyAccessorDefinition oldItem, IPropertyAccessorDefinition newItem)
         {
-            if (oldItem.Name != newItem.Name)
+            // Take a match on the exact name first
+            if (oldItem.Name == newItem.Name)
             {
-                return false;
+                return true;
             }
 
-            return true;
+            // Next accept a match on the read or write purpose of the accessor
+            // This captures switches between set and init accessors
+            if (oldItem.AccessorPurpose == newItem.AccessorPurpose)
+            {
+                return true;
+            }
+
+            // This must be comparing a get to either an init or a set
+            return false;
+
         }
     }
 }

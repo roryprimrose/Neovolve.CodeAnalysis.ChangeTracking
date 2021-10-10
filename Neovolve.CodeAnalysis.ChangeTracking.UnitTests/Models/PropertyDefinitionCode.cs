@@ -12,12 +12,42 @@ namespace MyNamespace
 }
 ";
 
+        public const string GetInitProperty = @"
+namespace MyNamespace 
+{
+    public class MyClass
+    {
+        public string Value { get; init; }
+    }   
+}
+";
+
         public const string GetSetProperty = @"
 namespace MyNamespace 
 {
     public class MyClass
     {
         public string Value { get; set; }
+    }   
+}
+";
+
+        public const string InitOnlyProperty = @"
+namespace MyNamespace 
+{
+    public class MyClass
+    {
+        public string Value { init; }
+    }   
+}
+";
+
+        public const string InitProperty = @"
+namespace MyNamespace 
+{
+    public class MyClass
+    {
+        public string Value { init; }
     }   
 }
 ";

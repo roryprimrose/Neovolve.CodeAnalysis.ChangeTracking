@@ -7,6 +7,8 @@
     public class TestPropertyAccessorDefinition : IPropertyAccessorDefinition
     {
         public PropertyAccessorAccessModifiers AccessModifiers { get; set; } = PropertyAccessorAccessModifiers.None;
+        public PropertyAccessorPurpose AccessorPurpose { get; set; } = PropertyAccessorPurpose.Read;
+        public PropertyAccessorType AccessorType { get; set; } = PropertyAccessorType.Get;
         public IReadOnlyCollection<IAttributeDefinition> Attributes { get; set; } = new List<TestAttributeDefinition>();
         public string DeclaredModifiers { get; set; } = string.Empty;
         public string FullName { get; set; } = Guid.NewGuid().ToString();

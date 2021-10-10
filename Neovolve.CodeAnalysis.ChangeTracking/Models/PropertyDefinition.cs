@@ -34,6 +34,7 @@
 
             GetAccessor = DetermineAccessor(this, node, SyntaxKind.GetAccessorDeclaration);
             SetAccessor = DetermineAccessor(this, node, SyntaxKind.SetAccessorDeclaration);
+            InitAccessor = DetermineAccessor(this, node, SyntaxKind.InitAccessorDeclaration);
         }
 
         private static IPropertyAccessorDefinition? DetermineAccessor(PropertyDefinition propertyDefinition,
@@ -134,6 +135,9 @@
 
         /// <inheritdoc />
         public IPropertyAccessorDefinition? GetAccessor { get; }
+
+        /// <inheritdoc />
+        public IPropertyAccessorDefinition? InitAccessor { get; }
 
         /// <inheritdoc />
         public PropertyModifiers Modifiers { get; }

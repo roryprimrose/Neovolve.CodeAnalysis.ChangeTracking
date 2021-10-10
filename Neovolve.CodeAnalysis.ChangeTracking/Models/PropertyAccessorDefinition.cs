@@ -14,13 +14,32 @@
             AccessModifiers = DetermineAccessModifier(node);
             IsVisible = DetermineIsVisible(declaringProperty, AccessModifiers);
 
-            var nameSuffix = node.Kind() == SyntaxKind.GetAccessorDeclaration ? "_get" : "_set";
+            var nameSuffix = AccessorTypeName(node);
             var name = declaringProperty.Name + nameSuffix;
 
+            AccessorType = GetAccessorType(node);
+            AccessorPurpose = GetAccessorPurpose(node);
             Name = name;
             FullName = declaringProperty.FullName + nameSuffix;
             FullRawName = declaringProperty.FullRawName + nameSuffix;
             RawName = declaringProperty.RawName + nameSuffix;
+        }
+
+        private static string AccessorTypeName(AccessorDeclarationSyntax node)
+        {
+            var kind = node.Kind();
+
+            if (kind == SyntaxKind.SetAccessorDeclaration)
+            {
+                return "_set";
+            }
+
+            if (kind == SyntaxKind.InitAccessorDeclaration)
+            {
+                return "_init";
+            }
+
+            return "_get";
         }
 
         private static PropertyAccessorAccessModifiers DetermineAccessModifier(AccessorDeclarationSyntax node)
@@ -76,8 +95,39 @@
 
             return false;
         }
-        
+
+        private static PropertyAccessorPurpose GetAccessorPurpose(AccessorDeclarationSyntax node)
+        {
+            var kind = node.Kind();
+
+            if (kind == SyntaxKind.GetAccessorDeclaration)
+            {
+                return PropertyAccessorPurpose.Read;
+            }
+
+            return PropertyAccessorPurpose.Write;
+        }
+
+        private static PropertyAccessorType GetAccessorType(AccessorDeclarationSyntax node)
+        {
+            var kind = node.Kind();
+
+            if (kind == SyntaxKind.SetAccessorDeclaration)
+            {
+                return PropertyAccessorType.Set;
+            }
+
+            if (kind == SyntaxKind.InitAccessorDeclaration)
+            {
+                return PropertyAccessorType.Init;
+            }
+
+            return PropertyAccessorType.Get;
+        }
+
         public PropertyAccessorAccessModifiers AccessModifiers { get; }
+        public PropertyAccessorPurpose AccessorPurpose { get; }
+        public PropertyAccessorType AccessorType { get; }
         public override string FullName { get; }
         public override string FullRawName { get; }
         public override string Name { get; }

@@ -11,6 +11,21 @@
 
     public class PropertyChangesTests
     {
+        public const string SingleProperty = @"
+namespace MyNamespace 
+{
+    [ClassAttribute(123, false, myName: ""on the class"")]
+    public class MyClass
+    {
+        [PropertyAttribute(344, true, myName: ""on the property"")]
+        public string MyProperty { get; set; }
+
+        [FieldAttribute(885, myName: ""on the field"")]
+        public string MyField;
+    }  
+}
+";
+
         private readonly IChangeCalculator _calculator;
 
         public PropertyChangesTests(ITestOutputHelper output)
@@ -23,31 +38,13 @@
         [Fact]
         public async Task ChangeOfInterfacePropertyTypeReturnsBreaking()
         {
-            var oldInterface = @"
-namespace MyNamespace.Calculator
-{
-    public interface ICalculator
-    {
-        int Add(int x, int y);
-        public long X {get;set;}
-        public int Y {get;set;}
-        public int Z {get;set;}
-
-        
-        public Decimal ZZ {get;set;}
-
-        public long AAAA {get;set;}
-        public int BBBB {get;set;}
-    }
-}";
-            var newInterface = oldInterface.Replace("public int BBBB {get;set;}", "public string BBBB {get;set;}");
             var oldCode = new List<CodeSource>
             {
-                new(oldInterface)
+                new(SingleProperty)
             };
             var newCode = new List<CodeSource>
             {
-                new(newInterface)
+                new(SingleProperty.Replace("string MyProperty", "int MyProperty"))
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -56,6 +53,54 @@ namespace MyNamespace.Calculator
                 .ConfigureAwait(false);
 
             result.ChangeType.Should().Be(SemVerChangeType.Breaking);
+        }
+
+        [Theory]
+        [InlineData("get;", "get;", SemVerChangeType.None)]
+        [InlineData("get;", "set;", SemVerChangeType.Breaking)]
+        [InlineData("get;", "init;", SemVerChangeType.Breaking)]
+        [InlineData("get;", "get; set;", SemVerChangeType.Feature)]
+        [InlineData("get;", "get; init;", SemVerChangeType.Feature)]
+        [InlineData("set;", "set;", SemVerChangeType.None)]
+        [InlineData("set;", "get;", SemVerChangeType.Breaking)]
+        [InlineData("set;", "init;", SemVerChangeType.Breaking)]
+        [InlineData("set;", "get; set;", SemVerChangeType.Feature)]
+        [InlineData("set;", "get; init;", SemVerChangeType.Breaking)]
+        [InlineData("init;", "init;", SemVerChangeType.None)]
+        [InlineData("init;", "get;", SemVerChangeType.Breaking)]
+        [InlineData("init;", "set;", SemVerChangeType.Feature)]
+        [InlineData("init;", "get; set;", SemVerChangeType.Feature)]
+        [InlineData("init;", "get; init;", SemVerChangeType.Feature)]
+        [InlineData("get; set;", "get; set;", SemVerChangeType.None)]
+        [InlineData("get; set;", "get;", SemVerChangeType.Breaking)]
+        [InlineData("get; set;", "set;", SemVerChangeType.Breaking)]
+        [InlineData("get; set;", "init;", SemVerChangeType.Breaking)]
+        [InlineData("get; set;", "get; init;", SemVerChangeType.Breaking)]
+        [InlineData("get; init;", "get; init;", SemVerChangeType.None)]
+        [InlineData("get; init;", "get;", SemVerChangeType.Breaking)]
+        [InlineData("get; init;", "set;", SemVerChangeType.Breaking)]
+        [InlineData("get; init;", "init;", SemVerChangeType.Breaking)]
+        [InlineData("get; init;", "get; set;", SemVerChangeType.Feature)]
+        public async Task EvaluatesAccessors(
+            string oldAccessors,
+            string newAccessors,
+            SemVerChangeType expected)
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new(SingleProperty.Replace("get; set;", oldAccessors))
+            };
+            var newCode = new List<CodeSource>
+            {
+                new(SingleProperty.Replace("get; set;", newAccessors))
+            };
+
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            result.ChangeType.Should().Be(expected);
         }
 
         [Theory]
@@ -75,6 +120,33 @@ namespace MyNamespace.Calculator
             var newCode = new List<CodeSource>
             {
                 new(SingleProperty.Replace("get;", modifiers + " get;"))
+            };
+
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            result.ChangeType.Should().Be(expected);
+        }
+
+        [Theory]
+        [InlineData("", SemVerChangeType.Feature)]
+        [InlineData("internal", SemVerChangeType.None)]
+        [InlineData("private", SemVerChangeType.None)]
+        [InlineData("protected", SemVerChangeType.Feature)]
+        [InlineData("protected internal", SemVerChangeType.Feature)]
+        public async Task EvaluatesAddingInitAccessorWithAccessModifiers(
+            string modifiers,
+            SemVerChangeType expected)
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new(SingleProperty.Replace("set;", string.Empty))
+            };
+            var newCode = new List<CodeSource>
+            {
+                new(SingleProperty.Replace("set;", modifiers + " init;"))
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -251,6 +323,30 @@ namespace MyNamespace.Calculator
             var newCode = new List<CodeSource>
             {
                 new(SingleProperty.Replace("get;", newModifiers + " get;"))
+            };
+
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            result.ChangeType.Should().Be(expected);
+        }
+
+        [Theory]
+        [ClassData(typeof(PropertyAccessorAccessModifierDataSet))]
+        public async Task EvaluatesChangeOfInitAccessorAccessModifiers(
+            string oldModifiers,
+            string newModifiers,
+            SemVerChangeType expected)
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new(SingleProperty.Replace("set;", oldModifiers + " init;"))
+            };
+            var newCode = new List<CodeSource>
+            {
+                new(SingleProperty.Replace("set;", newModifiers + " init;"))
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -458,6 +554,33 @@ namespace MyNamespace.Calculator
         [InlineData("private", SemVerChangeType.None)]
         [InlineData("protected", SemVerChangeType.Breaking)]
         [InlineData("protected internal", SemVerChangeType.Breaking)]
+        public async Task EvaluatesRemovingInitAccessorWithAccessModifiers(
+            string modifiers,
+            SemVerChangeType expected)
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new(SingleProperty.Replace("set;", modifiers + " init;"))
+            };
+            var newCode = new List<CodeSource>
+            {
+                new(SingleProperty.Replace("set;", string.Empty))
+            };
+
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            result.ChangeType.Should().Be(expected);
+        }
+
+        [Theory]
+        [InlineData("", SemVerChangeType.Breaking)]
+        [InlineData("internal", SemVerChangeType.None)]
+        [InlineData("private", SemVerChangeType.None)]
+        [InlineData("protected", SemVerChangeType.Breaking)]
+        [InlineData("protected internal", SemVerChangeType.Breaking)]
         public async Task EvaluatesRemovingSetAccessorWithAccessModifiers(
             string modifiers,
             SemVerChangeType expected)
@@ -499,21 +622,6 @@ namespace MyNamespace
     {
         [PropertyAttribute(344, true, myName: ""on the property"")]
         public TKey MyProperty { get; set; }
-
-        [FieldAttribute(885, myName: ""on the field"")]
-        public string MyField;
-    }  
-}
-";
-
-        public const string SingleProperty = @"
-namespace MyNamespace 
-{
-    [ClassAttribute(123, false, myName: ""on the class"")]
-    public class MyClass
-    {
-        [PropertyAttribute(344, true, myName: ""on the property"")]
-        public string MyProperty { get; set; }
 
         [FieldAttribute(885, myName: ""on the field"")]
         public string MyField;

@@ -94,7 +94,40 @@
             actual.Should().HaveCount(1);
             actual[0].Should().BeEquivalentTo(result);
         }
-        
+
+        [Fact]
+        [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
+        public void CompareMatchReturnsResultFromPropertyAccessorMatchProcessorWithGetAndInitAccessors()
+        {
+            var oldItem = new TestPropertyDefinition().Set(x =>
+            {
+                x.InitAccessor = x.SetAccessor;
+                x.SetAccessor = null;
+            });
+            var newItem = oldItem.JsonClone();
+            var match = new ItemMatch<IPropertyDefinition>(oldItem, newItem);
+            var options = TestComparerOptions.Default;
+            var changeType = Model.Create<SemVerChangeType>();
+            var message = Guid.NewGuid().ToString();
+            var result = new ComparisonResult(changeType, oldItem, newItem, message);
+            var results = new[] { result };
+
+            Service<IPropertyAccessorMatchProcessor>()
+                .CalculateChanges(
+                    Arg.Is<IEnumerable<IPropertyAccessorDefinition>>(
+                        x => x.Contains(oldItem.GetAccessor) && x.Contains(oldItem.InitAccessor)),
+                    Arg.Is<IEnumerable<IPropertyAccessorDefinition>>(
+                        x => x.Contains(newItem.GetAccessor) && x.Contains(newItem.InitAccessor)),
+                    options).Returns(results);
+
+            var actual = SUT.CompareMatch(match, options).ToList();
+
+            _output.WriteResults(actual);
+
+            actual.Should().HaveCount(1);
+            actual[0].Should().BeEquivalentTo(result);
+        }
+
         [Fact]
         public void CompareMatchReturnsResultFromPropertyAccessorMatchProcessorWithMixedAccessors()
         {
@@ -139,6 +172,7 @@
             {
                 x.GetAccessor = null;
                 x.SetAccessor = null;
+                x.InitAccessor = null;
             });
             var newItem = oldItem.JsonClone();
             var match = new ItemMatch<IPropertyDefinition>(oldItem, newItem);
@@ -182,6 +216,39 @@
                         x => x.Contains(oldItem.SetAccessor)),
                     Arg.Is<IEnumerable<IPropertyAccessorDefinition>>(
                         x => x.Contains(newItem.SetAccessor)),
+                    options).Returns(results);
+
+            var actual = SUT.CompareMatch(match, options).ToList();
+
+            _output.WriteResults(actual);
+
+            actual.Should().HaveCount(1);
+            actual[0].Should().BeEquivalentTo(result);
+        }
+
+        [Fact]
+        public void CompareMatchReturnsResultFromPropertyAccessorMatchProcessorWithInitAccessor()
+        {
+            var oldItem = new TestPropertyDefinition().Set(x =>
+            {
+                x.GetAccessor = null;
+                x.InitAccessor = x.SetAccessor;
+                x.SetAccessor = null;
+            });
+            var newItem = oldItem.JsonClone();
+            var match = new ItemMatch<IPropertyDefinition>(oldItem, newItem);
+            var options = TestComparerOptions.Default;
+            var changeType = Model.Create<SemVerChangeType>();
+            var message = Guid.NewGuid().ToString();
+            var result = new ComparisonResult(changeType, oldItem, newItem, message);
+            var results = new[] { result };
+
+            Service<IPropertyAccessorMatchProcessor>()
+                .CalculateChanges(
+                    Arg.Is<IEnumerable<IPropertyAccessorDefinition>>(
+                        x => x.Contains(oldItem.InitAccessor)),
+                    Arg.Is<IEnumerable<IPropertyAccessorDefinition>>(
+                        x => x.Contains(newItem.InitAccessor)),
                     options).Returns(results);
 
             var actual = SUT.CompareMatch(match, options).ToList();
