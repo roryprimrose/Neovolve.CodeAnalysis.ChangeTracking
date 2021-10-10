@@ -12,6 +12,11 @@
         IPropertyAccessorDefinition? GetAccessor { get; }
 
         /// <summary>
+        ///     Gets the property init accessor.
+        /// </summary>
+        IPropertyAccessorDefinition? InitAccessor { get; }
+
+        /// <summary>
         ///     Gets the property set accessor.
         /// </summary>
         IPropertyAccessorDefinition? SetAccessor { get; }

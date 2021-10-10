@@ -53,6 +53,11 @@
             {
                 yield return definition.SetAccessor;
             }
+
+            if (definition.InitAccessor != null)
+            {
+                yield return definition.InitAccessor;
+            }
         }
 
         private void EvaluatePropertyAccessors(

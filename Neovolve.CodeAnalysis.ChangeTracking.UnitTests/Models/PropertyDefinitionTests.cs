@@ -58,17 +58,47 @@
             sut.GetAccessor.Should().NotBeNull();
         }
 
-        [Fact]
-        public async Task GetAccessorReturnsNullForReadOnlyProperty()
+        [Theory]
+        [InlineData(PropertyDefinitionCode.WriteOnlyProperty)]
+        [InlineData(PropertyDefinitionCode.InitOnlyProperty)]
+        public async Task GetAccessorReturnsNullWhenNotDefined(string code)
         {
             var declaringType = Substitute.For<IClassDefinition>();
 
-            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(PropertyDefinitionCode.WriteOnlyProperty)
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code)
                 .ConfigureAwait(false);
 
             var sut = new PropertyDefinition(declaringType, node);
 
             sut.GetAccessor.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task InitAccessorReturnsDefinitionForWriteProperty()
+        {
+            var declaringType = Substitute.For<IClassDefinition>();
+
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(PropertyDefinitionCode.GetInitProperty)
+                .ConfigureAwait(false);
+
+            var sut = new PropertyDefinition(declaringType, node);
+
+            sut.InitAccessor.Should().NotBeNull();
+        }
+
+        [Theory]
+        [InlineData(PropertyDefinitionCode.ReadOnlyProperty)]
+        [InlineData(PropertyDefinitionCode.WriteOnlyProperty)]
+        public async Task InitAccessorReturnsNullWhenNotDefined(string code)
+        {
+            var declaringType = Substitute.For<IClassDefinition>();
+
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code)
+                .ConfigureAwait(false);
+
+            var sut = new PropertyDefinition(declaringType, node);
+
+            sut.InitAccessor.Should().BeNull();
         }
 
         [Theory]
@@ -173,12 +203,14 @@
             sut.SetAccessor.Should().NotBeNull();
         }
 
-        [Fact]
-        public async Task SetAccessorReturnsNullForReadOnlyProperty()
+        [Theory]
+        [InlineData(PropertyDefinitionCode.ReadOnlyProperty)]
+        [InlineData(PropertyDefinitionCode.InitProperty)]
+        public async Task SetAccessorReturnsNullWhenNotDefined(string code)
         {
             var declaringType = Substitute.For<IClassDefinition>();
 
-            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(PropertyDefinitionCode.ReadOnlyProperty)
+            var node = await TestNode.FindNode<PropertyDeclarationSyntax>(code)
                 .ConfigureAwait(false);
 
             var sut = new PropertyDefinition(declaringType, node);

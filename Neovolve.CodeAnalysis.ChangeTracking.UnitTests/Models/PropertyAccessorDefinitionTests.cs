@@ -37,8 +37,49 @@
         }
 
         [Theory]
+        [InlineData(PropertyDefinitionCode.ReadOnlyProperty, PropertyAccessorPurpose.Read)]
+        [InlineData(PropertyDefinitionCode.WriteOnlyProperty, PropertyAccessorPurpose.Write)]
+        [InlineData(PropertyDefinitionCode.InitProperty, PropertyAccessorPurpose.Write)]
+        public async Task AccessorPurposeIdentifiesWriteOrReadAccessor(string code, PropertyAccessorPurpose expected)
+        {
+            var parentName = Guid.NewGuid().ToString();
+
+            var declaringProperty = Substitute.For<IPropertyDefinition>();
+
+            declaringProperty.Name.Returns(parentName);
+
+            var node = await TestNode.FindNode<AccessorDeclarationSyntax>(code)
+                .ConfigureAwait(false);
+
+            var sut = new PropertyAccessorDefinition(declaringProperty, node);
+
+            sut.AccessorPurpose.Should().Be(expected);
+        }
+
+        [Theory]
+        [InlineData(PropertyDefinitionCode.ReadOnlyProperty, PropertyAccessorType.Get)]
+        [InlineData(PropertyDefinitionCode.WriteOnlyProperty, PropertyAccessorType.Set)]
+        [InlineData(PropertyDefinitionCode.InitProperty, PropertyAccessorType.Init)]
+        public async Task AccessorTypeIdentifiesWriteOrReadAccessor(string code, PropertyAccessorType expected)
+        {
+            var parentName = Guid.NewGuid().ToString();
+
+            var declaringProperty = Substitute.For<IPropertyDefinition>();
+
+            declaringProperty.Name.Returns(parentName);
+
+            var node = await TestNode.FindNode<AccessorDeclarationSyntax>(code)
+                .ConfigureAwait(false);
+
+            var sut = new PropertyAccessorDefinition(declaringProperty, node);
+
+            sut.AccessorType.Should().Be(expected);
+        }
+
+        [Theory]
         [InlineData(PropertyDefinitionCode.ReadOnlyProperty, "_get")]
         [InlineData(PropertyDefinitionCode.WriteOnlyProperty, "_set")]
+        [InlineData(PropertyDefinitionCode.InitProperty, "_init")]
         public async Task FullNameReturnsPropertyNameCombinedWithParentFullName(string code, string expectedSuffix)
         {
             var parentFullName = Guid.NewGuid().ToString();
@@ -58,6 +99,7 @@
         [Theory]
         [InlineData(PropertyDefinitionCode.ReadOnlyProperty, "_get")]
         [InlineData(PropertyDefinitionCode.WriteOnlyProperty, "_set")]
+        [InlineData(PropertyDefinitionCode.InitProperty, "_init")]
         public async Task FullRawNameReturnsPropertyNameCombinedWithParentFullRawName(string code,
             string expectedSuffix)
         {
@@ -111,6 +153,7 @@
         [Theory]
         [InlineData(PropertyDefinitionCode.ReadOnlyProperty, "_get")]
         [InlineData(PropertyDefinitionCode.WriteOnlyProperty, "_set")]
+        [InlineData(PropertyDefinitionCode.InitProperty, "_init")]
         public async Task NameReturnsPropertyNameWithAccessorSuffix(string code, string expectedSuffix)
         {
             var parentName = Guid.NewGuid().ToString();
@@ -130,6 +173,7 @@
         [Theory]
         [InlineData(PropertyDefinitionCode.ReadOnlyProperty, "_get")]
         [InlineData(PropertyDefinitionCode.WriteOnlyProperty, "_set")]
+        [InlineData(PropertyDefinitionCode.InitProperty, "_init")]
         public async Task RawNameReturnsPropertyName(string code, string expectedSuffix)
         {
             var parentRawName = Guid.NewGuid().ToString();

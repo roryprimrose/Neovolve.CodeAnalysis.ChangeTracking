@@ -13,6 +13,7 @@
         public string FullName { get; set; } = Guid.NewGuid().ToString();
         public string FullRawName { get; set; } = Guid.NewGuid().ToString();
         public IPropertyAccessorDefinition? GetAccessor { get; set; } = new TestPropertyAccessorDefinition();
+        public IPropertyAccessorDefinition? InitAccessor { get; set; } = new TestPropertyAccessorDefinition();
         public bool IsVisible { get; set; } = true;
         public DefinitionLocation Location { get; set; } = new(string.Empty, 0, 0);
         public PropertyModifiers Modifiers { get; set; } = PropertyModifiers.None;
