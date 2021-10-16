@@ -2,6 +2,10 @@
 {
     using System.Collections.Generic;
 
+    /// <summary>
+    ///     The <see cref="IMethodDefinition" />
+    ///     interface defines the members that describe a method.
+    /// </summary>
     public interface IMethodDefinition : IMemberDefinition, IModifiersElement<MethodModifiers>, IGenericTypeElement
     {
         /// <summary>

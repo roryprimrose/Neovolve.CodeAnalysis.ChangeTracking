@@ -3,6 +3,10 @@
     using System;
     using System.Collections.Generic;
 
+    /// <summary>
+    ///     The <see cref="IChangeResultAggregator" />
+    ///     interface defines the members to recording changes between old and new items.
+    /// </summary>
     public interface IChangeResultAggregator
     {
         /// <summary>

@@ -1,5 +1,9 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.Models
 {
+    /// <summary>
+    ///     The <see cref="IParameterDefinition" />
+    ///     interface defines the members that describe a parameter.
+    /// </summary>
     public interface IParameterDefinition : IModifiersElement<ParameterModifiers>
     {
         /// <summary>
