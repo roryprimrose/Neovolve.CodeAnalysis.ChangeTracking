@@ -42,7 +42,7 @@
             };
             var match = new ItemMatch<IBaseTypeDefinition>(oldFirstItem, newFirstItem);
             var matches = new List<ItemMatch<IBaseTypeDefinition>> {match};
-            var matchResults = new MatchResults<IBaseTypeDefinition>(matches, Array.Empty<IClassDefinition>(),
+            var matchResults = new EvaluationResults<IBaseTypeDefinition>(matches, Array.Empty<IClassDefinition>(),
                 Array.Empty<IClassDefinition>());
             var message = Guid.NewGuid().ToString();
             var result = new ComparisonResult(SemVerChangeType.Breaking, oldFirstItem, newFirstItem, message);
@@ -88,7 +88,7 @@
             };
             var match = new ItemMatch<IBaseTypeDefinition>(oldFirstItem, newFirstItem);
             var matches = new List<ItemMatch<IBaseTypeDefinition>> {match};
-            var matchResults = new MatchResults<IBaseTypeDefinition>(matches, Array.Empty<IClassDefinition>(),
+            var matchResults = new EvaluationResults<IBaseTypeDefinition>(matches, Array.Empty<IClassDefinition>(),
                 Array.Empty<IClassDefinition>());
             var message = Guid.NewGuid().ToString();
             var result = new ComparisonResult(SemVerChangeType.Breaking, oldFirstItem, newFirstItem, message);
@@ -149,14 +149,14 @@
             };
             var childMatch = new ItemMatch<IBaseTypeDefinition>(oldChildItem, newChildItem);
             var childMatches = new List<ItemMatch<IBaseTypeDefinition>> {childMatch};
-            var childMatchResults = new MatchResults<IBaseTypeDefinition>(childMatches, Array.Empty<IClassDefinition>(),
+            var childMatchResults = new EvaluationResults<IBaseTypeDefinition>(childMatches, Array.Empty<IClassDefinition>(),
                 Array.Empty<IClassDefinition>());
             var childMessage = Guid.NewGuid().ToString();
             var childResult = new ComparisonResult(SemVerChangeType.Breaking, oldChildItem, newChildItem, childMessage);
             var childResults = new List<ComparisonResult> {childResult};
             var parentMatch = new ItemMatch<IBaseTypeDefinition>(oldParentItem, newParentItem);
             var parentMatches = new List<ItemMatch<IBaseTypeDefinition>> {parentMatch};
-            var parentMatchResults = new MatchResults<IBaseTypeDefinition>(parentMatches, Array.Empty<IClassDefinition>(),
+            var parentMatchResults = new EvaluationResults<IBaseTypeDefinition>(parentMatches, Array.Empty<IClassDefinition>(),
                 Array.Empty<IClassDefinition>());
             var parentMessage = Guid.NewGuid().ToString();
             var parentResult =
@@ -202,7 +202,7 @@
             };
             var match = new ItemMatch<IBaseTypeDefinition>(oldFirstItem, newFirstItem);
             var matches = new List<ItemMatch<IBaseTypeDefinition>> {match};
-            var matchResults = new MatchResults<IBaseTypeDefinition>(matches, Array.Empty<IClassDefinition>(),
+            var matchResults = new EvaluationResults<IBaseTypeDefinition>(matches, Array.Empty<IClassDefinition>(),
                 Array.Empty<IClassDefinition>());
             var message = Guid.NewGuid().ToString();
             var result = new ComparisonResult(SemVerChangeType.Breaking, oldFirstItem, newFirstItem, message);

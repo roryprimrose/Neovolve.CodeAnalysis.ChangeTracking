@@ -65,7 +65,7 @@
                 newItem
             };
             var options = TestComparerOptions.Default;
-            var matchResults = new MatchResults<IMethodDefinition>(Array.Empty<IMethodDefinition>(),
+            var matchResults = new EvaluationResults<IMethodDefinition>(Array.Empty<IMethodDefinition>(),
                 newItems);
 
             Service<IMethodEvaluator>().FindMatches(oldItems, newItems).Returns(matchResults);
@@ -94,7 +94,7 @@
                 newItem
             };
             var options = TestComparerOptions.Default;
-            var matchResults = new MatchResults<IMethodDefinition>(Array.Empty<IMethodDefinition>(),
+            var matchResults = new EvaluationResults<IMethodDefinition>(Array.Empty<IMethodDefinition>(),
                 newItems);
 
             Service<IMethodEvaluator>().FindMatches(oldItems, newItems).Returns(matchResults);

@@ -29,7 +29,7 @@
                 newItem
             };
             var options = TestComparerOptions.Default;
-            var matchResults = new MatchResults<IClassDefinition>(Array.Empty<IClassDefinition>(),
+            var matchResults = new EvaluationResults<IClassDefinition>(Array.Empty<IClassDefinition>(),
                 newItems);
 
             Service<IEvaluator<IClassDefinition>>().FindMatches(oldItems, newItems).Returns(matchResults);

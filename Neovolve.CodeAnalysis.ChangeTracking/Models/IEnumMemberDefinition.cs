@@ -1,5 +1,9 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.Models
 {
+    /// <summary>
+    ///     The <see cref="IEnumMemberDefinition" />
+    ///     interface defines the members that describe an enum member.
+    /// </summary>
     public interface IEnumMemberDefinition : IElementDefinition
     {
         /// <summary>

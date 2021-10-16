@@ -2,6 +2,10 @@
 {
     using System.Collections.Generic;
 
+    /// <summary>
+    ///     The <see cref="IElementDefinition" />
+    ///     interface defines the members that describe a code element.
+    /// </summary>
     public interface IElementDefinition : IItemDefinition
     {
         /// <summary>

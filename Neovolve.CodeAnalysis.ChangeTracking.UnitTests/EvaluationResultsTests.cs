@@ -8,7 +8,7 @@
     using Neovolve.CodeAnalysis.ChangeTracking.UnitTests.TestModels;
     using Xunit;
 
-    public class MatchResultsTests
+    public class EvaluationResultsTests
     {
         [Fact]
         public void CanCreateWithMatches()
@@ -31,7 +31,7 @@
                 addedItem
             };
 
-            var sut = new MatchResults<IClassDefinition>(matchingItems, removedItems, addedItems);
+            var sut = new EvaluationResults<IClassDefinition>(matchingItems, removedItems, addedItems);
 
             sut.MatchingItems.Should().BeEquivalentTo(matchingItems);
             sut.ItemsRemoved.Should().BeEquivalentTo(removedItems);
@@ -52,7 +52,7 @@
                 addedItem
             };
 
-            var sut = new MatchResults<IClassDefinition>(removedItems, addedItems);
+            var sut = new EvaluationResults<IClassDefinition>(removedItems, addedItems);
 
             sut.MatchingItems.Should().BeEmpty();
             sut.ItemsRemoved.Should().BeEquivalentTo(removedItems);
@@ -78,7 +78,7 @@
             };
 
             // ReSharper disable once ObjectCreationAsStatement
-            Action action = () => new MatchResults<IClassDefinition>(matchingItems, removedItems, null!);
+            Action action = () => new EvaluationResults<IClassDefinition>(matchingItems, removedItems, null!);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -95,7 +95,7 @@
             };
 
             // ReSharper disable once ObjectCreationAsStatement
-            Action action = () => new MatchResults<IClassDefinition>(removedItems, null!);
+            Action action = () => new EvaluationResults<IClassDefinition>(removedItems, null!);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -117,7 +117,7 @@
             };
 
             // ReSharper disable once ObjectCreationAsStatement
-            Action action = () => new MatchResults<IClassDefinition>(null!, removedItems, addedItems);
+            Action action = () => new EvaluationResults<IClassDefinition>(null!, removedItems, addedItems);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -141,7 +141,7 @@
             };
 
             // ReSharper disable once ObjectCreationAsStatement
-            Action action = () => new MatchResults<IClassDefinition>(matchingItems, null!, addedItems);
+            Action action = () => new EvaluationResults<IClassDefinition>(matchingItems, null!, addedItems);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -158,7 +158,7 @@
             };
 
             // ReSharper disable once ObjectCreationAsStatement
-            Action action = () => new MatchResults<IClassDefinition>(null!, addedItems);
+            Action action = () => new EvaluationResults<IClassDefinition>(null!, addedItems);
 
             action.Should().Throw<ArgumentNullException>();
         }

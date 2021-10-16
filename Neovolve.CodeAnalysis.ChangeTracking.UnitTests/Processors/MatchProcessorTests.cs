@@ -28,7 +28,7 @@
             var oldItems = Array.Empty<IClassDefinition>();
             var newItems = Array.Empty<IClassDefinition>();
             var options = TestComparerOptions.Default;
-            var matches = new MatchResults<IClassDefinition>(oldItems, newItems);
+            var matches = new EvaluationResults<IClassDefinition>(oldItems, newItems);
 
             Service<IEvaluator<IClassDefinition>>().FindMatches(oldItems, newItems).Returns(matches);
 
@@ -56,7 +56,7 @@
             var match = new ItemMatch<IClassDefinition>(oldItem, newItem);
             var matches = new List<ItemMatch<IClassDefinition>> {match};
             var options = TestComparerOptions.Default;
-            var matchResults = new MatchResults<IClassDefinition>(matches, Array.Empty<IClassDefinition>(),
+            var matchResults = new EvaluationResults<IClassDefinition>(matches, Array.Empty<IClassDefinition>(),
                 Array.Empty<IClassDefinition>());
             var message = Guid.NewGuid().ToString();
             var result = new ComparisonResult(changeType, oldItem, newItem, message);
@@ -89,7 +89,7 @@
                 newItem
             };
             var options = TestComparerOptions.Default;
-            var matchResults = new MatchResults<IClassDefinition>(Array.Empty<IClassDefinition>(),
+            var matchResults = new EvaluationResults<IClassDefinition>(Array.Empty<IClassDefinition>(),
                 newItems);
 
             Service<IEvaluator<IClassDefinition>>().FindMatches(oldItems, newItems).Returns(matchResults);
@@ -119,7 +119,7 @@
             };
             var newItems = Array.Empty<IClassDefinition>();
             var options = TestComparerOptions.Default;
-            var matchResults = new MatchResults<IClassDefinition>(oldItems,
+            var matchResults = new EvaluationResults<IClassDefinition>(oldItems,
                 Array.Empty<IClassDefinition>());
 
             Service<IEvaluator<IClassDefinition>>().FindMatches(oldItems, newItems).Returns(matchResults);

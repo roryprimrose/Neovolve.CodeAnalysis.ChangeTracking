@@ -14,12 +14,12 @@
 
         //private class Wrapper<T> : Evaluator<T> where T : IItemDefinition
         //{
-        //    public IMatchResults<T> RunFindMatches(IMatchResults<T> results, Func<T, T, bool> evaluator)
+        //    public IEvaluationResults<T> RunFindMatches(IEvaluationResults<T> results, Func<T, T, bool> evaluator)
         //    {
         //        return FindMatches(results, evaluator);
         //    }
 
-        //    public override IMatchResults<T> FindMatches(IEnumerable<T> oldItems, IEnumerable<T> newItems)
+        //    public override IEvaluationResults<T> FindMatches(IEnumerable<T> oldItems, IEnumerable<T> newItems)
         //    {
         //        return null!;
         //    }

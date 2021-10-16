@@ -6,7 +6,7 @@
 
     public class ConstructorEvaluator : Evaluator<IConstructorDefinition>, IConstructorEvaluator
     {
-        public override IMatchResults<IConstructorDefinition> FindMatches(IEnumerable<IConstructorDefinition> oldItems,
+        public override IEvaluationResults<IConstructorDefinition> FindMatches(IEnumerable<IConstructorDefinition> oldItems,
             IEnumerable<IConstructorDefinition> newItems)
         {
             var oldConstructors = oldItems.ToList();
@@ -35,7 +35,7 @@
 
             // If we got this far then a default constructor has been added or removed and there are no other constructors
             // We need to wipe out the match results which would have identified this as a feature (added) or breaking (removed) change
-            return MatchResults<IConstructorDefinition>.Empty;
+            return EvaluationResults<IConstructorDefinition>.Empty;
         }
 
         protected override void FindMatches(IMatchAgent<IConstructorDefinition> agent)

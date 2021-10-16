@@ -6,23 +6,23 @@
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
     /// <summary>
-    ///     The <see cref="MatchResults{T}" />
+    ///     The <see cref="EvaluationResults{T}" />
     ///     class defines items that have been added or removed as well as items that can be matched.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class MatchResults<T> : IMatchResults<T> where T : IItemDefinition
+    public class EvaluationResults<T> : IEvaluationResults<T> where T : IItemDefinition
     {
         /// <summary>
         /// Returns an empty instance of the results.
         /// </summary>
-        public static MatchResults<T> Empty = new(Array.Empty<T>(), Array.Empty<T>());
+        public static EvaluationResults<T> Empty = new(Array.Empty<T>(), Array.Empty<T>());
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="MatchResults{T}" /> class.
+        ///     Initializes a new instance of the <see cref="EvaluationResults{T}" /> class.
         /// </summary>
         /// <param name="itemsRemoved">The items that have been removed.</param>
         /// <param name="itemsAdded">The items that have been added.</param>
-        public MatchResults(IEnumerable<T> itemsRemoved, IEnumerable<T> itemsAdded)
+        public EvaluationResults(IEnumerable<T> itemsRemoved, IEnumerable<T> itemsAdded)
         {
             itemsRemoved = itemsRemoved ?? throw new ArgumentNullException(nameof(itemsRemoved));
             itemsAdded = itemsAdded ?? throw new ArgumentNullException(nameof(itemsAdded));
@@ -33,12 +33,12 @@
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="MatchResults{T}" /> class.
+        ///     Initializes a new instance of the <see cref="EvaluationResults{T}" /> class.
         /// </summary>
         /// <param name="matchingItems">The set of old items that match to new items.</param>
         /// <param name="itemsRemoved">The items that have been removed.</param>
         /// <param name="itemsAdded">The items that have been added.</param>
-        public MatchResults(
+        public EvaluationResults(
             IEnumerable<ItemMatch<T>> matchingItems,
             IEnumerable<T> itemsRemoved,
             IEnumerable<T> itemsAdded)
