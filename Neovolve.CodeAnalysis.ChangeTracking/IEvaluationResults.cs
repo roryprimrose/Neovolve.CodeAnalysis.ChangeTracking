@@ -4,11 +4,11 @@
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
 
     /// <summary>
-    ///     The <see cref="IMatchResults{T}" />
+    ///     The <see cref="IEvaluationResults{T}" />
     ///     interface defines the members that describe how items have changed.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public interface IMatchResults<T> where T : IItemDefinition
+    /// <typeparam name="T">The type of item being evaluated.</typeparam>
+    public interface IEvaluationResults<T> where T : IItemDefinition
     {
         /// <summary>
         ///     Returns the items that have been added.

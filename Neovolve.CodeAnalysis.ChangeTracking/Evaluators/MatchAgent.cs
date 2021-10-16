@@ -80,7 +80,7 @@
 
         public IReadOnlyCollection<T> NewItems => _newItems.AsReadOnly();
         public IReadOnlyCollection<T> OldItems => _oldItems.AsReadOnly();
-        public IMatchResults<T> Results =>
-            new MatchResults<T>(_matches, _oldItems, _newItems);
+        public IEvaluationResults<T> Results =>
+            new EvaluationResults<T>(_matches, _oldItems, _newItems);
     }
 }

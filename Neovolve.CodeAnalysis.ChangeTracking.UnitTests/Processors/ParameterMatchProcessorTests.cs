@@ -36,7 +36,7 @@
                 newItem
             };
             var options = TestComparerOptions.Default;
-            var matchResults = new MatchResults<IParameterDefinition>(Array.Empty<IParameterDefinition>(),
+            var matchResults = new EvaluationResults<IParameterDefinition>(Array.Empty<IParameterDefinition>(),
                 newItems);
 
             Service<IParameterEvaluator>().FindMatches(oldItems, newItems).Returns(matchResults);

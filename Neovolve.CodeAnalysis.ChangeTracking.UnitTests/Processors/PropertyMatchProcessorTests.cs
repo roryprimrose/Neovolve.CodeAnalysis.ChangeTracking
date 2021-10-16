@@ -39,7 +39,7 @@
                 newItem
             };
             var options = TestComparerOptions.Default;
-            var matchResults = new MatchResults<IPropertyDefinition>(Array.Empty<IPropertyDefinition>(),
+            var matchResults = new EvaluationResults<IPropertyDefinition>(Array.Empty<IPropertyDefinition>(),
                 newItems);
 
             Service<IPropertyEvaluator>().FindMatches(oldItems, newItems).Returns(matchResults);
@@ -78,7 +78,7 @@
                 newItem
             };
             var options = TestComparerOptions.Default;
-            var matchResults = new MatchResults<IPropertyDefinition>(Array.Empty<IPropertyDefinition>(),
+            var matchResults = new EvaluationResults<IPropertyDefinition>(Array.Empty<IPropertyDefinition>(),
                 newItems);
 
             Service<IPropertyEvaluator>().FindMatches(oldItems, newItems).Returns(matchResults);

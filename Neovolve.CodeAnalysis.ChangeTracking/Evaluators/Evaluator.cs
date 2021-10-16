@@ -6,7 +6,7 @@
 
     public abstract class Evaluator<T> : IEvaluator<T> where T : IItemDefinition
     {
-        public virtual IMatchResults<T> FindMatches(IEnumerable<T> oldItems, IEnumerable<T> newItems)
+        public virtual IEvaluationResults<T> FindMatches(IEnumerable<T> oldItems, IEnumerable<T> newItems)
         {
             oldItems = oldItems ?? throw new ArgumentNullException(nameof(oldItems));
             newItems = newItems ?? throw new ArgumentNullException(nameof(newItems));

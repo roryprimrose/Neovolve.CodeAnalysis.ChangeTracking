@@ -56,7 +56,7 @@
             };
             var itemsRemoved = new List<IAttributeDefinition> {new TestAttributeDefinition()};
             var itemsAdded = new List<IAttributeDefinition> {new TestAttributeDefinition()};
-            var matchResults = new MatchResults<IAttributeDefinition>(matchingItems, itemsRemoved, itemsAdded);
+            var matchResults = new EvaluationResults<IAttributeDefinition>(matchingItems, itemsRemoved, itemsAdded);
 
             options.CompareAttributes = AttributeCompareOption.All;
 
@@ -112,7 +112,7 @@
             };
             var itemsRemoved = new List<IAttributeDefinition> {new TestAttributeDefinition()};
             var itemsAdded = new List<IAttributeDefinition> {new TestAttributeDefinition()};
-            var matchResults = new MatchResults<IAttributeDefinition>(matchingItems, itemsRemoved, itemsAdded);
+            var matchResults = new EvaluationResults<IAttributeDefinition>(matchingItems, itemsRemoved, itemsAdded);
 
             var comparer = Substitute.For<IAttributeComparer>();
             var evaluator = Substitute.For<IAttributeEvaluator>();

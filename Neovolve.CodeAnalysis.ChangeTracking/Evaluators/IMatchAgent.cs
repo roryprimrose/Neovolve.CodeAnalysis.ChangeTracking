@@ -9,6 +9,6 @@
         void MatchOn(Func<T, T, bool> condition);
         IReadOnlyCollection<T> NewItems { get; }
         IReadOnlyCollection<T> OldItems { get; }
-        IMatchResults<T> Results { get; }
+        IEvaluationResults<T> Results { get; }
     }
 }
