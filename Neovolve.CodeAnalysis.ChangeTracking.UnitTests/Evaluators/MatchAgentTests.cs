@@ -138,9 +138,6 @@
             actual.MatchingItems.First().NewItem.Should().Be(newItems[0]);
             actual.ItemsRemoved.Should().BeEmpty();
             actual.ItemsAdded.Should().BeEmpty();
-
-            sut.NewItems.Should().BeEmpty();
-            sut.OldItems.Should().BeEmpty();
         }
 
         [Fact]
@@ -231,10 +228,6 @@
             actual.MatchingItems.First().NewItem.Should().Be(newItems[0]);
             actual.ItemsRemoved.Should().BeEquivalentTo(oldItems.Where(x => x == oldItems[0]));
             actual.ItemsAdded.Should().BeEmpty();
-
-            sut.OldItems.Should().HaveCount(1);
-            sut.OldItems.Single().Should().Be(oldItems[0]);
-            sut.NewItems.Should().BeEmpty();
         }
 
         [Fact]
@@ -262,10 +255,6 @@
             actual.MatchingItems.First().NewItem.Should().Be(newItems[1]);
             actual.ItemsRemoved.Should().BeEmpty();
             actual.ItemsAdded.Should().BeEquivalentTo(newItems.Where(x => x == newItems[0]));
-
-            sut.OldItems.Should().BeEmpty();
-            sut.NewItems.Should().HaveCount(1);
-            sut.NewItems.Single().Should().Be(newItems[0]);
         }
 
         [Fact]
@@ -334,6 +323,7 @@
         {
             var oldItems = Array.Empty<IClassDefinition>();
 
+            // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new MatchAgent<IClassDefinition>(oldItems, null!);
 
             action.Should().Throw<ArgumentNullException>();
@@ -344,6 +334,7 @@
         {
             var newItems = Array.Empty<IClassDefinition>();
 
+            // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new MatchAgent<IClassDefinition>(null!, newItems);
 
             action.Should().Throw<ArgumentNullException>();

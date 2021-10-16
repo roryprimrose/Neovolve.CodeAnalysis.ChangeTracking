@@ -78,8 +78,6 @@
             _newItems.Remove(newItem);
         }
 
-        public IReadOnlyCollection<T> NewItems => _newItems.AsReadOnly();
-        public IReadOnlyCollection<T> OldItems => _oldItems.AsReadOnly();
         public IEvaluationResults<T> Results =>
             new EvaluationResults<T>(_matches, _oldItems, _newItems);
     }
