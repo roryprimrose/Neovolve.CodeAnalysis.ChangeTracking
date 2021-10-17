@@ -158,9 +158,9 @@
                 if (removedConstraints.Count == 1)
                 {
                     // A generic type parameter has been added
-                    args = new FormatArguments($"has removed the {MessagePart.NewValue} generic type constraint",
-                        null,
-                        removedConstraints[0]);
+                    args = new FormatArguments($"has removed the {MessagePart.OldValue} generic type constraint",
+                        removedConstraints[0],
+                        null);
                 }
 
                 aggregator.AddElementChangedResult(SemVerChangeType.Feature, match, options.MessageFormatter, args);
