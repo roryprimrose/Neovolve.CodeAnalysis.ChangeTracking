@@ -10,6 +10,62 @@
 
     public class MethodChangesTests
     {
+        private const string NoMethod = @"
+namespace MyNamespace 
+{
+    using System;
+
+    public class MyClass
+    {
+    }  
+}
+";
+
+        private const string NoParameters = @"
+namespace MyNamespace 
+{
+    using System;
+
+    public class MyClass
+    {
+        public string MyMethod()
+        {
+            return Guid.NewGuid().ToString();
+        }
+    }  
+}
+";
+
+        private const string OverloadedMethod = @"
+namespace MyNamespace 
+{
+    using System;
+
+    public class MyClass
+    {
+        public string MyMethod()
+        {
+            return Guid.NewGuid().ToString();
+        }
+
+        public T MyMethod<T>()
+        {
+            return Guid.NewGuid().ToString();
+        }
+
+        public T MyMethod<T>(T value)
+        {
+            return Guid.NewGuid().ToString();
+        }
+
+        public string MyMethod(string first, bool second, DateTime third)
+        {
+            return Guid.NewGuid().ToString();
+        }
+    }  
+}
+";
+
         private readonly IChangeCalculator _calculator;
 
         public MethodChangesTests(ITestOutputHelper output)
@@ -234,14 +290,17 @@
         }
 
         [Theory]
-        [InlineData("MyMethod()", "MyMethod()", SemVerChangeType.None)]
-        [InlineData("MyMethod()", "MyOtherMethod()", SemVerChangeType.Breaking)]
-        [InlineData("MyMethod(string first, bool second, int third)",
-            "MyOtherMethod(string first, bool second, int third)", SemVerChangeType.Breaking)]
-        [InlineData("MyMethod(string first, bool second, int third)",
-            "MyOtherMethod(string fourth, bool fifth, int sixth)", SemVerChangeType.Breaking)]
-        [InlineData("MyMethod<T>(T first, bool second, int third)", "MyOtherMethod<T>(T first, bool second, int third)",
-            SemVerChangeType.Breaking)]
+        [InlineData("string MyMethod()", "string MyMethod()", SemVerChangeType.None)]
+        [InlineData("T MyMethod<T>()", "TOther MyMethod<TOther>()", SemVerChangeType.None)]
+        [InlineData("string MyMethod()", "string MyOtherMethod()", SemVerChangeType.Breaking)]
+        [InlineData("string MyMethod(string first, bool second, int third)",
+            "string MyOtherMethod(string first, bool second, int third)", SemVerChangeType.Breaking)]
+        [InlineData("string MyMethod(string first, bool second, int third)",
+            "string MyOtherMethod(string fourth, bool fifth, int sixth)", SemVerChangeType.Breaking)]
+        [InlineData("string MyMethod<T>(T first, bool second, int third)",
+            "string MyOtherMethod<T>(T first, bool second, int third)", SemVerChangeType.Breaking)]
+        [InlineData("string MyMethod<T>(T first, bool second, int third)",
+            "string MyOtherMethod<TOther>(TOther first, bool second, int third)", SemVerChangeType.Breaking)]
         public async Task EvaluatesChangeOfName(
             string oldSignature,
             string newSignature,
@@ -249,11 +308,11 @@
         {
             var oldCode = new List<CodeSource>
             {
-                new(NoParameters.Replace("public string MyMethod()", "public string " + oldSignature))
+                new(NoParameters.Replace("public string MyMethod()", "public " + oldSignature))
             };
             var newCode = new List<CodeSource>
             {
-                new(NoParameters.Replace("public string MyMethod()", "public string " + newSignature))
+                new(NoParameters.Replace("public string MyMethod()", "public " + newSignature))
             };
 
             var options = OptionsFactory.BuildOptions();
@@ -262,6 +321,26 @@
                 .ConfigureAwait(false);
 
             result.ChangeType.Should().Be(expected);
+        }
+
+        [Fact]
+        public async Task EvaluatesChangeOfNameOfOverloadedMethod()
+        {
+            var oldCode = new List<CodeSource>
+            {
+                new(OverloadedMethod)
+            };
+            var newCode = new List<CodeSource>
+            {
+                new(OverloadedMethod.Replace("MyMethod", "MyNewMethod"))
+            };
+
+            var options = OptionsFactory.BuildOptions();
+
+            var result = await _calculator.CalculateChanges(oldCode, newCode, options, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            result.ChangeType.Should().Be(SemVerChangeType.Breaking);
         }
 
         [Theory]
@@ -348,31 +427,5 @@
 
             result.ChangeType.Should().Be(expected);
         }
-
-        private static string NoMethod => @"
-namespace MyNamespace 
-{
-    using System;
-
-    public class MyClass
-    {
-    }  
-}
-";
-
-        private static string NoParameters => @"
-namespace MyNamespace 
-{
-    using System;
-
-    public class MyClass
-    {
-        public string MyMethod()
-        {
-            return Guid.NewGuid().ToString();
-        }
-    }  
-}
-";
     }
 }

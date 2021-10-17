@@ -25,8 +25,8 @@
                 // This enum has an implicit value assigned by the compiler but has changed position
                 // The underlying value of this member will most likely have changed
                 var args = new FormatArguments(
-                    $"has been renamed to {MessagePart.NewValue}",
-                    null,
+                    $"has been renamed from {MessagePart.OldValue}",
+                    match.OldItem.Name,
                     match.NewItem.Name);
 
                 aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);

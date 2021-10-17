@@ -59,9 +59,8 @@
             }
 
             var args = new FormatArguments(
-                $"has been renamed to {MessagePart.NewValue}",
-                null,
-                match.NewItem.Name);
+                $"has been renamed from {MessagePart.OldValue}",
+                match.OldItem.Name, null);
 
             aggregator.AddElementChangedResult(SemVerChangeType.Breaking, match, options.MessageFormatter, args);
         }
