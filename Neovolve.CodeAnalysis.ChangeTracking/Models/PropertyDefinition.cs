@@ -37,6 +37,12 @@
             InitAccessor = DetermineAccessor(this, node, SyntaxKind.InitAccessorDeclaration);
         }
 
+        /// <inheritdoc />
+        public override bool Matches(IElementDefinition element, ElementMatchOptions options)
+        {
+            throw new NotImplementedException();
+        }
+
         private static IPropertyAccessorDefinition? DetermineAccessor(PropertyDefinition propertyDefinition,
             PropertyDeclarationSyntax node, SyntaxKind accessorType)
         {

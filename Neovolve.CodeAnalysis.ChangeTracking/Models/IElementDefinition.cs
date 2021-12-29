@@ -9,6 +9,14 @@
     public interface IElementDefinition : IItemDefinition
     {
         /// <summary>
+        ///     Returns whether this element matches the provided element.
+        /// </summary>
+        /// <param name="element">The element to evaluate.</param>
+        /// <param name="options">The match options.</param>
+        /// <returns>A value indicating whether the elements match.</returns>
+        bool Matches(IElementDefinition element, ElementMatchOptions options);
+
+        /// <summary>
         ///     Gets the attributes defined on the type.
         /// </summary>
         IReadOnlyCollection<IAttributeDefinition> Attributes { get; }

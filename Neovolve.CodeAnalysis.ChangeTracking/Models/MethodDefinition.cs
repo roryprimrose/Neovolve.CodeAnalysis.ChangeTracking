@@ -1,5 +1,6 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.Models
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Microsoft.CodeAnalysis.CSharp;
@@ -11,7 +12,7 @@
         {
             var name = DetermineName(node);
             var rawName = DetermineRawName(node);
-            
+
             Modifiers = DetermineModifiers(node);
             ReturnType = node.ReturnType.ToString();
             Name = name;
@@ -24,6 +25,12 @@
             GenericTypeParameters = DetermineGenericTypeParameters(node);
             GenericConstraints = DetermineGenericConstraints(node);
             Parameters = DetermineParameters(node.ParameterList);
+        }
+
+        /// <inheritdoc />
+        public override bool Matches(IElementDefinition element, ElementMatchOptions options)
+        {
+            throw new NotImplementedException();
         }
 
         private static IReadOnlyCollection<IConstraintListDefinition> DetermineGenericConstraints(
@@ -100,6 +107,20 @@
             return value;
         }
 
+        private static string DetermineRawName(MethodDeclarationSyntax node)
+        {
+            var name = string.Empty;
+
+            name += node.Identifier.Text;
+
+            if (node.ExplicitInterfaceSpecifier != null)
+            {
+                name = node.ExplicitInterfaceSpecifier.Name + "." + name;
+            }
+
+            return name;
+        }
+
         private string DetermineName(MethodDeclarationSyntax node)
         {
             var name = DetermineRawName(node);
@@ -120,20 +141,6 @@
             return name;
         }
 
-        private static string DetermineRawName(MethodDeclarationSyntax node)
-        {
-            var name = string.Empty;
-
-            name += node.Identifier.Text;
-
-            if (node.ExplicitInterfaceSpecifier != null)
-            {
-                name = node.ExplicitInterfaceSpecifier.Name + "." + name;
-            }
-
-            return name;
-        }
-
         /// <inheritdoc />
         public override string FullName { get; }
 
@@ -147,6 +154,9 @@
         public IReadOnlyCollection<string> GenericTypeParameters { get; }
 
         /// <inheritdoc />
+        public bool HasBody { get; }
+
+        /// <inheritdoc />
         public MethodModifiers Modifiers { get; }
 
         /// <inheritdoc />
@@ -154,9 +164,6 @@
 
         /// <inheritdoc />
         public IReadOnlyCollection<IParameterDefinition> Parameters { get; }
-
-        /// <inheritdoc />
-        public bool HasBody { get; }
 
         /// <inheritdoc />
         public override string RawName { get; }

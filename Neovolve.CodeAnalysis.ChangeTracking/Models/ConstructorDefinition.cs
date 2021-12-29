@@ -30,6 +30,12 @@
             Parameters = DetermineParameters(node.ParameterList);
         }
 
+        /// <inheritdoc />
+        public override bool Matches(IElementDefinition element, ElementMatchOptions options)
+        {
+            throw new NotImplementedException();
+        }
+
         private static ConstructorModifiers DetermineModifiers(ConstructorDeclarationSyntax node)
         {
             if (node.Modifiers.HasModifier(SyntaxKind.StaticKeyword))

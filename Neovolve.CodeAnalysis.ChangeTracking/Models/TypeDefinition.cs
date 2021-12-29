@@ -56,6 +56,12 @@
         }
 
         /// <inheritdoc />
+        public override bool Matches(IElementDefinition element, ElementMatchOptions options)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc />
         public virtual void MergePartialType(ITypeDefinition partialType)
         {
             partialType = partialType ?? throw new ArgumentNullException(nameof(partialType));

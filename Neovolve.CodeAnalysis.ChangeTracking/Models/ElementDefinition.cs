@@ -54,6 +54,18 @@
             return DetermineAttributes(declaringItem, attributeList);
         }
 
+        /// <inheritdoc />
+        public virtual bool Matches(IElementDefinition element, ElementMatchOptions options)
+        {
+            if (options.HasFlag(ElementMatchOptions.IgnoreName) == false
+                && Name != element.Name)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         private static IReadOnlyCollection<IAttributeDefinition> DetermineAttributes(IElementDefinition declaringItem,
             SyntaxList<AttributeListSyntax> attributeList)
         {

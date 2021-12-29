@@ -1,13 +1,10 @@
 ﻿namespace Neovolve.CodeAnalysis.ChangeTracking.UnitTests.Comparers
 {
     using System;
-    using System.Linq;
     using FluentAssertions;
-    using ModelBuilder;
     using Neovolve.CodeAnalysis.ChangeTracking.Comparers;
     using Neovolve.CodeAnalysis.ChangeTracking.Models;
     using Neovolve.CodeAnalysis.ChangeTracking.Processors;
-    using Neovolve.CodeAnalysis.ChangeTracking.UnitTests.TestModels;
     using NSubstitute;
     using Xunit;
     using Xunit.Abstractions;

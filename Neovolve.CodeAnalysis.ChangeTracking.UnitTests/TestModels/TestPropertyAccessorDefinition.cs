@@ -6,6 +6,12 @@
 
     public class TestPropertyAccessorDefinition : IPropertyAccessorDefinition
     {
+        /// <inheritdoc />
+        public bool Matches(IElementDefinition element, ElementMatchOptions options)
+        {
+            throw new NotImplementedException();
+        }
+
         public PropertyAccessorAccessModifiers AccessModifiers { get; set; } = PropertyAccessorAccessModifiers.None;
         public PropertyAccessorPurpose AccessorPurpose { get; set; } = PropertyAccessorPurpose.Read;
         public PropertyAccessorType AccessorType { get; set; } = PropertyAccessorType.Get;

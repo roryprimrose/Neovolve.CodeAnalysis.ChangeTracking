@@ -6,6 +6,12 @@
 
     public class TestEnumDefinition : IEnumDefinition
     {
+        /// <inheritdoc />
+        public bool Matches(IElementDefinition element, ElementMatchOptions options)
+        {
+            throw new NotImplementedException();
+        }
+
         public EnumAccessModifiers AccessModifiers { get; set; } = EnumAccessModifiers.Public;
         public IReadOnlyCollection<IAttributeDefinition> Attributes { get; set; } = new List<TestAttributeDefinition>();
         public string DeclaredModifiers { get; set; } = "public";

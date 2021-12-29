@@ -38,6 +38,66 @@
             Members = DetermineMembers(node);
         }
 
+        /// <inheritdoc />
+        public override bool Matches(IElementDefinition element, ElementMatchOptions options)
+        {
+            if (GetType() != element.GetType())
+            {
+                return false;
+            }
+
+            var item = (IEnumDefinition)element;
+
+            if (ImplementedTypes.Count != item.ImplementedTypes.Count)
+            {
+                return false;
+            }
+
+            foreach (var implementedType in ImplementedTypes)
+            {
+                if (item.ImplementedTypes.Any(x => x == implementedType) == false)
+                {
+                    return false;
+                }
+            }
+
+            if (Members.Count != item.Members.Count)
+            {
+                return false;
+            }
+
+            foreach (var member in Members)
+            {
+                var matchingMember = item.Members.FirstOrDefault(x => x.Matches(member, options));
+
+                if (matchingMember == null)
+                {
+                    return false;
+                }
+            }
+
+            if (options.HasFlag(ElementMatchOptions.IgnoreName) == false
+                && Name != item.Name)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private static EnumAccessModifiers DetermineAccessModifier(BaseTypeDeclarationSyntax node,
+            ITypeDefinition? declaringType)
+        {
+            node = node ?? throw new ArgumentNullException(nameof(node));
+
+            if (declaringType == null)
+            {
+                return node.Modifiers.DetermineAccessModifier(EnumAccessModifiers.Internal);
+            }
+
+            return node.Modifiers.DetermineAccessModifier(EnumAccessModifiers.Private);
+        }
+
         private static bool DetermineIsVisible(BaseTypeDeclarationSyntax node, ITypeDefinition? declaringType)
         {
             node = node ?? throw new ArgumentNullException(nameof(node));
@@ -54,19 +114,6 @@
             var accessModifier = DetermineAccessModifier(node, declaringType);
 
             return accessModifier.IsVisible();
-        }
-
-        private static EnumAccessModifiers DetermineAccessModifier(BaseTypeDeclarationSyntax node,
-            ITypeDefinition? declaringType)
-        {
-            node = node ?? throw new ArgumentNullException(nameof(node));
-
-            if (declaringType == null)
-            {
-                return node.Modifiers.DetermineAccessModifier(EnumAccessModifiers.Internal);
-            }
-
-            return node.Modifiers.DetermineAccessModifier(EnumAccessModifiers.Private);
         }
 
         private IReadOnlyCollection<IEnumMemberDefinition> DetermineMembers(EnumDeclarationSyntax node)

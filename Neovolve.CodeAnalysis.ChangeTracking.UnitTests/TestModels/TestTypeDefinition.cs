@@ -6,6 +6,12 @@
 
     public abstract class TestTypeDefinition : ITypeDefinition
     {
+        /// <inheritdoc />
+        public bool Matches(IElementDefinition element, ElementMatchOptions options)
+        {
+            throw new NotImplementedException();
+        }
+
         public void MergePartialType(ITypeDefinition partialType)
         {
         }

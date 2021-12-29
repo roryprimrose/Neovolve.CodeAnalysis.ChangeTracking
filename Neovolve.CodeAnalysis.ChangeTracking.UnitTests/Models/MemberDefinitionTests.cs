@@ -143,6 +143,12 @@
             {
             }
 
+            /// <inheritdoc />
+            public override bool Matches(IElementDefinition element, ElementMatchOptions options)
+            {
+                throw new NotImplementedException();
+            }
+
             public override string FullName { get; } = string.Empty;
             public override string FullRawName { get; } = string.Empty;
             public override string Name { get; } = string.Empty;

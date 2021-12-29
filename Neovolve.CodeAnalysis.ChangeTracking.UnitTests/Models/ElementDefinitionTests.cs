@@ -194,7 +194,7 @@
         public void ThrowsExceptionWhenCreatedWithNullNode()
         {
             // ReSharper disable once ObjectCreationAsStatement
-            Action action = () => new Wrapper((MemberDeclarationSyntax) null!);
+            Action action = () => new Wrapper((MemberDeclarationSyntax)null!);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -217,6 +217,12 @@
                 FullName = Guid.NewGuid().ToString();
                 FullRawName = Guid.NewGuid().ToString();
                 IsVisible = true;
+            }
+
+            /// <inheritdoc />
+            public override bool Matches(IElementDefinition element, ElementMatchOptions options)
+            {
+                throw new NotImplementedException();
             }
 
             public override string FullName { get; }

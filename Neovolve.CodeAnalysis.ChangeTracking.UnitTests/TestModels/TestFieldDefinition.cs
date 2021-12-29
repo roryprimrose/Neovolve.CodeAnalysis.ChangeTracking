@@ -6,6 +6,12 @@
 
     public class TestFieldDefinition : IFieldDefinition
     {
+        /// <inheritdoc />
+        public bool Matches(IElementDefinition element, ElementMatchOptions options)
+        {
+            throw new NotImplementedException();
+        }
+
         public AccessModifiers AccessModifiers { get; set; } = AccessModifiers.Public;
         public IReadOnlyCollection<IAttributeDefinition> Attributes { get; set; } = new List<TestAttributeDefinition>();
         public string DeclaredModifiers { get; set; } = "public";

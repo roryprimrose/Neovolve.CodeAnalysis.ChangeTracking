@@ -26,6 +26,34 @@
             IsVisible = DeclaringMember.IsVisible;
         }
 
+        public override bool Matches(IElementDefinition element, ElementMatchOptions options)
+        {
+            if (GetType() != element.GetType())
+            {
+                return false;
+            }
+
+            var item = (IParameterDefinition)element;
+
+            if (Type != item.Type)
+            {
+                return false;
+            }
+
+            if (DeclaredIndex != item.DeclaredIndex)
+            {
+                return false;
+            }
+
+            if (options.HasFlag(ElementMatchOptions.IgnoreName) == false
+                && Name != item.Name)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         private static ParameterModifiers DetermineModifier(ParameterSyntax node)
         {
             if (node.Modifiers.HasModifier(SyntaxKind.ThisKeyword))
@@ -51,12 +79,13 @@
             return ParameterModifiers.None;
         }
 
+        public int DeclaredIndex { get; }
+
         public IMemberDefinition DeclaringMember { get; }
         public string DefaultValue { get; }
+
         public override string FullName { get; }
         public override string FullRawName { get; }
-
-        public int DeclaredIndex { get; }
         public ParameterModifiers Modifiers { get; }
         public override string Name { get; }
         public override string RawName { get; }

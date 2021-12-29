@@ -16,7 +16,8 @@
         /// <param name="node">The node that defines the argument.</param>
         /// <param name="index">The index of the member in declaration order.</param>
         /// <exception cref="ArgumentNullException">The <paramref name="node" /> parameter is <c>null</c>.</exception>
-        public EnumMemberDefinition(IEnumDefinition declaringType, EnumMemberDeclarationSyntax node, int index) : base(node)
+        public EnumMemberDefinition(IEnumDefinition declaringType, EnumMemberDeclarationSyntax node, int index) :
+            base(node)
         {
             DeclaringType = declaringType;
             var name = node.Identifier.Text;
@@ -38,12 +39,45 @@
             }
         }
 
-        public override string Name { get; }
+        public override bool Matches(IElementDefinition element, ElementMatchOptions options)
+        {
+            if (element is not IEnumMemberDefinition item)
+            {
+                return false;
+            }
+            
+            if (options.HasFlag(ElementMatchOptions.IgnoreValue) == false)
+            {
+                if (Value != item.Value)
+                {
+                    return false;
+                }
+
+                if (string.IsNullOrWhiteSpace(Value)
+                    && Index != item.Index)
+                {
+                    // In this case both enum members do not define a value
+                    // This means the value is implicit according to the index of the member in the enum
+                    return false;
+                }
+            }
+
+            if (base.Matches(element, options) == false)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public IEnumDefinition DeclaringType { get; set; }
+
         public override string FullName { get; }
         public override string FullRawName { get; }
+        public int Index { get; set; }
+
+        public override string Name { get; }
         public override string RawName { get; }
-        public IEnumDefinition DeclaringType { get; set; }
-        public int Index { get; }
         public string Value { get; set; }
     }
 }

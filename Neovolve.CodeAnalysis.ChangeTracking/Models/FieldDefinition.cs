@@ -31,6 +31,29 @@
             FullRawName = DeclaringType.FullRawName + "." + name;
         }
 
+        public override bool Matches(IElementDefinition element, ElementMatchOptions options)
+        {
+            if (GetType() != element.GetType())
+            {
+                return false;
+            }
+
+            var item = (IFieldDefinition)element;
+
+            if (ReturnType != item.ReturnType)
+            {
+                return false;
+            }
+
+            if (options.HasFlag(ElementMatchOptions.IgnoreName) == false
+                && Name != item.Name)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         private static FieldModifiers DetermineModifiers(FieldDeclarationSyntax node)
         {
             var isStatic = node.Modifiers.HasModifier(SyntaxKind.StaticKeyword);

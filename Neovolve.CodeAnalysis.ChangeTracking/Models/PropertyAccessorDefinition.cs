@@ -25,6 +25,29 @@
             RawName = declaringProperty.RawName + nameSuffix;
         }
 
+        public override bool Matches(IElementDefinition element, ElementMatchOptions options)
+        {
+            if (GetType() != element.GetType())
+            {
+                return false;
+            }
+
+            var item = (IPropertyAccessorDefinition)element;
+            
+            if (AccessorType != item.AccessorType)
+            {
+                return false;
+            }
+
+            if (options.HasFlag(ElementMatchOptions.IgnoreName) == false
+                && Name != item.Name)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         private static string AccessorTypeName(AccessorDeclarationSyntax node)
         {
             var kind = node.Kind();
